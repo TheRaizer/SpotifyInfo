@@ -1,0 +1,27 @@
+body {
+    background-color: #191414;
+    color: #1DB954;
+    font-family: "Proxima Nova",
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+.container {
+    text-align: center;
+    justify-content: center;
+    align-content: center;
+}
+
+h1 {
+    margin-top: 5%;
+    font-size: 400%;
+}
+
+#playlists {
+    justify-content: space-around;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, max-content));
+    grid-template-rows: repeat(auto-fit, minmax(100px, max-content));
+}
