@@ -1,11 +1,14 @@
+const { default: axios } = require("axios");
+
 const authEndpoint = "https://accounts.spotify.com/authorize";
-const tokenEndpoint = "https://accounts.spotify.com/api/token";
 
 var authCode = null;
-
+var obtained = false;
 // Replace with your app's client ID, redirect URI and desired scopes
-const clientId = "434f5e9f442a4e4586e089a33f65c857";
 const redirectUri = "http://localhost:3000";
+
+const clientId = "434f5e9f442a4e4586e089a33f65c857";
+
 const scopes = [
   "ugc-image-upload",
   "user-read-playback-state",
@@ -28,14 +31,6 @@ const scopes = [
   "user-follow-modify",
 ];
 
-// Authentification url as shown in https://developer.spotify.com/documentation/general/guides/authorization-guide/#:~:text=A%20token%20that%20can%20be,access%20token%20will%20be%20returned.
-// underneath the code flow image's, first table. Where it states 'A typical request is the GET request of the /authorize endpoint, followed by the query:'
-const authURL = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
-  "%20"
-)}&response_type=code&show_dialog=true`;
-
-const tokenURL = `${tokenEndpoint}?grant_type=authorization_code&code=${authCode}&redirect_uri=${redirectUri}`;
-
 function createSpotifyLoginButton() {
   // Create anchor element.
   var a = document.createElement("a");
@@ -46,6 +41,13 @@ function createSpotifyLoginButton() {
   // Set the title.
   a.title = "Login To Spotify";
   a.id = "spotify-login";
+
+  // Authentification url as shown in https://developer.spotify.com/documentation/general/guides/authorization-guide/#:~:text=A%20token%20that%20can%20be,access%20token%20will%20be%20returned.
+  // underneath the code flow image's, first table. Where it states 'A typical request is the GET request of the /authorize endpoint, followed by the query:'
+  let authURL = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
+    "%20"
+  )}&response_type=code&show_dialog=true`;
+
   // Set the href property.
   a.href = authURL;
   // Append the anchor element to the body.
@@ -68,6 +70,14 @@ function checkForCode() {
   window.history.pushState(null, null, "/");
 }
 
-if (authCode == null) {
+function getTokens() {
+  axios.get(`/get_tokens?code=${authCode}`);
+}
+
+// if the auth code is not -> (""), null, undefined, false and the numbers 0 and NaN
+if (!authCode) {
   checkForCode();
+} else if (!obtained) {
+  getTokens();
+  obtained = true;
 }
