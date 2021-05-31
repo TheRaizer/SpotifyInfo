@@ -1,9 +1,7 @@
-const { default: axios } = require("axios");
-
 const authEndpoint = "https://accounts.spotify.com/authorize";
 
 var authCode = null;
-var obtained = false;
+
 // Replace with your app's client ID, redirect URI and desired scopes
 const redirectUri = "http://localhost:3000";
 
@@ -65,19 +63,28 @@ function checkForCode() {
 
   console.log(authCode);
 
+  if (authCode) {
+    getTokens();
+    console.log("get tokens");
+  }
+
   // because the code has been obtained we want to change the url
   // so it doesn't have the code without refreshing the page
   window.history.pushState(null, null, "/");
 }
 
 function getTokens() {
-  axios.get(`/get_tokens?code=${authCode}`);
+  axios
+    .get(`/tokens/get_tokens?code=${authCode}`)
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log("error posting to app");
+    });
 }
 
-// if the auth code is not -> (""), null, undefined, false and the numbers 0 and NaN
+// if the auth code is -> (""), null, undefined, false and the numbers 0 and NaN
 if (!authCode) {
   checkForCode();
-} else if (!obtained) {
-  getTokens();
-  obtained = true;
 }
