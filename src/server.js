@@ -14,8 +14,8 @@ app.use(
   })
 );
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.urlencoded());
 app.use(express.static(__dirname + "/public"));
 
 // '/' represents the home page which will render index.html from express server
