@@ -66,6 +66,7 @@ function checkForCode() {
   if (authCode) {
     getTokens();
     console.log("get tokens");
+    authCode = "";
   }
 
   // because the code has been obtained we want to change the url

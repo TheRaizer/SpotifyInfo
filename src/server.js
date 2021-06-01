@@ -4,6 +4,7 @@ const session = require("express-session");
 
 const app = express();
 const tokens = require("./routes/tokens");
+const spotifyActions = require("./routes/spotify-actions");
 
 app.use(
   session({
@@ -23,6 +24,7 @@ app.get("/", function (_req, res) {
   res.sendFile(__dirname + "/" + "index.html");
 });
 app.use("/tokens", tokens);
+app.use("/spotify", spotifyActions);
 
 app.listen(3000, function () {
   console.log("listening at localhost:3000");
