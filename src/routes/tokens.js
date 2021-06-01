@@ -29,9 +29,15 @@ router.get("/get_tokens", async function (req, res, next) {
     // get a reponse through the spotify web api using the tokenURL
     .post(tokenURL, qs.stringify(data), headers)
     .then((response) => {
-      // store the response in the session as 'tokens'
-      req.session.tokens = response.data;
-      console.log(req.session.tokens);
+      // store the tokens in session store
+      // req.session.tokens = response.data;
+      // console.log(req.session.tokens);
+
+      // store the tokens in session cookie
+      req.session.cookie.access_token = response.data.access_token;
+      req.session.cookie.refresh_token = response.data.refresh_token;
+      console.log("cookie");
+      console.log(req.session.cookie);
     })
     .catch((err) => {
       // log caught error

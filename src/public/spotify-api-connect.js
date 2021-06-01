@@ -65,7 +65,6 @@ function checkForCode() {
 
   if (authCode) {
     getTokens();
-    console.log("get tokens");
     authCode = "";
   }
 

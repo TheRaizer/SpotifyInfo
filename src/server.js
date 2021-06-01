@@ -6,14 +6,27 @@ const app = express();
 const tokens = require("./routes/tokens");
 const spotifyActions = require("./routes/spotify-actions");
 
-app.use(
-  session({
-    secret: "keyboard cat",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }, // set to true if have https
-  })
-);
+const oneDayToSeconds = 24 * 60 * 60;
+
+var sesh = {
+  secret: "keyboard cat",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: oneDayToSeconds,
+    access_token: "",
+    refresh_token: "",
+  },
+};
+
+// NODE_ENV is conventionally either 'production' or 'development'
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1); // trust first proxy
+  sesh.cookie.secure = true; // serve secure cookies
+  sesh.cookie.httpOnly = false;
+}
+
+app.use(session(sesh));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
