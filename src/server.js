@@ -25,7 +25,7 @@ const oneDayToSeconds = 24 * 60 * 60;
 
 var sesh = {
   store: new RedisStore({ client: redisClient }),
-  secret: "keyboard cat",
+  secret: process.env.SESH_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
