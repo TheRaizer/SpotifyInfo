@@ -30,20 +30,19 @@ router.get("/get_tokens", async function (req, res, next) {
     .post(tokenURL, qs.stringify(data), headers)
     .then((response) => {
       // store the tokens in session store
-      // req.session.tokens = response.data;
-      // console.log(req.session.tokens);
+      req.session.access_token = response.data.access_token;
+      req.session.refresh_token = response.data.refresh_token;
+      console.log(req.session);
 
       // store the tokens in session cookie
-      req.session.cookie.access_token = response.data.access_token;
-      req.session.cookie.refresh_token = response.data.refresh_token;
-      console.log("cookie");
-      console.log(req.session.cookie);
+      // req.session.cookie.access_token = response.data.access_token;
+      // req.session.cookie.refresh_token = response.data.refresh_token;
+      // console.log("cookie");
+      // console.log(req.session.cookie);
     })
     .catch((err) => {
       // log caught error
       console.log(err);
-      // move onto next middleware
-      next(err);
     });
   res.send("Post handler for token route");
 });
