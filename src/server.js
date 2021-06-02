@@ -7,10 +7,19 @@ const app = express();
 const tokens = require("./routes/tokens");
 const spotifyActions = require("./routes/spotify-actions");
 
-let RedisStore = require("connect-redis")(session);
-let redisClient = redis.createClient();
+const RedisStore = require("connect-redis")(session);
 
-redisClient.on("error", console.error);
+//Configure redis client
+const redisClient = redis.createClient({
+  host: "localhost",
+  port: 6379,
+});
+redisClient.on("error", function (err) {
+  console.log("Could not establish a connection with redis. " + err);
+});
+redisClient.on("connect", function (err) {
+  console.log("Connected to redis successfully");
+});
 
 const oneDayToSeconds = 24 * 60 * 60;
 

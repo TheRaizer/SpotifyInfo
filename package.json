@@ -4,12 +4,12 @@
   "description": "View spotify info and make streamlined modifications",
   "main": "index.js",
   "dependencies": {
-    "body-parser": "^1.19.0",
     "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
     "connect-redis": "^5.2.0",
     "dotenv": "^10.0.0",
-    "express-session": "^1.17.2",
     "express": "^4.17.1",
+    "express-session": "^1.17.2",
     "qs": "^6.10.1",
     "redis": "^3.1.2"
   },
