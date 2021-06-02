@@ -2,8 +2,8 @@ const authEndpoint = "https://accounts.spotify.com/authorize";
 
 // Replace with your app's client ID, redirect URI and desired scopes
 const redirectUri = "http://localhost:3000";
-
 const clientId = "434f5e9f442a4e4586e089a33f65c857";
+var hasToken = false;
 
 const scopes = [
   "ugc-image-upload",
@@ -49,10 +49,47 @@ function createSpotifyLoginButton() {
   // Append the anchor element to the body.
   document.getElementById("spotify-container").appendChild(a);
 }
-createSpotifyLoginButton();
+
+const tokenPromise = (authCode) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(`/tokens/get_tokens?code=${authCode}`)
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
+const hasTokenPromise = () => {
+  return new Promise((resolve, reject) => {
+    axios
+      .get(`/tokens/has_tokens`)
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
 
 // MAYBE DO THIS BACKEND TO AVOID REVEALING AUTH CODE
-function checkForCode() {
+async function obtainTokens() {
+  // await promise resolve that returns whether the session has tokens.
+  // because token is stored in session we need to reassign 'hasToken' to the client so we do not need to run this method again on refresh
+  hasToken = await hasTokenPromise().catch((err) => {
+    console.error(err);
+  });
+
+  // leave if there is a token
+  if (hasToken) {
+    return;
+  }
+
+  console.log("get tokens");
   // create a parameter searcher in the URL after '?' which holds the requests body parameters
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -60,11 +97,14 @@ function checkForCode() {
   // hopefully came back from the spotify GET request otherwise it is null
   var authCode = urlParams.get("code");
 
-  console.log(authCode);
-
   if (authCode) {
-    getTokens(authCode);
+    await tokenPromise(authCode).catch((err) => {
+      console.error(err);
+    });
     authCode = "";
+  } else {
+    // create spotify button if no auth code was found in the url
+    createSpotifyLoginButton();
   }
 
   // because the code has been obtained we want to change the url
@@ -72,18 +112,7 @@ function checkForCode() {
   window.history.pushState(null, null, "/");
 }
 
-function getTokens(authCode) {
-  axios
-    .get(`/tokens/get_tokens?code=${authCode}`)
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => {
-      console.log("error posting to app");
-    });
-}
-
-// if the auth code is -> (""), null, undefined, false and the numbers 0 and NaN
-if (!authCode) {
-  checkForCode();
+// check if the has token variable changed so no more requests have to be made
+if (!hasToken) {
+  obtainTokens();
 }

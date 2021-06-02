@@ -11,8 +11,8 @@ const RedisStore = require("connect-redis")(session);
 
 //Configure redis client
 const redisClient = redis.createClient({
-  host: "localhost",
-  port: 6379,
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
 });
 redisClient.on("error", function (err) {
   console.log("Could not establish a connection with redis. " + err);
@@ -21,8 +21,6 @@ redisClient.on("connect", function (err) {
   console.log("Connected to redis successfully");
 });
 
-const oneDayToSeconds = 24 * 60 * 60;
-
 var sesh = {
   store: new RedisStore({ client: redisClient }),
   secret: process.env.SESH_SECRET,
@@ -30,7 +28,7 @@ var sesh = {
   saveUninitialized: false,
   cookie: {
     signed: true,
-    maxAge: oneDayToSeconds,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
   },
 };
 
@@ -49,13 +47,10 @@ app.use(express.static(__dirname + "/public"));
 // '/' represents the home page which will render index.html from express server
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/" + "index.html");
-
-  // log the cookie of this session when starting site.
-  console.log(req.session);
 });
 app.use("/tokens", tokens);
 app.use("/spotify", spotifyActions);
 
-app.listen(3000, function () {
+app.listen(process.env.EXPRESS_PORT, function () {
   console.log("listening at localhost:3000");
 });
