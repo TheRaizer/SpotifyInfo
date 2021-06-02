@@ -1,7 +1,5 @@
 const authEndpoint = "https://accounts.spotify.com/authorize";
 
-var authCode = null;
-
 // Replace with your app's client ID, redirect URI and desired scopes
 const redirectUri = "http://localhost:3000";
 
@@ -53,18 +51,19 @@ function createSpotifyLoginButton() {
 }
 createSpotifyLoginButton();
 
+// MAYBE DO THIS BACKEND TO AVOID REVEALING AUTH CODE
 function checkForCode() {
   // create a parameter searcher in the URL after '?' which holds the requests body parameters
   const urlParams = new URLSearchParams(window.location.search);
 
   // Get the code from the parameter called 'code' in the url which
   // hopefully came back from the spotify GET request otherwise it is null
-  authCode = urlParams.get("code");
+  var authCode = urlParams.get("code");
 
   console.log(authCode);
 
   if (authCode) {
-    getTokens();
+    getTokens(authCode);
     authCode = "";
   }
 
@@ -73,7 +72,7 @@ function checkForCode() {
   window.history.pushState(null, null, "/");
 }
 
-function getTokens() {
+function getTokens(authCode) {
   axios
     .get(`/tokens/get_tokens?code=${authCode}`)
     .then((res) => {
