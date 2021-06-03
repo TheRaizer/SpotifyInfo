@@ -17,7 +17,7 @@ const redisClient = redis.createClient({
 redisClient.on("error", function (err) {
   console.log("Could not establish a connection with redis. " + err);
 });
-redisClient.on("connect", function (err) {
+redisClient.on("connect", function () {
   console.log("Connected to redis successfully");
 });
 
@@ -28,7 +28,7 @@ var sesh = {
   saveUninitialized: false,
   cookie: {
     signed: true,
-    maxAge: 30 * 24 * 60 * 60 * 1000,
+    maxAge: 3_600_000, // 1 hours to ms
   },
 };
 
@@ -45,9 +45,10 @@ app.use(express.json());
 app.use(express.static(__dirname + "/public"));
 
 // '/' represents the home page which will render index.html from express server
-app.get("/", function (req, res) {
+app.get("/", function (_req, res) {
   res.sendFile(__dirname + "/" + "index.html");
 });
+
 app.use("/tokens", tokens);
 app.use("/spotify", spotifyActions);
 

@@ -2,10 +2,10 @@ body {
     background-color: #191414;
     color: #1DB954;
     font-family: "Proxima Nova",
-    "Helvetica Neue",
-    Helvetica,
-    Arial,
-    sans-serif;
+        "Helvetica Neue",
+        Helvetica,
+        Arial,
+        sans-serif;
 }
 
 .container {
@@ -33,7 +33,7 @@ section {
     border-color: #1DB954;
     border-width: 2px;
     border-radius: 5px;
-    
+
     transition: all .1s linear;
 }
 

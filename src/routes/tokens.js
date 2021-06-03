@@ -3,8 +3,6 @@ const qs = require("qs");
 const router = express.Router();
 const axios = require("axios");
 
-const redirectUri = "http://localhost:3000";
-
 // whether the session has tokens
 router.get("/has_tokens", function (req, res) {
   if (req.session.access_token && req.session.refresh_token) {
@@ -28,7 +26,7 @@ const getTokensPromise = (req) => {
     let data = {
       grant_type: "authorization_code",
       code: authCode,
-      redirect_uri: redirectUri,
+      redirect_uri: process.env.REDIRECT_URI,
       // this uses client secret which is why this process must be done in backend
       client_secret: process.env.CLIENT_SECRET,
       client_id: process.env.CLIENT_ID,

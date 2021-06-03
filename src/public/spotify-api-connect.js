@@ -3,7 +3,6 @@ const authEndpoint = "https://accounts.spotify.com/authorize";
 // Replace with your app's client ID, redirect URI and desired scopes
 const redirectUri = "http://localhost:3000";
 const clientId = "434f5e9f442a4e4586e089a33f65c857";
-var hasToken = false;
 
 const scopes = [
   "ugc-image-upload",
@@ -51,6 +50,7 @@ function createSpotifyLoginButton() {
 }
 
 const tokenPromise = (authCode) => {
+  // the request should redirect to spotify permission where it will then redirect to call back url where info is shown.
   return new Promise((resolve, reject) => {
     axios
       .get(`/tokens/get_tokens?code=${authCode}`)
@@ -76,17 +76,16 @@ const hasTokenPromise = () => {
   });
 };
 
-// MAYBE DO THIS BACKEND TO AVOID REVEALING AUTH CODE
 async function obtainTokens() {
   // await promise resolve that returns whether the session has tokens.
   // because token is stored in session we need to reassign 'hasToken' to the client so we do not need to run this method again on refresh
-  hasToken = await hasTokenPromise().catch((err) => {
+  var hasToken = await hasTokenPromise().catch((err) => {
     console.error(err);
   });
 
-  // leave if there is a token
   if (hasToken) {
-    return;
+    console.log("has token");
+    return hasToken;
   }
 
   console.log("get tokens");
@@ -110,9 +109,36 @@ async function obtainTokens() {
   // because the code has been obtained we want to change the url
   // so it doesn't have the code without refreshing the page
   window.history.pushState(null, null, "/");
+  return hasToken;
 }
 
-// check if the has token variable changed so no more requests have to be made
-if (!hasToken) {
-  obtainTokens();
+// try and obtain tokens
+var hasToken = obtainTokens();
+
+async function getInformation() {
+  const getCurrentlyPlaying = () => {
+    // the request should redirect to spotify permission where it will then redirect to call back url where info is shown.
+    return new Promise((resolve, reject) => {
+      axios
+        .get(`/spotify/get_currently_playing`)
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  };
+
+  var currentlyPlaying = await getCurrentlyPlaying().catch((err) => {
+    console.error(err);
+  });
+
+  console.log(currentlyPlaying);
+}
+
+if (hasToken) {
+  console.log("render certain things");
+  // render certain things
+  getInformation();
 }
