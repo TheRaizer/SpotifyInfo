@@ -54,10 +54,7 @@ const getTokensPromise = (req) => {
 
 // expecting /get_tokens?code=XXXX
 router.get("/get_tokens", async function (req, res) {
-  await getTokensPromise(req).catch((err) => {
-    // log caught error
-    console.error(err);
-  });
+  await getTokensPromise(req);
   res.send("Post handler for token route");
 });
 

@@ -49,39 +49,17 @@ function createSpotifyLoginButton() {
   document.getElementById("spotify-container").appendChild(a);
 }
 
-const tokenPromise = (authCode) => {
-  // the request should redirect to spotify permission where it will then redirect to call back url where info is shown.
-  return new Promise((resolve, reject) => {
-    axios
-      .get(`/tokens/get_tokens?code=${authCode}`)
-      .then((res) => {
-        resolve(res);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-};
-
-const hasTokenPromise = () => {
-  return new Promise((resolve, reject) => {
-    axios
-      .get(`/tokens/has_tokens`)
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-};
-
 async function obtainTokens() {
   // await promise resolve that returns whether the session has tokens.
   // because token is stored in session we need to reassign 'hasToken' to the client so we do not need to run this method again on refresh
-  var hasToken = await hasTokenPromise().catch((err) => {
-    console.error(err);
-  });
+  var hasToken = await axios
+    .get(`/tokens/has_tokens`)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 
   if (hasToken) {
     console.log("has token");
@@ -97,7 +75,8 @@ async function obtainTokens() {
   var authCode = urlParams.get("code");
 
   if (authCode) {
-    await tokenPromise(authCode).catch((err) => {
+    // axios itself is promise based so we do not need to wrap it in a custom promise
+    await axios.get(`/tokens/get_tokens?code=${authCode}`).catch((err) => {
       console.error(err);
     });
     authCode = "";
@@ -111,34 +90,34 @@ async function obtainTokens() {
   window.history.pushState(null, null, "/");
   return hasToken;
 }
-
-// try and obtain tokens
-var hasToken = obtainTokens();
-
 async function getInformation() {
-  const getCurrentlyPlaying = () => {
-    // the request should redirect to spotify permission where it will then redirect to call back url where info is shown.
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`/spotify/get_currently_playing`)
-        .then((res) => {
-          resolve(res);
-        })
-        .catch((err) => {
-          reject(err);
-        });
+  var currentlyPlaying = await axios
+    .get(`/spotify/get_currently_playing`)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      console.error(err);
     });
-  };
-
-  var currentlyPlaying = await getCurrentlyPlaying().catch((err) => {
-    console.error(err);
-  });
 
   console.log(currentlyPlaying);
 }
 
-if (hasToken) {
-  console.log("render certain things");
-  // render certain things
-  getInformation();
+// create custom promise
+async function stall(stallTime = 3000) {
+  await new Promise((resolve) => setTimeout(resolve, stallTime));
 }
+
+console.log("Start long task");
+stall().then(() => {
+  console.log("Finished long task");
+});
+console.log("do other stuff:");
+
+obtainTokens().then((hasToken) => {
+  if (hasToken) {
+    console.log("render certain things");
+    // render certain things
+    getInformation();
+  }
+});
