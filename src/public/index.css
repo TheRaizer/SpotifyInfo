@@ -45,6 +45,22 @@ section {
 #playlists {
     justify-content: space-around;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, max-content));
-    grid-template-rows: repeat(auto-fit, minmax(100px, max-content));
+    grid-template-columns: repeat(auto-fit, minmax(150px, max-content));
+    grid-template-rows: repeat(auto-fit, minmax(150px, max-content));
+}
+
+.playlist img {
+    width: 90px;
+    height: 90px;
+}
+
+.playlist h3 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.loading-spinner {
+    width: 150px;
+    height: 150px;
 }

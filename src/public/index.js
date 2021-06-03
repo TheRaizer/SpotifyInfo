@@ -112,7 +112,7 @@ async function obtainTokens() {
 const playlistsElement = document.getElementById("playlists");
 
 // the index of the 60x60 img stored in playlist.images list
-const sixtyBysixtyImgIdx = 2;
+const sixtyBysixtyImgIdx = 0;
 
 const displayPlaylists = (playlists) => {
   const htmlString = playlists
@@ -130,8 +130,8 @@ const displayPlaylists = (playlists) => {
 
       return `
             <div class="playlist">
-                <h3>${playlist.name}</h3>
                 <img src="${url}"></img>
+                <h3>${playlist.name}</h3>
             </div>
         `;
     })
@@ -144,9 +144,15 @@ async function getInformation() {
   var playListsReq = axiosGetReq("/spotify/get_playlists");
 
   // promise.all runs each promise in parallel before returning their values once theyre all done.
+  // promise.all will also stop function execution if a error is thrown in any of the promises.
+
   // promise.settleAll will not throw error however it will store the state of each request. (rejected state is equivalent to a thrown error)
   let data = await Promise.all([currentlyPlayingReq, playListsReq]);
   console.log(data[1]);
+
+  let loadingSpinner = document.getElementById("playlists-loading");
+
+  loadingSpinner.parentNode.removeChild(loadingSpinner);
   displayPlaylists(data[1]);
 }
 
@@ -165,6 +171,9 @@ obtainTokens().then((hasToken) => {
   if (hasToken) {
     console.log("render certain things");
     // render certain things
-    getInformation().catch((err) => console.error(err));
+    getInformation().catch((err) => {
+      console.log("Problem when getting information");
+      console.error(err);
+    });
   }
 });
