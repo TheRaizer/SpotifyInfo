@@ -25,4 +25,23 @@ router.get("/get_currently_playing", async function (req, res) {
     });
 });
 
+router.get("/get_playlists", async function (req, res) {
+  await axios({
+    method: "get",
+    url: "https://api.spotify.com/v1/me/playlists",
+    headers: {
+      Authorization: "Bearer " + req.session.access_token,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then(function (response) {
+      // the json is nested in a way that the below will retrieve playlists
+      res.send(response.data.items);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+});
+
 module.exports = router;

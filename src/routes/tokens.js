@@ -39,7 +39,6 @@ const getTokensPromise = (req) => {
         // store the tokens in session store
         req.session.access_token = response.data.access_token;
         req.session.refresh_token = response.data.refresh_token;
-        console.log(req.session);
 
         // log the session when tokens are obtained
         console.log(req.session);
