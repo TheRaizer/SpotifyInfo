@@ -66,10 +66,9 @@ const axiosGetReq = (url) => {
 async function obtainTokens() {
   // await promise resolve that returns whether the session has tokens.
   // because token is stored in session we need to reassign 'hasToken' to the client so we do not need to run this method again on refresh
-  var hasToken = await axios
-    .get(`/tokens/has_tokens`)
-    .then((res) => {
-      return res.data;
+  var hasToken = await axiosGetReq("/tokens/has-tokens")
+    .then((hasToken) => {
+      return hasToken;
     })
     .catch((err) => {
       console.error(err);
@@ -90,8 +89,7 @@ async function obtainTokens() {
 
   if (authCode) {
     // axios itself is promise based so we do not need to wrap it in a custom promise
-    await axios
-      .get(`/tokens/get_tokens?code=${authCode}`)
+    await axiosGetReq(`/tokens/get-tokens?code=${authCode}`)
       // if the request was succesful we have recieved a token
       .then(() => (hasToken = true))
       .catch((err) => {
@@ -141,21 +139,26 @@ const displayPlaylists = (playlists) => {
 };
 
 async function getInformation() {
-  var currentlyPlayingReq = axiosGetReq("/spotify/get_currently_playing");
-  var playListsReq = axiosGetReq("/spotify/get_playlists");
+  var topArtistsReq = axiosGetReq(
+    "/spotify/get-top-artists?time_range=long_term"
+  );
+  var topTracksReq = axiosGetReq(
+    "/spotify/get-top-tracks?time_range=medium_term"
+  );
+  var playListsReq = axiosGetReq("/spotify/get-playlists");
 
   // promise.all runs each promise in parallel before returning their values once theyre all done.
   // promise.all will also stop function execution if a error is thrown in any of the promises.
 
   // promise.settleAll will not throw error however it will store the state of each request. (rejected state is equivalent to a thrown error)
-  let data = await Promise.all([currentlyPlayingReq, playListsReq]);
+  let data = await Promise.all([topArtistsReq, topTracksReq, playListsReq]);
   console.log(data);
 
   let loadingSpinner = document.getElementById("playlists-loading");
-
   loadingSpinner.parentNode.removeChild(loadingSpinner);
+
   // index 1 is the response from the playlists request
-  displayPlaylists(data[1]);
+  displayPlaylists(data[2]);
 }
 
 // create custom promise
@@ -215,9 +218,8 @@ const animateOnScroll = new IntersectionObserver(function (
     if (!entry.isIntersecting) {
       return;
     }
-    // FIX THIS ASAPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
-    // THIS 'playlist' classname should be changeable from outside and not HARDCODED
-    runElementsAnimations("playlist");
+    // observable element that causes animation on scroll should contain a 'data-class-to-animate' attribute
+    runElementsAnimations(entry.target.getAttribute("data-class-to-animate"));
     appearOnScroll.unobserve(entry.target);
   });
 },
@@ -233,8 +235,7 @@ obtainTokens().then((hasToken) => {
     getInformation()
       .then(() => {
         // Run .then() when information has been obtained and innerhtml has been changed
-        const playlistsArea = document.getElementById("playlists-area");
-
+        const playlistsArea = document.getElementById("playlists-header");
         // you can also observe multiple objects
         animateOnScroll.observe(playlistsArea);
       })

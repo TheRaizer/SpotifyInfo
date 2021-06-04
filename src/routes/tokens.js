@@ -4,10 +4,11 @@ const router = express.Router();
 const axios = require("axios");
 
 // whether the session has tokens
-router.get("/has_tokens", function (req, res) {
+router.get("/has-tokens", function (req, res) {
   if (req.session.access_token && req.session.refresh_token) {
     res.send(true);
   } else {
+    console.log("no tokens");
     res.send(false);
   }
 });
@@ -15,7 +16,7 @@ router.get("/has_tokens", function (req, res) {
 const getTokensPromise = (req) => {
   return new Promise((resolve, reject) => {
     // get code from request parameter
-    authCode = req.query.code;
+    var authCode = req.query.code;
     const tokenURL = "https://accounts.spotify.com/api/token";
     const headers = {
       headers: {
@@ -52,8 +53,11 @@ const getTokensPromise = (req) => {
 };
 
 // expecting /get_tokens?code=XXXX
-router.get("/get_tokens", async function (req, res) {
-  await getTokensPromise(req);
+router.get("/get-tokens", async function (req, res, next) {
+  await getTokensPromise(req).catch((err) => {
+    console.error(err);
+    next(err);
+  });
   res.send("Post handler for token route");
 });
 
