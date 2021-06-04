@@ -116,10 +116,11 @@ const sixtyBysixtyImgIdx = 0;
 
 const displayPlaylists = (playlists) => {
   const htmlString = playlists
-    .map((playlist) => {
+    .map((playlist, idx) => {
       imgList = playlist.images;
 
       var url = "";
+      var id = `playlist-${idx}`;
 
       // if the img list obtained from api has a 60x60 img
       if (imgList.length > sixtyBysixtyImgIdx) {
@@ -129,14 +130,15 @@ const displayPlaylists = (playlists) => {
       }
 
       return `
-            <div class="playlist">
+            <div class="playlist" id=${id}">
                 <img src="${url}"></img>
-                <h3>${playlist.name}</h3>
+                <h4>${playlist.name}</h4>
             </div>
         `;
     })
     .join("");
   playlistsElement.innerHTML = htmlString;
+  animationHandler();
 };
 
 async function getInformation() {
@@ -148,11 +150,12 @@ async function getInformation() {
 
   // promise.settleAll will not throw error however it will store the state of each request. (rejected state is equivalent to a thrown error)
   let data = await Promise.all([currentlyPlayingReq, playListsReq]);
-  console.log(data[1]);
+  console.log(data);
 
   let loadingSpinner = document.getElementById("playlists-loading");
 
   loadingSpinner.parentNode.removeChild(loadingSpinner);
+  // index 1 is the response from the playlists request
   displayPlaylists(data[1]);
 }
 
@@ -167,13 +170,73 @@ stall().then(() => {
 });
 console.log("do other stuff:");
 
+const infoContainer = document.getElementById("info-container");
+const allowAccessHeader = document.getElementById("allow-access-header");
+
 obtainTokens().then((hasToken) => {
   if (hasToken) {
     console.log("render certain things");
+    // if there is a token remove the allow access header from DOM
+    allowAccessHeader.parentNode.removeChild(allowAccessHeader);
+    infoContainer.style.display = "block";
     // render certain things
     getInformation().catch((err) => {
       console.log("Problem when getting information");
       console.error(err);
     });
+  } else {
+    // if there is no token show the allow access header and hide the info
+    allowAccessHeader.style.display = "block";
+    infoContainer.style.display = "none";
   }
 });
+
+function isInViewport(element) {
+  // nothing works here rn
+  return true;
+}
+
+function onVisible(element, callback) {
+  if (isInViewport(element)) {
+    console.log("is in view");
+    return () => callback();
+  }
+  console.log("not in view");
+  return () => {};
+}
+
+function runElementsAnimations(className) {
+  var elements = document.getElementsByClassName(className);
+  if (
+    elements.length > 0 &&
+    elements[0].style.animationPlayState === "running"
+  ) {
+    return;
+  }
+
+  var idx = 0;
+
+  // in intervals play their initial animations
+  var interval = setInterval(function () {
+    if (idx === elements.length) {
+      clearInterval(interval);
+      return;
+    }
+    var element = elements[idx];
+    element.style.animationPlayState = "running";
+    idx += 1;
+  }, 50);
+}
+
+const animationHandler = onVisible(
+  document.getElementById("playlists-area"),
+  () => {
+    // do stuff here when the given element is visible
+    runElementsAnimations("playlist");
+  }
+);
+
+window.addEventListener("DOMContentLoaded", animationHandler, false);
+window.addEventListener("load", animationHandler, false);
+window.addEventListener("scroll", animationHandler, false);
+window.addEventListener("resize", animationHandler, false);
