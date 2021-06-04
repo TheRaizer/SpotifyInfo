@@ -138,7 +138,6 @@ const displayPlaylists = (playlists) => {
     })
     .join("");
   playlistsElement.innerHTML = htmlString;
-  animationHandler();
 };
 
 async function getInformation() {
@@ -173,40 +172,16 @@ console.log("do other stuff:");
 const infoContainer = document.getElementById("info-container");
 const allowAccessHeader = document.getElementById("allow-access-header");
 
-obtainTokens().then((hasToken) => {
-  if (hasToken) {
-    console.log("render certain things");
-    // if there is a token remove the allow access header from DOM
-    allowAccessHeader.parentNode.removeChild(allowAccessHeader);
-    infoContainer.style.display = "block";
-    // render certain things
-    getInformation().catch((err) => {
-      console.log("Problem when getting information");
-      console.error(err);
-    });
-  } else {
-    // if there is no token show the allow access header and hide the info
-    allowAccessHeader.style.display = "block";
-    infoContainer.style.display = "none";
-  }
-});
-
-function isInViewport(element) {
-  // nothing works here rn
-  return true;
-}
-
-function onVisible(element, callback) {
-  if (isInViewport(element)) {
-    console.log("is in view");
-    return () => callback();
-  }
-  console.log("not in view");
-  return () => {};
-}
+const animateOptions = {
+  // the entire element should be visible before the observer counts it as intersecting
+  threshold: 1,
+  // how far down the screen the element needs to be before the observer counts it as intersecting
+  rootMargin: "0px 0px -100px 0px",
+};
 
 function runElementsAnimations(className) {
   var elements = document.getElementsByClassName(className);
+
   if (
     elements.length > 0 &&
     elements[0].style.animationPlayState === "running"
@@ -228,15 +203,46 @@ function runElementsAnimations(className) {
   }, 50);
 }
 
-const animationHandler = onVisible(
-  document.getElementById("playlists-area"),
-  () => {
-    // do stuff here when the given element is visible
+// intersection observer is a nice way to find whether an element is in the viewport
+// in this case once we know it's in the viewport we also animate elements relating to a given class name
+const animateOnScroll = new IntersectionObserver(function (
+  entries,
+  appearOnScroll
+) {
+  entries.forEach((entry) => {
+    if (!entry.isIntersecting) {
+      return;
+    }
+    // FIX THIS ASAPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+    // THIS 'playlist' classname should be changeable from outside and not HARDCODED
     runElementsAnimations("playlist");
-  }
-);
+    appearOnScroll.unobserve(entry.target);
+  });
+},
+animateOptions);
 
-window.addEventListener("DOMContentLoaded", animationHandler, false);
-window.addEventListener("load", animationHandler, false);
-window.addEventListener("scroll", animationHandler, false);
-window.addEventListener("resize", animationHandler, false);
+obtainTokens().then((hasToken) => {
+  if (hasToken) {
+    console.log("render certain things");
+    // if there is a token remove the allow access header from DOM
+    allowAccessHeader.parentNode.removeChild(allowAccessHeader);
+    infoContainer.style.display = "block";
+    // render certain things
+    getInformation()
+      .then(() => {
+        // Run .then() when information has been obtained and innerhtml has been changed
+        const playlistsArea = document.getElementById("playlists-area");
+
+        // you can also observe multiple objects
+        animateOnScroll.observe(playlistsArea);
+      })
+      .catch((err) => {
+        console.log("Problem when getting information");
+        console.error(err);
+      });
+  } else {
+    // if there is no token show the allow access header and hide the info
+    allowAccessHeader.style.display = "block";
+    infoContainer.style.display = "none";
+  }
+});
