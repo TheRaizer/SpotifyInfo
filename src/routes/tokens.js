@@ -1,7 +1,7 @@
-const express = require("express");
-const qs = require("qs");
-const router = express.Router();
-const axios = require("axios");
+import { Router } from "express";
+import { stringify } from "qs";
+export const router = Router();
+import axios from "axios";
 
 // whether the session has tokens
 router.get("/has-tokens", function (req, res) {
@@ -34,8 +34,7 @@ const getTokensPromise = (req) => {
     };
 
     axios
-      // get a reponse through the spotify web api using the tokenURL
-      .post(tokenURL, qs.stringify(data), headers)
+      .post(tokenURL, stringify(data), headers)
       .then((response) => {
         // store the tokens in session store
         req.session.access_token = response.data.access_token;
@@ -60,5 +59,3 @@ router.get("/get-tokens", async function (req, res, next) {
   });
   res.send("Post handler for token route");
 });
-
-module.exports = router;

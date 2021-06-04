@@ -1,16 +1,25 @@
-require("dotenv").config();
-const express = require("express");
-const redis = require("redis");
-const session = require("express-session");
+import dotenv from "dotenv";
+dotenv.config();
+
+import express from "express";
+import { createClient } from "redis";
+import session from "express-session";
+
+import { router as tokens } from "./routes/tokens.js";
+import { router as spotifyActions } from "./routes/spotify-actions.js";
+import RedisStore from "connect-redis";
+
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const tokens = require("./routes/tokens");
-const spotifyActions = require("./routes/spotify-actions");
 
-const RedisStore = require("connect-redis")(session);
+const store = RedisStore(session);
 
 //Configure redis client
-const redisClient = redis.createClient({
+const redisClient = createClient({
   host: process.env.REDIS_HOST,
   port: process.env.REDIS_PORT,
 });
@@ -22,7 +31,7 @@ redisClient.on("connect", function () {
 });
 
 var sesh = {
-  store: new RedisStore({ client: redisClient }),
+  store: new store({ client: redisClient }),
   secret: process.env.SESH_SECRET,
   resave: false,
   saveUninitialized: false,

@@ -1,6 +1,6 @@
-const express = require("express");
-const router = express.Router();
-const axios = require("axios");
+import { Router } from "express";
+export const router = Router();
+import axios from "axios";
 
 const spotifyGetHeaders = (req) => {
   return {
@@ -66,5 +66,3 @@ router.get("/get-playlists", async function (req, res) {
       console.error(err);
     });
 });
-
-module.exports = router;
