@@ -106,10 +106,39 @@ async function obtainTokens() {
   return hasToken;
 }
 
-const playlistsElement = document.getElementById("playlists");
+/* Functions that show or hide an element by adding the corrosponding
+class to their class list. This means they keep their current css attributes,
+however transition to and gain the attributes corrosponding to the added class.
 
-// the index of the 60x60 img stored in playlist.images list
-const sixtyBysixtyImgIdx = 0;
+@param {HTML} element - The html element whose class will be modified
+ */
+const hideElement = (element) => element.classList.add("hidden");
+const showElement = (element) => {
+  element.classList.remove("hidden");
+  element.classList.add("appear");
+};
+
+const playlistsElement = document.getElementById("playlists");
+const tracksElement = document.getElementById("tracks");
+
+const addOnPlaylistClick = () => {
+  var playlistCards = document.querySelectorAll(".playlist");
+
+  playlistCards.forEach((card) => {
+    card.addEventListener("click", (ev) => {
+      // on click add the selected class onto the element
+      card.classList.add("selected");
+
+      // hide every other card
+      let otherCards = document.querySelectorAll(".playlist");
+      otherCards.forEach((otherCard) => {
+        if (otherCard !== card) {
+          hideElement(otherCard);
+        }
+      });
+    });
+  });
+};
 
 const displayPlaylists = (playlists) => {
   const htmlString = playlists
@@ -119,27 +148,51 @@ const displayPlaylists = (playlists) => {
       var url = "";
       var id = `playlist-${idx}`;
 
-      // if the img list obtained from api has a 60x60 img
-      if (imgList.length > sixtyBysixtyImgIdx) {
-        // get the images url
-        let img = imgList[sixtyBysixtyImgIdx];
+      if (imgList.length > 0) {
+        let img = imgList[0];
         url = img.url;
       }
 
       return `
-            <div class="playlist" id=${id}">
-                <img src="${url}"></img>
+            <div class="playlist" id=${id}>
+                <img src=${url}></img>
                 <h4>${playlist.name}</h4>
             </div>
         `;
     })
     .join("");
   playlistsElement.innerHTML = htmlString;
+  addOnPlaylistClick();
 };
 
+const displayTracks = (tracks) => {
+  const htmlString = tracks
+    .map((track, idx) => {
+      imgList = track.album.images;
+
+      var url = "";
+      var id = `track-${idx}`;
+
+      if (imgList.length > 0) {
+        let img = imgList[0];
+        url = img.url;
+      }
+
+      return `
+            <div class="track" id=${id}>
+                <img src=${url}></img>
+                <h4>${track.name}</h4>
+            </div>
+        `;
+    })
+    .join("");
+  tracksElement.innerHTML = htmlString;
+};
+
+/* Obtains information from web api and displays them.*/
 async function getInformation() {
   var topArtistsReq = axiosGetReq(
-    "/spotify/get-top-artists?time_range=long_term"
+    "/spotify/get-top-artists?time_range=medium_term"
   );
   var topTracksReq = axiosGetReq(
     "/spotify/get-top-tracks?time_range=medium_term"
@@ -153,11 +206,15 @@ async function getInformation() {
   let data = await Promise.all([topArtistsReq, topTracksReq, playListsReq]);
   console.log(data);
 
-  let loadingSpinner = document.getElementById("playlists-loading");
-  loadingSpinner.parentNode.removeChild(loadingSpinner);
+  // remove the info loading spinners as info has been loaded
+  let infoSpinners = document.querySelectorAll(".info-loading-spinner");
+  infoSpinners.forEach((spinner) => {
+    spinner.parentNode.removeChild(spinner);
+  });
 
   // index 1 is the response from the playlists request
   displayPlaylists(data[2]);
+  displayTracks(data[1]);
 }
 
 // create custom promise
@@ -165,6 +222,7 @@ async function stall(stallTime = 3000) {
   await new Promise((resolve) => setTimeout(resolve, stallTime));
 }
 
+// TEST CODE
 console.log("Start long task");
 stall().then(() => {
   console.log("Finished long task");
@@ -178,21 +236,24 @@ const animateOptions = {
   // the entire element should be visible before the observer counts it as intersecting
   threshold: 1,
   // how far down the screen the element needs to be before the observer counts it as intersecting
-  rootMargin: "0px 0px -100px 0px",
+  rootMargin: "0px 0px -150px 0px",
 };
 
-const animationInterval = 25;
+/*Adds a class to each element causing a transition to the changed css attributes
+of the added class while still retaining unchanged attributes from original class.
 
-function runElementsAnimations(className) {
+This is done on set intervals.
+
+@param {string} className - The class that all the transitioning elements contain
+@param {string} classToTransitionToo - The class that all the transitioning elements will add
+@param {number} animationInterval - The interval to wait between animation of elements
+ */
+function intervalElementsTransitions(
+  className,
+  classToTransitionToo,
+  animationInterval
+) {
   var elements = document.getElementsByClassName(className);
-
-  if (
-    elements.length > 0 &&
-    elements[0].style.animationPlayState === "running"
-  ) {
-    return;
-  }
-
   var idx = 0;
 
   // in intervals play their initial animations
@@ -202,7 +263,9 @@ function runElementsAnimations(className) {
       return;
     }
     var element = elements[idx];
-    element.style.animationPlayState = "running";
+
+    // add the class to the elements classes in order to run the transition
+    element.classList.add(classToTransitionToo);
     idx += 1;
   }, animationInterval);
 }
@@ -217,8 +280,15 @@ const animateOnScroll = new IntersectionObserver(function (
     if (!entry.isIntersecting) {
       return;
     }
+
+    const animationInterval = 25;
+
     // observable element that causes animation on scroll should contain a 'data-class-to-animate' attribute
-    runElementsAnimations(entry.target.getAttribute("data-class-to-animate"));
+    intervalElementsTransitions(
+      entry.target.getAttribute("data-class-to-animate"),
+      "appear",
+      animationInterval
+    );
     appearOnScroll.unobserve(entry.target);
   });
 },
@@ -227,16 +297,20 @@ animateOptions);
 obtainTokens().then((hasToken) => {
   if (hasToken) {
     console.log("render certain things");
+
     // if there is a token remove the allow access header from DOM
     allowAccessHeader.parentNode.removeChild(allowAccessHeader);
     infoContainer.style.display = "block";
+
     // render certain things
     getInformation()
       .then(() => {
         // Run .then() when information has been obtained and innerhtml has been changed
         const playlistsArea = document.getElementById("playlists-header");
-        // you can also observe multiple objects
+        const tracksArea = document.getElementById("top-tracks-header");
+
         animateOnScroll.observe(playlistsArea);
+        animateOnScroll.observe(tracksArea);
       })
       .catch((err) => {
         console.log("Problem when getting information");

@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-const store = RedisStore(session);
+const redisStore = RedisStore(session);
 
 //Configure redis client
 const redisClient = createClient({
@@ -31,7 +31,7 @@ redisClient.on("connect", function () {
 });
 
 var sesh = {
-  store: new store({ client: redisClient }),
+  store: new redisStore({ client: redisClient }),
   secret: process.env.SESH_SECRET,
   resave: false,
   saveUninitialized: false,

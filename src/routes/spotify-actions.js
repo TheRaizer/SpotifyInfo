@@ -10,6 +10,7 @@ const spotifyGetHeaders = (req) => {
   };
 };
 
+// time range can be 'short_term', 'medium_term', and 'long_term'
 const getTopPromise = (req, url) => {
   return new Promise((resolve, reject) => {
     // if no time range is given default to 'short_term'
@@ -21,7 +22,8 @@ const getTopPromise = (req, url) => {
       headers: spotifyGetHeaders(req),
     })
       .then((res) => {
-        resolve(res.data);
+        // data.items will return the list of top
+        resolve(res.data.items);
       })
       .catch((err) => {
         reject(err);
