@@ -89,7 +89,7 @@ section {
     /* if transform is changed in for example the hover of a playlist then we run this transition */
     transition: transform 250ms ease-in-out 25ms, box-shadow 250ms ease-in-out 25ms;
 
-    animation-duration: 1s;
+    animation-duration: 0.5s;
     animation-name: playlist-enter;
     animation-fill-mode: forwards;
     animation-play-state: paused;

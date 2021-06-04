@@ -179,6 +179,8 @@ const animateOptions = {
   rootMargin: "0px 0px -100px 0px",
 };
 
+const animationInterval = 25;
+
 function runElementsAnimations(className) {
   var elements = document.getElementsByClassName(className);
 
@@ -200,7 +202,7 @@ function runElementsAnimations(className) {
     var element = elements[idx];
     element.style.animationPlayState = "running";
     idx += 1;
-  }, 50);
+  }, animationInterval);
 }
 
 // intersection observer is a nice way to find whether an element is in the viewport
