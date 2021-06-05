@@ -24,9 +24,43 @@ const scopes = [
   "user-follow-read",
   "user-follow-modify",
 ];
-
-const PLAYLISTS = [];
-const TOP_TRACKS = [];
+const config = {
+  CSS: {
+    IDs: {
+      playlists: "playlists",
+      tracks: "tracks",
+      playlistPrefix: "playlist-",
+      trackPrefix: "track-",
+      loginButton: "spotify-login",
+      spotifyContainer: "spotify-container",
+      infoContainer: "info-container",
+      allowAccessHeader: "allow-access-header",
+      songList: "song-list",
+      expandedPlaylistPrefix: "expanded-playlist-",
+    },
+    CLASSES: {
+      playlist: "playlist",
+      track: "track",
+      infoLoadingSpinners: "info-loading-spinner",
+      appear: "appear",
+      hide: "hidden",
+      selected: "selected",
+    },
+    ATTRIBUTES: {
+      dataClassToAnimate: "data-class-to-animate",
+    },
+  },
+  URLs: {
+    auth: `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
+      "%20"
+    )}&response_type=code&show_dialog=true`,
+    getHasTokens: "/tokens/has-tokens",
+    getTokensPrefix: "/tokens/get-tokens?code=",
+    getTopArtists: "/spotify/get-top-artists?time_range=medium_term",
+    getTopTracks: "/spotify/get-top-tracks?time_range=medium_term",
+    getPlaylists: "/spotify/get-playlists",
+  },
+};
 
 class Track {
   constructor(name, images) {
@@ -35,8 +69,8 @@ class Track {
   }
 
   getTrackHtml(idx) {
-    var url = "";
-    var id = `track-${idx}`;
+    let url = "";
+    let id = `${config.CSS.IDs.trackPrefix}${idx}`;
 
     if (this.images.length > 0) {
       let img = this.images[0];
@@ -44,7 +78,7 @@ class Track {
     }
 
     return `
-            <div class="track" id="${id}">
+            <div class="${config.CSS.CLASSES.track}" id="${id}">
               <img src="${url}"></img>
               <h4>${this.name}</h4>
             </div>
@@ -57,18 +91,23 @@ class Playlist {
     this.images = images;
     this.name = name;
     this.id = id;
+
+    // the id of the playlist card element
+    this.playlistElementId = "";
   }
 
   getPlaylistHtml(idx) {
-    var url = "";
-    var id = `playlist-${idx}`;
+    let url = "";
+    let id = `${config.CSS.IDs.playlistPrefix}${idx}`;
+
+    this.playlistElementId = id;
 
     if (this.images.length > 0) {
       let img = this.images[0];
       url = img.url;
 
       return `
-            <div class="playlist" id="${id}">
+            <div class="${config.CSS.CLASSES.playlist}" id="${id}">
               <img src="${url}"></img>
               <h4>${this.name}</h4>
             </div>
@@ -76,30 +115,26 @@ class Playlist {
     }
   }
 
-  getTracks() {}
+  getTracks() {
+    return ["song 1", "song 2", "song 3"];
+  }
 }
 
 function createSpotifyLoginButton() {
   // Create anchor element.
-  var a = document.createElement("a");
+  let a = document.createElement("a");
   // Create the text node for anchor element.
-  var link = document.createTextNode("Login To Spotify");
+  let link = document.createTextNode("Login To Spotify");
   // Append the text node to anchor element.
   a.appendChild(link);
   // Set the title.
   a.title = "Login To Spotify";
-  a.id = "spotify-login";
-
-  // Authentification url as shown in https://developer.spotify.com/documentation/general/guides/authorization-guide/#:~:text=A%20token%20that%20can%20be,access%20token%20will%20be%20returned.
-  // underneath the code flow image's, first table. Where it states 'A typical request is the GET request of the /authorize endpoint, followed by the query:'
-  let authURL = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
-    "%20"
-  )}&response_type=code&show_dialog=true`;
+  a.id = config.CSS.IDs.loginButton;
 
   // Set the href property.
-  a.href = authURL;
+  a.href = config.URLs.auth;
   // Append the anchor element to the body.
-  document.getElementById("spotify-container").appendChild(a);
+  document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(a);
 }
 
 // custom promise to handle axios get requests
@@ -119,7 +154,7 @@ const axiosGetReq = (url) => {
 async function obtainTokens() {
   // await promise resolve that returns whether the session has tokens.
   // because token is stored in session we need to reassign 'hasToken' to the client so we do not need to run this method again on refresh
-  var hasToken = await axiosGetReq("/tokens/has-tokens")
+  let hasToken = await axiosGetReq(config.URLs.getHasTokens)
     .then((hasToken) => {
       return hasToken;
     })
@@ -138,11 +173,11 @@ async function obtainTokens() {
 
   // Get the code from the parameter called 'code' in the url which
   // hopefully came back from the spotify GET request otherwise it is null
-  var authCode = urlParams.get("code");
+  let authCode = urlParams.get("code");
 
   if (authCode) {
     // axios itself is promise based so we do not need to wrap it in a custom promise
-    await axiosGetReq(`/tokens/get-tokens?code=${authCode}`)
+    await axiosGetReq(`${config.URLs.getTokensPrefix}${authCode}`)
       // if the request was succesful we have recieved a token
       .then(() => (hasToken = true))
       .catch((err) => {
@@ -160,124 +195,127 @@ async function obtainTokens() {
   return hasToken;
 }
 
-/* Functions that show or hide an element by adding the corrosponding
-class to their class list. This means they keep their current css attributes,
-however transition to and gain the attributes corrosponding to the added class.
+const informationRetrieval = (function () {
+  let numOfExpandedPlaylists = 0;
+  const MAX_NUM_SELECTED_PLAYLISTS = 2;
+  const playlistsContainer = document.getElementById(config.CSS.IDs.playlists);
+  const tracksContainer = document.getElementById(config.CSS.IDs.tracks);
+  const playlistObjs = [];
+  const topTrackObjs = [];
 
-@param {HTML} element - The html element whose class will be modified
- */
-const hideElement = (element) => {
-  element.classList.add("hidden");
-};
-const showElement = (element) => {
-  element.classList.remove("hidden");
-};
+  function showExpandedPlaylist(tracks) {
+    numOfExpandedPlaylists += 1;
+    const parentUl = document.getElementById(
+      `${config.CSS.IDs.expandedPlaylistPrefix}${numOfExpandedPlaylists}`
+    );
 
-var numOfExpandedPlaylists = 0;
-const MAX_NUM_EXPANDED_PLAYLISTS = 2;
-
-const addExpandedPlaylist = (songs) => {
-  numOfExpandedPlaylists += 1;
-  const parentUl = document.getElementById("expanded-playlists-container");
-
-  const htmlString = `
-          <div class="expanded-playlist" id="expanded-playlist-${numOfExpandedPlaylists}">
-            <ul id="song-list">${songs
-              .map((song, idx) => {
+    // overwrite the previous songlist with the current one
+    const htmlString = `
+            <ul id="${config.CSS.IDs.songList}">
+            ${tracks
+              .map((track, idx) => {
                 return `
               <li class="song">
-                <h4>Song ${idx}</h4>
+                <h4>${track}</h4>
               </li>
               `;
               })
               .join("")}
-            </ul>
-          </div>`;
+            </ul>`;
 
-  parentUl.innerHTML += htmlString;
+    parentUl.innerHTML = htmlString;
 
-  let transitionInterval = setInterval(() => {
-    let expandedPlaylist = document.getElementById(
-      `expanded-playlist-${numOfExpandedPlaylists}`
-    );
-    expandedPlaylist.classList.add("appear");
-    clearInterval(transitionInterval);
-  }, 100);
-};
+    let transitionInterval = setInterval(() => {
+      let id = `${config.CSS.IDs.expandedPlaylistPrefix}${numOfExpandedPlaylists}`;
+      let expandedPlaylist = document.getElementById(id);
+      expandedPlaylist.classList.add(config.CSS.CLASSES.appear);
+      clearInterval(transitionInterval);
+    }, 100);
+  }
+  function addOnPlaylistClick() {
+    function onPlaylistElementClick(playlistEl) {
+      // get corrosponding playlist object using the elements id
+      let playlistObj = playlistObjs.find(
+        (x) => x.playlistElementId === playlistEl.id
+      );
 
-const playlistsContainer = document.getElementById("playlists");
-const tracksContainer = document.getElementById("tracks");
-
-const addOnPlaylistClick = () => {
-  var playlistCards = document.querySelectorAll(".playlist");
-
-  playlistCards.forEach((card) => {
-    card.addEventListener("click", () => {
-      // you can only expand 3 playlists
-      if (numOfExpandedPlaylists < MAX_NUM_EXPANDED_PLAYLISTS) {
-        // on click add the selected class onto the element which runs a transition
-        card.classList.add("selected");
-
-        addExpandedPlaylist(["song 1", "song 2", "song 3"]);
-      } else {
-        // tell them u can only open 3 playlists or smthn
+      if (playlistEl.classList.contains(config.CSS.CLASSES.selected)) {
+        playlistEl.classList.remove(config.CSS.CLASSES.selected);
+        return;
+        // hide the expanded element
       }
+      if (numOfExpandedPlaylists < MAX_NUM_SELECTED_PLAYLISTS) {
+        // on click add the selected class onto the element which runs a transition
+        playlistEl.classList.add(config.CSS.CLASSES.selected);
+
+        showExpandedPlaylist(playlistObj.getTracks());
+      }
+    }
+
+    let playlists = document.querySelectorAll(
+      "." + config.CSS.CLASSES.playlist
+    );
+
+    playlists.forEach((playlistEl) => {
+      playlistEl.addEventListener("click", () =>
+        onPlaylistElementClick(playlistEl)
+      );
     });
-  });
-};
+  }
+  function displayPlaylists() {
+    const htmlString = playlistObjs
+      .map((playlist, idx) => {
+        return playlist.getPlaylistHtml(idx);
+      })
+      .join("");
+    playlistsContainer.innerHTML = htmlString;
+    addOnPlaylistClick();
+  }
+  function displayTracks(tracks) {
+    const htmlString = tracks
+      .map((track, idx) => {
+        return track.getTrackHtml(idx);
+      })
+      .join("");
+    tracksContainer.innerHTML = htmlString;
+  }
+  /* Obtains information from web api and displays them.*/
+  async function getInformation() {
+    let topArtistsReq = axiosGetReq(config.URLs.getTopArtists);
+    let topTracksReq = axiosGetReq(config.URLs.getTopTracks);
+    let playListsReq = axiosGetReq(config.URLs.getPlaylists);
 
-const displayPlaylists = () => {
-  const htmlString = PLAYLISTS.map((playlist, idx) => {
-    return playlist.getPlaylistHtml(idx);
-  }).join("");
-  playlistsContainer.innerHTML = htmlString;
-  addOnPlaylistClick();
-};
+    // promise.all runs each promise in parallel before returning their values once theyre all done.
+    // promise.all will also stop function execution if a error is thrown in any of the promises.
 
-const displayTracks = (tracks) => {
-  const htmlString = tracks
-    .map((track, idx) => {
-      return track.getTrackHtml(idx);
-    })
-    .join("");
-  tracksContainer.innerHTML = htmlString;
-};
+    // promise.settleAll will not throw error however it will store the state of each request. (rejected state is equivalent to a thrown error)
+    let data = await Promise.all([topArtistsReq, topTracksReq, playListsReq]);
+    console.log(data);
 
-/* Obtains information from web api and displays them.*/
-async function getInformation() {
-  var topArtistsReq = axiosGetReq(
-    "/spotify/get-top-artists?time_range=medium_term"
-  );
-  var topTracksReq = axiosGetReq(
-    "/spotify/get-top-tracks?time_range=medium_term"
-  );
-  var playListsReq = axiosGetReq("/spotify/get-playlists");
+    // remove the info loading spinners as info has been loaded
+    let infoSpinners = document.querySelectorAll(
+      "." + config.CSS.CLASSES.infoLoadingSpinners
+    );
+    infoSpinners.forEach((spinner) => {
+      spinner.parentNode.removeChild(spinner);
+    });
 
-  // promise.all runs each promise in parallel before returning their values once theyre all done.
-  // promise.all will also stop function execution if a error is thrown in any of the promises.
+    const playlistDatas = data[2];
+    const topTrackDatas = data[1];
+    playlistDatas.forEach((data) => {
+      playlistObjs.push(new Playlist(data.name, data.images, data.id));
+    });
+    topTrackDatas.forEach((data) => {
+      topTrackObjs.push(new Track(data.name, data.album.images));
+    });
 
-  // promise.settleAll will not throw error however it will store the state of each request. (rejected state is equivalent to a thrown error)
-  let data = await Promise.all([topArtistsReq, topTracksReq, playListsReq]);
-  console.log(data);
-
-  // remove the info loading spinners as info has been loaded
-  let infoSpinners = document.querySelectorAll(".info-loading-spinner");
-  infoSpinners.forEach((spinner) => {
-    spinner.parentNode.removeChild(spinner);
-  });
-
-  const playlistDatas = data[2];
-  const topTrackDatas = data[1];
-  playlistDatas.forEach((data) => {
-    PLAYLISTS.push(new Playlist(data.name, data.images, data.id));
-  });
-  topTrackDatas.forEach((data) => {
-    TOP_TRACKS.push(new Track(data.name, data.album.images));
-  });
-
-  displayPlaylists();
-  displayTracks(TOP_TRACKS);
-}
+    displayPlaylists();
+    displayTracks(topTrackObjs);
+  }
+  return {
+    getInformation: getInformation,
+  };
+})();
 
 // create custom promise
 async function stall(stallTime = 3000) {
@@ -291,17 +329,35 @@ stall().then(() => {
 });
 console.log("do other stuff:");
 
-const infoContainer = document.getElementById("info-container");
-const allowAccessHeader = document.getElementById("allow-access-header");
+const animationControl = (function () {
+  const animateOptions = {
+    // the entire element should be visible before the observer counts it as intersecting
+    threshold: 1,
+    // how far down the screen the element needs to be before the observer counts it as intersecting
+    rootMargin: "0px 0px -150px 0px",
+  };
+  const appearOnScrollObserver = new IntersectionObserver(function (
+    entries,
+    appearOnScroll
+  ) {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) {
+        return;
+      }
 
-const animateOptions = {
-  // the entire element should be visible before the observer counts it as intersecting
-  threshold: 1,
-  // how far down the screen the element needs to be before the observer counts it as intersecting
-  rootMargin: "0px 0px -150px 0px",
-};
+      const animationInterval = 25;
 
-/*Adds a class to each element causing a transition to the changed css attributes
+      // observable element that causes animation on scroll should contain a 'data-class-to-animate' attribute
+      intervalElementsTransitions(
+        entry.target.getAttribute(config.CSS.ATTRIBUTES.dataClassToAnimate),
+        config.CSS.CLASSES.appear,
+        animationInterval
+      );
+      appearOnScroll.unobserve(entry.target);
+    });
+  },
+  animateOptions);
+  /*Adds a class to each element causing a transition to the changed css attributes
 of the added class while still retaining unchanged attributes from original class.
 
 This is done on set intervals.
@@ -310,53 +366,48 @@ This is done on set intervals.
 @param {string} classToTransitionToo - The class that all the transitioning elements will add
 @param {number} animationInterval - The interval to wait between animation of elements
  */
-function intervalElementsTransitions(
-  className,
-  classToTransitionToo,
-  animationInterval
-) {
-  var elements = document.getElementsByClassName(className);
-  var idx = 0;
+  function intervalElementsTransitions(
+    className,
+    classToTransitionToo,
+    animationInterval
+  ) {
+    let elements = document.getElementsByClassName(className);
+    let idx = 0;
 
-  // in intervals play their initial animations
-  var interval = setInterval(function () {
-    if (idx === elements.length) {
-      clearInterval(interval);
-      return;
-    }
-    var element = elements[idx];
+    // in intervals play their initial animations
+    let interval = setInterval(function () {
+      if (idx === elements.length) {
+        clearInterval(interval);
+        return;
+      }
+      let element = elements[idx];
 
-    // add the class to the elements classes in order to run the transition
-    element.classList.add(classToTransitionToo);
-    idx += 1;
-  }, animationInterval);
-}
+      // add the class to the elements classes in order to run the transition
+      element.classList.add(classToTransitionToo);
+      idx += 1;
+    }, animationInterval);
+  }
+  function addAnimateOnScroll() {
+    const playlistsArea = document.getElementById("playlists-header");
+    const tracksArea = document.getElementById("top-tracks-header");
+
+    appearOnScrollObserver.observe(playlistsArea);
+    appearOnScrollObserver.observe(tracksArea);
+  }
+  return {
+    addAnimateOnScroll: addAnimateOnScroll,
+    intervalElementsTransitions,
+  };
+})();
 
 // intersection observer is a nice way to find whether an element is in the viewport
 // in this case once we know it's in the viewport we also animate elements relating to a given class name
-const animateOnScroll = new IntersectionObserver(function (
-  entries,
-  appearOnScroll
-) {
-  entries.forEach((entry) => {
-    if (!entry.isIntersecting) {
-      return;
-    }
-
-    const animationInterval = 25;
-
-    // observable element that causes animation on scroll should contain a 'data-class-to-animate' attribute
-    intervalElementsTransitions(
-      entry.target.getAttribute("data-class-to-animate"),
-      "appear",
-      animationInterval
-    );
-    appearOnScroll.unobserve(entry.target);
-  });
-},
-animateOptions);
 
 obtainTokens().then((hasToken) => {
+  const infoContainer = document.getElementById(config.CSS.IDs.infoContainer);
+  const allowAccessHeader = document.getElementById(
+    config.CSS.IDs.allowAccessHeader
+  );
   if (hasToken) {
     console.log("render certain things");
 
@@ -365,14 +416,11 @@ obtainTokens().then((hasToken) => {
     infoContainer.style.display = "block";
 
     // render and get information
-    getInformation()
+    informationRetrieval
+      .getInformation()
       .then(() => {
         // Run .then() when information has been obtained and innerhtml has been changed
-        const playlistsArea = document.getElementById("playlists-header");
-        const tracksArea = document.getElementById("top-tracks-header");
-
-        animateOnScroll.observe(playlistsArea);
-        animateOnScroll.observe(tracksArea);
+        animationControl.addAnimateOnScroll();
       })
       .catch((err) => {
         console.log("Problem when getting information");
