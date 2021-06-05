@@ -119,21 +119,27 @@ const showElement = (element) => {
   element.classList.remove("hidden");
 };
 
-const addSongsToExpandedPlaylist = (songs) => {
-  const parentUl = document.getElementById("expanded-playlist");
+var numOfExpandedPlaylists = 0;
 
-  const htmlString = songs
-    .map((song, idx) => {
-      return `
-            <li class="song">
-              <h4>Song ${idx}</h4>
-            </li>
-        `;
-    })
-    .join("");
+const addExpandedPlaylist = (songs) => {
+  numOfExpandedPlaylists += 1;
+  const parentUl = document.getElementById("expanded-playlists-container");
 
-  parentUl.innerHTML = htmlString;
-  parentUl.classList.add("appear");
+  const htmlString = `
+          <div class="expanded-playlist">
+            <ul id="song-list">${songs
+              .map((song, idx) => {
+                return `
+              <li class="song">
+                <h4>Song ${idx}</h4>
+              </li>
+              `;
+              })
+              .join("")}
+            </ul>
+          </div>`;
+
+  parentUl.innerHTML += htmlString;
 };
 
 const playlistsContainer = document.getElementById("playlists");
@@ -143,23 +149,16 @@ const addOnPlaylistClick = () => {
   var playlistCards = document.querySelectorAll(".playlist");
 
   playlistCards.forEach((card) => {
-    card.addEventListener("click", (ev) => {
-      // on click add the selected class onto the element which runs a transition
-      card.classList.add("selected");
-      card.addEventListener("transitionend", () => {
-        // when that transition ends set the containers display to be 'none'
-        playlistsContainer.style.display = "none";
-      });
+    card.addEventListener("click", () => {
+      // you can only expand 3 playlists
+      if (numOfExpandedPlaylists < 3) {
+        // on click add the selected class onto the element which runs a transition
+        card.classList.add("selected");
 
-      // show the expanded playlist
-      addSongsToExpandedPlaylist(["song 1", "song 2", "song 3"]);
-      // hide every other card
-      let otherCards = document.querySelectorAll(".playlist");
-      otherCards.forEach((otherCard) => {
-        if (otherCard !== card) {
-          hideElement(otherCard);
-        }
-      });
+        addExpandedPlaylist(["song 1", "song 2", "song 3"]);
+      } else {
+        // tell them u can only open 3 playlists or smthn
+      }
     });
   });
 };

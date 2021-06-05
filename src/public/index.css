@@ -127,7 +127,6 @@ section {
 }
 
 .playlist.selected {
-    opacity: 0;
     pointer-events: none;
     background-color: #1DB954;
 }
@@ -152,17 +151,11 @@ section {
 
 }
 
-#expanded-playlist {
-    opacity: 1;
-    
-    width: 50%;
-    height: 30%;
-
-    background-color: #414141;
-}
-
-#expanded-playlist.appear {
-    opacity: 1;
+.expanded-playlist {
+    background-color: #202020;
+    color: white;
+    width: 500px;
+    height: 250px;
 }
 
 .song {
