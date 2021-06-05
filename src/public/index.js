@@ -94,6 +94,9 @@ class Playlist {
 
     // the id of the playlist card element
     this.playlistElementId = "";
+
+    // the number corrosponding to this playlist's expanded element
+    this.expandedPlaylistNum = -1;
   }
 
   getPlaylistHtml(idx) {
@@ -196,24 +199,24 @@ async function obtainTokens() {
 }
 
 const informationRetrieval = (function () {
-  let numOfExpandedPlaylists = 0;
-  const MAX_NUM_SELECTED_PLAYLISTS = 2;
+  // true means it is hidden, false means its showing
+  const HIDDEN_STATE = true;
+  const SHOWING_STATE = false;
+  var expandedPlaylistStates = { 1: HIDDEN_STATE, 2: HIDDEN_STATE };
   const playlistsContainer = document.getElementById(config.CSS.IDs.playlists);
   const tracksContainer = document.getElementById(config.CSS.IDs.tracks);
   const playlistObjs = [];
   const topTrackObjs = [];
 
-  function showExpandedPlaylist(tracks) {
-    numOfExpandedPlaylists += 1;
-    const parentUl = document.getElementById(
-      `${config.CSS.IDs.expandedPlaylistPrefix}${numOfExpandedPlaylists}`
-    );
+  function showExpandedPlaylist(tracks, playlistNum) {
+    const EXPANDED_PLAYLIST_ID = `${config.CSS.IDs.expandedPlaylistPrefix}${playlistNum}`;
+    const EXPANDED_PLAYLIST = document.getElementById(EXPANDED_PLAYLIST_ID);
 
     // overwrite the previous songlist with the current one
     const htmlString = `
             <ul id="${config.CSS.IDs.songList}">
             ${tracks
-              .map((track, idx) => {
+              .map((track) => {
                 return `
               <li class="song">
                 <h4>${track}</h4>
@@ -223,14 +226,48 @@ const informationRetrieval = (function () {
               .join("")}
             </ul>`;
 
-    parentUl.innerHTML = htmlString;
+    EXPANDED_PLAYLIST.innerHTML = htmlString;
 
     let transitionInterval = setInterval(() => {
-      let id = `${config.CSS.IDs.expandedPlaylistPrefix}${numOfExpandedPlaylists}`;
-      let expandedPlaylist = document.getElementById(id);
-      expandedPlaylist.classList.add(config.CSS.CLASSES.appear);
+      EXPANDED_PLAYLIST.classList.add(config.CSS.CLASSES.appear);
       clearInterval(transitionInterval);
     }, 100);
+  }
+
+  function findFirstHiddenExpandedPlaylist() {
+    let state = false;
+    let expandedPlaylistNum = -1;
+
+    for (let key in expandedPlaylistStates) {
+      state = expandedPlaylistStates[key];
+      if (state) {
+        expandedPlaylistNum = parseInt(key);
+        break;
+      }
+    }
+
+    return { state, expandedPlaylistNum };
+  }
+
+  function unselectPlaylist(playlistEl, playlistObj) {
+    playlistEl.classList.remove(config.CSS.CLASSES.selected);
+
+    let expandedPlaylistEl = document.getElementById(
+      `${config.CSS.IDs.expandedPlaylistPrefix}${playlistObj.expandedPlaylistNum}`
+    );
+    expandedPlaylistEl.classList.remove("appear");
+    expandedPlaylistStates[playlistObj.expandedPlaylistNum] = HIDDEN_STATE;
+    playlistObj.expandedPlaylistNum = -1;
+  }
+  function selectPlaylist(playlistEl, playlistObj) {
+    expandedPlaylistStates[playlistObj.expandedPlaylistNum] = SHOWING_STATE;
+    // on click add the selected class onto the element which runs a transition
+    playlistEl.classList.add(config.CSS.CLASSES.selected);
+
+    showExpandedPlaylist(
+      playlistObj.getTracks(),
+      playlistObj.expandedPlaylistNum
+    );
   }
   function addOnPlaylistClick() {
     function onPlaylistElementClick(playlistEl) {
@@ -239,16 +276,17 @@ const informationRetrieval = (function () {
         (x) => x.playlistElementId === playlistEl.id
       );
 
+      // if the element is selected already the unselect it and hide its expanded playlist
       if (playlistEl.classList.contains(config.CSS.CLASSES.selected)) {
-        playlistEl.classList.remove(config.CSS.CLASSES.selected);
+        unselectPlaylist(playlistEl, playlistObj);
         return;
-        // hide the expanded element
       }
-      if (numOfExpandedPlaylists < MAX_NUM_SELECTED_PLAYLISTS) {
-        // on click add the selected class onto the element which runs a transition
-        playlistEl.classList.add(config.CSS.CLASSES.selected);
 
-        showExpandedPlaylist(playlistObj.getTracks());
+      const { state, expandedPlaylistNum } = findFirstHiddenExpandedPlaylist();
+
+      if (state == HIDDEN_STATE) {
+        playlistObj.expandedPlaylistNum = expandedPlaylistNum;
+        selectPlaylist(playlistEl, playlistObj);
       }
     }
 
