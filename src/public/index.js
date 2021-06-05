@@ -25,6 +25,60 @@ const scopes = [
   "user-follow-modify",
 ];
 
+const PLAYLISTS = [];
+const TOP_TRACKS = [];
+
+class Track {
+  constructor(name, images) {
+    this.name = name;
+    this.images = images;
+  }
+
+  getTrackHtml(idx) {
+    var url = "";
+    var id = `track-${idx}`;
+
+    if (this.images.length > 0) {
+      let img = this.images[0];
+      url = img.url;
+    }
+
+    return `
+            <div class="track" id="${id}">
+              <img src="${url}"></img>
+              <h4>${this.name}</h4>
+            </div>
+        `;
+  }
+}
+
+class Playlist {
+  constructor(name, images, id) {
+    this.images = images;
+    this.name = name;
+    this.id = id;
+  }
+
+  getPlaylistHtml(idx) {
+    var url = "";
+    var id = `playlist-${idx}`;
+
+    if (this.images.length > 0) {
+      let img = this.images[0];
+      url = img.url;
+
+      return `
+            <div class="playlist" id="${id}">
+              <img src="${url}"></img>
+              <h4>${this.name}</h4>
+            </div>
+        `;
+    }
+  }
+
+  getTracks() {}
+}
+
 function createSpotifyLoginButton() {
   // Create anchor element.
   var a = document.createElement("a");
@@ -120,13 +174,14 @@ const showElement = (element) => {
 };
 
 var numOfExpandedPlaylists = 0;
+const MAX_NUM_EXPANDED_PLAYLISTS = 2;
 
 const addExpandedPlaylist = (songs) => {
   numOfExpandedPlaylists += 1;
   const parentUl = document.getElementById("expanded-playlists-container");
 
   const htmlString = `
-          <div class="expanded-playlist">
+          <div class="expanded-playlist" id="expanded-playlist-${numOfExpandedPlaylists}">
             <ul id="song-list">${songs
               .map((song, idx) => {
                 return `
@@ -140,6 +195,14 @@ const addExpandedPlaylist = (songs) => {
           </div>`;
 
   parentUl.innerHTML += htmlString;
+
+  let transitionInterval = setInterval(() => {
+    let expandedPlaylist = document.getElementById(
+      `expanded-playlist-${numOfExpandedPlaylists}`
+    );
+    expandedPlaylist.classList.add("appear");
+    clearInterval(transitionInterval);
+  }, 100);
 };
 
 const playlistsContainer = document.getElementById("playlists");
@@ -151,7 +214,7 @@ const addOnPlaylistClick = () => {
   playlistCards.forEach((card) => {
     card.addEventListener("click", () => {
       // you can only expand 3 playlists
-      if (numOfExpandedPlaylists < 3) {
+      if (numOfExpandedPlaylists < MAX_NUM_EXPANDED_PLAYLISTS) {
         // on click add the selected class onto the element which runs a transition
         card.classList.add("selected");
 
@@ -163,27 +226,10 @@ const addOnPlaylistClick = () => {
   });
 };
 
-const displayPlaylists = (playlists) => {
-  const htmlString = playlists
-    .map((playlist, idx) => {
-      imgList = playlist.images;
-
-      var url = "";
-      var id = `playlist-${idx}`;
-
-      if (imgList.length > 0) {
-        let img = imgList[0];
-        url = img.url;
-      }
-
-      return `
-            <div class="playlist" id=${id}>
-              <img src=${url}></img>
-              <h4>${playlist.name}</h4>
-            </div>
-        `;
-    })
-    .join("");
+const displayPlaylists = () => {
+  const htmlString = PLAYLISTS.map((playlist, idx) => {
+    return playlist.getPlaylistHtml(idx);
+  }).join("");
   playlistsContainer.innerHTML = htmlString;
   addOnPlaylistClick();
 };
@@ -191,22 +237,7 @@ const displayPlaylists = (playlists) => {
 const displayTracks = (tracks) => {
   const htmlString = tracks
     .map((track, idx) => {
-      imgList = track.album.images;
-
-      var url = "";
-      var id = `track-${idx}`;
-
-      if (imgList.length > 0) {
-        let img = imgList[0];
-        url = img.url;
-      }
-
-      return `
-            <div class="track" id=${id}>
-              <img src=${url}></img>
-              <h4>${track.name}</h4>
-            </div>
-        `;
+      return track.getTrackHtml(idx);
     })
     .join("");
   tracksContainer.innerHTML = htmlString;
@@ -235,9 +266,17 @@ async function getInformation() {
     spinner.parentNode.removeChild(spinner);
   });
 
-  // index 1 is the response from the playlists request
-  displayPlaylists(data[2]);
-  displayTracks(data[1]);
+  const playlistDatas = data[2];
+  const topTrackDatas = data[1];
+  playlistDatas.forEach((data) => {
+    PLAYLISTS.push(new Playlist(data.name, data.images, data.id));
+  });
+  topTrackDatas.forEach((data) => {
+    TOP_TRACKS.push(new Track(data.name, data.album.images));
+  });
+
+  displayPlaylists();
+  displayTracks(TOP_TRACKS);
 }
 
 // create custom promise

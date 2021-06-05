@@ -64,6 +64,7 @@ section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, max-content));
     grid-template-rows: repeat(auto-fit, minmax(230px, max-content));
+    align-self: center;
 }
 
 .playlist img, .track img {
@@ -147,15 +148,30 @@ section {
 
 #allow-access-header {
     display: none;
-
-
 }
 
 .expanded-playlist {
+    overflow: hidden;
     background-color: #202020;
+    margin-bottom: 5vh;
     color: white;
-    width: 500px;
-    height: 250px;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    
+    transition: width 500ms ease-in-out,
+    height 500ms ease-in-out,
+    opacity 250ms ease-in;
+}
+
+.expanded-playlist.appear {
+    width: 30vw;
+    height: 40vh;
+    opacity: 1;
+
+    transition: width 500ms ease-in-out,
+    height 500ms ease-in-out,
+    opacity 250ms ease-in;
 }
 
 .song {
@@ -167,4 +183,10 @@ section {
     z-index: 1;
     transform: scale(1.2);
     box-shadow: 0px 0px 15px 8px rgb(14, 14, 14);
+}
+
+#playlists-section {
+    display: grid;
+    grid-template-columns: auto fit-content(800px);
+    grid-row: 1;
 }
