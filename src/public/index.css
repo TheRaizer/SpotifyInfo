@@ -96,16 +96,14 @@ section {
     padding-top: 5%;
     box-shadow: 0px 0px 15px 4px rgb(14, 14, 14);
 
-    transform: scale(1);
-    z-index: 0;
     top: -500px;
+    left: 0;
     opacity: 0;
-    /* if transform is changed in for example the hover of a playlist then we run this transition */
-    transition: transform 250ms ease-in-out 25ms, 
-    box-shadow 250ms ease-in-out 25ms, 
-    opacity 250ms ease-in 25ms, 
-    top 250ms cubic-bezier(0.075, 0.82, 0.165, 1),
-    width 1000ms ease-in;
+
+    transition: transform 250ms ease-in-out, 
+    box-shadow 250ms ease-in-out, 
+    opacity 250ms ease-in, 
+    top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
 
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -116,13 +114,11 @@ section {
 .appear {
     opacity: 1;
     top: 0;
-
     /* overwrites previouse classes transitions */
-    transition: transform 250ms ease-in-out 25ms,
-    box-shadow 250ms ease-in-out 25ms,
-    opacity 250ms ease-in 25ms,
-    top 1000ms cubic-bezier(0.075, 0.82, 0.165, 1),
-    width 1000ms ease-in;
+    transition: transform 250ms ease-in-out,
+    box-shadow 250ms ease-in-out,
+    opacity 250ms ease-in,
+    top 250ms cubic-bezier(0.075, 0.82, 0.165, 1),
 }
 
 .hidden {
@@ -131,10 +127,9 @@ section {
 }
 
 .playlist.selected {
-    background-color: red;
-    position: absolute;
-    top: 15%;
-    width: 50%;
+    opacity: 0;
+    pointer-events: none;
+    background-color: #1DB954;
 }
 
 .loading-spinner {
@@ -150,8 +145,29 @@ section {
 #info-container {
     display: none;
 }
+
 #allow-access-header {
     display: none;
+
+
+}
+
+#expanded-playlist {
+    opacity: 1;
+    
+    width: 50%;
+    height: 30%;
+
+    background-color: #414141;
+}
+
+#expanded-playlist.appear {
+    opacity: 1;
+}
+
+.song {
+    list-style-type: none;
+    color: rgb(212, 212, 212);
 }
 
 .playlist.appear:not(.selected):hover, .track:hover {

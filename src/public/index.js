@@ -112,23 +112,47 @@ however transition to and gain the attributes corrosponding to the added class.
 
 @param {HTML} element - The html element whose class will be modified
  */
-const hideElement = (element) => element.classList.add("hidden");
+const hideElement = (element) => {
+  element.classList.add("hidden");
+};
 const showElement = (element) => {
   element.classList.remove("hidden");
-  element.classList.add("appear");
 };
 
-const playlistsElement = document.getElementById("playlists");
-const tracksElement = document.getElementById("tracks");
+const addSongsToExpandedPlaylist = (songs) => {
+  const parentUl = document.getElementById("expanded-playlist");
+
+  const htmlString = songs
+    .map((song, idx) => {
+      return `
+            <li class="song">
+              <h4>Song ${idx}</h4>
+            </li>
+        `;
+    })
+    .join("");
+
+  parentUl.innerHTML = htmlString;
+  parentUl.classList.add("appear");
+};
+
+const playlistsContainer = document.getElementById("playlists");
+const tracksContainer = document.getElementById("tracks");
 
 const addOnPlaylistClick = () => {
   var playlistCards = document.querySelectorAll(".playlist");
 
   playlistCards.forEach((card) => {
     card.addEventListener("click", (ev) => {
-      // on click add the selected class onto the element
+      // on click add the selected class onto the element which runs a transition
       card.classList.add("selected");
+      card.addEventListener("transitionend", () => {
+        // when that transition ends set the containers display to be 'none'
+        playlistsContainer.style.display = "none";
+      });
 
+      // show the expanded playlist
+      addSongsToExpandedPlaylist(["song 1", "song 2", "song 3"]);
       // hide every other card
       let otherCards = document.querySelectorAll(".playlist");
       otherCards.forEach((otherCard) => {
@@ -155,13 +179,13 @@ const displayPlaylists = (playlists) => {
 
       return `
             <div class="playlist" id=${id}>
-                <img src=${url}></img>
-                <h4>${playlist.name}</h4>
+              <img src=${url}></img>
+              <h4>${playlist.name}</h4>
             </div>
         `;
     })
     .join("");
-  playlistsElement.innerHTML = htmlString;
+  playlistsContainer.innerHTML = htmlString;
   addOnPlaylistClick();
 };
 
@@ -180,13 +204,13 @@ const displayTracks = (tracks) => {
 
       return `
             <div class="track" id=${id}>
-                <img src=${url}></img>
-                <h4>${track.name}</h4>
+              <img src=${url}></img>
+              <h4>${track.name}</h4>
             </div>
         `;
     })
     .join("");
-  tracksElement.innerHTML = htmlString;
+  tracksContainer.innerHTML = htmlString;
 };
 
 /* Obtains information from web api and displays them.*/
@@ -302,7 +326,7 @@ obtainTokens().then((hasToken) => {
     allowAccessHeader.parentNode.removeChild(allowAccessHeader);
     infoContainer.style.display = "block";
 
-    // render certain things
+    // render and get information
     getInformation()
       .then(() => {
         // Run .then() when information has been obtained and innerhtml has been changed
