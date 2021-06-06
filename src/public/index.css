@@ -147,7 +147,7 @@ section {
 
 .expanded-playlist {
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
   background-color: #202020;
   margin-bottom: 5vh;
   color: white;
@@ -157,6 +157,21 @@ section {
 
   transition: width 500ms ease-in-out, height 500ms ease-in-out,
     opacity 250ms ease-in;
+}
+
+.expanded-playlist::-webkit-scrollbar {
+    width: 12px;
+    /* width of the entire scrollbar */
+}
+
+.expanded-playlist::-webkit-scrollbar-track {
+    background: rgb(0, 0, 0);
+}
+
+.expanded-playlist::-webkit-scrollbar-thumb {
+    background-color: rgb(110, 110, 110);
+    border-radius: 20px;
+    border: 3px solid rgb(206, 206, 206);
 }
 
 .expanded-playlist.appear {

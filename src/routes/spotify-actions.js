@@ -31,7 +31,7 @@ const getTopPromise = (req, url) => {
   });
 };
 
-router.get("/get-top-artists", async function (req, res, next) {
+router.get("/get-top-artists", async function (req, res) {
   await getTopPromise(req, "https://api.spotify.com/v1/me/top/artists")
     .then((response) => {
       res.send(response);
@@ -39,7 +39,6 @@ router.get("/get-top-artists", async function (req, res, next) {
     .catch((err) => {
       console.log("ERROR IN GET TOP ARTISTS");
       console.error(err);
-      next(err);
     });
 });
 
@@ -63,6 +62,30 @@ router.get("/get-playlists", async function (req, res) {
     .then(function (response) {
       // the json is nested in a way that the below will retrieve playlists
       res.send(response.data.items);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+});
+
+router.get("/get-playlist-tracks", async function (req, res) {
+  var playlistId = req.query.playlist_id;
+
+  await axios({
+    method: "get",
+    url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks?market=ES`,
+    headers: spotifyGetHeaders(req),
+  })
+    .then(function (response) {
+      // get the list of items
+      let items = response.data.items;
+
+      // map to a list of only the items tracks
+      let data = items.map((item) => {
+        return item.track;
+      });
+
+      res.send(data);
     })
     .catch((err) => {
       console.error(err);

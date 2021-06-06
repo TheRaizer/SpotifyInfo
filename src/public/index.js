@@ -59,6 +59,7 @@ const config = {
     getTopArtists: "/spotify/get-top-artists?time_range=medium_term",
     getTopTracks: "/spotify/get-top-tracks?time_range=medium_term",
     getPlaylists: "/spotify/get-playlists",
+    getPlaylistTracks: "/spotify/get-playlist-tracks?playlist_id=",
   },
 };
 
@@ -118,8 +119,9 @@ class Playlist {
     }
   }
 
-  getTracks() {
-    return ["song 1", "song 2", "song 3"];
+  async getTracks() {
+    let tracks = await axiosGetReq(config.URLs.getPlaylistTracks + this.id);
+    return tracks;
   }
 }
 
@@ -208,30 +210,51 @@ const informationRetrieval = (function () {
   const playlistObjs = [];
   const topTrackObjs = [];
 
-  function showExpandedPlaylist(tracks, playlistNum) {
-    const EXPANDED_PLAYLIST_ID = `${config.CSS.IDs.expandedPlaylistPrefix}${playlistNum}`;
-    const EXPANDED_PLAYLIST = document.getElementById(EXPANDED_PLAYLIST_ID);
-
-    // overwrite the previous songlist with the current one
-    const htmlString = `
+  function loadTracksToHtmlString(playlistObj, useHtmlString) {
+    // asynchronously load the tracks and replace the html once it loads
+    playlistObj
+      .getTracks()
+      .then((tracks) => {
+        console.log("loaded tracks");
+        // overwrite the previous songlist with the current one
+        const htmlString = `
             <ul id="${config.CSS.IDs.songList}">
             ${tracks
               .map((track) => {
                 return `
               <li class="song">
-                <h4>${track}</h4>
+                <h4>${track.name}</h4>
               </li>
               `;
               })
               .join("")}
             </ul>`;
 
-    EXPANDED_PLAYLIST.innerHTML = htmlString;
+        useHtmlString(htmlString);
+      })
+      .catch((err) => {
+        console.log("Error when getting tracks");
+        console.error(err);
+      });
+  }
 
-    let transitionInterval = setInterval(() => {
-      EXPANDED_PLAYLIST.classList.add(config.CSS.CLASSES.appear);
-      clearInterval(transitionInterval);
-    }, 100);
+  function showExpandedPlaylist(playlistObj, playlistNum) {
+    const EXPANDED_PLAYLIST_ID = `${config.CSS.IDs.expandedPlaylistPrefix}${playlistNum}`;
+    const EXPANDED_PLAYLIST = document.getElementById(EXPANDED_PLAYLIST_ID);
+
+    // initially show the playlist with the loading spinner
+    const htmlString = `
+            <ul id="${config.CSS.IDs.songList}">
+            <img class="songs-loading-spinner" src="200pxLoadingSpinner.svg" />
+            </ul>`;
+
+    EXPANDED_PLAYLIST.innerHTML = htmlString;
+    EXPANDED_PLAYLIST.classList.add(config.CSS.CLASSES.appear);
+
+    loadTracksToHtmlString(playlistObj, (loadedHtmlString) => {
+      EXPANDED_PLAYLIST.innerHTML = loadedHtmlString;
+    });
+    console.log("synchronously after running load tracks");
   }
 
   function findFirstHiddenExpandedPlaylist() {
@@ -255,7 +278,7 @@ const informationRetrieval = (function () {
     let expandedPlaylistEl = document.getElementById(
       `${config.CSS.IDs.expandedPlaylistPrefix}${playlistObj.expandedPlaylistNum}`
     );
-    expandedPlaylistEl.classList.remove("appear");
+    expandedPlaylistEl.classList.remove(config.CSS.CLASSES.appear);
     expandedPlaylistStates[playlistObj.expandedPlaylistNum] = HIDDEN_STATE;
     playlistObj.expandedPlaylistNum = -1;
   }
@@ -264,10 +287,17 @@ const informationRetrieval = (function () {
     // on click add the selected class onto the element which runs a transition
     playlistEl.classList.add(config.CSS.CLASSES.selected);
 
-    showExpandedPlaylist(
-      playlistObj.getTracks(),
-      playlistObj.expandedPlaylistNum
-    );
+    // THIS CAUSES LOADING THAT MAY WANT TO BE DONE ONCE THE ELEMENT IS SHOWN USING A LOADING SPINNER
+    // playlistObj
+    //   .getTracks()
+    //   .then((tracks) => {
+    //     showExpandedPlaylist(tracks, playlistObj.expandedPlaylistNum);
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //   });
+
+    showExpandedPlaylist(playlistObj, playlistObj.expandedPlaylistNum);
   }
   function addOnPlaylistClick() {
     function onPlaylistElementClick(playlistEl) {
