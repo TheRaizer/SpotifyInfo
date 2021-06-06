@@ -15,7 +15,7 @@ function createSpotifyLoginButton(changeAccount = false) {
 
   // clear current tokens when clicked
   div.addEventListener("click", () => {
-    axios.post(config.URLs.postClearTokens);
+    axios.post(config.URLs.postClearTokens).catch((err) => console.error(err));
     window.location.href = config.URLs.auth;
   });
 

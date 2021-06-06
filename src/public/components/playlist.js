@@ -1,19 +1,5 @@
 import { config } from "../config.js";
 
-// custom promise to handle axios get requests
-const axiosGetReq = (url) => {
-  return new Promise((resolve, reject) => {
-    axios
-      .get(url)
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-};
-
 class Playlist {
   constructor(name, images, id) {
     this.images = images;
@@ -47,8 +33,11 @@ class Playlist {
   }
 
   async getTracks() {
-    let tracks = await axiosGetReq(config.URLs.getPlaylistTracks + this.id);
-    return tracks;
+    let response = await axios
+      .get(config.URLs.getPlaylistTracks + this.id)
+      .catch((err) => console.error(err));
+
+    return response.data;
   }
 }
 
