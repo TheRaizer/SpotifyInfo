@@ -8,9 +8,16 @@ router.get("/has-tokens", function (req, res) {
   if (req.session.access_token && req.session.refresh_token) {
     res.send(true);
   } else {
-    console.log("no tokens");
     res.send(false);
   }
+});
+
+router.post("/clear-tokens", function (req, res) {
+  console.log("clear tokens");
+  req.session.access_token = "";
+  req.session.refresh_token = "";
+
+  res.send("recieved post request to clear tokens");
 });
 
 const getTokensPromise = (req) => {

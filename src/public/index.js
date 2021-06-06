@@ -60,6 +60,7 @@ const config = {
     getTopTracks: "/spotify/get-top-tracks?time_range=medium_term",
     getPlaylists: "/spotify/get-playlists",
     getPlaylistTracks: "/spotify/get-playlist-tracks?playlist_id=",
+    postClearTokens: "/tokens/clear-tokens",
   },
 };
 
@@ -125,21 +126,25 @@ class Playlist {
   }
 }
 
-function createSpotifyLoginButton() {
+function createSpotifyLoginButton(changeAccount = false) {
   // Create anchor element.
-  let a = document.createElement("a");
+  let div = document.createElement("div");
   // Create the text node for anchor element.
-  let link = document.createTextNode("Login To Spotify");
+  let link = document.createTextNode(
+    changeAccount ? "Change Account" : "Login To Spotify"
+  );
   // Append the text node to anchor element.
-  a.appendChild(link);
-  // Set the title.
-  a.title = "Login To Spotify";
-  a.id = config.CSS.IDs.loginButton;
+  div.appendChild(link);
+  div.id = config.CSS.IDs.loginButton;
 
-  // Set the href property.
-  a.href = config.URLs.auth;
+  // clear current tokens when clicked
+  div.addEventListener("click", () => {
+    axios.post(config.URLs.postClearTokens);
+    window.location.href = config.URLs.auth;
+  });
+
   // Append the anchor element to the body.
-  document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(a);
+  document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(div);
 }
 
 // custom promise to handle axios get requests
@@ -237,7 +242,6 @@ const informationRetrieval = (function () {
         console.error(err);
       });
   }
-
   function showExpandedPlaylist(playlistObj, playlistNum) {
     const EXPANDED_PLAYLIST_ID = `${config.CSS.IDs.expandedPlaylistPrefix}${playlistNum}`;
     const EXPANDED_PLAYLIST = document.getElementById(EXPANDED_PLAYLIST_ID);
@@ -256,7 +260,6 @@ const informationRetrieval = (function () {
     });
     console.log("synchronously after running load tracks");
   }
-
   function findFirstHiddenExpandedPlaylist() {
     let state = false;
     let expandedPlaylistNum = -1;
@@ -271,7 +274,6 @@ const informationRetrieval = (function () {
 
     return { state, expandedPlaylistNum };
   }
-
   function unselectPlaylist(playlistEl, playlistObj) {
     playlistEl.classList.remove(config.CSS.CLASSES.selected);
 
@@ -286,17 +288,6 @@ const informationRetrieval = (function () {
     expandedPlaylistStates[playlistObj.expandedPlaylistNum] = SHOWING_STATE;
     // on click add the selected class onto the element which runs a transition
     playlistEl.classList.add(config.CSS.CLASSES.selected);
-
-    // THIS CAUSES LOADING THAT MAY WANT TO BE DONE ONCE THE ELEMENT IS SHOWN USING A LOADING SPINNER
-    // playlistObj
-    //   .getTracks()
-    //   .then((tracks) => {
-    //     showExpandedPlaylist(tracks, playlistObj.expandedPlaylistNum);
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //   });
-
     showExpandedPlaylist(playlistObj, playlistObj.expandedPlaylistNum);
   }
   function addOnPlaylistClick() {
@@ -471,32 +462,35 @@ This is done on set intervals.
 // intersection observer is a nice way to find whether an element is in the viewport
 // in this case once we know it's in the viewport we also animate elements relating to a given class name
 
-obtainTokens().then((hasToken) => {
-  const infoContainer = document.getElementById(config.CSS.IDs.infoContainer);
-  const allowAccessHeader = document.getElementById(
-    config.CSS.IDs.allowAccessHeader
-  );
-  if (hasToken) {
-    console.log("render certain things");
+obtainTokens()
+  .then((hasToken) => {
+    const infoContainer = document.getElementById(config.CSS.IDs.infoContainer);
+    const allowAccessHeader = document.getElementById(
+      config.CSS.IDs.allowAccessHeader
+    );
+    if (hasToken) {
+      console.log("render certain things");
 
-    // if there is a token remove the allow access header from DOM
-    allowAccessHeader.parentNode.removeChild(allowAccessHeader);
-    infoContainer.style.display = "block";
+      // if there is a token remove the allow access header from DOM
+      allowAccessHeader.parentNode.removeChild(allowAccessHeader);
+      createSpotifyLoginButton(true);
+      infoContainer.style.display = "block";
 
-    // render and get information
-    informationRetrieval
-      .getInformation()
-      .then(() => {
-        // Run .then() when information has been obtained and innerhtml has been changed
-        animationControl.addAnimateOnScroll();
-      })
-      .catch((err) => {
-        console.log("Problem when getting information");
-        console.error(err);
-      });
-  } else {
-    // if there is no token show the allow access header and hide the info
-    allowAccessHeader.style.display = "block";
-    infoContainer.style.display = "none";
-  }
-});
+      // render and get information
+      informationRetrieval
+        .getInformation()
+        .then(() => {
+          // Run .then() when information has been obtained and innerhtml has been changed
+          animationControl.addAnimateOnScroll();
+        })
+        .catch((err) => {
+          console.log("Problem when getting information");
+          console.error(err);
+        });
+    } else {
+      // if there is no token show the allow access header and hide the info
+      allowAccessHeader.style.display = "block";
+      infoContainer.style.display = "none";
+    }
+  })
+  .catch((err) => console.error(err));
