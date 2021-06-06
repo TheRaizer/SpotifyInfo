@@ -1,130 +1,6 @@
-const authEndpoint = "https://accounts.spotify.com/authorize";
-// Replace with your app's client ID, redirect URI and desired scopes
-const redirectUri = "http://localhost:3000";
-const clientId = "434f5e9f442a4e4586e089a33f65c857";
-
-const scopes = [
-  "ugc-image-upload",
-  "user-read-playback-state",
-  "user-modify-playback-state",
-  "user-read-currently-playing",
-  "streaming",
-  "app-remote-control",
-  "user-read-email",
-  "user-read-private",
-  "playlist-read-collaborative",
-  "playlist-modify-public",
-  "playlist-read-private",
-  "playlist-modify-private",
-  "user-library-modify",
-  "user-library-read",
-  "user-top-read",
-  "user-read-playback-position",
-  "user-read-recently-played",
-  "user-follow-read",
-  "user-follow-modify",
-];
-const config = {
-  CSS: {
-    IDs: {
-      playlists: "playlists",
-      tracks: "tracks",
-      playlistPrefix: "playlist-",
-      trackPrefix: "track-",
-      loginButton: "spotify-login",
-      spotifyContainer: "spotify-container",
-      infoContainer: "info-container",
-      allowAccessHeader: "allow-access-header",
-      songList: "song-list",
-      expandedPlaylistPrefix: "expanded-playlist-",
-    },
-    CLASSES: {
-      playlist: "playlist",
-      track: "track",
-      infoLoadingSpinners: "info-loading-spinner",
-      appear: "appear",
-      hide: "hidden",
-      selected: "selected",
-    },
-    ATTRIBUTES: {
-      dataClassToAnimate: "data-class-to-animate",
-    },
-  },
-  URLs: {
-    auth: `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
-      "%20"
-    )}&response_type=code&show_dialog=true`,
-    getHasTokens: "/tokens/has-tokens",
-    getTokensPrefix: "/tokens/get-tokens?code=",
-    getTopArtists: "/spotify/get-top-artists?time_range=medium_term",
-    getTopTracks: "/spotify/get-top-tracks?time_range=medium_term",
-    getPlaylists: "/spotify/get-playlists",
-    getPlaylistTracks: "/spotify/get-playlist-tracks?playlist_id=",
-    postClearTokens: "/tokens/clear-tokens",
-  },
-};
-
-class Track {
-  constructor(name, images) {
-    this.name = name;
-    this.images = images;
-  }
-
-  getTrackHtml(idx) {
-    let url = "";
-    let id = `${config.CSS.IDs.trackPrefix}${idx}`;
-
-    if (this.images.length > 0) {
-      let img = this.images[0];
-      url = img.url;
-    }
-
-    return `
-            <div class="${config.CSS.CLASSES.track}" id="${id}">
-              <img src="${url}"></img>
-              <h4>${this.name}</h4>
-            </div>
-        `;
-  }
-}
-
-class Playlist {
-  constructor(name, images, id) {
-    this.images = images;
-    this.name = name;
-    this.id = id;
-
-    // the id of the playlist card element
-    this.playlistElementId = "";
-
-    // the number corrosponding to this playlist's expanded element
-    this.expandedPlaylistNum = -1;
-  }
-
-  getPlaylistHtml(idx) {
-    let url = "";
-    let id = `${config.CSS.IDs.playlistPrefix}${idx}`;
-
-    this.playlistElementId = id;
-
-    if (this.images.length > 0) {
-      let img = this.images[0];
-      url = img.url;
-
-      return `
-            <div class="${config.CSS.CLASSES.playlist}" id="${id}">
-              <img src="${url}"></img>
-              <h4>${this.name}</h4>
-            </div>
-        `;
-    }
-  }
-
-  async getTracks() {
-    let tracks = await axiosGetReq(config.URLs.getPlaylistTracks + this.id);
-    return tracks;
-  }
-}
+import Track from "./components/track.js";
+import Playlist from "./components/playlist.js";
+import { config } from "./config.js";
 
 function createSpotifyLoginButton(changeAccount = false) {
   // Create anchor element.
@@ -147,26 +23,13 @@ function createSpotifyLoginButton(changeAccount = false) {
   document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(div);
 }
 
-// custom promise to handle axios get requests
-const axiosGetReq = (url) => {
-  return new Promise((resolve, reject) => {
-    axios
-      .get(url)
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-};
-
 async function obtainTokens() {
   // await promise resolve that returns whether the session has tokens.
   // because token is stored in session we need to reassign 'hasToken' to the client so we do not need to run this method again on refresh
-  let hasToken = await axiosGetReq(config.URLs.getHasTokens)
-    .then((hasToken) => {
-      return hasToken;
+  let hasToken = await axios
+    .get(config.URLs.getHasTokens)
+    .then((res) => {
+      return res.data;
     })
     .catch((err) => {
       console.error(err);
@@ -186,8 +49,8 @@ async function obtainTokens() {
   let authCode = urlParams.get("code");
 
   if (authCode) {
-    // axios itself is promise based so we do not need to wrap it in a custom promise
-    await axiosGetReq(`${config.URLs.getTokensPrefix}${authCode}`)
+    await axios
+      .get(`${config.URLs.getTokensPrefix}${authCode}`)
       // if the request was succesful we have recieved a token
       .then(() => (hasToken = true))
       .catch((err) => {
@@ -226,6 +89,9 @@ const informationRetrieval = (function () {
             <ul id="${config.CSS.IDs.songList}">
             ${tracks
               .map((track) => {
+                if (track === null) {
+                  return "";
+                }
                 return `
               <li class="song">
                 <h4>${track.name}</h4>
@@ -321,35 +187,40 @@ const informationRetrieval = (function () {
       );
     });
   }
-  function displayPlaylists() {
+  function displayPlaylists(playlistObjs) {
     const htmlString = playlistObjs
-      .map((playlist, idx) => {
-        return playlist.getPlaylistHtml(idx);
+      .map((playlistObj, idx) => {
+        return playlistObj.getPlaylistHtml(idx);
       })
       .join("");
     playlistsContainer.innerHTML = htmlString;
     addOnPlaylistClick();
   }
-  function displayTracks(tracks) {
-    const htmlString = tracks
-      .map((track, idx) => {
-        return track.getTrackHtml(idx);
+  function displayTracks(trackObjs) {
+    const htmlString = trackObjs
+      .map((trackObj, idx) => {
+        return trackObj.getTrackHtml(idx);
       })
       .join("");
     tracksContainer.innerHTML = htmlString;
   }
   /* Obtains information from web api and displays them.*/
   async function getInformation() {
-    let topArtistsReq = axiosGetReq(config.URLs.getTopArtists);
-    let topTracksReq = axiosGetReq(config.URLs.getTopTracks);
-    let playListsReq = axiosGetReq(config.URLs.getPlaylists);
+    // axios get requests return a promise
+    let topArtistsReq = axios.get(config.URLs.getTopArtists);
+    let topTracksReq = axios.get(config.URLs.getTopTracks);
+    let playListsReq = axios.get(config.URLs.getPlaylists);
 
     // promise.all runs each promise in parallel before returning their values once theyre all done.
     // promise.all will also stop function execution if a error is thrown in any of the promises.
 
     // promise.settleAll will not throw error however it will store the state of each request. (rejected state is equivalent to a thrown error)
-    let data = await Promise.all([topArtistsReq, topTracksReq, playListsReq]);
-    console.log(data);
+    let responses = await Promise.all([
+      topArtistsReq,
+      topTracksReq,
+      playListsReq,
+    ]);
+    console.log(responses);
 
     // remove the info loading spinners as info has been loaded
     let infoSpinners = document.querySelectorAll(
@@ -359,8 +230,8 @@ const informationRetrieval = (function () {
       spinner.parentNode.removeChild(spinner);
     });
 
-    const playlistDatas = data[2];
-    const topTrackDatas = data[1];
+    const playlistDatas = responses[2].data;
+    const topTrackDatas = responses[1].data;
     playlistDatas.forEach((data) => {
       playlistObjs.push(new Playlist(data.name, data.images, data.id));
     });
@@ -368,7 +239,7 @@ const informationRetrieval = (function () {
       topTrackObjs.push(new Track(data.name, data.album.images));
     });
 
-    displayPlaylists();
+    displayPlaylists(playlistObjs);
     displayTracks(topTrackObjs);
   }
   return {
@@ -464,13 +335,18 @@ This is done on set intervals.
 
 obtainTokens()
   .then((hasToken) => {
+    let getTokensSpinner = document.getElementById(
+      config.CSS.IDs.getTokenLoadingSpinner
+    );
+
+    // remove token spinner because by this line we have obtained the token
+    getTokensSpinner.parentNode.removeChild(getTokensSpinner);
+
     const infoContainer = document.getElementById(config.CSS.IDs.infoContainer);
     const allowAccessHeader = document.getElementById(
       config.CSS.IDs.allowAccessHeader
     );
     if (hasToken) {
-      console.log("render certain things");
-
       // if there is a token remove the allow access header from DOM
       allowAccessHeader.parentNode.removeChild(allowAccessHeader);
       createSpotifyLoginButton(true);

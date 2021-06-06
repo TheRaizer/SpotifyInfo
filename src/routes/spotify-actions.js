@@ -31,7 +31,7 @@ const getTopPromise = (req, url) => {
   });
 };
 
-router.get("/get-top-artists", async function (req, res) {
+router.get("/get-top-artists", async function (req, res, next) {
   await getTopPromise(req, "https://api.spotify.com/v1/me/top/artists")
     .then((response) => {
       res.send(response);
@@ -39,10 +39,12 @@ router.get("/get-top-artists", async function (req, res) {
     .catch((err) => {
       console.log("ERROR IN GET TOP ARTISTS");
       console.error(err);
+      // run next to pass this error down to a middleware that will handle it
+      next(err);
     });
 });
 
-router.get("/get-top-tracks", async function (req, res) {
+router.get("/get-top-tracks", async function (req, res, next) {
   await getTopPromise(req, "https://api.spotify.com/v1/me/top/tracks")
     .then((response) => {
       res.send(response);
@@ -50,10 +52,12 @@ router.get("/get-top-tracks", async function (req, res) {
     .catch((err) => {
       console.log("ERROR IN GET TOP TRACK");
       console.error(err);
+      // run next to pass this error down to a middleware that will handle it
+      next(err);
     });
 });
 
-router.get("/get-playlists", async function (req, res) {
+router.get("/get-playlists", async function (req, res, next) {
   await axios({
     method: "get",
     url: "https://api.spotify.com/v1/me/playlists",
@@ -65,10 +69,12 @@ router.get("/get-playlists", async function (req, res) {
     })
     .catch((err) => {
       console.error(err);
+      // run next to pass this error down to a middleware that will handle it
+      next(err);
     });
 });
 
-router.get("/get-playlist-tracks", async function (req, res) {
+router.get("/get-playlist-tracks", async function (req, res, next) {
   var playlistId = req.query.playlist_id;
 
   await axios({
@@ -89,5 +95,7 @@ router.get("/get-playlist-tracks", async function (req, res) {
     })
     .catch((err) => {
       console.error(err);
+      // run next to pass this error down to a middleware that will handle it
+      next(err);
     });
 });

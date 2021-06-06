@@ -55,8 +55,7 @@ section {
   box-shadow: 0px 0px 10px 5px #1db954;
 }
 
-#playlists,
-#tracks {
+.card-grid {
   justify-content: space-around;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, max-content));
@@ -64,25 +63,7 @@ section {
   align-self: center;
 }
 
-.playlist img,
-.track img {
-  width: 120px;
-  height: 120px;
-  box-shadow: 0px 0px 10px 6px rgb(19, 19, 19);
-}
-
-.playlist h4,
-.track h4 {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: rgb(212, 212, 212);
-  margin-left: 5%;
-  margin-right: 5%;
-}
-
-.playlist,
-.track {
+.card {
   /* Make relative to allow movement from normal position during animations */
   position: relative;
   width: 150px;
@@ -101,8 +82,10 @@ section {
   left: 0;
   opacity: 0;
 
-  transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out,
-    opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  transition: transform 250ms ease-in-out,
+  box-shadow 250ms ease-in-out,
+  opacity 250ms ease-in,
+  top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
 
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -110,6 +93,25 @@ section {
   user-select: none;
 }
 
+.card > img {
+    width: 120px;
+    height: 120px;
+    box-shadow: 0px 0px 10px 6px rgb(19, 19, 19);
+}
+
+.card > h4 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgb(212, 212, 212);
+  margin-left: 5%;
+  margin-right: 5%;
+}
+.card:hover {
+  z-index: 1;
+  transform: scale(1.2);
+  box-shadow: 0px 0px 15px 8px rgb(14, 14, 14);
+}
 .appear {
   opacity: 1;
   top: 0;
@@ -123,7 +125,7 @@ section {
   pointer-events: none;
 }
 
-.playlist.selected {
+.selected {
   background-color: #1db954;
 }
 
@@ -186,13 +188,6 @@ section {
 .song {
   list-style-type: none;
   color: rgb(212, 212, 212);
-}
-
-.playlist.appear:hover,
-.track:hover {
-  z-index: 1;
-  transform: scale(1.2);
-  box-shadow: 0px 0px 15px 8px rgb(14, 14, 14);
 }
 
 #playlists-section {

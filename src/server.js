@@ -48,9 +48,30 @@ if (process.env.NODE_ENV === "production") {
   sesh.cookie.httpOnly = false;
 }
 
+// middleware error handling functions need all 4 parameters to notify express that it is error handling
+function logErrors(err, _req, _res, next) {
+  console.error(err.stack);
+  next(err);
+}
+function clientErrorHandler(err, req, res, next) {
+  if (req.xhr) {
+    res.status(500).send({ error: "Something failed!" });
+  } else {
+    next(err);
+  }
+}
+function errorHandler(err, _req, res, next) {
+  res.status(500);
+  res.render("error", { error: err });
+}
+
 app.use(session(sesh));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(logErrors);
+app.use(clientErrorHandler);
+app.use(errorHandler);
+
 app.use(express.static(__dirname + "/public"));
 
 // '/' represents the home page which will render index.html from express server
