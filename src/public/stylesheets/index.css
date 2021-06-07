@@ -178,7 +178,7 @@ section {
 
 .expanded-playlist.appear {
   width: 40vw;
-  height: 40vh;
+  height: 70vh;
   opacity: 1;
 
   transition: width 500ms ease-in-out, height 500ms ease-in-out,

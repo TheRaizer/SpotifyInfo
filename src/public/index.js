@@ -69,14 +69,11 @@ async function obtainTokens() {
 }
 
 const informationRetrieval = (function () {
-  // true means it is hidden, false means its showing
-  const HIDDEN_STATE = true;
-  const SHOWING_STATE = false;
-  var expandedPlaylistStates = { 1: HIDDEN_STATE, 2: HIDDEN_STATE };
   const playlistsContainer = document.getElementById(config.CSS.IDs.playlists);
   const tracksContainer = document.getElementById(config.CSS.IDs.tracks);
   const playlistObjs = [];
   const topTrackObjs = [];
+  var currSelectedPlaylistEl = null;
 
   function loadPlaylistTracksToHtmlString(playlistObj, useHtmlString) {
     // asynchronously load the tracks and replace the html once it loads
@@ -101,9 +98,10 @@ const informationRetrieval = (function () {
         console.error(err);
       });
   }
-  function showExpandedPlaylist(playlistObj, playlistNum) {
-    const EXPANDED_PLAYLIST_ID = `${config.CSS.IDs.expandedPlaylistPrefix}${playlistNum}`;
-    const EXPANDED_PLAYLIST = document.getElementById(EXPANDED_PLAYLIST_ID);
+  function showExpandedPlaylist(playlistObj) {
+    const EXPANDED_PLAYLIST = document.getElementById(
+      config.CSS.IDs.expandedPlaylist
+    );
 
     // initially show the playlist with the loading spinner
     const htmlString = `
@@ -119,35 +117,18 @@ const informationRetrieval = (function () {
     });
     console.log("synchronously after running load tracks");
   }
-  function findFirstHiddenExpandedPlaylist() {
-    let state = false;
-    let expandedPlaylistNum = -1;
-
-    for (let key in expandedPlaylistStates) {
-      state = expandedPlaylistStates[key];
-      if (state) {
-        expandedPlaylistNum = parseInt(key);
-        break;
-      }
-    }
-
-    return { state, expandedPlaylistNum };
-  }
-  function unselectPlaylist(playlistEl, playlistObj) {
+  function unselectPlaylist(playlistEl) {
     playlistEl.classList.remove(config.CSS.CLASSES.selected);
 
     let expandedPlaylistEl = document.getElementById(
-      `${config.CSS.IDs.expandedPlaylistPrefix}${playlistObj.expandedPlaylistNum}`
+      config.CSS.IDs.expandedPlaylist
     );
     expandedPlaylistEl.classList.remove(config.CSS.CLASSES.appear);
-    expandedPlaylistStates[playlistObj.expandedPlaylistNum] = HIDDEN_STATE;
-    playlistObj.expandedPlaylistNum = -1;
   }
   function selectPlaylist(playlistEl, playlistObj) {
-    expandedPlaylistStates[playlistObj.expandedPlaylistNum] = SHOWING_STATE;
     // on click add the selected class onto the element which runs a transition
     playlistEl.classList.add(config.CSS.CLASSES.selected);
-    showExpandedPlaylist(playlistObj, playlistObj.expandedPlaylistNum);
+    showExpandedPlaylist(playlistObj);
   }
   function addOnPlaylistClick() {
     function onPlaylistElementClick(playlistEl) {
@@ -156,17 +137,18 @@ const informationRetrieval = (function () {
         (x) => x.playlistElementId === playlistEl.id
       );
 
-      // if the element is selected already the unselect it and hide its expanded playlist
+      // if the element is selected already then unselect it and hide its expanded playlist
       if (playlistEl.classList.contains(config.CSS.CLASSES.selected)) {
-        unselectPlaylist(playlistEl, playlistObj);
-        return;
-      }
+        unselectPlaylist(playlistEl);
+      } else {
+        // if there is an existing playlist selected unselect it
+        if (currSelectedPlaylistEl) {
+          unselectPlaylist(currSelectedPlaylistEl);
+        }
 
-      const { state, expandedPlaylistNum } = findFirstHiddenExpandedPlaylist();
-
-      if (state == HIDDEN_STATE) {
-        playlistObj.expandedPlaylistNum = expandedPlaylistNum;
-        selectPlaylist(playlistEl, playlistObj);
+        // make the currently selected playlist this playlist and select it.
+        currSelectedPlaylistEl = playlistEl;
+        selectPlaylist(currSelectedPlaylistEl, playlistObj);
       }
     }
 

@@ -36,7 +36,7 @@ export const config = {
       infoContainer: "info-container",
       allowAccessHeader: "allow-access-header",
       trackList: "track-list",
-      expandedPlaylistPrefix: "expanded-playlist-",
+      expandedPlaylist: "expanded-playlist",
     },
     CLASSES: {
       playlist: "playlist",
