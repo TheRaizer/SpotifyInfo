@@ -78,7 +78,7 @@ const informationRetrieval = (function () {
   const playlistObjs = [];
   const topTrackObjs = [];
 
-  function loadTracksToHtmlString(playlistObj, useHtmlString) {
+  function loadPlaylistTracksToHtmlString(playlistObj, useHtmlString) {
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
       .getTracks()
@@ -86,17 +86,10 @@ const informationRetrieval = (function () {
         console.log("loaded tracks");
         // overwrite the previous songlist with the current one
         const htmlString = `
-            <ul id="${config.CSS.IDs.songList}">
+            <ul id="${config.CSS.IDs.trackList}">
             ${tracks
               .map((track) => {
-                if (track === null) {
-                  return "";
-                }
-                return `
-              <li class="song">
-                <h4>${track.name}</h4>
-              </li>
-              `;
+                return track.getPlaylistTrackHtml();
               })
               .join("")}
             </ul>`;
@@ -114,14 +107,14 @@ const informationRetrieval = (function () {
 
     // initially show the playlist with the loading spinner
     const htmlString = `
-            <ul id="${config.CSS.IDs.songList}">
+            <ul id="${config.CSS.IDs.trackList}">
             <img class="songs-loading-spinner" src="200pxLoadingSpinner.svg" />
             </ul>`;
 
     EXPANDED_PLAYLIST.innerHTML = htmlString;
     EXPANDED_PLAYLIST.classList.add(config.CSS.CLASSES.appear);
 
-    loadTracksToHtmlString(playlistObj, (loadedHtmlString) => {
+    loadPlaylistTracksToHtmlString(playlistObj, (loadedHtmlString) => {
       EXPANDED_PLAYLIST.innerHTML = loadedHtmlString;
     });
     console.log("synchronously after running load tracks");
@@ -199,7 +192,7 @@ const informationRetrieval = (function () {
   function displayTracks(trackObjs) {
     const htmlString = trackObjs
       .map((trackObj, idx) => {
-        return trackObj.getTrackHtml(idx);
+        return trackObj.getTrackCardHtml(idx);
       })
       .join("");
     tracksContainer.innerHTML = htmlString;

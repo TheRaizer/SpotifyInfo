@@ -185,8 +185,9 @@ section {
     opacity 250ms ease-in;
 }
 
-.song {
+.playlist-track {
   list-style-type: none;
+  text-align: left;
   color: rgb(212, 212, 212);
 }
 

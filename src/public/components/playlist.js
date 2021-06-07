@@ -1,4 +1,5 @@
 import { config } from "../config.js";
+import Track from "./track.js";
 
 class Playlist {
   constructor(name, images, id) {
@@ -36,8 +37,15 @@ class Playlist {
     let response = await axios
       .get(config.URLs.getPlaylistTracks + this.id)
       .catch((err) => console.error(err));
-
-    return response.data;
+    let tracksData = response.data;
+    var trackObjs = [];
+    tracksData.forEach((data) => {
+      // if the data is not null or undefined etc.
+      if (data) {
+        trackObjs.push(new Track(data.name, data.album.images));
+      }
+    });
+    return trackObjs;
   }
 }
 
