@@ -42,7 +42,9 @@ class Playlist {
     tracksData.forEach((data) => {
       // if the data is not null or undefined etc.
       if (data) {
-        trackObjs.push(new Track(data.name, data.album.images));
+        trackObjs.push(
+          new Track(data.name, data.album.images, data.duration_ms)
+        );
       }
     });
     return trackObjs;

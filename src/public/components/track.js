@@ -1,7 +1,7 @@
-import { config } from "../config.js";
+import { config, millisToMinutesAndSeconds } from "../config.js";
 
 class Track {
-  constructor(name, images) {
+  constructor(name, images, duration) {
     this.name = name;
     this.images = images;
 
@@ -11,6 +11,8 @@ class Track {
     } else {
       this.url = "";
     }
+
+    this.duration = millisToMinutesAndSeconds(duration);
   }
 
   getTrackCardHtml(idx) {
@@ -33,7 +35,9 @@ class Track {
   getPlaylistTrackHtml() {
     return `
               <li class="${config.CSS.CLASSES.playlistTrack}">
+                <img src="${this.url}"></img>
                 <h4>${this.name}</h4>
+                <h5>${this.duration}</h5>
               </li>
             `;
   }

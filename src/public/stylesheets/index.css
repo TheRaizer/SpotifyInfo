@@ -177,7 +177,7 @@ section {
 }
 
 .expanded-playlist.appear {
-  width: 30vw;
+  width: 40vw;
   height: 40vh;
   opacity: 1;
 
@@ -186,9 +186,16 @@ section {
 }
 
 .playlist-track {
+  display: flex;
+  flex-wrap: wrap;
   list-style-type: none;
   text-align: left;
   color: rgb(212, 212, 212);
+}
+
+.playlist-track > img {
+  width: 60px;
+  height: 60px;
 }
 
 #playlists-section {

@@ -229,7 +229,9 @@ const informationRetrieval = (function () {
       playlistObjs.push(new Playlist(data.name, data.images, data.id));
     });
     topTrackDatas.forEach((data) => {
-      topTrackObjs.push(new Track(data.name, data.album.images));
+      topTrackObjs.push(
+        new Track(data.name, data.album.images, data.duration_ms)
+      );
     });
 
     displayPlaylists(playlistObjs);
