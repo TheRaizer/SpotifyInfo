@@ -98,9 +98,6 @@ section {
 }
 
 .card>h4 {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   color: rgb(212, 212, 212);
   margin-left: 5%;
   margin-right: 5%;
@@ -184,11 +181,17 @@ section {
     opacity 250ms ease-in;
 }
 
-.expanded-playlist>h2 {
-  height: 40px;
+.sticky-area {
+  display: grid;
+  grid-template-columns: 75% 25%;
+  grid-row: 1;
+  height: 10%;
+
+  align-content: center;
+  justify-content: center;
+
   top: 0;
   margin: 0 0 0 0;
-  padding-top: 10px;
 
   position: -webkit-sticky;
   position: sticky;
@@ -196,6 +199,17 @@ section {
   z-index: 1;
   background: #303030;
   font-weight: 700;
+}
+
+.ellipsis-wrap {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.playlist-search {
+  margin-top: 10%;
+  height: 20%;
 }
 
 .expanded-playlist>ul {
@@ -225,9 +239,6 @@ section {
 }
 
 .playlist-track>h4 {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   margin-left: 2%;
 }
 

@@ -363,6 +363,7 @@ obtainTokens()
   })
   .catch((err) => console.error(err));
 
+// add key up even to the expanded play lists mods search bar element
 document
   .getElementById(config.CSS.IDs.expandedPlaylistMods)
   .getElementsByClassName(config.CSS.CLASSES.playlistSearch)[0]

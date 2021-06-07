@@ -27,7 +27,7 @@ class Track {
     return `
             <div class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.track}" id="${id}">
               <img src="${this.url}"></img>
-              <h4>${this.name}</h4>
+              <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
             </div>
           `;
   }
@@ -36,7 +36,7 @@ class Track {
     return `
               <li class="${config.CSS.CLASSES.playlistTrack}">
                 <img src="${this.url}"></img>
-                <h4>${this.name}</h4>
+                <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
                 <h5>${this.duration}</h5>
               </li>
             `;

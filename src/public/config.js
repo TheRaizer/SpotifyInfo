@@ -47,6 +47,7 @@ export const config = {
       selected: "selected",
       card: "card",
       playlistSearch: "playlist-search",
+      ellipsisWrap: "ellipsis-wrap",
     },
     ATTRIBUTES: {
       dataClassToAnimate: "data-class-to-animate",

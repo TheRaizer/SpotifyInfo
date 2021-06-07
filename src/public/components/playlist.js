@@ -24,7 +24,7 @@ class Playlist {
       return `
             <div class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.playlist}" id="${id}">
               <img src="${url}"></img>
-              <h4>${this.name}</h4>
+              <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
             </div>
         `;
     }
