@@ -97,21 +97,21 @@ const informationRetrieval = (function () {
       });
   }
   function showExpandedPlaylist(playlistObj) {
-    const EXPANDED_PLAYLIST = document.getElementById(
+    const expandedPlaylistMods = document.getElementById(
       config.CSS.IDs.expandedPlaylistMods
     );
-    const trackList = EXPANDED_PLAYLIST.querySelector("ul");
-    const playlistTitle = EXPANDED_PLAYLIST.querySelector("h2");
-    playlistTitle.innerText = playlistObj.name;
+    const trackList = expandedPlaylistMods.getElementsByTagName("ul")[0];
+    const playlistTitle = expandedPlaylistMods.getElementsByTagName("h2")[0];
+    playlistTitle.textContent = playlistObj.name;
 
     // initially show the playlist with the loading spinner
     const htmlString = `
             <li>
-              <img class="songs-loading-spinner" src="200pxLoadingSpinner.svg" />
+              <img src="200pxLoadingSpinner.svg" />
             </li>`;
 
     trackList.innerHTML = htmlString;
-    EXPANDED_PLAYLIST.classList.add(config.CSS.CLASSES.appear);
+    expandedPlaylistMods.classList.add(config.CSS.CLASSES.appear);
 
     loadPlaylistTracksToHtmlString(playlistObj, (loadedHtmlString) => {
       trackList.innerHTML = loadedHtmlString;
@@ -153,8 +153,8 @@ const informationRetrieval = (function () {
       }
     }
 
-    let playlists = document.querySelectorAll(
-      "." + config.CSS.CLASSES.playlist
+    let playlists = Array.from(
+      document.getElementsByClassName(config.CSS.CLASSES.playlist)
     );
 
     playlists.forEach((playlistEl) => {
@@ -163,16 +163,16 @@ const informationRetrieval = (function () {
       );
     });
   }
-  function displayPlaylists(playlistObjs) {
+  function displayPlaylistCards(playlistObjs) {
     const htmlString = playlistObjs
       .map((playlistObj, idx) => {
-        return playlistObj.getPlaylistHtml(idx);
+        return playlistObj.getPlaylistCardHtml(idx);
       })
       .join("");
     playlistsContainer.innerHTML = htmlString;
     addOnPlaylistClick();
   }
-  function displayTracks(trackObjs) {
+  function displayTrackCards(trackObjs) {
     const htmlString = trackObjs
       .map((trackObj, idx) => {
         return trackObj.getTrackCardHtml(idx);
@@ -199,8 +199,8 @@ const informationRetrieval = (function () {
     console.log(responses);
 
     // remove the info loading spinners as info has been loaded
-    let infoSpinners = document.querySelectorAll(
-      "." + config.CSS.CLASSES.infoLoadingSpinners
+    let infoSpinners = Array.from(
+      document.getElementsByClassName(config.CSS.CLASSES.infoLoadingSpinners)
     );
     infoSpinners.forEach((spinner) => {
       spinner.parentNode.removeChild(spinner);
@@ -217,14 +217,28 @@ const informationRetrieval = (function () {
       );
     });
 
-    displayPlaylists(playlistObjs);
-    displayTracks(topTrackObjs);
+    displayPlaylistCards(playlistObjs);
+    displayTrackCards(topTrackObjs);
   }
   return {
     getInformation: getInformation,
   };
 })();
 
+function searchPlaylist(tracksUl, searchInput) {
+  let tracksLi = tracksUl.getElementsByTagName("li");
+  let filter = searchInput.value.toUpperCase();
+
+  for (let i = 0; i < tracksLi.length; i++) {
+    let trackNameh4 = tracksLi[i].getElementsByTagName("h4")[0];
+    let nameTxt = trackNameh4.textContent || trackNameh4.innerText;
+    if (nameTxt.toUpperCase().indexOf(filter) > -1) {
+      tracksLi[i].style.display = "grid";
+    } else {
+      tracksLi[i].style.display = "none";
+    }
+  }
+}
 // create custom promise
 async function stall(stallTime = 3000) {
   await new Promise((resolve) => setTimeout(resolve, stallTime));
@@ -348,3 +362,17 @@ obtainTokens()
     }
   })
   .catch((err) => console.error(err));
+
+document
+  .getElementById(config.CSS.IDs.expandedPlaylistMods)
+  .getElementsByClassName(config.CSS.CLASSES.playlistSearch)[0]
+  .addEventListener("keyup", () => {
+    const expandedPlaylistMods = document.getElementById(
+      config.CSS.IDs.expandedPlaylistMods
+    );
+    const trackList = expandedPlaylistMods.getElementsByTagName("ul")[0];
+    const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
+      config.CSS.CLASSES.playlistSearch
+    )[0];
+    searchPlaylist(trackList, playlistSearchInput);
+  });

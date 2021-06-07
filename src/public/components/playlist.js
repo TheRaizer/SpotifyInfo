@@ -9,12 +9,9 @@ class Playlist {
 
     // the id of the playlist card element
     this.playlistElementId = "";
-
-    // the number corrosponding to this playlist's expanded element
-    this.expandedPlaylistNum = -1;
   }
 
-  getPlaylistHtml(idx) {
+  getPlaylistCardHtml(idx) {
     let url = "";
     let id = `${config.CSS.IDs.playlistPrefix}${idx}`;
 

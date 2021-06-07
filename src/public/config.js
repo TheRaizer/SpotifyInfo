@@ -46,6 +46,7 @@ export const config = {
       hide: "hidden",
       selected: "selected",
       card: "card",
+      playlistSearch: "playlist-search",
     },
     ATTRIBUTES: {
       dataClassToAnimate: "data-class-to-animate",

@@ -160,20 +160,6 @@ section {
     opacity 250ms ease-in;
 }
 
-.expanded-playlist>h2 {
-  height: 40px;
-  top: 0;
-  margin: 0 0 0 0;
-  padding-top: 10px;
-
-  position: -webkit-sticky;
-  position: sticky;
-  
-  z-index: 1;
-  background: #303030;
-  font-weight: 700;
-}
-
 .expanded-playlist::-webkit-scrollbar {
   width: 12px;
   /* width of the entire scrollbar */
@@ -196,6 +182,20 @@ section {
 
   transition: width 500ms ease-in-out, height 500ms ease-in-out,
     opacity 250ms ease-in;
+}
+
+.expanded-playlist>h2 {
+  height: 40px;
+  top: 0;
+  margin: 0 0 0 0;
+  padding-top: 10px;
+
+  position: -webkit-sticky;
+  position: sticky;
+
+  z-index: 1;
+  background: #303030;
+  font-weight: 700;
 }
 
 .expanded-playlist>ul {
