@@ -35,8 +35,7 @@ export const config = {
       spotifyContainer: "spotify-container",
       infoContainer: "info-container",
       allowAccessHeader: "allow-access-header",
-      trackList: "track-list",
-      expandedPlaylist: "expanded-playlist",
+      expandedPlaylistMods: "expanded-playlist-mods",
     },
     CLASSES: {
       playlist: "playlist",

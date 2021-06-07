@@ -83,13 +83,11 @@ const informationRetrieval = (function () {
         console.log("loaded tracks");
         // overwrite the previous songlist with the current one
         const htmlString = `
-            <ul id="${config.CSS.IDs.trackList}">
             ${tracks
               .map((track) => {
                 return track.getPlaylistTrackHtml();
               })
-              .join("")}
-            </ul>`;
+              .join("")}`;
 
         useHtmlString(htmlString);
       })
@@ -100,20 +98,23 @@ const informationRetrieval = (function () {
   }
   function showExpandedPlaylist(playlistObj) {
     const EXPANDED_PLAYLIST = document.getElementById(
-      config.CSS.IDs.expandedPlaylist
+      config.CSS.IDs.expandedPlaylistMods
     );
+    const trackList = EXPANDED_PLAYLIST.querySelector("ul");
+    const playlistTitle = EXPANDED_PLAYLIST.querySelector("h2");
+    playlistTitle.innerText = playlistObj.name;
 
     // initially show the playlist with the loading spinner
     const htmlString = `
-            <ul id="${config.CSS.IDs.trackList}">
-            <img class="songs-loading-spinner" src="200pxLoadingSpinner.svg" />
-            </ul>`;
+            <li>
+              <img class="songs-loading-spinner" src="200pxLoadingSpinner.svg" />
+            </li>`;
 
-    EXPANDED_PLAYLIST.innerHTML = htmlString;
+    trackList.innerHTML = htmlString;
     EXPANDED_PLAYLIST.classList.add(config.CSS.CLASSES.appear);
 
     loadPlaylistTracksToHtmlString(playlistObj, (loadedHtmlString) => {
-      EXPANDED_PLAYLIST.innerHTML = loadedHtmlString;
+      trackList.innerHTML = loadedHtmlString;
     });
     console.log("synchronously after running load tracks");
   }
@@ -121,7 +122,7 @@ const informationRetrieval = (function () {
     playlistEl.classList.remove(config.CSS.CLASSES.selected);
 
     let expandedPlaylistEl = document.getElementById(
-      config.CSS.IDs.expandedPlaylist
+      config.CSS.IDs.expandedPlaylistMods
     );
     expandedPlaylistEl.classList.remove(config.CSS.CLASSES.appear);
   }

@@ -82,10 +82,8 @@ section {
   left: 0;
   opacity: 0;
 
-  transition: transform 250ms ease-in-out,
-  box-shadow 250ms ease-in-out,
-  opacity 250ms ease-in,
-  top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out,
+    opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
 
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -93,13 +91,13 @@ section {
   user-select: none;
 }
 
-.card > img {
-    width: 120px;
-    height: 120px;
-    box-shadow: 0px 0px 10px 6px rgb(19, 19, 19);
+.card>img {
+  width: 120px;
+  height: 120px;
+  box-shadow: 0px 0px 10px 6px rgb(19, 19, 19);
 }
 
-.card > h4 {
+.card>h4 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -149,6 +147,7 @@ section {
 
 .expanded-playlist {
   position: relative;
+  /* list overflow will be hidden causing a vertical scroll bar */
   overflow-x: hidden;
   background-color: #202020;
   margin-bottom: 5vh;
@@ -161,19 +160,33 @@ section {
     opacity 250ms ease-in;
 }
 
+.expanded-playlist>h2 {
+  height: 40px;
+  top: 0;
+  margin: 0 0 0 0;
+  padding-top: 10px;
+
+  position: -webkit-sticky;
+  position: sticky;
+  
+  z-index: 1;
+  background: #303030;
+  font-weight: 700;
+}
+
 .expanded-playlist::-webkit-scrollbar {
-    width: 12px;
-    /* width of the entire scrollbar */
+  width: 12px;
+  /* width of the entire scrollbar */
 }
 
 .expanded-playlist::-webkit-scrollbar-track {
-    background: rgb(0, 0, 0);
+  background: rgb(0, 0, 0);
 }
 
 .expanded-playlist::-webkit-scrollbar-thumb {
-    background-color: rgb(110, 110, 110);
-    border-radius: 20px;
-    border: 3px solid rgb(206, 206, 206);
+  background-color: rgb(110, 110, 110);
+  border-radius: 20px;
+  border: 3px solid rgb(206, 206, 206);
 }
 
 .expanded-playlist.appear {
@@ -185,17 +198,41 @@ section {
     opacity 250ms ease-in;
 }
 
-.playlist-track {
-  display: flex;
-  flex-wrap: wrap;
-  list-style-type: none;
-  text-align: left;
-  color: rgb(212, 212, 212);
+.expanded-playlist>ul {
+  list-style-type:none
 }
 
-.playlist-track > img {
+.playlist-track {
+  margin-top: 1%;
+  margin-bottom: 1%;
+
+  display: grid;
+  grid-template-columns: 10% 30% 40%;
+  grid-row: 1;
+  
+  text-align: left;
+  color: rgb(212, 212, 212);
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.playlist-track>img {
   width: 60px;
   height: 60px;
+}
+
+.playlist-track>h4 {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-left: 2%;
+}
+
+.playlist-track>h5 {
+  margin-left: 30%;
 }
 
 #playlists-section {
