@@ -225,9 +225,9 @@ const informationRetrieval = (function () {
   };
 })();
 
-function searchPlaylist(tracksUl, searchInput) {
-  let tracksLi = tracksUl.getElementsByTagName("li");
-  let filter = searchInput.value.toUpperCase();
+function searchUl(ul, input) {
+  let tracksLi = ul.getElementsByTagName("li");
+  let filter = input.value.toUpperCase();
 
   for (let i = 0; i < tracksLi.length; i++) {
     let trackNameh4 = tracksLi[i].getElementsByTagName("h4")[0];
@@ -374,5 +374,5 @@ document
     const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
       config.CSS.CLASSES.playlistSearch
     )[0];
-    searchPlaylist(trackList, playlistSearchInput);
+    searchUl(trackList, playlistSearchInput);
   });
