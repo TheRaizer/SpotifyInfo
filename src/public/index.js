@@ -124,16 +124,6 @@ const informationRetrieval = (function () {
     });
     console.log("synchronously after running load tracks");
   }
-  function unselectPlaylist(playlistEl) {
-    playlistEl.classList.remove(config.CSS.CLASSES.selected);
-
-    const expandedPlaylistEl = document.getElementById(
-      config.CSS.IDs.expandedPlaylistMods
-    );
-    const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
-    expandedPlaylistEl.classList.remove(config.CSS.CLASSES.appear);
-    modsSection.classList.remove(config.CSS.CLASSES.appear);
-  }
   function selectPlaylist(playlistEl, playlistObj) {
     // on click add the selected class onto the element which runs a transition
     playlistEl.classList.add(config.CSS.CLASSES.selected);
@@ -141,24 +131,21 @@ const informationRetrieval = (function () {
   }
   function addOnPlaylistClick() {
     function onPlaylistElementClick(playlistEl) {
+      if (currSelectedPlaylistEl === playlistEl) {
+        return;
+      }
       // get corrosponding playlist object using the elements id
       let playlistObj = playlistObjs.find(
         (x) => x.playlistElementId === playlistEl.id
       );
-
-      // if the element is selected already then unselect it and hide its expanded playlist
-      if (playlistEl.classList.contains(config.CSS.CLASSES.selected)) {
-        unselectPlaylist(playlistEl);
-      } else {
-        // if there is an existing playlist selected unselect it
-        if (currSelectedPlaylistEl) {
-          unselectPlaylist(currSelectedPlaylistEl);
-        }
-
-        // make the currently selected playlist this playlist and select it.
-        currSelectedPlaylistEl = playlistEl;
-        selectPlaylist(currSelectedPlaylistEl, playlistObj);
+      // if there is an existing playlist selected, unselect it
+      if (currSelectedPlaylistEl) {
+        currSelectedPlaylistEl.classList.remove(config.CSS.CLASSES.selected);
       }
+
+      // make the currently selected playlist this playlist and select it.
+      currSelectedPlaylistEl = playlistEl;
+      selectPlaylist(currSelectedPlaylistEl, playlistObj);
     }
 
     let playlists = Array.from(
