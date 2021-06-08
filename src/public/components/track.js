@@ -25,10 +25,10 @@ class Track {
     }
 
     return `
-            <div class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.track}" id="${id}">
+            <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.track}" id="${id}">
               <img src="${this.url}"></img>
               <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
-            </div>
+            </button>
           `;
   }
 

@@ -1,0 +1,7 @@
+The animation to smooth flex item wrapping cannot have the initial item moving while the duplicate is being made.
+This will cause the duplicate to spawn at the items initial position, which may not be on screen due to the animation/transition.
+
+data-class-to-animate: refers to a class of elements whose animation is triggered through set intervals.
+
+The data-class-to-animate element is passed into the intersection observer where it will wait to be triggered once the user scrolls onto said element. once that happens
+The observer will extract the data-class-to-animate attribute which will give it the classes that should be animated in set Intervals.

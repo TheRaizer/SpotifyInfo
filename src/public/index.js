@@ -69,8 +69,12 @@ async function obtainTokens() {
 }
 
 const informationRetrieval = (function () {
-  const playlistsContainer = document.getElementById(config.CSS.IDs.playlists);
-  const tracksContainer = document.getElementById(config.CSS.IDs.tracks);
+  const playlistsContainer = document.getElementById(
+    config.CSS.IDs.playlistCardsContainer
+  );
+  const tracksContainer = document.getElementById(
+    config.CSS.IDs.trackCardsContainer
+  );
   const playlistObjs = [];
   const topTrackObjs = [];
   var currSelectedPlaylistEl = null;
@@ -275,7 +279,7 @@ const animationControl = (function () {
 
       // observable element that causes animation on scroll should contain a 'data-class-to-animate' attribute
       intervalElementsTransitions(
-        entry.target.getAttribute(config.CSS.ATTRIBUTES.dataClassToAnimate),
+        entry.target.getAttribute(config.CSS.ATTRIBUTES.elementsToAnimate),
         config.CSS.CLASSES.appear,
         animationInterval
       );
@@ -293,25 +297,27 @@ This is done on set intervals.
 @param {number} animationInterval - The interval to wait between animation of elements
  */
   function intervalElementsTransitions(
-    className,
+    elementsToAnimate,
     classToTransitionToo,
     animationInterval
   ) {
-    let elements = document.getElementsByClassName(className);
-    let idx = 0;
-
-    // in intervals play their initial animations
-    let interval = setInterval(function () {
-      if (idx === elements.length) {
-        clearInterval(interval);
-        return;
-      }
-      let element = elements[idx];
-
-      // add the class to the elements classes in order to run the transition
-      element.classList.add(classToTransitionToo);
-      idx += 1;
-    }, animationInterval);
+    let attributes = elementsToAnimate.split(",");
+    attributes.forEach((attr) => {
+      console.log(attr);
+      let elements = document.querySelectorAll(attr);
+      let idx = 0;
+      // in intervals play their initial animations
+      let interval = setInterval(() => {
+        if (idx === elements.length) {
+          clearInterval(interval);
+          return;
+        }
+        let element = elements[idx];
+        // add the class to the elements classes in order to run the transition
+        element.classList.add(classToTransitionToo);
+        idx += 1;
+      }, animationInterval);
+    });
   }
   function addAnimateOnScroll() {
     const playlistsArea = document.getElementById("playlists-header");

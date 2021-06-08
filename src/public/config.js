@@ -27,8 +27,8 @@ export const config = {
   CSS: {
     IDs: {
       getTokenLoadingSpinner: "get-token-loading-spinner",
-      playlists: "playlists",
-      tracks: "tracks",
+      playlistCardsContainer: "playlist-cards-container",
+      trackCardsContainer: "track-cards-container",
       playlistPrefix: "playlist-",
       trackPrefix: "track-",
       loginButton: "spotify-login",
@@ -51,7 +51,7 @@ export const config = {
       ellipsisWrap: "ellipsis-wrap",
     },
     ATTRIBUTES: {
-      dataClassToAnimate: "data-class-to-animate",
+      elementsToAnimate: "elements-to-animate",
     },
   },
   URLs: {
