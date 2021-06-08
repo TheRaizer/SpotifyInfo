@@ -100,6 +100,7 @@ const informationRetrieval = (function () {
     const expandedPlaylistMods = document.getElementById(
       config.CSS.IDs.expandedPlaylistMods
     );
+    const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
     const trackList = expandedPlaylistMods.getElementsByTagName("ul")[0];
     const playlistTitle = expandedPlaylistMods.getElementsByTagName("h2")[0];
     playlistTitle.textContent = playlistObj.name;
@@ -112,6 +113,7 @@ const informationRetrieval = (function () {
 
     trackList.innerHTML = htmlString;
     expandedPlaylistMods.classList.add(config.CSS.CLASSES.appear);
+    modsSection.classList.add(config.CSS.CLASSES.appear);
 
     loadPlaylistTracksToHtmlString(playlistObj, (loadedHtmlString) => {
       trackList.innerHTML = loadedHtmlString;
@@ -121,10 +123,12 @@ const informationRetrieval = (function () {
   function unselectPlaylist(playlistEl) {
     playlistEl.classList.remove(config.CSS.CLASSES.selected);
 
-    let expandedPlaylistEl = document.getElementById(
+    const expandedPlaylistEl = document.getElementById(
       config.CSS.IDs.expandedPlaylistMods
     );
+    const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
     expandedPlaylistEl.classList.remove(config.CSS.CLASSES.appear);
+    modsSection.classList.remove(config.CSS.CLASSES.appear);
   }
   function selectPlaylist(playlistEl, playlistObj) {
     // on click add the selected class onto the element which runs a transition
