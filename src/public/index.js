@@ -2,6 +2,15 @@ import Track from "./components/track.js";
 import Playlist from "./components/playlist.js";
 import { config } from "./config.js";
 
+const expandedPlaylistMods = document.getElementById(
+  config.CSS.IDs.expandedPlaylistMods
+);
+// add on change event listener to the order selection element of the mods expanded playlist
+const playlistOrder = expandedPlaylistMods.getElementsByClassName(
+  config.CSS.CLASSES.playlistOrder
+)[0];
+const trackListUl = expandedPlaylistMods.getElementsByTagName("ul")[0];
+
 function createSpotifyLoginButton(changeAccount = false) {
   // Create anchor element.
   let div = document.createElement("div");
@@ -79,7 +88,7 @@ const informationRetrieval = (function () {
   const topTrackObjs = [];
   var currSelectedPlaylistEl = null;
 
-  function loadPlaylistTracksToHtmlString(playlistObj, useHtmlString) {
+  function loadPlaylistTracksToHtmlString(playlistObj, htmlStringCallback) {
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
       .getTracks()
@@ -93,21 +102,18 @@ const informationRetrieval = (function () {
               })
               .join("")}`;
 
-        useHtmlString(htmlString);
+        htmlStringCallback(htmlString);
       })
       .catch((err) => {
         console.log("Error when getting tracks");
         console.error(err);
       });
   }
+
+  const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
+  const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
   function showExpandedPlaylist(playlistObj) {
-    const expandedPlaylistMods = document.getElementById(
-      config.CSS.IDs.expandedPlaylistMods
-    );
-    const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
-    const trackList = expandedPlaylistMods.getElementsByTagName("ul")[0];
-    const playlistTitle = expandedPlaylistMods.getElementsByTagName("h2")[0];
-    playlistTitle.textContent = playlistObj.name;
+    playlistTitleh2.textContent = playlistObj.name;
 
     // initially show the playlist with the loading spinner
     const htmlString = `
@@ -115,12 +121,13 @@ const informationRetrieval = (function () {
               <img src="200pxLoadingSpinner.svg" />
             </li>`;
 
-    trackList.innerHTML = htmlString;
+    trackListUl.innerHTML = htmlString;
     expandedPlaylistMods.classList.add(config.CSS.CLASSES.appear);
     modsSection.classList.add(config.CSS.CLASSES.appear);
 
     loadPlaylistTracksToHtmlString(playlistObj, (loadedHtmlString) => {
-      trackList.innerHTML = loadedHtmlString;
+      trackListUl.innerHTML = loadedHtmlString;
+      sortTracksToOrder(trackListUl);
     });
     console.log("synchronously after running load tracks");
   }
@@ -220,20 +227,36 @@ const informationRetrieval = (function () {
   };
 })();
 
-function searchUl(ul, input) {
+function searchUl(ul, input, stdDisplay = "grid") {
   let tracksLi = ul.getElementsByTagName("li");
   let filter = input.value.toUpperCase();
 
   for (let i = 0; i < tracksLi.length; i++) {
-    let trackNameh4 = tracksLi[i].getElementsByTagName("h4")[0];
-    let nameTxt = trackNameh4.textContent || trackNameh4.innerText;
+    let name = tracksLi[i].getElementsByClassName(config.CSS.CLASSES.name)[0];
+    let nameTxt = name.textContent || name.innerText;
     if (nameTxt.toUpperCase().indexOf(filter) > -1) {
-      tracksLi[i].style.display = "grid";
+      tracksLi[i].style.display = stdDisplay;
     } else {
       tracksLi[i].style.display = "none";
     }
   }
 }
+
+function orderByNameUl(ul) {
+  let tracksLi = Array.from(ul.getElementsByTagName("li"));
+  tracksLi.sort(function (a, b) {
+    let nameA = a.getElementsByClassName(config.CSS.CLASSES.name)[0];
+    let nameATxt = nameA.textContent || nameA.innerText;
+
+    let nameB = b.getElementsByClassName(config.CSS.CLASSES.name)[0];
+    let nameBTxt = nameB.textContent || nameB.innerText;
+
+    // -1 precedes, 1 suceeds, 0 is equal
+    return nameATxt === nameBTxt ? 0 : nameATxt < nameBTxt ? -1 : 1;
+  });
+  return tracksLi;
+}
+
 // create custom promise
 async function stall(stallTime = 3000) {
   await new Promise((resolve) => setTimeout(resolve, stallTime));
@@ -319,6 +342,23 @@ This is done on set intervals.
   };
 })();
 
+function sortTracksToOrder(trackListUl) {
+  if (playlistOrder.value == "name") {
+    let tracksLi = orderByNameUl(trackListUl);
+    rerenderPlaylistTracks(tracksLi, trackListUl);
+  }
+}
+
+function rerenderPlaylistTracks(tracksLi, trackListUl) {
+  const htmlString = `
+            ${tracksLi
+              .map((trackLi) => {
+                return trackLi.outerHTML;
+              })
+              .join("")}`;
+  trackListUl.innerHTML = htmlString;
+}
+
 // intersection observer is a nice way to find whether an element is in the viewport
 // in this case once we know it's in the viewport we also animate elements relating to a given class name
 
@@ -360,17 +400,37 @@ obtainTokens()
   })
   .catch((err) => console.error(err));
 
-// add key up even to the expanded play lists mods search bar element
-document
-  .getElementById(config.CSS.IDs.expandedPlaylistMods)
-  .getElementsByClassName(config.CSS.CLASSES.playlistSearch)[0]
-  .addEventListener("keyup", () => {
-    const expandedPlaylistMods = document.getElementById(
-      config.CSS.IDs.expandedPlaylistMods
-    );
-    const trackList = expandedPlaylistMods.getElementsByTagName("ul")[0];
-    const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
-      config.CSS.CLASSES.playlistSearch
+const addEventListeners = (function () {
+  function addExpandedPlaylistModsSearchbarEvent() {
+    // add key up event to the mods expanded playlist's search bar element
+    expandedPlaylistMods
+      .getElementsByClassName(config.CSS.CLASSES.playlistSearch)[0]
+      .addEventListener("keyup", () => {
+        const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
+          config.CSS.CLASSES.playlistSearch
+        )[0];
+        searchUl(trackListUl, playlistSearchInput);
+      });
+  }
+
+  function addExpandedPlaylistModsOrderEvent() {
+    // add on change event listener to the order selection element of the mods expanded playlist
+    const playlistOrder = expandedPlaylistMods.getElementsByClassName(
+      config.CSS.CLASSES.playlistOrder
     )[0];
-    searchUl(trackList, playlistSearchInput);
-  });
+    playlistOrder.addEventListener("change", () => {
+      if (playlistOrder.value == "name") {
+        sortTracksToOrder(trackListUl);
+      }
+    });
+  }
+
+  return {
+    addExpandedPlaylistModsSearchbarEvent:
+      addExpandedPlaylistModsSearchbarEvent,
+    addExpandedPlaylistModsOrderEvent: addExpandedPlaylistModsOrderEvent,
+  };
+})();
+
+addEventListeners.addExpandedPlaylistModsSearchbarEvent();
+addEventListeners.addExpandedPlaylistModsOrderEvent();

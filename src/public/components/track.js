@@ -36,7 +36,7 @@ class Track {
     return `
               <li class="${config.CSS.CLASSES.playlistTrack}">
                 <img src="${this.url}"></img>
-                <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
+                <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${config.CSS.CLASSES.name}">${this.name}</h4>
                 <h5>${this.duration}</h5>
               </li>
             `;

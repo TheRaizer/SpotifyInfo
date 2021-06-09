@@ -49,6 +49,8 @@ export const config = {
       card: "card",
       playlistSearch: "playlist-search",
       ellipsisWrap: "ellipsis-wrap",
+      name: "name",
+      playlistOrder: "playlist-order",
     },
     ATTRIBUTES: {
       elementsToAnimate: "elements-to-animate",
