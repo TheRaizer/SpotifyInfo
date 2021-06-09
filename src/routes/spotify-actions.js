@@ -85,13 +85,7 @@ router.get("/get-playlist-tracks", async function (req, res, next) {
     .then(function (response) {
       // get the list of items
       let items = response.data.items;
-
-      // map to a list of only the items tracks
-      let data = items.map((item) => {
-        return item.track;
-      });
-
-      res.send(data);
+      res.send(items);
     })
     .catch((err) => {
       console.error(err);

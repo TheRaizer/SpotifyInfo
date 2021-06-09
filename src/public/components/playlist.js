@@ -39,11 +39,17 @@ class Playlist {
     }
     let tracksData = response.data;
     var trackObjs = [];
+
     tracksData.forEach((data) => {
       // if the data is not null or undefined etc.
       if (data) {
         trackObjs.push(
-          new Track(data.name, data.album.images, data.duration_ms)
+          new Track(
+            data.track.name,
+            data.track.album.images,
+            data.track.duration_ms,
+            data.added_at
+          )
         );
       }
     });

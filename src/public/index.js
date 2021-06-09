@@ -107,15 +107,30 @@ const informationRetrieval = (function () {
   const playlistObjs = [];
   const topTrackObjs = [];
   var currSelectedPlaylistEl = null;
+  var currSelectedPlaylist = { playlist: null, loadedTracks: false };
 
   function loadPlaylistTracksToHtmlString(playlistObj, htmlStringCallback) {
     playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
     playlistOrder.classList.add(config.CSS.CLASSES.hide);
+    // synchronously assign the currently selected playlist to be this playlist
+    currSelectedPlaylist.playlist = playlistObj;
+    // it hasn't loaded its tracks
+    currSelectedPlaylist.loadedTracks = false;
+
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
       .getTracks()
       .then((tracks) => {
-        console.log("loaded tracks");
+        // because .then() can run when currently selected playlist has already changed we need this if statement.
+        // if the tracks have been loaded but they aren't from the currently selected playlist return.
+        if (playlistObj !== currSelectedPlaylist.playlist) {
+          return;
+        }
+        // if they're the same object but its already been loaded then dont load it again.
+        else if (currSelectedPlaylist.loadedTracks) {
+          return;
+        }
+        // this does not run synchronously
         expandablePlaylistTracks = tracks;
         // overwrite the previous songlist with the current one
         const htmlString = `
@@ -125,6 +140,8 @@ const informationRetrieval = (function () {
               })
               .join("")}`;
         htmlStringCallback(htmlString);
+
+        currSelectedPlaylist.loadedTracks = true;
       })
       .catch((err) => {
         console.log("Error when getting tracks");
@@ -162,7 +179,6 @@ const informationRetrieval = (function () {
       sortTracksToOrder();
       onTracksLoadingDone();
     });
-    console.log("synchronously after running load tracks");
   }
   function selectPlaylist(playlistEl, playlistObj) {
     // on click add the selected class onto the element which runs a transition
