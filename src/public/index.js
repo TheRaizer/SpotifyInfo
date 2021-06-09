@@ -35,18 +35,30 @@ function createSpotifyLoginButton(changeAccount = false) {
   document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(div);
 }
 
+async function promiseHandler(
+  promise,
+  onSuccesful = (res) => {},
+  onFailure = (res) => {}
+) {
+  try {
+    const res = await promise;
+    onSuccesful(res);
+    return { res: res, err: null };
+  } catch (err) {
+    console.error(err);
+    onFailure(err);
+    return { res: null, err: err };
+  }
+}
+
 async function obtainTokens() {
+  let hasToken = false;
   // await promise resolve that returns whether the session has tokens.
   // because token is stored in session we need to reassign 'hasToken' to the client so we do not need to run this method again on refresh
-  let hasToken = await axios
-    .get(config.URLs.getHasTokens)
-    .then((res) => {
-      return res.data;
-    })
-    .catch((err) => {
-      console.error(err);
-      throw new Error("Error Occured in axios req");
-    });
+  await promiseHandler(
+    axios.get(config.URLs.getHasTokens),
+    (res) => (hasToken = res.data)
+  );
 
   if (hasToken) {
     console.log("has token");
@@ -62,14 +74,12 @@ async function obtainTokens() {
   let authCode = urlParams.get("code");
 
   if (authCode) {
-    await axios
-      .get(`${config.URLs.getTokensPrefix}${authCode}`)
+    await promiseHandler(
+      axios.get(`${config.URLs.getTokensPrefix}${authCode}`),
+
       // if the request was succesful we have recieved a token
-      .then(() => (hasToken = true))
-      .catch((err) => {
-        console.error(err);
-        throw new Error("Error Occured in axios req");
-      });
+      () => (hasToken = true)
+    );
     authCode = "";
   } else {
     // create spotify button if no auth code was found in the url
@@ -208,9 +218,9 @@ const informationRetrieval = (function () {
   /* Obtains information from web api and displays them.*/
   async function getInformation() {
     // axios get requests return a promise
-    let topArtistsReq = axios.get(config.URLs.getTopArtists);
-    let topTracksReq = axios.get(config.URLs.getTopTracks);
-    let playListsReq = axios.get(config.URLs.getPlaylists);
+    let topArtistsReq = promiseHandler(axios.get(config.URLs.getTopArtists));
+    let topTracksReq = promiseHandler(axios.get(config.URLs.getTopTracks));
+    let playListsReq = promiseHandler(axios.get(config.URLs.getPlaylists));
 
     // promise.all runs each promise in parallel before returning their values once theyre all done.
     // promise.all will also stop function execution if a error is thrown in any of the promises.
@@ -231,8 +241,8 @@ const informationRetrieval = (function () {
       spinner.parentNode.removeChild(spinner);
     });
 
-    const playlistDatas = responses[2].data;
-    const topTrackDatas = responses[1].data;
+    const playlistDatas = responses[2].res.data;
+    const topTrackDatas = responses[1].res.data;
     playlistDatas.forEach((data) => {
       playlistObjs.push(new Playlist(data.name, data.images, data.id));
     });
@@ -343,7 +353,6 @@ This is done on set intervals.
   ) {
     let attributes = elementsToAnimate.split(",");
     attributes.forEach((attr) => {
-      console.log(attr);
       let elements = document.querySelectorAll(attr);
       let idx = 0;
       // in intervals play their initial animations
