@@ -106,16 +106,17 @@ const informationRetrieval = (function () {
   const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
   const playlistObjs = [];
   const topTrackObjs = [];
-  var currSelectedPlaylistEl = null;
-  var currSelectedPlaylist = { playlist: null, loadedTracks: false };
+  var currSelPlaylistEl = null;
+  var currSelPlaylist = { playlist: null, loadedTracks: false };
 
   function loadPlaylistTracksToHtmlString(playlistObj, htmlStringCallback) {
+    playlistSearchInput.value = "";
     playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
     playlistOrder.classList.add(config.CSS.CLASSES.hide);
     // synchronously assign the currently selected playlist to be this playlist
-    currSelectedPlaylist.playlist = playlistObj;
+    currSelPlaylist.playlist = playlistObj;
     // it hasn't loaded its tracks
-    currSelectedPlaylist.loadedTracks = false;
+    currSelPlaylist.loadedTracks = false;
 
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
@@ -123,11 +124,11 @@ const informationRetrieval = (function () {
       .then((tracks) => {
         // because .then() can run when currently selected playlist has already changed we need this if statement.
         // if the tracks have been loaded but they aren't from the currently selected playlist return.
-        if (playlistObj !== currSelectedPlaylist.playlist) {
+        if (playlistObj !== currSelPlaylist.playlist) {
           return;
         }
         // if they're the same object but its already been loaded then dont load it again.
-        else if (currSelectedPlaylist.loadedTracks) {
+        else if (currSelPlaylist.loadedTracks) {
           return;
         }
         // this does not run synchronously
@@ -141,7 +142,7 @@ const informationRetrieval = (function () {
               .join("")}`;
         htmlStringCallback(htmlString);
 
-        currSelectedPlaylist.loadedTracks = true;
+        currSelPlaylist.loadedTracks = true;
       })
       .catch((err) => {
         console.log("Error when getting tracks");
@@ -187,7 +188,7 @@ const informationRetrieval = (function () {
   }
   function addOnPlaylistClick() {
     function onPlaylistElementClick(playlistEl) {
-      if (currSelectedPlaylistEl === playlistEl) {
+      if (currSelPlaylistEl === playlistEl) {
         return;
       }
       // get corrosponding playlist object using the elements id
@@ -195,13 +196,13 @@ const informationRetrieval = (function () {
         (x) => x.playlistElementId === playlistEl.id
       );
       // if there is an existing playlist selected, unselect it
-      if (currSelectedPlaylistEl) {
-        currSelectedPlaylistEl.classList.remove(config.CSS.CLASSES.selected);
+      if (currSelPlaylistEl) {
+        currSelPlaylistEl.classList.remove(config.CSS.CLASSES.selected);
       }
 
       // make the currently selected playlist this playlist and select it.
-      currSelectedPlaylistEl = playlistEl;
-      selectPlaylist(currSelectedPlaylistEl, playlistObj);
+      currSelPlaylistEl = playlistEl;
+      selectPlaylist(currSelPlaylistEl, playlistObj);
     }
 
     let playlists = Array.from(
