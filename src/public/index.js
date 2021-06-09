@@ -45,6 +45,7 @@ async function obtainTokens() {
     })
     .catch((err) => {
       console.error(err);
+      throw new Error("Error Occured in axios req");
     });
 
   if (hasToken) {
@@ -67,6 +68,7 @@ async function obtainTokens() {
       .then(() => (hasToken = true))
       .catch((err) => {
         console.error(err);
+        throw new Error("Error Occured in axios req");
       });
     authCode = "";
   } else {
@@ -276,7 +278,11 @@ function orderTracksByName(tracks) {
     let nameBTxt = nameB.textContent || nameB.innerText;
 
     // -1 precedes, 1 suceeds, 0 is equal
-    return nameATxt === nameBTxt ? 0 : nameATxt < nameBTxt ? -1 : 1;
+    return nameATxt.toUpperCase() === nameBTxt.toUpperCase()
+      ? 0
+      : nameATxt.toUpperCase() < nameBTxt.toUpperCase()
+      ? -1
+      : 1;
   });
   return tracksCopy;
 }

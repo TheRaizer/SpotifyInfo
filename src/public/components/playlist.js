@@ -34,6 +34,9 @@ class Playlist {
     let response = await axios
       .get(config.URLs.getPlaylistTracks + this.id)
       .catch((err) => console.error(err));
+    if (!response) {
+      return [];
+    }
     let tracksData = response.data;
     var trackObjs = [];
     tracksData.forEach((data) => {
