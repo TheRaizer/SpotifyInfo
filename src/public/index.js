@@ -10,6 +10,9 @@ const playlistOrder = expandedPlaylistMods.getElementsByClassName(
   config.CSS.CLASSES.playlistOrder
 )[0];
 const trackListUl = expandedPlaylistMods.getElementsByTagName("ul")[0];
+const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
+  config.CSS.CLASSES.playlistSearch
+)[0];
 
 function createSpotifyLoginButton(changeAccount = false) {
   // Create anchor element.
@@ -77,6 +80,9 @@ async function obtainTokens() {
   return hasToken;
 }
 
+// order of items should never change
+var expandablePlaylistTracks = [];
+
 const informationRetrieval = (function () {
   const playlistsContainer = document.getElementById(
     config.CSS.IDs.playlistCardsContainer
@@ -84,16 +90,21 @@ const informationRetrieval = (function () {
   const tracksContainer = document.getElementById(
     config.CSS.IDs.trackCardsContainer
   );
+  const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
+  const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
   const playlistObjs = [];
   const topTrackObjs = [];
   var currSelectedPlaylistEl = null;
 
   function loadPlaylistTracksToHtmlString(playlistObj, htmlStringCallback) {
+    playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
+    playlistOrder.classList.add(config.CSS.CLASSES.hide);
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
       .getTracks()
       .then((tracks) => {
         console.log("loaded tracks");
+        expandablePlaylistTracks = tracks;
         // overwrite the previous songlist with the current one
         const htmlString = `
             ${tracks
@@ -101,7 +112,6 @@ const informationRetrieval = (function () {
                 return track.getPlaylistTrackHtml();
               })
               .join("")}`;
-
         htmlStringCallback(htmlString);
       })
       .catch((err) => {
@@ -110,8 +120,18 @@ const informationRetrieval = (function () {
       });
   }
 
-  const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
-  const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
+  function whenTracksLoading() {
+    // hide these while loading tracks
+    playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
+    playlistOrder.classList.add(config.CSS.CLASSES.hide);
+  }
+
+  function onTracksLoadingDone() {
+    // show them once tracks have loaded
+    playlistSearchInput.classList.remove(config.CSS.CLASSES.hide);
+    playlistOrder.classList.remove(config.CSS.CLASSES.hide);
+  }
+
   function showExpandedPlaylist(playlistObj) {
     playlistTitleh2.textContent = playlistObj.name;
 
@@ -124,10 +144,11 @@ const informationRetrieval = (function () {
     trackListUl.innerHTML = htmlString;
     expandedPlaylistMods.classList.add(config.CSS.CLASSES.appear);
     modsSection.classList.add(config.CSS.CLASSES.appear);
-
+    whenTracksLoading();
     loadPlaylistTracksToHtmlString(playlistObj, (loadedHtmlString) => {
       trackListUl.innerHTML = loadedHtmlString;
-      sortTracksToOrder(trackListUl);
+      sortTracksToOrder();
+      onTracksLoadingDone();
     });
     console.log("synchronously after running load tracks");
   }
@@ -242,9 +263,12 @@ function searchUl(ul, input, stdDisplay = "grid") {
   }
 }
 
-function orderByNameUl(ul) {
-  let tracksLi = Array.from(ul.getElementsByTagName("li"));
-  tracksLi.sort(function (a, b) {
+function orderTracksByName(tracks) {
+  // shallow copy just so we dont modify the original order
+  let tracksCopy = [...tracks];
+  tracksCopy.sort(function (a, b) {
+    a = new DOMParser().parseFromString(a.getPlaylistTrackHtml(), "text/html");
+    b = new DOMParser().parseFromString(b.getPlaylistTrackHtml(), "text/html");
     let nameA = a.getElementsByClassName(config.CSS.CLASSES.name)[0];
     let nameATxt = nameA.textContent || nameA.innerText;
 
@@ -254,7 +278,7 @@ function orderByNameUl(ul) {
     // -1 precedes, 1 suceeds, 0 is equal
     return nameATxt === nameBTxt ? 0 : nameATxt < nameBTxt ? -1 : 1;
   });
-  return tracksLi;
+  return tracksCopy;
 }
 
 // create custom promise
@@ -342,10 +366,12 @@ This is done on set intervals.
   };
 })();
 
-function sortTracksToOrder(trackListUl) {
+function sortTracksToOrder() {
   if (playlistOrder.value == "name") {
-    let tracksLi = orderByNameUl(trackListUl);
+    let tracksLi = orderTracksByName(expandablePlaylistTracks);
     rerenderPlaylistTracks(tracksLi, trackListUl);
+  } else if (playlistOrder.value == "custom-order") {
+    rerenderPlaylistTracks(expandablePlaylistTracks, trackListUl);
   }
 }
 
@@ -353,7 +379,7 @@ function rerenderPlaylistTracks(tracksLi, trackListUl) {
   const htmlString = `
             ${tracksLi
               .map((trackLi) => {
-                return trackLi.outerHTML;
+                return trackLi.getPlaylistTrackHtml();
               })
               .join("")}`;
   trackListUl.innerHTML = htmlString;
@@ -406,9 +432,6 @@ const addEventListeners = (function () {
     expandedPlaylistMods
       .getElementsByClassName(config.CSS.CLASSES.playlistSearch)[0]
       .addEventListener("keyup", () => {
-        const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
-          config.CSS.CLASSES.playlistSearch
-        )[0];
         searchUl(trackListUl, playlistSearchInput);
       });
   }
@@ -419,9 +442,7 @@ const addEventListeners = (function () {
       config.CSS.CLASSES.playlistOrder
     )[0];
     playlistOrder.addEventListener("change", () => {
-      if (playlistOrder.value == "name") {
-        sortTracksToOrder(trackListUl);
-      }
+      sortTracksToOrder();
     });
   }
 
