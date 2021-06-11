@@ -131,7 +131,6 @@ const informationRetrieval = (function () {
         else if (currSelPlaylist.loadedTracks) {
           return;
         }
-        // this does not run synchronously
         expandablePlaylistTracks = tracks;
         // overwrite the previous songlist with the current one
         const htmlString = `
@@ -314,6 +313,20 @@ function orderTracksByName(tracks) {
   return tracksCopy;
 }
 
+function orderTracksByDateAdded(tracks) {
+  // shallow copy just so we dont modify the original order
+  let tracksCopy = [...tracks];
+  tracksCopy.sort(function (a, b) {
+    // -1 'a' precedes 'b', 1 'a' suceeds 'b', 0 is 'a' equal 'b'
+    return a.dateAddedToPlaylist === b.dateAddedToPlaylist
+      ? 0
+      : a.dateAddedToPlaylist < b.dateAddedToPlaylist
+      ? -1
+      : 1;
+  });
+  return tracksCopy;
+}
+
 // create custom promise
 async function stall(stallTime = 3000) {
   await new Promise((resolve) => setTimeout(resolve, stallTime));
@@ -399,91 +412,95 @@ This is done on set intervals.
 })();
 
 function sortTracksToOrder() {
-  if (playlistOrder.value == "name") {
-    let tracksLi = orderTracksByName(expandablePlaylistTracks);
-    rerenderPlaylistTracks(tracksLi, trackListUl);
-  } else if (playlistOrder.value == "custom-order") {
+  if (playlistOrder.value == "custom-order") {
     rerenderPlaylistTracks(expandablePlaylistTracks, trackListUl);
+  } else if (playlistOrder.value == "name") {
+    let tracks = orderTracksByName(expandablePlaylistTracks);
+    rerenderPlaylistTracks(tracks, trackListUl);
+  } else if (playlistOrder.value == "date-added") {
+    let tracks = orderTracksByDateAdded(expandablePlaylistTracks);
+    rerenderPlaylistTracks(tracks, trackListUl);
   }
 }
 
-function rerenderPlaylistTracks(tracksLi, trackListUl) {
+function rerenderPlaylistTracks(tracks, trackListUl) {
   const htmlString = `
-            ${tracksLi
-              .map((trackLi) => {
-                return trackLi.getPlaylistTrackHtml();
+            ${tracks
+              .map((track) => {
+                return track.getPlaylistTrackHtml();
               })
               .join("")}`;
   trackListUl.innerHTML = htmlString;
 }
 
-// intersection observer is a nice way to find whether an element is in the viewport
-// in this case once we know it's in the viewport we also animate elements relating to a given class name
+(function () {
+  obtainTokens()
+    .then((hasToken) => {
+      let getTokensSpinner = document.getElementById(
+        config.CSS.IDs.getTokenLoadingSpinner
+      );
 
-obtainTokens()
-  .then((hasToken) => {
-    let getTokensSpinner = document.getElementById(
-      config.CSS.IDs.getTokenLoadingSpinner
-    );
+      // remove token spinner because by this line we have obtained the token
+      getTokensSpinner.parentNode.removeChild(getTokensSpinner);
 
-    // remove token spinner because by this line we have obtained the token
-    getTokensSpinner.parentNode.removeChild(getTokensSpinner);
+      const infoContainer = document.getElementById(
+        config.CSS.IDs.infoContainer
+      );
+      const allowAccessHeader = document.getElementById(
+        config.CSS.IDs.allowAccessHeader
+      );
+      if (hasToken) {
+        // if there is a token remove the allow access header from DOM
+        allowAccessHeader.parentNode.removeChild(allowAccessHeader);
+        createSpotifyLoginButton(true);
+        infoContainer.style.display = "block";
 
-    const infoContainer = document.getElementById(config.CSS.IDs.infoContainer);
-    const allowAccessHeader = document.getElementById(
-      config.CSS.IDs.allowAccessHeader
-    );
-    if (hasToken) {
-      // if there is a token remove the allow access header from DOM
-      allowAccessHeader.parentNode.removeChild(allowAccessHeader);
-      createSpotifyLoginButton(true);
-      infoContainer.style.display = "block";
+        // render and get information
+        informationRetrieval
+          .getInformation()
+          .then(() => {
+            // Run .then() when information has been obtained and innerhtml has been changed
+            animationControl.addAnimateOnScroll();
+          })
+          .catch((err) => {
+            console.log("Problem when getting information");
+            console.error(err);
+          });
+      } else {
+        // if there is no token show the allow access header and hide the info
+        allowAccessHeader.style.display = "block";
+        infoContainer.style.display = "none";
+      }
+    })
+    .catch((err) => console.error(err));
 
-      // render and get information
-      informationRetrieval
-        .getInformation()
-        .then(() => {
-          // Run .then() when information has been obtained and innerhtml has been changed
-          animationControl.addAnimateOnScroll();
-        })
-        .catch((err) => {
-          console.log("Problem when getting information");
-          console.error(err);
+  const addEventListeners = (function () {
+    function addExpandedPlaylistModsSearchbarEvent() {
+      // add key up event to the mods expanded playlist's search bar element
+      expandedPlaylistMods
+        .getElementsByClassName(config.CSS.CLASSES.playlistSearch)[0]
+        .addEventListener("keyup", () => {
+          searchUl(trackListUl, playlistSearchInput);
         });
-    } else {
-      // if there is no token show the allow access header and hide the info
-      allowAccessHeader.style.display = "block";
-      infoContainer.style.display = "none";
     }
-  })
-  .catch((err) => console.error(err));
 
-const addEventListeners = (function () {
-  function addExpandedPlaylistModsSearchbarEvent() {
-    // add key up event to the mods expanded playlist's search bar element
-    expandedPlaylistMods
-      .getElementsByClassName(config.CSS.CLASSES.playlistSearch)[0]
-      .addEventListener("keyup", () => {
-        searchUl(trackListUl, playlistSearchInput);
+    function addExpandedPlaylistModsOrderEvent() {
+      // add on change event listener to the order selection element of the mods expanded playlist
+      const playlistOrder = expandedPlaylistMods.getElementsByClassName(
+        config.CSS.CLASSES.playlistOrder
+      )[0];
+      playlistOrder.addEventListener("change", () => {
+        sortTracksToOrder();
       });
-  }
+    }
 
-  function addExpandedPlaylistModsOrderEvent() {
-    // add on change event listener to the order selection element of the mods expanded playlist
-    const playlistOrder = expandedPlaylistMods.getElementsByClassName(
-      config.CSS.CLASSES.playlistOrder
-    )[0];
-    playlistOrder.addEventListener("change", () => {
-      sortTracksToOrder();
-    });
-  }
+    return {
+      addExpandedPlaylistModsSearchbarEvent:
+        addExpandedPlaylistModsSearchbarEvent,
+      addExpandedPlaylistModsOrderEvent: addExpandedPlaylistModsOrderEvent,
+    };
+  })();
 
-  return {
-    addExpandedPlaylistModsSearchbarEvent:
-      addExpandedPlaylistModsSearchbarEvent,
-    addExpandedPlaylistModsOrderEvent: addExpandedPlaylistModsOrderEvent,
-  };
+  addEventListeners.addExpandedPlaylistModsSearchbarEvent();
+  addEventListeners.addExpandedPlaylistModsOrderEvent();
 })();
-
-addEventListeners.addExpandedPlaylistModsSearchbarEvent();
-addEventListeners.addExpandedPlaylistModsOrderEvent();

@@ -7,6 +7,9 @@ The data-class-to-animate element is passed into the intersection observer where
 The observer will extract the data-class-to-animate attribute which will give it the classes that should be animated in set Intervals.
 
 
+Terminal functions: cd src, node server.
+In ubuntu Terminal: sudo service redis-server start or (sudo service redis-server stop) or (sudo service redis-server restart) 
+
 
 note to self about async functionality:
     loadPlaylistTracksToHtmlString() explanation:

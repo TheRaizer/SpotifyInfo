@@ -1,10 +1,14 @@
 import { config, millisToMinutesAndSeconds } from "../config.js";
 
 class Track {
-  constructor(name, images, duration, dateAdded = "") {
+  constructor(name, images, duration, dateAddedToPlaylist = "") {
     this.name = name;
     this.images = images;
-    this.dateAdded = dateAdded;
+    if (dateAddedToPlaylist) {
+      this.dateAddedToPlaylist = new Date(dateAddedToPlaylist);
+    } else {
+      this.dateAddedToPlaylist = "";
+    }
 
     if (this.images.length > 0) {
       let img = this.images[0];
@@ -37,8 +41,11 @@ class Track {
     return `
             <li class="${config.CSS.CLASSES.playlistTrack}">
               <img src="${this.url}"></img>
-              <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${config.CSS.CLASSES.name}">${this.name}</h4>
+              <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
+      config.CSS.CLASSES.name
+    }">${this.name}</h4>
               <h5>${this.duration}</h5>
+              <h5>${this.dateAddedToPlaylist.toLocaleDateString()}</h5>
             </li>
             `;
   }

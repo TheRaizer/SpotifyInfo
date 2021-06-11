@@ -201,9 +201,9 @@ section {
 }
 
 .sticky-area {
+  height: fit-content;
   display: grid;
   grid-row: 1;
-  height: fit-content;
 
   align-content: center;
   justify-content: center;
@@ -226,7 +226,7 @@ section {
 }
 
 .expanded-playlist>.sticky-area {
-  grid-template-columns: minmax(auto, 60%) minmax(auto, 15%) minmax(auto, 25%);
+  grid-template-columns: minmax(auto, 60%) minmax(auto, 20%) minmax(auto, 25%);
 }
 
 .expanded-playlist>ul {
@@ -237,7 +237,7 @@ section {
   background-color: #1b1b1b;
   color: rgb(216, 216, 216);
   margin-right: 5%;
-  margin-top: 38%;
+  margin-top: 30%;
   height: 30%;
 }
 
@@ -254,7 +254,7 @@ section {
   margin-bottom: 1%;
 
   display: grid;
-  grid-template-columns: minmax(auto, 10%) minmax(auto, 30%) minmax(auto, 40%);
+  grid-template-columns: minmax(auto, 10%) minmax(auto, 30%) minmax(auto, 20%) minmax(auto, 40%);
   grid-row: 1;
 
   text-align: left;
