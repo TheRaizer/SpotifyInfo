@@ -264,7 +264,7 @@ const informationRetrieval = (function () {
     });
     topTrackDatas.forEach((data) => {
       topTrackObjs.push(
-        new Track(data.name, data.album.images, data.duration_ms)
+        new Track(data.name, data.album.images, data.uri, data.duration_ms)
       );
     });
 
@@ -272,7 +272,8 @@ const informationRetrieval = (function () {
     displayTrackCards(topTrackObjs);
   }
   return {
-    getInformation: getInformation,
+    getInformation,
+    currSelPlaylist,
   };
 })();
 
@@ -406,7 +407,7 @@ This is done on set intervals.
     appearOnScrollObserver.observe(tracksArea);
   }
   return {
-    addAnimateOnScroll: addAnimateOnScroll,
+    addAnimateOnScroll,
     intervalElementsTransitions,
   };
 })();
@@ -433,6 +434,52 @@ function rerenderPlaylistTracks(tracks, trackListUl) {
   trackListUl.innerHTML = htmlString;
 }
 
+const addEventListeners = (function () {
+  function addExpandedPlaylistModsSearchbarEvent() {
+    // add key up event to the mods expanded playlist's search bar element
+    expandedPlaylistMods
+      .getElementsByClassName(config.CSS.CLASSES.playlistSearch)[0]
+      .addEventListener("keyup", () => {
+        searchUl(trackListUl, playlistSearchInput);
+      });
+  }
+
+  function addExpandedPlaylistModsOrderEvent() {
+    // add on change event listener to the order selection element of the mods expanded playlist
+    const playlistOrder = expandedPlaylistMods.getElementsByClassName(
+      config.CSS.CLASSES.playlistOrder
+    )[0];
+    playlistOrder.addEventListener("change", () => {
+      sortTracksToOrder();
+    });
+  }
+
+  function addDeleteRecentlyAddedEvent() {
+    const removeBtn = document
+      .getElementById("remove-early-added")
+      .getElementsByTagName("button")[0];
+    removeBtn.addEventListener("click", () => {
+      let trackToRemove = expandablePlaylistTracks.pop();
+      rerenderPlaylistTracks(expandablePlaylistTracks, trackListUl);
+      console.log(informationRetrieval.currSelPlaylist.playlist.id);
+      promiseHandler(
+        axios.delete(
+          config.URLs.deletePlaylistTracks +
+            informationRetrieval.currSelPlaylist.playlist.id,
+          {
+            data: { tracks: [trackToRemove] },
+          }
+        )
+      );
+    });
+  }
+
+  return {
+    addExpandedPlaylistModsSearchbarEvent,
+    addExpandedPlaylistModsOrderEvent,
+    addDeleteRecentlyAddedEvent,
+  };
+})();
 (function () {
   obtainTokens()
     .then((hasToken) => {
@@ -474,33 +521,7 @@ function rerenderPlaylistTracks(tracks, trackListUl) {
     })
     .catch((err) => console.error(err));
 
-  const addEventListeners = (function () {
-    function addExpandedPlaylistModsSearchbarEvent() {
-      // add key up event to the mods expanded playlist's search bar element
-      expandedPlaylistMods
-        .getElementsByClassName(config.CSS.CLASSES.playlistSearch)[0]
-        .addEventListener("keyup", () => {
-          searchUl(trackListUl, playlistSearchInput);
-        });
-    }
-
-    function addExpandedPlaylistModsOrderEvent() {
-      // add on change event listener to the order selection element of the mods expanded playlist
-      const playlistOrder = expandedPlaylistMods.getElementsByClassName(
-        config.CSS.CLASSES.playlistOrder
-      )[0];
-      playlistOrder.addEventListener("change", () => {
-        sortTracksToOrder();
-      });
-    }
-
-    return {
-      addExpandedPlaylistModsSearchbarEvent:
-        addExpandedPlaylistModsSearchbarEvent,
-      addExpandedPlaylistModsOrderEvent: addExpandedPlaylistModsOrderEvent,
-    };
-  })();
-
   addEventListeners.addExpandedPlaylistModsSearchbarEvent();
   addEventListeners.addExpandedPlaylistModsOrderEvent();
+  addEventListeners.addDeleteRecentlyAddedEvent();
 })();

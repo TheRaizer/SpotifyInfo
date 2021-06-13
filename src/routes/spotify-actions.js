@@ -93,3 +93,29 @@ router.get("/get-playlist-tracks", async function (req, res, next) {
       next(err);
     });
 });
+
+router.delete("/delete-playlist-items", async function (req, res, next) {
+  var playlistId = req.query.playlist_id;
+  let trackObjs = req.body.tracks;
+  const uriData = [];
+
+  for (let i = 0; i < trackObjs.length; i++) {
+    let track = trackObjs[i];
+    uriData.push({ uri: track.uri });
+  }
+
+  await axios({
+    method: "delete",
+    url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    headers: spotifyGetHeaders(req),
+    data: { tracks: uriData },
+  })
+    .then(function () {
+      res.send("Success");
+    })
+    .catch((err) => {
+      console.error(err);
+      // run next to pass this error down to a middleware that will handle it
+      next(err);
+    });
+});

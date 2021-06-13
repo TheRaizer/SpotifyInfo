@@ -1,7 +1,7 @@
 import { config, millisToMinutesAndSeconds } from "../config.js";
 
 class Track {
-  constructor(name, images, duration, dateAddedToPlaylist = "") {
+  constructor(name, images, duration, uri, dateAddedToPlaylist = "") {
     this.name = name;
     this.images = images;
     if (dateAddedToPlaylist) {
@@ -12,12 +12,13 @@ class Track {
 
     if (this.images.length > 0) {
       let img = this.images[0];
-      this.url = img.url;
+      this.imgURL = img.url;
     } else {
-      this.url = "";
+      this.imgURL = "";
     }
 
     this.duration = millisToMinutesAndSeconds(duration);
+    this.uri = uri;
   }
 
   getTrackCardHtml(idx) {
@@ -31,7 +32,7 @@ class Track {
 
     return `
             <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.track}" id="${id}">
-              <img src="${this.url}"></img>
+              <img src="${this.imgURL}"></img>
               <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
             </button>
           `;
@@ -40,7 +41,7 @@ class Track {
   getPlaylistTrackHtml() {
     return `
             <li class="${config.CSS.CLASSES.playlistTrack}">
-              <img src="${this.url}"></img>
+              <img src="${this.imgURL}"></img>
               <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.name
     }">${this.name}</h4>

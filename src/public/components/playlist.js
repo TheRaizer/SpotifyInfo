@@ -48,6 +48,7 @@ class Playlist {
             data.track.name,
             data.track.album.images,
             data.track.duration_ms,
+            data.track.uri,
             data.added_at
           )
         );
