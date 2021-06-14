@@ -2,6 +2,7 @@
   --main-bg-color: #191414;
   --expanded-playlist-width: 40vw;
   --expanded-playlist-height: 70vh;
+  --expanded-playlist-border-radius: 10px;
 }
 button,
 input[type="submit"],
@@ -75,7 +76,9 @@ section {
   justify-content: space-around;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, max-content));
-  grid-template-rows: repeat(auto-fit, minmax(230px, max-content));
+
+  /* size of rows that are created due to a wrap/implicitly */
+  grid-auto-rows: minmax(220px, max-content);
   align-self: center;
 }
 
@@ -178,6 +181,7 @@ section {
   color: white;
   width: var(--expanded-playlist-width);
   height: var(--expanded-playlist-height);
+  border-radius: var(--expanded-playlist-border-radius);
 
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -217,6 +221,11 @@ section {
   z-index: 1;
   background: #303030;
   font-weight: 700;
+}
+
+.sticky-area>h2 {
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .ellipsis-wrap {
@@ -278,6 +287,7 @@ section {
   display: grid;
   background-color: #4b4b4b;
   width: var(--expanded-playlist-width);
+  border-radius: var(--expanded-playlist-border-radius);
   height: 10vh;
 
   -webkit-user-select: none;

@@ -462,16 +462,15 @@ const addEventListeners = (function () {
     const removeBtn = document
       .getElementById("remove-early-added")
       .getElementsByTagName("button")[0];
+
     removeBtn.addEventListener("click", () => {
-      if (numToRemoveInput > expandablePlaylistTracks.length) {
+      if (numToRemoveInput.value > expandablePlaylistTracks.length) {
+        console.log("cant remove this many");
         // the user is trying to delete more songs then there are available, you may want to allow this
         return;
       }
       let orderedTracks = orderTracksByDateAdded(expandablePlaylistTracks);
-      let tracksToRemove = orderedTracks.slice(
-        0,
-        parseInt(numToRemoveInput.value)
-      );
+      let tracksToRemove = orderedTracks.slice(0, numToRemoveInput.value);
 
       // remove songs contained in tracksToRemove from expandablePlaylistTracks
       expandablePlaylistTracks = expandablePlaylistTracks.filter(
