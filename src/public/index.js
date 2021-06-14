@@ -455,19 +455,36 @@ const addEventListeners = (function () {
   }
 
   function addDeleteRecentlyAddedEvent() {
+    const numToRemoveInput = document
+      .getElementById("remove-early-added")
+      .getElementsByTagName("input")[0];
+
     const removeBtn = document
       .getElementById("remove-early-added")
       .getElementsByTagName("button")[0];
     removeBtn.addEventListener("click", () => {
-      let trackToRemove = expandablePlaylistTracks.pop();
-      rerenderPlaylistTracks(expandablePlaylistTracks, trackListUl);
-      console.log(informationRetrieval.currSelPlaylist.playlist.id);
+      if (numToRemoveInput > expandablePlaylistTracks.length) {
+        // the user is trying to delete more songs then there are available, you may want to allow this
+        return;
+      }
+      let orderedTracks = orderTracksByDateAdded(expandablePlaylistTracks);
+      let tracksToRemove = orderedTracks.slice(
+        0,
+        parseInt(numToRemoveInput.value)
+      );
+
+      // remove songs contained in tracksToRemove from expandablePlaylistTracks
+      expandablePlaylistTracks = expandablePlaylistTracks.filter(
+        (track) => !tracksToRemove.includes(track)
+      );
+      sortTracksToOrder(expandablePlaylistTracks);
+
       promiseHandler(
         axios.delete(
           config.URLs.deletePlaylistTracks +
             informationRetrieval.currSelPlaylist.playlist.id,
           {
-            data: { tracks: [trackToRemove] },
+            data: { tracks: tracksToRemove },
           }
         )
       );
