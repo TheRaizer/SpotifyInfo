@@ -95,28 +95,18 @@ async function obtainTokens() {
 // order of items should never change
 var expandablePlaylistTracks = [];
 
-const informationRetrieval = (function () {
-  const playlistsContainer = document.getElementById(
-    config.CSS.IDs.playlistCardsContainer
-  );
-  const tracksContainer = document.getElementById(
-    config.CSS.IDs.trackCardsContainer
-  );
+const playlistActions = (function () {
   const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
   const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
-  const playlistObjs = [];
-  const topTrackObjs = [];
-  var currSelPlaylistEl = null;
-  var currSelPlaylist = { playlist: null, loadedTracks: false };
 
   function loadPlaylistTracksToHtmlString(playlistObj, htmlStringCallback) {
     playlistSearchInput.value = "";
     playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
     playlistOrder.classList.add(config.CSS.CLASSES.hide);
     // synchronously assign the currently selected playlist to be this playlist
-    currSelPlaylist.playlist = playlistObj;
+    informationRetrieval.currSelPlaylist.playlist = playlistObj;
     // it hasn't loaded its tracks
-    currSelPlaylist.loadedTracks = false;
+    informationRetrieval.currSelPlaylist.loadedTracks = false;
 
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
@@ -124,11 +114,11 @@ const informationRetrieval = (function () {
       .then((tracks) => {
         // because .then() can run when currently selected playlist has already changed we need this if statement.
         // if the tracks have been loaded but they aren't from the currently selected playlist return.
-        if (playlistObj !== currSelPlaylist.playlist) {
+        if (playlistObj !== informationRetrieval.currSelPlaylist.playlist) {
           return;
         }
         // if they're the same object but its already been loaded then dont load it again.
-        else if (currSelPlaylist.loadedTracks) {
+        else if (informationRetrieval.currSelPlaylist.loadedTracks) {
           return;
         }
         expandablePlaylistTracks = tracks;
@@ -141,26 +131,23 @@ const informationRetrieval = (function () {
               .join("")}`;
         htmlStringCallback(htmlString);
 
-        currSelPlaylist.loadedTracks = true;
+        informationRetrieval.currSelPlaylist.loadedTracks = true;
       })
       .catch((err) => {
         console.log("Error when getting tracks");
         console.error(err);
       });
   }
-
   function whenTracksLoading() {
     // hide these while loading tracks
     playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
     playlistOrder.classList.add(config.CSS.CLASSES.hide);
   }
-
   function onTracksLoadingDone() {
     // show them once tracks have loaded
     playlistSearchInput.classList.remove(config.CSS.CLASSES.hide);
     playlistOrder.classList.remove(config.CSS.CLASSES.hide);
   }
-
   function showExpandedPlaylist(playlistObj) {
     playlistTitleh2.textContent = playlistObj.name;
 
@@ -176,7 +163,7 @@ const informationRetrieval = (function () {
     whenTracksLoading();
     loadPlaylistTracksToHtmlString(playlistObj, (loadedHtmlString) => {
       trackListUl.innerHTML = loadedHtmlString;
-      sortTracksToOrder();
+      manageTracks.sortTracksToOrder();
       onTracksLoadingDone();
     });
   }
@@ -185,8 +172,9 @@ const informationRetrieval = (function () {
     playlistEl.classList.add(config.CSS.CLASSES.selected);
     showExpandedPlaylist(playlistObj);
   }
-  function addOnPlaylistClick() {
-    function onPlaylistElementClick(playlistEl) {
+  function addOnPlaylistClick(playlistObjs) {
+    var currSelPlaylistEl = null;
+    function onPlaylistElementClick(playlistEl, playlistObjs) {
       if (currSelPlaylistEl === playlistEl) {
         return;
       }
@@ -210,10 +198,27 @@ const informationRetrieval = (function () {
 
     playlists.forEach((playlistEl) => {
       playlistEl.addEventListener("click", () =>
-        onPlaylistElementClick(playlistEl)
+        onPlaylistElementClick(playlistEl, playlistObjs)
       );
     });
   }
+
+  return {
+    addOnPlaylistClick,
+  };
+})();
+
+const informationRetrieval = (function () {
+  const playlistsContainer = document.getElementById(
+    config.CSS.IDs.playlistCardsContainer
+  );
+  const tracksContainer = document.getElementById(
+    config.CSS.IDs.trackCardsContainer
+  );
+  var currSelPlaylist = { playlist: null, loadedTracks: false };
+  const playlistObjs = [];
+  const topTrackObjs = [];
+
   function displayPlaylistCards(playlistObjs) {
     const htmlString = playlistObjs
       .map((playlistObj, idx) => {
@@ -221,7 +226,7 @@ const informationRetrieval = (function () {
       })
       .join("");
     playlistsContainer.innerHTML = htmlString;
-    addOnPlaylistClick();
+    playlistActions.addOnPlaylistClick(playlistObjs);
   }
   function displayTrackCards(trackObjs) {
     const htmlString = trackObjs
@@ -290,42 +295,6 @@ function searchUl(ul, input, stdDisplay = "grid") {
       tracksLi[i].style.display = "none";
     }
   }
-}
-
-function orderTracksByName(tracks) {
-  // shallow copy just so we dont modify the original order
-  let tracksCopy = [...tracks];
-  tracksCopy.sort(function (a, b) {
-    a = new DOMParser().parseFromString(a.getPlaylistTrackHtml(), "text/html");
-    b = new DOMParser().parseFromString(b.getPlaylistTrackHtml(), "text/html");
-    let nameA = a.getElementsByClassName(config.CSS.CLASSES.name)[0];
-    let nameATxt = nameA.textContent || nameA.innerText;
-
-    let nameB = b.getElementsByClassName(config.CSS.CLASSES.name)[0];
-    let nameBTxt = nameB.textContent || nameB.innerText;
-
-    // -1 precedes, 1 suceeds, 0 is equal
-    return nameATxt.toUpperCase() === nameBTxt.toUpperCase()
-      ? 0
-      : nameATxt.toUpperCase() < nameBTxt.toUpperCase()
-      ? -1
-      : 1;
-  });
-  return tracksCopy;
-}
-
-function orderTracksByDateAdded(tracks) {
-  // shallow copy just so we dont modify the original order
-  let tracksCopy = [...tracks];
-  tracksCopy.sort(function (a, b) {
-    // -1 'a' precedes 'b', 1 'a' suceeds 'b', 0 is 'a' equal 'b'
-    return a.dateAddedToPlaylist === b.dateAddedToPlaylist
-      ? 0
-      : a.dateAddedToPlaylist < b.dateAddedToPlaylist
-      ? -1
-      : 1;
-  });
-  return tracksCopy;
 }
 
 // create custom promise
@@ -412,27 +381,73 @@ This is done on set intervals.
   };
 })();
 
-function sortTracksToOrder() {
-  if (playlistOrder.value == "custom-order") {
-    rerenderPlaylistTracks(expandablePlaylistTracks, trackListUl);
-  } else if (playlistOrder.value == "name") {
-    let tracks = orderTracksByName(expandablePlaylistTracks);
-    rerenderPlaylistTracks(tracks, trackListUl);
-  } else if (playlistOrder.value == "date-added") {
-    let tracks = orderTracksByDateAdded(expandablePlaylistTracks);
-    rerenderPlaylistTracks(tracks, trackListUl);
+const manageTracks = (function () {
+  function sortTracksToOrder() {
+    if (playlistOrder.value == "custom-order") {
+      rerenderPlaylistTracks(expandablePlaylistTracks, trackListUl);
+    } else if (playlistOrder.value == "name") {
+      let tracks = orderTracksByName(expandablePlaylistTracks);
+      rerenderPlaylistTracks(tracks, trackListUl);
+    } else if (playlistOrder.value == "date-added") {
+      let tracks = orderTracksByDateAdded(expandablePlaylistTracks);
+      rerenderPlaylistTracks(tracks, trackListUl);
+    }
   }
-}
+  function orderTracksByName(tracks) {
+    // shallow copy just so we dont modify the original order
+    let tracksCopy = [...tracks];
+    tracksCopy.sort(function (a, b) {
+      a = new DOMParser().parseFromString(
+        a.getPlaylistTrackHtml(),
+        "text/html"
+      );
+      b = new DOMParser().parseFromString(
+        b.getPlaylistTrackHtml(),
+        "text/html"
+      );
+      let nameA = a.getElementsByClassName(config.CSS.CLASSES.name)[0];
+      let nameATxt = nameA.textContent || nameA.innerText;
 
-function rerenderPlaylistTracks(tracks, trackListUl) {
-  const htmlString = `
+      let nameB = b.getElementsByClassName(config.CSS.CLASSES.name)[0];
+      let nameBTxt = nameB.textContent || nameB.innerText;
+
+      // -1 precedes, 1 suceeds, 0 is equal
+      return nameATxt.toUpperCase() === nameBTxt.toUpperCase()
+        ? 0
+        : nameATxt.toUpperCase() < nameBTxt.toUpperCase()
+        ? -1
+        : 1;
+    });
+    return tracksCopy;
+  }
+  function orderTracksByDateAdded(tracks) {
+    // shallow copy just so we dont modify the original order
+    let tracksCopy = [...tracks];
+    tracksCopy.sort(function (a, b) {
+      // -1 'a' precedes 'b', 1 'a' suceeds 'b', 0 is 'a' equal 'b'
+      return a.dateAddedToPlaylist === b.dateAddedToPlaylist
+        ? 0
+        : a.dateAddedToPlaylist < b.dateAddedToPlaylist
+        ? -1
+        : 1;
+    });
+    return tracksCopy;
+  }
+  function rerenderPlaylistTracks(tracks, trackListUl) {
+    const htmlString = `
             ${tracks
               .map((track) => {
                 return track.getPlaylistTrackHtml();
               })
               .join("")}`;
-  trackListUl.innerHTML = htmlString;
-}
+    trackListUl.innerHTML = htmlString;
+  }
+
+  return {
+    sortTracksToOrder,
+    orderTracksByDateAdded,
+  };
+})();
 
 const addEventListeners = (function () {
   function addExpandedPlaylistModsSearchbarEvent() {
@@ -450,10 +465,12 @@ const addEventListeners = (function () {
       config.CSS.CLASSES.playlistOrder
     )[0];
     playlistOrder.addEventListener("change", () => {
-      sortTracksToOrder();
+      manageTracks.sortTracksToOrder();
     });
   }
 
+  //TEST
+  const undoList = [];
   function addDeleteRecentlyAddedEvent() {
     const numToRemoveInput = document
       .getElementById("remove-early-added")
@@ -469,14 +486,20 @@ const addEventListeners = (function () {
         // the user is trying to delete more songs then there are available, you may want to allow this
         return;
       }
-      let orderedTracks = orderTracksByDateAdded(expandablePlaylistTracks);
+      let orderedTracks = manageTracks.orderTracksByDateAdded(
+        expandablePlaylistTracks
+      );
       let tracksToRemove = orderedTracks.slice(0, numToRemoveInput.value);
 
       // remove songs contained in tracksToRemove from expandablePlaylistTracks
       expandablePlaylistTracks = expandablePlaylistTracks.filter(
         (track) => !tracksToRemove.includes(track)
       );
-      sortTracksToOrder(expandablePlaylistTracks);
+
+      //TEST
+      undoList.push(tracksToRemove);
+
+      manageTracks.sortTracksToOrder(expandablePlaylistTracks);
 
       promiseHandler(
         axios.delete(
