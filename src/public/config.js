@@ -68,6 +68,7 @@ export const config = {
     getPlaylistTracks: "/spotify/get-playlist-tracks?playlist_id=",
     postClearTokens: "/tokens/clear-tokens",
     deletePlaylistTracks: "/spotify/delete-playlist-items?playlist_id=",
+    postPlaylistTracks: "/spotify/post-playlist-items?playlist_id=",
   },
 };
 

@@ -120,16 +120,14 @@ router.delete("/delete-playlist-items", async function (req, res, next) {
     });
 });
 
-router.post("/add-playlist-items", async function (req, res, next) {
+router.post("/post-playlist-items", async function (req, res, next) {
   var playlistId = req.query.playlist_id;
-  let trackObjs = req.body.tracks;
+  let trackObjs = req.body.data.tracks;
   const uriData = [];
-
   for (let i = 0; i < trackObjs.length; i++) {
     let track = trackObjs[i];
     uriData.push(track.uri);
   }
-
   await axios({
     method: "post",
     url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,

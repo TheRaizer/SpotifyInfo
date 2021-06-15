@@ -353,6 +353,10 @@ section {
   user-select: none;
 }
 
+#playlist-mods>button {
+  width: 25%;
+}
+
 #playlists-section {
   display: grid;
   grid-template-columns: auto fit-content(800px);

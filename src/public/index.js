@@ -302,12 +302,13 @@ async function stall(stallTime = 3000) {
   await new Promise((resolve) => setTimeout(resolve, stallTime));
 }
 
-// TEST CODE
+// TEST CODE START
 console.log("Start long task");
 stall().then(() => {
   console.log("Finished long task");
 });
 console.log("do other stuff:");
+// TEST CODE END
 
 const animationControl = (function () {
   const animateOptions = {
@@ -458,7 +459,6 @@ const addEventListeners = (function () {
         searchUl(trackListUl, playlistSearchInput);
       });
   }
-
   function addExpandedPlaylistModsOrderEvent() {
     // add on change event listener to the order selection element of the mods expanded playlist
     const playlistOrder = expandedPlaylistMods.getElementsByClassName(
@@ -468,20 +468,13 @@ const addEventListeners = (function () {
       manageTracks.sortTracksToOrder();
     });
   }
-
-  //TEST
   const undoList = [];
-  function addDeleteRecentlyAddedEvent() {
-    const numToRemoveInput = document
-      .getElementById("remove-early-added")
-      .getElementsByTagName("input")[0];
-
-    const removeBtn = document
-      .getElementById("remove-early-added")
-      .getElementsByTagName("button")[0];
-
-    removeBtn.addEventListener("click", () => {
-      if (numToRemoveInput.value > expandablePlaylistTracks.length) {
+  function addDeleteRecentlyAddedTrackEvent() {
+    function onClick() {
+      if (
+        numToRemoveInput.value > expandablePlaylistTracks.length ||
+        numToRemoveInput.value == 0
+      ) {
         console.log("cant remove this many");
         // the user is trying to delete more songs then there are available, you may want to allow this
         return;
@@ -496,8 +489,10 @@ const addEventListeners = (function () {
         (track) => !tracksToRemove.includes(track)
       );
 
-      //TEST
-      undoList.push(tracksToRemove);
+      undoList.push({
+        sourcePlaylistId: informationRetrieval.currSelPlaylist.playlist.id,
+        tracksRemoved: tracksToRemove,
+      });
 
       manageTracks.sortTracksToOrder(expandablePlaylistTracks);
 
@@ -510,13 +505,45 @@ const addEventListeners = (function () {
           }
         )
       );
-    });
+    }
+    const numToRemoveInput = document
+      .getElementById("remove-early-added")
+      .getElementsByTagName("input")[0];
+
+    const removeBtn = document
+      .getElementById("remove-early-added")
+      .getElementsByTagName("button")[0];
+
+    removeBtn.addEventListener("click", () => onClick());
+  }
+  function addUndoPlaylistTrackDeleteEvent() {
+    function onClick() {
+      if (undoList.length == 0) {
+        return;
+      }
+      let actionResult = undoList.pop();
+      console.log(actionResult);
+      promiseHandler(
+        axios.post(
+          config.URLs.postPlaylistTracks + actionResult.sourcePlaylistId,
+          {
+            data: { tracks: actionResult.tracksRemoved },
+          }
+        )
+      );
+    }
+    const undoBtn = document
+      .getElementById("playlist-mods")
+      .getElementsByTagName("button")[0];
+
+    undoBtn.addEventListener("click", () => onClick());
   }
 
   return {
     addExpandedPlaylistModsSearchbarEvent,
     addExpandedPlaylistModsOrderEvent,
-    addDeleteRecentlyAddedEvent,
+    addDeleteRecentlyAddedTrackEvent,
+    addUndoPlaylistTrackDeleteEvent,
   };
 })();
 (function () {
@@ -562,5 +589,6 @@ const addEventListeners = (function () {
 
   addEventListeners.addExpandedPlaylistModsSearchbarEvent();
   addEventListeners.addExpandedPlaylistModsOrderEvent();
-  addEventListeners.addDeleteRecentlyAddedEvent();
+  addEventListeners.addDeleteRecentlyAddedTrackEvent();
+  addEventListeners.addUndoPlaylistTrackDeleteEvent();
 })();
