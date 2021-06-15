@@ -31,7 +31,6 @@ export const config = {
       trackCardsContainer: "track-cards-container",
       playlistPrefix: "playlist-",
       trackPrefix: "track-",
-      loginButton: "spotify-login",
       spotifyContainer: "spotify-container",
       infoContainer: "info-container",
       allowAccessHeader: "allow-access-header",
@@ -39,6 +38,7 @@ export const config = {
       playlistMods: "playlist-mods",
     },
     CLASSES: {
+      glow: "glow",
       playlist: "playlist",
       track: "track",
       playlistTrack: "playlist-track",

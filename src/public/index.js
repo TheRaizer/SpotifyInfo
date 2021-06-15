@@ -16,23 +16,23 @@ const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
 
 function createSpotifyLoginButton(changeAccount = false) {
   // Create anchor element.
-  let div = document.createElement("div");
+  let btn = document.createElement("button");
   // Create the text node for anchor element.
   let link = document.createTextNode(
     changeAccount ? "Change Account" : "Login To Spotify"
   );
   // Append the text node to anchor element.
-  div.appendChild(link);
-  div.id = config.CSS.IDs.loginButton;
+  btn.appendChild(link);
+  btn.classList.add(config.CSS.CLASSES.glow);
 
   // clear current tokens when clicked
-  div.addEventListener("click", () => {
+  btn.addEventListener("click", () => {
     axios.post(config.URLs.postClearTokens).catch((err) => console.error(err));
     window.location.href = config.URLs.auth;
   });
 
   // Append the anchor element to the body.
-  document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(div);
+  document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(btn);
 }
 
 async function promiseHandler(
