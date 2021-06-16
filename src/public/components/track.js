@@ -18,6 +18,8 @@ class Track {
     }
 
     this.duration = millisToMinutesAndSeconds(duration);
+
+    // either the normal uri, or the linked_from.uri
     this.uri = uri;
   }
 

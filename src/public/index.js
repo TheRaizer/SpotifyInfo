@@ -106,7 +106,7 @@ const playlistActions = (function () {
     // synchronously assign the currently selected playlist to be this playlist
     informationRetrieval.currSelPlaylist.playlist = playlistObj;
     // it hasn't loaded its tracks
-    informationRetrieval.currSelPlaylist.loadedTracks = false;
+    informationRetrieval.currSelPlaylist.hasLoadedTracks = false;
 
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
@@ -118,7 +118,7 @@ const playlistActions = (function () {
           return;
         }
         // if they're the same object but its already been loaded then dont load it again.
-        else if (informationRetrieval.currSelPlaylist.loadedTracks) {
+        else if (informationRetrieval.currSelPlaylist.hasLoadedTracks) {
           return;
         }
         expandablePlaylistTracks = tracks;
@@ -131,7 +131,7 @@ const playlistActions = (function () {
               .join("")}`;
         htmlStringCallback(htmlString);
 
-        informationRetrieval.currSelPlaylist.loadedTracks = true;
+        informationRetrieval.currSelPlaylist.hasLoadedTracks = true;
       })
       .catch((err) => {
         console.log("Error when getting tracks");
@@ -163,7 +163,7 @@ const playlistActions = (function () {
     whenTracksLoading();
     loadPlaylistTracksToHtmlString(playlistObj, (loadedHtmlString) => {
       trackListUl.innerHTML = loadedHtmlString;
-      manageTracks.sortTracksToOrder();
+      manageTracks.sortExpandedTracksToOrder();
       onTracksLoadingDone();
     });
   }
@@ -215,7 +215,7 @@ const informationRetrieval = (function () {
   const tracksContainer = document.getElementById(
     config.CSS.IDs.trackCardsContainer
   );
-  var currSelPlaylist = { playlist: null, loadedTracks: false };
+  var currSelPlaylist = { playlist: null, hasLoadedTracks: false };
   const playlistObjs = [];
   const topTrackObjs = [];
 
@@ -269,7 +269,12 @@ const informationRetrieval = (function () {
     });
     topTrackDatas.forEach((data) => {
       topTrackObjs.push(
-        new Track(data.name, data.album.images, data.uri, data.duration_ms)
+        new Track(
+          data.name,
+          data.album.images,
+          data.linked_from !== undefined ? data.linked_from.uri : data.uri,
+          data.duration_ms
+        )
       );
     });
 
@@ -383,7 +388,7 @@ This is done on set intervals.
 })();
 
 const manageTracks = (function () {
-  function sortTracksToOrder() {
+  function sortExpandedTracksToOrder() {
     if (playlistOrder.value == "custom-order") {
       rerenderPlaylistTracks(expandablePlaylistTracks, trackListUl);
     } else if (playlistOrder.value == "name") {
@@ -445,7 +450,7 @@ const manageTracks = (function () {
   }
 
   return {
-    sortTracksToOrder,
+    sortExpandedTracksToOrder,
     orderTracksByDateAdded,
   };
 })();
@@ -465,10 +470,9 @@ const addEventListeners = (function () {
       config.CSS.CLASSES.playlistOrder
     )[0];
     playlistOrder.addEventListener("change", () => {
-      manageTracks.sortTracksToOrder();
+      manageTracks.sortExpandedTracksToOrder();
     });
   }
-  const undoList = [];
   function addDeleteRecentlyAddedTrackEvent() {
     function onClick() {
       if (
@@ -489,21 +493,16 @@ const addEventListeners = (function () {
         (track) => !tracksToRemove.includes(track)
       );
 
-      undoList.push({
-        sourcePlaylistId: informationRetrieval.currSelPlaylist.playlist.id,
-        tracksRemoved: tracksToRemove,
-      });
+      let currPlaylist = informationRetrieval.currSelPlaylist.playlist;
 
-      manageTracks.sortTracksToOrder(expandablePlaylistTracks);
+      currPlaylist.addToUndoList(tracksToRemove);
+
+      manageTracks.sortExpandedTracksToOrder(expandablePlaylistTracks);
 
       promiseHandler(
-        axios.delete(
-          config.URLs.deletePlaylistTracks +
-            informationRetrieval.currSelPlaylist.playlist.id,
-          {
-            data: { tracks: tracksToRemove },
-          }
-        )
+        axios.delete(config.URLs.deletePlaylistTracks + currPlaylist.id, {
+          data: { tracks: tracksToRemove },
+        })
       );
     }
     const numToRemoveInput = document
@@ -518,18 +517,29 @@ const addEventListeners = (function () {
   }
   function addUndoPlaylistTrackDeleteEvent() {
     function onClick() {
-      if (undoList.length == 0) {
+      const currPlaylist = informationRetrieval.currSelPlaylist.playlist;
+      const undonePlaylistId = currPlaylist.id;
+      if (currPlaylist.undoList.length == 0) {
         return;
       }
-      let actionResult = undoList.pop();
-      console.log(actionResult);
+      let tracksRemoved = currPlaylist.undoList.pop();
       promiseHandler(
-        axios.post(
-          config.URLs.postPlaylistTracks + actionResult.sourcePlaylistId,
-          {
-            data: { tracks: actionResult.tracksRemoved },
+        axios.post(config.URLs.postPlaylistTracks + currPlaylist.id, {
+          data: { tracks: tracksRemoved },
+        }),
+        () => {
+          // if the request was succesful and the user is
+          // still looking at the playlist that was undone back, rerender it.
+          if (
+            undonePlaylistId == informationRetrieval.currSelPlaylist.playlist.id
+          ) {
+            tracksRemoved.forEach((track) =>
+              expandablePlaylistTracks.push(track)
+            );
+
+            manageTracks.sortExpandedTracksToOrder();
           }
-        )
+        }
       );
     }
     const undoBtn = document

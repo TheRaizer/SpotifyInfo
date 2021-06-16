@@ -6,9 +6,13 @@ class Playlist {
     this.images = images;
     this.name = name;
     this.id = id;
-
+    this.undoList = [];
     // the id of the playlist card element
     this.playlistElementId = "";
+  }
+
+  addToUndoList(tracks) {
+    this.undoList.push(tracks);
   }
 
   getPlaylistCardHtml(idx) {
@@ -38,6 +42,7 @@ class Playlist {
       return [];
     }
     let tracksData = response.data;
+    console.log(tracksData);
     var trackObjs = [];
 
     tracksData.forEach((data) => {
@@ -48,7 +53,9 @@ class Playlist {
             data.track.name,
             data.track.album.images,
             data.track.duration_ms,
-            data.track.uri,
+            data.track.linked_from !== undefined
+              ? data.track.linked_from.uri
+              : data.track.uri,
             data.added_at
           )
         );
