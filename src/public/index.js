@@ -96,7 +96,6 @@ async function obtainTokens() {
 var expandablePlaylistTracks = [];
 
 const playlistActions = (function () {
-  const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
   const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
 
   function loadPlaylistTracksToHtmlString(playlistObj, htmlStringCallback) {
@@ -158,8 +157,6 @@ const playlistActions = (function () {
             </li>`;
 
     trackListUl.innerHTML = htmlString;
-    expandedPlaylistMods.classList.add(config.CSS.CLASSES.appear);
-    modsSection.classList.add(config.CSS.CLASSES.appear);
     whenTracksLoading();
     loadPlaylistTracksToHtmlString(playlistObj, (loadedHtmlString) => {
       trackListUl.innerHTML = loadedHtmlString;
@@ -205,6 +202,7 @@ const playlistActions = (function () {
 
   return {
     addOnPlaylistClick,
+    showExpandedPlaylist,
   };
 })();
 
@@ -533,11 +531,10 @@ const addEventListeners = (function () {
           if (
             undonePlaylistId == informationRetrieval.currSelPlaylist.playlist.id
           ) {
-            tracksRemoved.forEach((track) =>
-              expandablePlaylistTracks.push(track)
+            // reload the playlist after adding tracks in order to show the tracks added back
+            playlistActions.showExpandedPlaylist(
+              informationRetrieval.currSelPlaylist.playlist
             );
-
-            manageTracks.sortExpandedTracksToOrder();
           }
         }
       );
