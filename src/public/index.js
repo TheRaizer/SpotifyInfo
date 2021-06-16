@@ -527,7 +527,7 @@ const addEventListeners = (function () {
         }),
         () => {
           // if the request was succesful and the user is
-          // still looking at the playlist that was undone back, rerender it.
+          // still looking at the playlist that was undone back, reload it.
           if (
             undonePlaylistId == informationRetrieval.currSelPlaylist.playlist.id
           ) {
@@ -553,6 +553,7 @@ const addEventListeners = (function () {
     addUndoPlaylistTrackDeleteEvent,
   };
 })();
+
 (function () {
   obtainTokens()
     .then((hasToken) => {
