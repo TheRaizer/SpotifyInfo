@@ -504,11 +504,11 @@ const addEventListeners = (function () {
       );
     }
     const numToRemoveInput = document
-      .getElementById("remove-early-added")
+      .getElementById(config.CSS.IDs.removeEarlyAdded)
       .getElementsByTagName("input")[0];
 
     const removeBtn = document
-      .getElementById("remove-early-added")
+      .getElementById(config.CSS.IDs.removeEarlyAdded)
       .getElementsByTagName("button")[0];
 
     removeBtn.addEventListener("click", () => onClick());
@@ -540,7 +540,7 @@ const addEventListeners = (function () {
       );
     }
     const undoBtn = document
-      .getElementById("playlist-mods")
+      .getElementById(config.CSS.IDs.playlistMods)
       .getElementsByTagName("button")[0];
 
     undoBtn.addEventListener("click", () => onClick());
@@ -600,3 +600,42 @@ const addEventListeners = (function () {
   addEventListeners.addDeleteRecentlyAddedTrackEvent();
   addEventListeners.addUndoPlaylistTrackDeleteEvent();
 })();
+
+var ctx = document.getElementById("popularity-chart");
+var myChart = new Chart(ctx, {
+  type: "pie",
+  data: {
+    labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+    datasets: [
+      {
+        label: "Popularity",
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(153, 102, 255, 0.2)",
+          "rgba(255, 159, 64, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+          "rgba(75, 192, 192, 1)",
+          "rgba(153, 102, 255, 1)",
+          "rgba(255, 159, 64, 1)",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  },
+  options: {
+    responsive: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  },
+});

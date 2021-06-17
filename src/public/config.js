@@ -26,6 +26,7 @@ const scopes = [
 export const config = {
   CSS: {
     IDs: {
+      removeEarlyAdded: "remove-early-added",
       getTokenLoadingSpinner: "get-token-loading-spinner",
       playlistCardsContainer: "playlist-cards-container",
       trackCardsContainer: "track-cards-container",
