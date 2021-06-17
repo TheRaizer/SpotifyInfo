@@ -294,7 +294,7 @@ section {
   background-color: #4b4b4b;
   width: var(--expanded-playlist-width);
   border-radius: var(--expanded-playlist-border-radius);
-  height: 10vh;
+  height: fit-content;
 
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -302,7 +302,7 @@ section {
   user-select: none;
 }
 
-#playlist-mods>button {
+#playlist-mods > button {
   width: 60px;
   height: 30px;
 }
@@ -313,7 +313,7 @@ section {
   grid-row: 1;
 }
 
-#remove-early-added>button {
+#remove-early-added > button {
   height: 100%;
   width: 20%;
 }

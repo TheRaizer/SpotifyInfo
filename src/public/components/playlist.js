@@ -56,6 +56,7 @@ class Playlist {
             data.track.linked_from !== undefined
               ? data.track.linked_from.uri
               : data.track.uri,
+            data.track.popularity,
             data.added_at
           )
         );

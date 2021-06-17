@@ -1,7 +1,14 @@
 import { config, millisToMinutesAndSeconds } from "../config.js";
 
 class Track {
-  constructor(name, images, duration, uri, dateAddedToPlaylist = "") {
+  constructor(
+    name,
+    images,
+    duration,
+    uri,
+    popularity,
+    dateAddedToPlaylist = ""
+  ) {
     this.name = name;
     this.images = images;
     if (dateAddedToPlaylist) {
@@ -21,6 +28,8 @@ class Track {
 
     // either the normal uri, or the linked_from.uri
     this.uri = uri;
+    this.popularity = popularity;
+    console.log(this.popularity);
   }
 
   getTrackCardHtml(idx) {
