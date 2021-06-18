@@ -1,28 +1,19 @@
 import { config, millisToMinutesAndSeconds } from "../config.js";
 
 class Track {
-  constructor(
-    name,
-    images,
-    duration,
-    uri,
-    popularity,
-    dateAddedToPlaylist = ""
-  ) {
+  constructor(props) {
+    let {
+      name,
+      images,
+      duration,
+      uri,
+      popularity,
+      dateAddedToPlaylist = "",
+      releaseDate,
+    } = props;
+
     this.name = name;
     this.images = images;
-    if (dateAddedToPlaylist) {
-      this.dateAddedToPlaylist = new Date(dateAddedToPlaylist);
-    } else {
-      this.dateAddedToPlaylist = "";
-    }
-
-    if (this.images.length > 0) {
-      let img = this.images[0];
-      this.imgURL = img.url;
-    } else {
-      this.imgURL = "";
-    }
 
     this.duration = millisToMinutesAndSeconds(duration);
 
@@ -30,6 +21,15 @@ class Track {
     this.uri = uri;
     this.popularity = popularity;
     this.cardId = "";
+    this.dateAddedToPlaylist = new Date(dateAddedToPlaylist);
+    this.releaseDate = new Date(releaseDate);
+
+    if (this.images.length > 0) {
+      let img = this.images[0];
+      this.imgURL = img.url;
+    } else {
+      this.imgURL = "";
+    }
   }
 
   getTrackCardHtml(idx) {

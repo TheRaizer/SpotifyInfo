@@ -22,3 +22,7 @@ note to self about async functionality:
     If it doesnt then ignore it and dont render them, if it is then render them.
 
     I do not check if it comes from the right playlist before the tracks are loaded because there is no delay to do so before the tracks start loading.
+
+
+'cardId' attribute/field in 'Card' and 'Playlist' classes acts as part of an interface, because the 'onCardClick' function in 'cardActions' in index.js assumes that the passed object will have
+said field (in a static language 'onCardClick(obj)' would expect any objects with the interface that contains the field 'cardId').

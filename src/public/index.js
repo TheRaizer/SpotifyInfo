@@ -110,6 +110,9 @@ const cardActions = (function () {
     if (currSelCardEl) {
       currSelCardEl.classList.remove(config.CSS.CLASSES.selected);
     }
+
+    // on click add the selected class onto the element which runs a transition
+    cardEl.classList.add(config.CSS.CLASSES.selected);
     return { cardEl: cardEl, corrObj: corrObj, ok: true };
   }
 
@@ -117,6 +120,28 @@ const cardActions = (function () {
     onCardClick,
   };
 })();
+
+class AsyncSelectionLock {
+  constructor() {
+    this.currSelectedObj = null;
+    this.hasLoadedCurrSelected = false;
+  }
+
+  reset(currSelectedObj) {
+    this.currSelectedObj = currSelectedObj;
+    this.hasLoadedCurrSelected = false;
+  }
+
+  isUnlocked(currLoadedObj) {
+    // if the currently selected object is not the same as the one just loaded it is not unlocked
+    // of it is the same object, but the object has already been loaded it is not unlocked.
+    if (this.currSelectedObj !== currLoadedObj || this.hasLoaded) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+}
 
 const playlistActions = (function () {
   const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
@@ -126,21 +151,14 @@ const playlistActions = (function () {
     playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
     playlistOrder.classList.add(config.CSS.CLASSES.hide);
     // synchronously assign the currently selected playlist to be this playlist
-    informationRetrieval.currSelPlaylist.playlist = playlistObj;
-    // it hasn't loaded its tracks
-    informationRetrieval.currSelPlaylist.hasLoadedTracks = false;
+    informationRetrieval.selectionLock.reset(playlistObj);
 
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
       .getTracks()
       .then((tracks) => {
-        // because .then() can run when currently selected playlist has already changed we need this if statement.
-        // if the tracks have been loaded but they aren't from the currently selected playlist return.
-        if (playlistObj !== informationRetrieval.currSelPlaylist.playlist) {
-          return;
-        }
-        // if they're the same object but its already been loaded then dont load it again.
-        else if (informationRetrieval.currSelPlaylist.hasLoadedTracks) {
+        // because .then() can run when the currently selected playlist has already changed we need a check
+        if (!informationRetrieval.selectionLock.isUnlocked(playlistObj)) {
           return;
         }
         expandablePlaylistTracks = tracks;
@@ -153,7 +171,7 @@ const playlistActions = (function () {
               .join("")}`;
         htmlStringCallback(htmlString);
 
-        informationRetrieval.currSelPlaylist.hasLoadedTracks = true;
+        informationRetrieval.selectionLock.hasLoadedCurrSelected = true;
       })
       .catch((err) => {
         console.log("Error when getting tracks");
@@ -187,40 +205,100 @@ const playlistActions = (function () {
       onTracksLoadingDone();
     });
   }
-  function selectPlaylist(playlistEl, playlistObj) {
-    // on click add the selected class onto the element which runs a transition
-    playlistEl.classList.add(config.CSS.CLASSES.selected);
-    showExpandedPlaylist(playlistObj);
-  }
-  function addOnPlaylistClick(playlistObjs) {
+  function addOnPlaylistCardClick(playlistObjs) {
     var currSelPlaylistEl = null;
-    function onPlaylistElementClick(playlistEl, playlistObjs) {
+    function onPlaylistCardClick(playlistCard, playlistObjs) {
       let { cardEl, corrObj, ok } = cardActions.onCardClick(
         currSelPlaylistEl,
-        playlistEl,
+        playlistCard,
         playlistObjs
       );
       if (!ok) {
         return;
       }
       currSelPlaylistEl = cardEl;
-      selectPlaylist(currSelPlaylistEl, corrObj);
+
+      showExpandedPlaylist(corrObj);
     }
 
-    let playlists = Array.from(
+    let playlistCards = Array.from(
       document.getElementsByClassName(config.CSS.CLASSES.playlist)
     );
 
-    playlists.forEach((playlistEl) => {
-      playlistEl.addEventListener("click", () =>
-        onPlaylistElementClick(playlistEl, playlistObjs)
+    playlistCards.forEach((playlistCard) => {
+      playlistCard.addEventListener("click", () =>
+        onPlaylistCardClick(playlistCard, playlistObjs)
       );
     });
   }
 
   return {
-    addOnPlaylistClick,
+    addOnPlaylistCardClick,
     showExpandedPlaylist,
+  };
+})();
+
+const trackActions = (function () {
+  const trackInfoEls = (function () {
+    const trackInfoEl = document
+      .getElementById(config.CSS.IDs.tracksData)
+      .getElementsByClassName(config.CSS.CLASSES.tracksInfo)[0];
+    const titleEl = trackInfoEl.getElementsByClassName(
+      config.CSS.CLASSES.infoTitle
+    )[0];
+    const albumNameEl = trackInfoEl.getElementsByClassName(
+      config.CSS.CLASSES.albumName
+    )[0];
+    const releaseDateEl = trackInfoEl.getElementsByClassName(
+      config.CSS.CLASSES.releaseDate
+    )[0];
+    const popularityEl = trackInfoEl.getElementsByClassName(
+      config.CSS.CLASSES.popularityIdx
+    )[0];
+
+    return {
+      titleEl,
+      albumNameEl,
+      releaseDateEl,
+      popularityEl,
+    };
+  })();
+
+  function showTrackInfo(trackObj) {
+    trackInfoEls.titleEl.textContent = "Title: " + trackObj.name;
+    trackInfoEls.releaseDateEl.textContent =
+      "Release Date: " + trackObj.releaseDate.toDateString();
+    trackInfoEls.popularityEl.textContent =
+      "Popularity Index: " + trackObj.popularity;
+  }
+  function addOnTrackCardClick(trackObjs) {
+    var currSelTrackEl = null;
+    function onTrackCardClick(trackCard, trackObjs) {
+      let { cardEl, corrObj, ok } = cardActions.onCardClick(
+        currSelTrackEl,
+        trackCard,
+        trackObjs
+      );
+      if (!ok) {
+        return;
+      }
+      currSelTrackEl = cardEl;
+
+      showTrackInfo(corrObj);
+    }
+
+    let trackCards = Array.from(
+      document.getElementsByClassName(config.CSS.CLASSES.track)
+    );
+
+    trackCards.forEach((trackCard) => {
+      trackCard.addEventListener("click", () =>
+        onTrackCardClick(trackCard, trackObjs)
+      );
+    });
+  }
+  return {
+    addOnTrackCardClick,
   };
 })();
 
@@ -231,7 +309,7 @@ const informationRetrieval = (function () {
   const tracksContainer = document.getElementById(
     config.CSS.IDs.trackCardsContainer
   );
-  var currSelPlaylist = { playlist: null, hasLoadedTracks: false };
+  var selectionLock = new AsyncSelectionLock();
   const playlistObjs = [];
   const topTrackObjs = [];
 
@@ -242,7 +320,7 @@ const informationRetrieval = (function () {
       })
       .join("");
     playlistsContainer.innerHTML = htmlString;
-    playlistActions.addOnPlaylistClick(playlistObjs);
+    playlistActions.addOnPlaylistCardClick(playlistObjs);
   }
   function displayTrackCards(trackObjs) {
     const htmlString = trackObjs
@@ -251,6 +329,8 @@ const informationRetrieval = (function () {
       })
       .join("");
     tracksContainer.innerHTML = htmlString;
+
+    trackActions.addOnTrackCardClick(trackObjs);
   }
   function displayTrackPopularityPieChart(trackObjs, chartElement) {
     const names = trackObjs.map((track) => track.name);
@@ -332,15 +412,15 @@ const informationRetrieval = (function () {
       playlistObjs.push(new Playlist(data.name, data.images, data.id));
     });
     topTrackDatas.forEach((data) => {
-      topTrackObjs.push(
-        new Track(
-          data.name,
-          data.album.images,
-          data.duration_ms,
-          data.linked_from !== undefined ? data.linked_from.uri : data.uri,
-          data.popularity
-        )
-      );
+      let props = {
+        name: data.name,
+        images: data.album.images,
+        duration: data.duration_ms,
+        uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
+        popularity: data.popularity,
+        releaseDate: data.album.release_date,
+      };
+      topTrackObjs.push(new Track(props));
     });
 
     var ctx = document.getElementById("popularity-chart");
@@ -350,7 +430,7 @@ const informationRetrieval = (function () {
   }
   return {
     getInformation,
-    currSelPlaylist,
+    selectionLock,
   };
 })();
 
@@ -560,7 +640,7 @@ const addEventListeners = (function () {
         (track) => !tracksToRemove.includes(track)
       );
 
-      let currPlaylist = informationRetrieval.currSelPlaylist.playlist;
+      let currPlaylist = informationRetrieval.selectionLock.currSelectedObj;
 
       currPlaylist.addToUndoList(tracksToRemove);
 
@@ -584,11 +664,11 @@ const addEventListeners = (function () {
   }
   function addUndoPlaylistTrackDeleteEvent() {
     function onClick() {
-      const currPlaylist = informationRetrieval.currSelPlaylist.playlist;
-      const undonePlaylistId = currPlaylist.id;
-      if (currPlaylist.undoList.length == 0) {
+      const currPlaylist = informationRetrieval.selectionLock.currSelectedObj;
+      if (!currPlaylist || currPlaylist.undoList.length == 0) {
         return;
       }
+      const undonePlaylistId = currPlaylist.id;
       let tracksRemoved = currPlaylist.undoList.pop();
       promiseHandler(
         axios.post(config.URLs.postPlaylistTracks + currPlaylist.id, {
@@ -598,11 +678,12 @@ const addEventListeners = (function () {
           // if the request was succesful and the user is
           // still looking at the playlist that was undone back, reload it.
           if (
-            undonePlaylistId == informationRetrieval.currSelPlaylist.playlist.id
+            undonePlaylistId ==
+            informationRetrieval.selectionLock.currSelectedObj.id
           ) {
             // reload the playlist after adding tracks in order to show the tracks added back
             playlistActions.showExpandedPlaylist(
-              informationRetrieval.currSelPlaylist.playlist
+              informationRetrieval.selectionLock.currSelectedObj
             );
           }
         }

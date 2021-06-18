@@ -1,8 +1,8 @@
 :root {
   --main-bg-color: #191414;
   --main-green: #1db954;
-  --expanded-playlist-width: 40vw;
-  --expanded-playlist-height: 70vh;
+  --expanded-playlist-width: 48vw;
+  --expanded-playlist-height: 80vh;
   --expanded-playlist-border-radius: 10px;
   --info-bg-color: #202020;
 }
@@ -172,7 +172,6 @@ section {
 
 #expanded-playlist-container.appear {
   opacity: 1;
-
   transition: opacity 250ms ease-in;
 }
 
@@ -250,13 +249,13 @@ section {
   background-color: #1b1b1b;
   color: rgb(216, 216, 216);
   margin-right: 5%;
-  margin-top: 30%;
+  margin-top: 25%;
   height: 30%;
 }
 
 .playlist-search {
   margin-right: 5%;
-  margin-top: 20%;
+  margin-top: 18%;
   height: 30%;
   background-color: #1b1b1b;
   color: rgb(216, 216, 216);

@@ -37,6 +37,7 @@ export const config = {
       allowAccessHeader: "allow-access-header",
       expandedPlaylistMods: "expanded-playlist-mods",
       playlistMods: "playlist-mods",
+      tracksData: "tracks-data",
     },
     CLASSES: {
       glow: "glow",
@@ -52,6 +53,11 @@ export const config = {
       ellipsisWrap: "ellipsis-wrap",
       name: "name",
       playlistOrder: "playlist-order",
+      tracksInfo: "tracks-info",
+      infoTitle: "info-title",
+      albumName: "album-name",
+      releaseDate: "release-date",
+      popularityIdx: "popularity-index",
     },
     ATTRIBUTES: {
       elementsToAnimate: "elements-to-animate",

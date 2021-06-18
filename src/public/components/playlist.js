@@ -47,18 +47,19 @@ class Playlist {
     tracksData.forEach((data) => {
       // if the data is not null or undefined etc.
       if (data) {
-        trackObjs.push(
-          new Track(
-            data.track.name,
-            data.track.album.images,
-            data.track.duration_ms,
+        let props = {
+          name: data.track.name,
+          images: data.track.album.images,
+          duration: data.track.duration_ms,
+          uri:
             data.track.linked_from !== undefined
               ? data.track.linked_from.uri
               : data.track.uri,
-            data.track.popularity,
-            data.added_at
-          )
-        );
+          popularity: data.track.popularity,
+          dateAddedToPlaylist: data.added_at,
+          releaseDate: data.track.album.release_date,
+        };
+        trackObjs.push(new Track(props));
       }
     });
     return trackObjs;
