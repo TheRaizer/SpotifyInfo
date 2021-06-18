@@ -17,6 +17,9 @@ const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
 function createSpotifyLoginButton(changeAccount = false) {
   // Create anchor element.
   let btn = document.createElement("button");
+  btn.style.width = "100px";
+  btn.style.height = "50px";
+
   // Create the text node for anchor element.
   let link = document.createTextNode(
     changeAccount ? "Change Account" : "Login To Spotify"
@@ -95,6 +98,26 @@ async function obtainTokens() {
 // order of items should never change
 var expandablePlaylistTracks = [];
 
+const cardActions = (function () {
+  // returns whether the card was succesfully clicked with all actions run
+  function onCardClick(currSelCardEl, cardEl, corrObjList) {
+    if (currSelCardEl === cardEl) {
+      return { cardEl: null, corrObj: null, ok: false };
+    }
+    // get corrosponding playlist object using the elements id
+    let corrObj = corrObjList.find((x) => x.cardId === cardEl.id);
+    // if there is an existing playlist selected, unselect it
+    if (currSelCardEl) {
+      currSelCardEl.classList.remove(config.CSS.CLASSES.selected);
+    }
+    return { cardEl: cardEl, corrObj: corrObj, ok: true };
+  }
+
+  return {
+    onCardClick,
+  };
+})();
+
 const playlistActions = (function () {
   const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
 
@@ -172,21 +195,16 @@ const playlistActions = (function () {
   function addOnPlaylistClick(playlistObjs) {
     var currSelPlaylistEl = null;
     function onPlaylistElementClick(playlistEl, playlistObjs) {
-      if (currSelPlaylistEl === playlistEl) {
+      let { cardEl, corrObj, ok } = cardActions.onCardClick(
+        currSelPlaylistEl,
+        playlistEl,
+        playlistObjs
+      );
+      if (!ok) {
         return;
       }
-      // get corrosponding playlist object using the elements id
-      let playlistObj = playlistObjs.find(
-        (x) => x.playlistElementId === playlistEl.id
-      );
-      // if there is an existing playlist selected, unselect it
-      if (currSelPlaylistEl) {
-        currSelPlaylistEl.classList.remove(config.CSS.CLASSES.selected);
-      }
-
-      // make the currently selected playlist this playlist and select it.
-      currSelPlaylistEl = playlistEl;
-      selectPlaylist(currSelPlaylistEl, playlistObj);
+      currSelPlaylistEl = cardEl;
+      selectPlaylist(currSelPlaylistEl, corrObj);
     }
 
     let playlists = Array.from(
@@ -239,7 +257,7 @@ const informationRetrieval = (function () {
     const popularities = trackObjs.map((track) => track.popularity);
 
     new Chart(chartElement, {
-      type: "pie",
+      type: "bar",
       data: {
         labels: names,
         datasets: [
@@ -265,7 +283,20 @@ const informationRetrieval = (function () {
         ],
       },
       options: {
+        plugins: {
+          title: {
+            display: true,
+            text: "Top Tracks Popularity Comparison",
+          },
+        },
         responsive: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMin: 0,
+            suggestedMax: 100,
+          },
+        },
       },
     });
   }

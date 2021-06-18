@@ -29,17 +29,12 @@ class Track {
     // either the normal uri, or the linked_from.uri
     this.uri = uri;
     this.popularity = popularity;
-    console.log(this.popularity);
+    this.cardId = "";
   }
 
   getTrackCardHtml(idx) {
-    let url = "";
     let id = `${config.CSS.IDs.trackPrefix}${idx}`;
-
-    if (this.images.length > 0) {
-      let img = this.images[0];
-      url = img.url;
-    }
+    this.cardId = id;
 
     return `
             <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.track}" id="${id}">
@@ -55,7 +50,8 @@ class Track {
               <img src="${this.imgURL}"></img>
               <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.name
-    }">${this.name}</h4>
+    }">${this.name}
+              </h4>
               <h5>${this.duration}</h5>
               <h5>${this.dateAddedToPlaylist.toLocaleDateString()}</h5>
             </li>

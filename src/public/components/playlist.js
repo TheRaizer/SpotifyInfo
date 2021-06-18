@@ -8,7 +8,7 @@ class Playlist {
     this.id = id;
     this.undoList = [];
     // the id of the playlist card element
-    this.playlistElementId = "";
+    this.cardId = "";
   }
 
   addToUndoList(tracks) {
@@ -19,7 +19,7 @@ class Playlist {
     let url = "";
     let id = `${config.CSS.IDs.playlistPrefix}${idx}`;
 
-    this.playlistElementId = id;
+    this.cardId = id;
 
     if (this.images.length > 0) {
       let img = this.images[0];
@@ -42,7 +42,6 @@ class Playlist {
       return [];
     }
     let tracksData = response.data;
-    console.log(tracksData);
     var trackObjs = [];
 
     tracksData.forEach((data) => {

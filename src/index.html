@@ -59,7 +59,7 @@
                 <input
                   type="text"
                   class="playlist-search"
-                  placeholder="Search by song name..."
+                  placeholder="Search in playlist"
                 />
               </div>
               <ul>
@@ -83,9 +83,23 @@
         <h1 id="top-tracks-header" elements-to-animate=".track">
           Your Top Tracks
         </h1>
+        <select>
+          <option value="short-term">Short Term (approx. last 4 weeks)</option>
+          <option value="medium-term">Mid Term (approx. last 6 months)</option>
+          <option value="long-term">Long Term (of all time)</option>
+        </select>
         <img class="info-loading-spinner" src="200pxLoadingSpinner.svg" />
         <div class="card-grid" id="track-cards-container"></div>
-        <canvas id="popularity-chart" width="400px" height="400px"></canvas>
+        <section id="tracks-data">
+          <canvas id="popularity-chart" width="600px" height="400px"></canvas>
+          <div class="tracks-info">
+            <h2>Track Info</h2>
+            <h4 class="info-title">Title: N/A</h4>
+            <h4 class="album-name">Album Name: N/A</h4>
+            <h4 class="release-date">Release Date: N/A</h4>
+            <h4 class="popularity-index">Popularity Index: N/A</h4>
+          </div>
+        </section>
       </section>
     </div>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
