@@ -1,4 +1,4 @@
-import { config } from "../config.js";
+import { config, htmlToEl } from "../config.js";
 import Track from "./track.js";
 
 class Playlist {
@@ -25,12 +25,13 @@ class Playlist {
       let img = this.images[0];
       url = img.url;
 
-      return `
+      let html = `
             <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.playlist}" id="${id}">
               <img src="${url}"></img>
               <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
             </button>
         `;
+      return htmlToEl(html);
     }
   }
 

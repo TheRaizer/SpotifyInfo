@@ -1,4 +1,4 @@
-import { config, millisToMinutesAndSeconds } from "../config.js";
+import { config, millisToMinutesAndSeconds, htmlToEl } from "../config.js";
 
 class Track {
   constructor(props) {
@@ -35,17 +35,17 @@ class Track {
   getTrackCardHtml(idx) {
     let id = `${config.CSS.IDs.trackPrefix}${idx}`;
     this.cardId = id;
-
-    return `
+    let html = `
             <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.track}" id="${id}">
               <img src="${this.imgURL}"></img>
               <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
             </button>
           `;
+    return htmlToEl(html);
   }
 
   getPlaylistTrackHtml() {
-    return `
+    let html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
               <img src="${this.imgURL}"></img>
               <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
@@ -56,6 +56,8 @@ class Track {
               <h5>${this.dateAddedToPlaylist.toLocaleDateString()}</h5>
             </li>
             `;
+
+    return htmlToEl(html);
   }
 }
 

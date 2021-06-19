@@ -70,7 +70,7 @@ export const config = {
     getHasTokens: "/tokens/has-tokens",
     getTokensPrefix: "/tokens/get-tokens?code=",
     getTopArtists: "/spotify/get-top-artists?time_range=medium_term",
-    getTopTracks: "/spotify/get-top-tracks?time_range=medium_term",
+    getTopTracks: "/spotify/get-top-tracks?time_range=",
     getPlaylists: "/spotify/get-playlists",
     getPlaylistTracks: "/spotify/get-playlist-tracks?playlist_id=",
     postClearTokens: "/tokens/clear-tokens",
@@ -85,4 +85,10 @@ export function millisToMinutesAndSeconds(millis) {
   return seconds == 60
     ? minutes + 1 + ":00"
     : minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+}
+export function htmlToEl(html) {
+  let temp = document.createElement("template");
+  html = html.trim(); // Never return a space text node as a result
+  temp.innerHTML = html;
+  return temp.content.firstChild;
 }

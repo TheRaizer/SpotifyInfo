@@ -123,19 +123,19 @@ const cardActions = (function () {
 
 class AsyncSelectionLock {
   constructor() {
-    this.currSelectedObj = null;
+    this.currSelectedVal = null;
     this.hasLoadedCurrSelected = false;
   }
 
-  reset(currSelectedObj) {
-    this.currSelectedObj = currSelectedObj;
+  reset(currSelectedVal) {
+    this.currSelectedVal = currSelectedVal;
     this.hasLoadedCurrSelected = false;
   }
 
-  isUnlocked(currLoadedObj) {
+  isUnlocked(currLoadedVal) {
     // if the currently selected object is not the same as the one just loaded it is not unlocked
-    // of it is the same object, but the object has already been loaded it is not unlocked.
-    if (this.currSelectedObj !== currLoadedObj || this.hasLoaded) {
+    // if it is the same object, but the object has already been loaded it is also not unlocked.
+    if (this.currSelectedVal !== currLoadedVal || this.hasLoaded) {
       return false;
     } else {
       return true;
@@ -146,32 +146,25 @@ class AsyncSelectionLock {
 const playlistActions = (function () {
   const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
 
-  function loadPlaylistTracksToHtmlString(playlistObj, htmlStringCallback) {
+  function loadPlaylistTracksToHtmlString(playlistObj, callback) {
     playlistSearchInput.value = "";
     playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
     playlistOrder.classList.add(config.CSS.CLASSES.hide);
     // synchronously assign the currently selected playlist to be this playlist
-    informationRetrieval.selectionLock.reset(playlistObj);
+    infoRetrieval.selectionLock.reset(playlistObj);
 
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
       .getTracks()
       .then((tracks) => {
         // because .then() can run when the currently selected playlist has already changed we need a check
-        if (!informationRetrieval.selectionLock.isUnlocked(playlistObj)) {
+        if (!infoRetrieval.selectionLock.isUnlocked(playlistObj)) {
           return;
         }
         expandablePlaylistTracks = tracks;
-        // overwrite the previous songlist with the current one
-        const htmlString = `
-            ${tracks
-              .map((track) => {
-                return track.getPlaylistTrackHtml();
-              })
-              .join("")}`;
-        htmlStringCallback(htmlString);
+        callback();
 
-        informationRetrieval.selectionLock.hasLoadedCurrSelected = true;
+        infoRetrieval.selectionLock.hasLoadedCurrSelected = true;
       })
       .catch((err) => {
         console.log("Error when getting tracks");
@@ -199,8 +192,7 @@ const playlistActions = (function () {
 
     trackListUl.innerHTML = htmlString;
     whenTracksLoading();
-    loadPlaylistTracksToHtmlString(playlistObj, (loadedHtmlString) => {
-      trackListUl.innerHTML = loadedHtmlString;
+    loadPlaylistTracksToHtmlString(playlistObj, () => {
       manageTracks.sortExpandedTracksToOrder();
       onTracksLoadingDone();
     });
@@ -239,6 +231,7 @@ const playlistActions = (function () {
 })();
 
 const trackActions = (function () {
+  const selectionLock = new AsyncSelectionLock();
   const trackInfoEls = (function () {
     const trackInfoEl = document
       .getElementById(config.CSS.IDs.tracksData)
@@ -263,6 +256,11 @@ const trackActions = (function () {
       popularityEl,
     };
   })();
+
+  function loadTrackFeatures(trackObj) {
+    selectionLock.reset(trackObj);
+    // this function is very similar to 'playlistActions.loadPlaylistTracksToHtmlString()'
+  }
 
   function showTrackInfo(trackObj) {
     trackInfoEls.titleEl.textContent = "Title: " + trackObj.name;
@@ -302,36 +300,13 @@ const trackActions = (function () {
   };
 })();
 
-const informationRetrieval = (function () {
-  const playlistsContainer = document.getElementById(
-    config.CSS.IDs.playlistCardsContainer
-  );
-  const tracksContainer = document.getElementById(
-    config.CSS.IDs.trackCardsContainer
-  );
-  var selectionLock = new AsyncSelectionLock();
+const infoRetrieval = (function () {
+  const selectionLock = new AsyncSelectionLock();
   const playlistObjs = [];
-  const topTrackObjs = [];
+  const topTrackObjsShortTerm = [];
+  const topTrackObjsMidTerm = [];
+  const topTrackObjsLongTerm = [];
 
-  function displayPlaylistCards(playlistObjs) {
-    const htmlString = playlistObjs
-      .map((playlistObj, idx) => {
-        return playlistObj.getPlaylistCardHtml(idx);
-      })
-      .join("");
-    playlistsContainer.innerHTML = htmlString;
-    playlistActions.addOnPlaylistCardClick(playlistObjs);
-  }
-  function displayTrackCards(trackObjs) {
-    const htmlString = trackObjs
-      .map((trackObj, idx) => {
-        return trackObj.getTrackCardHtml(idx);
-      })
-      .join("");
-    tracksContainer.innerHTML = htmlString;
-
-    trackActions.addOnTrackCardClick(trackObjs);
-  }
   function displayTrackPopularityPieChart(trackObjs, chartElement) {
     const names = trackObjs.map((track) => track.name);
     const popularities = trackObjs.map((track) => track.popularity);
@@ -380,11 +355,58 @@ const informationRetrieval = (function () {
       },
     });
   }
+  function loadDataToTrackLists(
+    shortTrackDatas,
+    midTrackDatas,
+    longTrackDatas
+  ) {
+    shortTrackDatas.forEach((data) => {
+      let props = {
+        name: data.name,
+        images: data.album.images,
+        duration: data.duration_ms,
+        uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
+        popularity: data.popularity,
+        releaseDate: data.album.release_date,
+      };
+      topTrackObjsShortTerm.push(new Track(props));
+    });
+    midTrackDatas.forEach((data) => {
+      let props = {
+        name: data.name,
+        images: data.album.images,
+        duration: data.duration_ms,
+        uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
+        popularity: data.popularity,
+        releaseDate: data.album.release_date,
+      };
+      topTrackObjsMidTerm.push(new Track(props));
+    });
+    longTrackDatas.forEach((data) => {
+      let props = {
+        name: data.name,
+        images: data.album.images,
+        duration: data.duration_ms,
+        uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
+        popularity: data.popularity,
+        releaseDate: data.album.release_date,
+      };
+      topTrackObjsLongTerm.push(new Track(props));
+    });
+  }
   /* Obtains information from web api and displays them.*/
   async function getInformation() {
     // axios get requests return a promise
     let topArtistsReq = promiseHandler(axios.get(config.URLs.getTopArtists));
-    let topTracksReq = promiseHandler(axios.get(config.URLs.getTopTracks));
+    let topTracksShortTermReq = promiseHandler(
+      axios.get(config.URLs.getTopTracks + "short_term")
+    );
+    let topTracksMidTermReq = promiseHandler(
+      axios.get(config.URLs.getTopTracks + "medium_term")
+    );
+    let topTracksLongTermReq = promiseHandler(
+      axios.get(config.URLs.getTopTracks + "long_term")
+    );
     let playListsReq = promiseHandler(axios.get(config.URLs.getPlaylists));
 
     // promise.all runs each promise in parallel before returning their values once theyre all done.
@@ -393,7 +415,9 @@ const informationRetrieval = (function () {
     // promise.settleAll will not throw error however it will store the state of each request. (rejected state is equivalent to a thrown error)
     let responses = await Promise.all([
       topArtistsReq,
-      topTracksReq,
+      topTracksShortTermReq,
+      topTracksMidTermReq,
+      topTracksLongTermReq,
       playListsReq,
     ]);
     console.log(responses);
@@ -406,31 +430,56 @@ const informationRetrieval = (function () {
       spinner.parentNode.removeChild(spinner);
     });
 
-    const playlistDatas = responses[2].res.data;
-    const topTrackDatas = responses[1].res.data;
+    const playlistDatas = responses[4].res.data;
     playlistDatas.forEach((data) => {
       playlistObjs.push(new Playlist(data.name, data.images, data.id));
     });
-    topTrackDatas.forEach((data) => {
-      let props = {
-        name: data.name,
-        images: data.album.images,
-        duration: data.duration_ms,
-        uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
-        popularity: data.popularity,
-        releaseDate: data.album.release_date,
-      };
-      topTrackObjs.push(new Track(props));
-    });
+
+    const shortTrackDatas = responses[1].res.data;
+    const midTrackDatas = responses[2].res.data;
+    const longTrackDatas = responses[3].res.data;
+    loadDataToTrackLists(shortTrackDatas, midTrackDatas, longTrackDatas);
 
     var ctx = document.getElementById("popularity-chart");
-    displayTrackPopularityPieChart(topTrackObjs, ctx);
-    displayPlaylistCards(playlistObjs);
-    displayTrackCards(topTrackObjs);
+    displayTrackPopularityPieChart(topTrackObjsMidTerm, ctx);
+
+    displayCards.displayPlaylistCards(playlistObjs);
+    playlistActions.addOnPlaylistCardClick(playlistObjs);
+
+    displayCards.displayTrackCards(topTrackObjsMidTerm);
+    trackActions.addOnTrackCardClick(topTrackObjsMidTerm);
   }
   return {
     getInformation,
     selectionLock,
+    topTrackObjsShortTerm,
+    topTrackObjsMidTerm,
+    topTrackObjsLongTerm,
+  };
+})();
+
+const displayCards = (function () {
+  const playlistsContainer = document.getElementById(
+    config.CSS.IDs.playlistCardsContainer
+  );
+  const tracksContainer = document.getElementById(
+    config.CSS.IDs.trackCardsContainer
+  );
+  function displayPlaylistCards(playlistObjs) {
+    removeAllChildNodes(playlistsContainer);
+    playlistObjs.map((playlistObj, idx) => {
+      playlistsContainer.appendChild(playlistObj.getPlaylistCardHtml(idx));
+    });
+  }
+  function displayTrackCards(trackObjs) {
+    removeAllChildNodes(tracksContainer);
+    trackObjs.map((trackObj, idx) => {
+      tracksContainer.appendChild(trackObj.getTrackCardHtml(idx));
+    });
+  }
+  return {
+    displayPlaylistCards,
+    displayTrackCards,
   };
 })();
 
@@ -534,6 +583,12 @@ This is done on set intervals.
   };
 })();
 
+function removeAllChildNodes(parent) {
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
+  }
+}
+
 const manageTracks = (function () {
   function sortExpandedTracksToOrder() {
     if (playlistOrder.value == "custom-order") {
@@ -550,14 +605,8 @@ const manageTracks = (function () {
     // shallow copy just so we dont modify the original order
     let tracksCopy = [...tracks];
     tracksCopy.sort(function (a, b) {
-      a = new DOMParser().parseFromString(
-        a.getPlaylistTrackHtml(),
-        "text/html"
-      );
-      b = new DOMParser().parseFromString(
-        b.getPlaylistTrackHtml(),
-        "text/html"
-      );
+      a = a.getPlaylistTrackHtml();
+      b = b.getPlaylistTrackHtml();
       let nameA = a.getElementsByClassName(config.CSS.CLASSES.name)[0];
       let nameATxt = nameA.textContent || nameA.innerText;
 
@@ -587,13 +636,10 @@ const manageTracks = (function () {
     return tracksCopy;
   }
   function rerenderPlaylistTracks(tracks, trackListUl) {
-    const htmlString = `
-            ${tracks
-              .map((track) => {
-                return track.getPlaylistTrackHtml();
-              })
-              .join("")}`;
-    trackListUl.innerHTML = htmlString;
+    removeAllChildNodes(trackListUl);
+    tracks.map((track) => {
+      trackListUl.appendChild(track.getPlaylistTrackHtml());
+    });
   }
 
   return {
@@ -613,11 +659,22 @@ const addEventListeners = (function () {
   }
   function addExpandedPlaylistModsOrderEvent() {
     // add on change event listener to the order selection element of the mods expanded playlist
-    const playlistOrder = expandedPlaylistMods.getElementsByClassName(
-      config.CSS.CLASSES.playlistOrder
-    )[0];
     playlistOrder.addEventListener("change", () => {
       manageTracks.sortExpandedTracksToOrder();
+    });
+  }
+  function addTopTrackCardsSelectionEvent() {
+    let selection = document.getElementById("tracks-term-selection");
+    selection.addEventListener("change", () => {
+      // cards displayed do not have the appear class because thats supposed to be added through animation,
+      // so return the elements from .displayTrackCards and add the appear class to those elements' class list.
+      if (selection.value == "short-term") {
+        displayCards.displayTrackCards(infoRetrieval.topTrackObjsShortTerm);
+      } else if (selection.value == "medium-term") {
+        displayCards.displayTrackCards(infoRetrieval.topTrackObjsMidTerm);
+      } else if (selection.value == "long-term") {
+        displayCards.displayTrackCards(infoRetrieval.topTrackObjsLongTerm);
+      }
     });
   }
   function addDeleteRecentlyAddedTrackEvent() {
@@ -640,7 +697,7 @@ const addEventListeners = (function () {
         (track) => !tracksToRemove.includes(track)
       );
 
-      let currPlaylist = informationRetrieval.selectionLock.currSelectedObj;
+      let currPlaylist = infoRetrieval.selectionLock.currSelectedVal;
 
       currPlaylist.addToUndoList(tracksToRemove);
 
@@ -664,7 +721,7 @@ const addEventListeners = (function () {
   }
   function addUndoPlaylistTrackDeleteEvent() {
     function onClick() {
-      const currPlaylist = informationRetrieval.selectionLock.currSelectedObj;
+      const currPlaylist = infoRetrieval.selectionLock.currSelectedVal;
       if (!currPlaylist || currPlaylist.undoList.length == 0) {
         return;
       }
@@ -678,12 +735,11 @@ const addEventListeners = (function () {
           // if the request was succesful and the user is
           // still looking at the playlist that was undone back, reload it.
           if (
-            undonePlaylistId ==
-            informationRetrieval.selectionLock.currSelectedObj.id
+            undonePlaylistId == infoRetrieval.selectionLock.currSelectedVal.id
           ) {
             // reload the playlist after adding tracks in order to show the tracks added back
             playlistActions.showExpandedPlaylist(
-              informationRetrieval.selectionLock.currSelectedObj
+              infoRetrieval.selectionLock.currSelectedVal
             );
           }
         }
@@ -701,6 +757,7 @@ const addEventListeners = (function () {
     addExpandedPlaylistModsOrderEvent,
     addDeleteRecentlyAddedTrackEvent,
     addUndoPlaylistTrackDeleteEvent,
+    addTopTrackCardsSelectionEvent,
   };
 })();
 
@@ -725,9 +782,8 @@ const addEventListeners = (function () {
         allowAccessHeader.parentNode.removeChild(allowAccessHeader);
         createSpotifyLoginButton(true);
         infoContainer.style.display = "block";
-
         // render and get information
-        informationRetrieval
+        infoRetrieval
           .getInformation()
           .then(() => {
             // Run .then() when information has been obtained and innerhtml has been changed
@@ -749,4 +805,5 @@ const addEventListeners = (function () {
   addEventListeners.addExpandedPlaylistModsOrderEvent();
   addEventListeners.addDeleteRecentlyAddedTrackEvent();
   addEventListeners.addUndoPlaylistTrackDeleteEvent();
+  addEventListeners.addTopTrackCardsSelectionEvent();
 })();

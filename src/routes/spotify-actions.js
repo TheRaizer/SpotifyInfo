@@ -94,6 +94,10 @@ router.get("/get-playlist-tracks", async function (req, res, next) {
     });
 });
 
+router.get("/get-track-features", async function (req, res, next) {
+  var track_id = req.query.track_id;
+});
+
 router.delete("/delete-playlist-items", async function (req, res, next) {
   var playlistId = req.query.playlist_id;
   let trackObjs = req.body.tracks;
