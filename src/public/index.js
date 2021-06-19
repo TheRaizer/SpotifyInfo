@@ -307,54 +307,6 @@ const infoRetrieval = (function () {
   const topTrackObjsMidTerm = [];
   const topTrackObjsLongTerm = [];
 
-  function displayTrackPopularityPieChart(trackObjs, chartElement) {
-    const names = trackObjs.map((track) => track.name);
-    const popularities = trackObjs.map((track) => track.popularity);
-
-    new Chart(chartElement, {
-      type: "bar",
-      data: {
-        labels: names,
-        datasets: [
-          {
-            label: "Popularity",
-            data: popularities,
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.2)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(255, 206, 86, 0.2)",
-              "rgba(75, 192, 192, 0.2)",
-              "rgba(153, 102, 255, 0.2)",
-            ],
-            borderColor: [
-              "rgba(255, 99, 132, 1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-              "rgba(153, 102, 255, 1)",
-            ],
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        plugins: {
-          title: {
-            display: true,
-            text: "Top Tracks Popularity Comparison",
-          },
-        },
-        responsive: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            suggestedMin: 0,
-            suggestedMax: 100,
-          },
-        },
-      },
-    });
-  }
   function loadDataToTrackLists(
     shortTrackDatas,
     midTrackDatas,
@@ -441,13 +393,8 @@ const infoRetrieval = (function () {
     loadDataToTrackLists(shortTrackDatas, midTrackDatas, longTrackDatas);
 
     var ctx = document.getElementById("popularity-chart");
-    displayTrackPopularityPieChart(topTrackObjsMidTerm, ctx);
 
-    displayCards.displayPlaylistCards(playlistObjs);
-    playlistActions.addOnPlaylistCardClick(playlistObjs);
-
-    displayCards.displayTrackCards(topTrackObjsMidTerm);
-    trackActions.addOnTrackCardClick(topTrackObjsMidTerm);
+    displayCardInfo.initDisplay(playlistObjs, topTrackObjsShortTerm, ctx);
   }
   return {
     getInformation,
@@ -458,28 +405,108 @@ const infoRetrieval = (function () {
   };
 })();
 
-const displayCards = (function () {
+const displayCardInfo = (function () {
   const playlistsContainer = document.getElementById(
     config.CSS.IDs.playlistCardsContainer
   );
   const tracksContainer = document.getElementById(
     config.CSS.IDs.trackCardsContainer
   );
+  var chart = null;
+  var chartEl = null;
+  function initDisplay(playlistObjs, trackObjs, chartElement) {
+    displayPlaylistCards(playlistObjs);
+    chartEl = chartElement;
+    displayTrackCards(trackObjs);
+  }
   function displayPlaylistCards(playlistObjs) {
     removeAllChildNodes(playlistsContainer);
     playlistObjs.map((playlistObj, idx) => {
       playlistsContainer.appendChild(playlistObj.getPlaylistCardHtml(idx));
     });
+    playlistActions.addOnPlaylistCardClick(playlistObjs);
   }
   function displayTrackCards(trackObjs) {
     removeAllChildNodes(tracksContainer);
+    let cardHtmls = [];
     trackObjs.map((trackObj, idx) => {
-      tracksContainer.appendChild(trackObj.getTrackCardHtml(idx));
+      let cardHtml = trackObj.getTrackCardHtml(idx);
+      cardHtmls.push(cardHtml);
+      tracksContainer.appendChild(cardHtml);
+    });
+    trackActions.addOnTrackCardClick(trackObjs);
+
+    if (chart == null) {
+      displayTrackPopularityPieChart(trackObjs, chartEl);
+    } else {
+      let { names, popularities } = getNamesAndPopularity(trackObjs);
+      updateChart(names, popularities);
+    }
+
+    return cardHtmls;
+  }
+
+  function getNamesAndPopularity(trackObjs) {
+    const names = trackObjs.map((track) => track.name);
+    const popularities = trackObjs.map((track) => track.popularity);
+    return { names, popularities };
+  }
+  function displayTrackPopularityPieChart(trackObjs, chartEl) {
+    let { names, popularities } = getNamesAndPopularity(trackObjs);
+    chart = new Chart(chartEl, {
+      type: "bar",
+      data: {
+        labels: names,
+        datasets: [
+          {
+            label: "Popularity",
+            data: popularities,
+            backgroundColor: [
+              "rgba(255, 99, 132, 0.2)",
+              "rgba(54, 162, 235, 0.2)",
+              "rgba(255, 206, 86, 0.2)",
+              "rgba(75, 192, 192, 0.2)",
+              "rgba(153, 102, 255, 0.2)",
+            ],
+            borderColor: [
+              "rgba(255, 99, 132, 1)",
+              "rgba(54, 162, 235, 1)",
+              "rgba(255, 206, 86, 1)",
+              "rgba(75, 192, 192, 1)",
+              "rgba(153, 102, 255, 1)",
+            ],
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: "Top Tracks Popularity Comparison",
+          },
+        },
+        responsive: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMin: 0,
+            suggestedMax: 100,
+          },
+        },
+      },
     });
   }
+  function updateChart(names, data) {
+    chart.data.labels = [];
+    chart.data.datasets[0].data = [];
+    chart.data.labels = names;
+    chart.data.datasets[0].data = data;
+    chart.update();
+  }
   return {
-    displayPlaylistCards,
     displayTrackCards,
+    initDisplay,
   };
 })();
 
@@ -666,15 +693,26 @@ const addEventListeners = (function () {
   function addTopTrackCardsSelectionEvent() {
     let selection = document.getElementById("tracks-term-selection");
     selection.addEventListener("change", () => {
+      let cardHtmls = null;
       // cards displayed do not have the appear class because thats supposed to be added through animation,
       // so return the elements from .displayTrackCards and add the appear class to those elements' class list.
       if (selection.value == "short-term") {
-        displayCards.displayTrackCards(infoRetrieval.topTrackObjsShortTerm);
+        cardHtmls = displayCardInfo.displayTrackCards(
+          infoRetrieval.topTrackObjsShortTerm
+        );
       } else if (selection.value == "medium-term") {
-        displayCards.displayTrackCards(infoRetrieval.topTrackObjsMidTerm);
+        cardHtmls = displayCardInfo.displayTrackCards(
+          infoRetrieval.topTrackObjsMidTerm
+        );
       } else if (selection.value == "long-term") {
-        displayCards.displayTrackCards(infoRetrieval.topTrackObjsLongTerm);
+        cardHtmls = displayCardInfo.displayTrackCards(
+          infoRetrieval.topTrackObjsLongTerm
+        );
       }
+
+      cardHtmls.forEach((card) => {
+        card.classList.add("appear");
+      });
     });
   }
   function addDeleteRecentlyAddedTrackEvent() {
