@@ -47,7 +47,7 @@ class Playlist {
 
     tracksData.forEach((data) => {
       // if the data is not null or undefined etc.
-      if (data) {
+      if (data && data.track) {
         let props = {
           name: data.track.name,
           images: data.track.album.images,
