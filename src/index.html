@@ -46,10 +46,10 @@
           src="200pxLoadingSpinner.svg"
         />
         <section id="playlists-section">
-          <div class="card-grid" id="playlist-cards-container"></div>
+          <section class="card-grid" id="playlist-cards-container"></section>
           <div id="expanded-playlist-container">
             <div class="expanded-playlist" id="expanded-playlist-mods">
-              <div class="sticky-area">
+              <header class="sticky-area">
                 <h2 class="ellipsis-wrap">Please Select a Playlist</h2>
                 <select class="playlist-order">
                   <option value="custom-order">Custom order</option>
@@ -61,7 +61,7 @@
                   class="playlist-search"
                   placeholder="Search in playlist"
                 />
-              </div>
+              </header>
               <ul>
                 <li>Select a Playlist</li>
               </ul>
@@ -80,14 +80,16 @@
             </section>
           </div>
         </section>
-        <h1 id="top-tracks-header" elements-to-animate=".track">
-          Your Top Tracks
-        </h1>
-        <select id="tracks-term-selection">
-          <option value="short-term">Short Term (last 4 weeks)</option>
-          <option value="medium-term">Mid Term (last 6 months)</option>
-          <option value="long-term">Long Term (of all time)</option>
-        </select>
+        <header>
+          <h1 id="top-tracks-header" elements-to-animate=".track">
+            Your Top Tracks
+          </h1>
+          <select id="tracks-term-selection">
+            <option value="short-term">Short Term (last 4 weeks)</option>
+            <option value="medium-term">Mid Term (last 6 months)</option>
+            <option value="long-term">Long Term (of all time)</option>
+          </select>
+        </header>
         <img class="info-loading-spinner" src="200pxLoadingSpinner.svg" />
         <div class="card-grid" id="track-cards-container"></div>
         <section id="tracks-data">

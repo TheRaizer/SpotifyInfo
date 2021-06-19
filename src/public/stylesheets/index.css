@@ -37,17 +37,12 @@ img {
 }
 
 h1 {
-  margin-top: 10%;
   font-size: 400%;
 
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-section {
-  margin-top: 5%;
 }
 
 .glow {
@@ -390,4 +385,8 @@ section {
 
   align-items: center;
   border: 3px solid green;
+}
+
+#tracks-term-selection {
+  margin-bottom: 3%;
 }
