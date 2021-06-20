@@ -125,7 +125,7 @@ const cardActions = (function () {
   };
 })();
 
-class AsyncSelectionLock {
+class AsyncSelectionVerif {
   constructor() {
     // used to compare to a loaded value
     this.currSelectedVal = null;
@@ -138,9 +138,9 @@ class AsyncSelectionLock {
     this.hasLoadedCurrSelected = false;
   }
 
-  isUnlocked(currLoadedVal) {
-    // if the currently selected object is not the same as the one just loaded it is not unlocked
-    // if it is the same object, but the object has already been loaded it is also not unlocked.
+  isValid(currLoadedVal) {
+    // if the currently selected object is not the same as the one just loaded it is not valid
+    // if it is the same object, but the object has already been loaded it is also not valid.
     if (this.currSelectedVal !== currLoadedVal || this.hasLoaded) {
       return false;
     } else {
@@ -164,7 +164,7 @@ const playlistActions = (function () {
       .getTracks()
       .then((tracks) => {
         // because .then() can run when the currently selected playlist has already changed we need a check
-        if (!infoRetrieval.selectionLock.isUnlocked(playlistObj)) {
+        if (!infoRetrieval.selectionLock.isValid(playlistObj)) {
           return;
         }
         expandablePlaylistTracks = tracks;
@@ -237,7 +237,7 @@ const playlistActions = (function () {
 })();
 
 const trackActions = (function () {
-  const selectionLock = new AsyncSelectionLock();
+  const selectionLock = new AsyncSelectionVerif();
   const trackInfoEls = (function () {
     const trackInfoEl = document
       .getElementById(config.CSS.IDs.tracksData)
@@ -266,7 +266,7 @@ const trackActions = (function () {
   function loadTrackFeatures(trackObj, callback) {
     selectionLock.selectionChanged(trackObj);
     trackObj.getFeatures().then((features) => {
-      if (!selectionLock.isUnlocked(trackObj)) {
+      if (!selectionLock.isValid(trackObj)) {
         return;
       }
       callback(features);
@@ -315,7 +315,7 @@ const trackActions = (function () {
 })();
 
 const infoRetrieval = (function () {
-  const selectionLock = new AsyncSelectionLock();
+  const selectionLock = new AsyncSelectionVerif();
   const playlistObjs = [];
   const topTrackObjsShortTerm = [];
   const topTrackObjsMidTerm = [];
@@ -409,9 +409,7 @@ const infoRetrieval = (function () {
     const longTrackDatas = responses[3].res.data;
     loadDataToTrackLists(shortTrackDatas, midTrackDatas, longTrackDatas);
 
-    var ctx = document.getElementById("popularity-chart");
-
-    displayCardInfo.initDisplay(playlistObjs, topTrackObjsShortTerm, ctx);
+    displayCardInfo.initDisplay(playlistObjs, topTrackObjsShortTerm);
   }
   return {
     getInitialInfo,
@@ -429,12 +427,9 @@ const displayCardInfo = (function () {
   const tracksContainer = document.getElementById(
     config.CSS.IDs.trackCardsContainer
   );
-  var chart = null;
-  var chartEl = null;
 
-  function initDisplay(playlistObjs, trackObjs, chartElement) {
+  function initDisplay(playlistObjs, trackObjs) {
     displayPlaylistCards(playlistObjs);
-    chartEl = chartElement;
     displayTrackCards(trackObjs);
   }
   function displayPlaylistCards(playlistObjs) {
@@ -453,21 +448,33 @@ const displayCardInfo = (function () {
       tracksContainer.appendChild(cardHtml);
     });
     trackActions.addOnTrackCardClick(trackObjs);
-
-    if (chart == null) {
-      displayTrackPopularityPieChart(trackObjs, chartEl);
+    if (chartsManager.charts.tracksChart == null) {
+      chartsManager.displayTracksChart(trackObjs);
     } else {
-      let { names, popularities } = getNamesAndPopularity(trackObjs);
-      updateChart(trackObjs, names, popularities);
+      let { names, popularities } =
+        chartsManager.getNamesAndPopularity(trackObjs);
+      chartsManager.updateTracksChart(trackObjs, names, popularities);
     }
 
     return cardHtmls;
   }
+
+  return {
+    displayTrackCards,
+    initDisplay,
+  };
+})();
+
+const chartsManager = (function () {
+  const tracksChartEl = document.getElementById("popularity-chart");
+  const charts = { tracksChart: null };
   function getNamesAndPopularity(trackObjs) {
     const names = trackObjs.map((track) => track.name);
     const popularities = trackObjs.map((track) => track.popularity);
     return { names, popularities };
   }
+
+  // obtains all the features for each track in a selected time range
   async function loadTracksFeatures(trackObjs, tracksVerLoading) {
     let featLoadingPromises = [];
     trackObjs.forEach((trackObj) => {
@@ -480,30 +487,42 @@ const displayCardInfo = (function () {
 
     return { featureList, tracksVerLoaded: tracksVerLoading };
   }
-
-  function loadFeaturesLock(trackObjs, callback) {
-    const selectionLock = new AsyncSelectionLock();
+  // uses the AsyncSelectionLock class to create a lock when using loadTracksFeatures()
+  function loadFeaturesVerif(trackObjs, callback) {
+    const selectionLock = new AsyncSelectionVerif();
     let tracksVerSelected = trackTimeRangeSelection.value;
     selectionLock.selectionChanged(tracksVerSelected);
 
     loadTracksFeatures(trackObjs, tracksVerSelected).then(
       ({ featureList, tracksVerLoaded }) => {
-        if (!selectionLock.isUnlocked(tracksVerLoaded)) {
+        if (!selectionLock.isValid(tracksVerLoaded)) {
           return;
         }
         selectionLock.hasLoadedCurrSelected = true;
-        console.log(featureList);
         callback(featureList);
       }
     );
   }
 
-  function displayTrackPopularityPieChart(trackObjs, chartEl) {
+  function createFeatureLists(featureList) {
+    let acousticnesses = featureList.map((features) =>
+      Math.round(features.acousticness * 100)
+    );
+    let energies = featureList.map((features) =>
+      Math.round(features.energy * 100)
+    );
+
+    return { acousticnesses, energies };
+  }
+
+  function displayTracksChart(trackObjs) {
     // display loading spinner, then load features of each track.
     let { names, popularities } = getNamesAndPopularity(trackObjs);
-    loadFeaturesLock(trackObjs, (featureList) => {
+    loadFeaturesVerif(trackObjs, (featureList) => {
       // remove loading spinner for chart
-      chart = new Chart(chartEl, {
+      let { acousticnesses, energies } = createFeatureLists(featureList);
+      console.log(featureList);
+      charts.tracksChart = new Chart(tracksChartEl, {
         type: "bar",
         data: {
           labels: names,
@@ -529,7 +548,26 @@ const displayCardInfo = (function () {
             },
             {
               label: "Acousticness",
-              data: popularities,
+              data: acousticnesses,
+              backgroundColor: [
+                "rgba(255, 99, 132, 0.2)",
+                "rgba(54, 162, 235, 0.2)",
+                "rgba(255, 206, 86, 0.2)",
+                "rgba(75, 192, 192, 0.2)",
+                "rgba(153, 102, 255, 0.2)",
+              ],
+              borderColor: [
+                "rgba(255, 99, 132, 1)",
+                "rgba(54, 162, 235, 1)",
+                "rgba(255, 206, 86, 1)",
+                "rgba(75, 192, 192, 1)",
+                "rgba(153, 102, 255, 1)",
+              ],
+              borderWidth: 1,
+            },
+            {
+              label: "Energy",
+              data: energies,
               backgroundColor: [
                 "rgba(255, 99, 132, 0.2)",
                 "rgba(54, 162, 235, 0.2)",
@@ -567,18 +605,30 @@ const displayCardInfo = (function () {
       });
     });
   }
-  function updateChart(trackObjs, names, data) {
-    loadFeaturesLock(trackObjs, (featureList) => {
+  function updateTracksChart(trackObjs, names, popularities) {
+    // display loading spinner, then load features of each track.
+    loadFeaturesVerif(trackObjs, (featureList) => {
+      // remove loading spinner for chart
+      let { acousticnesses, energies } = createFeatureLists(featureList);
+      let chart = charts.tracksChart;
       chart.data.labels = [];
       chart.data.datasets[0].data = [];
+      chart.data.datasets[1].data = [];
+      chart.data.datasets[2].data = [];
+
       chart.data.labels = names;
-      chart.data.datasets[0].data = data;
+      chart.data.datasets[0].data = popularities;
+      chart.data.datasets[1].data = acousticnesses;
+      chart.data.datasets[2].data = energies;
       chart.update();
     });
   }
+
   return {
-    displayTrackCards,
-    initDisplay,
+    displayTracksChart,
+    updateTracksChart,
+    getNamesAndPopularity,
+    charts,
   };
 })();
 
