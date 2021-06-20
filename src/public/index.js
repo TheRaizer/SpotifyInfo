@@ -1,6 +1,6 @@
 import Track from "./components/track.js";
 import Playlist from "./components/playlist.js";
-import { config } from "./config.js";
+import { config, htmlToEl } from "./config.js";
 
 const expandedPlaylistMods = document.getElementById(
   config.CSS.IDs.expandedPlaylistMods
@@ -195,8 +195,11 @@ const playlistActions = (function () {
             <li>
               <img src="200pxLoadingSpinner.svg" />
             </li>`;
+    let spinnerEl = htmlToEl(htmlString);
 
-    trackListUl.innerHTML = htmlString;
+    removeAllChildNodes(trackListUl);
+    trackListUl.appendChild(spinnerEl);
+
     whenTracksLoading();
     loadPlaylistTracksToHtmlString(playlistObj, () => {
       manageTracks.sortExpandedTracksToOrder();
@@ -534,8 +537,6 @@ const chartsManager = (function () {
     let { names, popularities } = getNamesAndPopularity(trackObjs);
     loadFeaturesVerif(trackObjs, (featureList) => {
       // remove loading spinner for chart
-      let { acousticnesses, energies } = createFeatureLists(featureList);
-      console.log(featureList);
       charts.tracksChart = new Chart(tracksChartEl, {
         type: "bar",
         data: {

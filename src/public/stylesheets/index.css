@@ -6,7 +6,7 @@
   --expanded-playlist-border-radius: 10px;
   --info-bg-color: #202020;
   --connected-border: 1px solid rgb(110, 110, 110);
-  --connected-border-hover: 1px solid rgba(110, 110, 110, 0.658);
+  --connected-border-hover: 1px solid rgba(110, 110, 110, 0.342);
 }
 button,
 input[type="submit"],
@@ -360,7 +360,7 @@ footer {
   border-left: var(--connected-border);
 }
 
-.border-connected-btn-container>button:hover {
+.border-connected-btn-container>button:hover:not(.selected) {
   border-top: var(--connected-border-hover);
   border-right: var(--connected-border-hover);
   border-left: var(--connected-border-hover);
