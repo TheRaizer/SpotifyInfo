@@ -96,6 +96,20 @@ router.get("/get-playlist-tracks", async function (req, res, next) {
 
 router.get("/get-track-features", async function (req, res, next) {
   var track_id = req.query.track_id;
+
+  await axios({
+    method: "get",
+    url: `https://api.spotify.com/v1/audio-features/${track_id}`,
+    headers: spotifyGetHeaders(req),
+  })
+    .then(function (response) {
+      res.send(response.data);
+    })
+    .catch((err) => {
+      console.error(err);
+      // run next to pass this error down to a middleware that will handle it
+      next(err);
+    });
 });
 
 router.delete("/delete-playlist-items", async function (req, res, next) {

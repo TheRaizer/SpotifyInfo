@@ -10,11 +10,12 @@ class Track {
       popularity,
       dateAddedToPlaylist = "",
       releaseDate,
+      id,
     } = props;
 
+    this.id = id;
     this.name = name;
     this.images = images;
-
     this.duration = millisToMinutesAndSeconds(duration);
 
     // either the normal uri, or the linked_from.uri
@@ -58,6 +59,14 @@ class Track {
             `;
 
     return htmlToEl(html);
+  }
+
+  async getFeatures() {
+    let response = await axios
+      .get(config.URLs.getTrackFeatures + this.id)
+      .catch((err) => console.error(err));
+
+    return response.data;
   }
 }
 

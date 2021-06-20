@@ -59,6 +59,7 @@ class Playlist {
           popularity: data.track.popularity,
           dateAddedToPlaylist: data.added_at,
           releaseDate: data.track.album.release_date,
+          id: data.track.id,
         };
         trackObjs.push(new Track(props));
       }

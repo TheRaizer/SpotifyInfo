@@ -14,6 +14,10 @@ const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
   config.CSS.CLASSES.playlistSearch
 )[0];
 
+const trackTimeRangeSelection = document.getElementById(
+  "tracks-term-selection"
+);
+
 function createSpotifyLoginButton(changeAccount = false) {
   // Create anchor element.
   let btn = document.createElement("button");
@@ -123,11 +127,13 @@ const cardActions = (function () {
 
 class AsyncSelectionLock {
   constructor() {
+    // used to compare to a loaded value
     this.currSelectedVal = null;
     this.hasLoadedCurrSelected = false;
   }
 
-  reset(currSelectedVal) {
+  // change the value in the lock when another value is selected
+  selectionChanged(currSelectedVal) {
     this.currSelectedVal = currSelectedVal;
     this.hasLoadedCurrSelected = false;
   }
@@ -151,7 +157,7 @@ const playlistActions = (function () {
     playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
     playlistOrder.classList.add(config.CSS.CLASSES.hide);
     // synchronously assign the currently selected playlist to be this playlist
-    infoRetrieval.selectionLock.reset(playlistObj);
+    infoRetrieval.selectionLock.selectionChanged(playlistObj);
 
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
@@ -257,17 +263,25 @@ const trackActions = (function () {
     };
   })();
 
-  function loadTrackFeatures(trackObj) {
-    selectionLock.reset(trackObj);
+  function loadTrackFeatures(trackObj, callback) {
+    selectionLock.selectionChanged(trackObj);
+    trackObj.getFeatures().then((features) => {
+      if (!selectionLock.isUnlocked(trackObj)) {
+        return;
+      }
+      callback(features);
+    });
     // this function is very similar to 'playlistActions.loadPlaylistTracksToHtmlString()'
   }
-
   function showTrackInfo(trackObj) {
-    trackInfoEls.titleEl.textContent = "Title: " + trackObj.name;
-    trackInfoEls.releaseDateEl.textContent =
-      "Release Date: " + trackObj.releaseDate.toDateString();
-    trackInfoEls.popularityEl.textContent =
-      "Popularity Index: " + trackObj.popularity;
+    loadTrackFeatures(trackObj, (features) => {
+      // stuff has been loaded now so remove loading spinner and show info
+      trackInfoEls.titleEl.textContent = "Title: " + trackObj.name;
+      trackInfoEls.releaseDateEl.textContent =
+        "Release Date: " + trackObj.releaseDate.toDateString();
+      trackInfoEls.popularityEl.textContent =
+        "Popularity Index: " + trackObj.popularity;
+    });
   }
   function addOnTrackCardClick(trackObjs) {
     var currSelTrackEl = null;
@@ -320,6 +334,7 @@ const infoRetrieval = (function () {
         uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
         popularity: data.popularity,
         releaseDate: data.album.release_date,
+        id: data.id,
       };
       topTrackObjsShortTerm.push(new Track(props));
     });
@@ -331,6 +346,7 @@ const infoRetrieval = (function () {
         uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
         popularity: data.popularity,
         releaseDate: data.album.release_date,
+        id: data.id,
       };
       topTrackObjsMidTerm.push(new Track(props));
     });
@@ -342,12 +358,13 @@ const infoRetrieval = (function () {
         uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
         popularity: data.popularity,
         releaseDate: data.album.release_date,
+        id: data.id,
       };
       topTrackObjsLongTerm.push(new Track(props));
     });
   }
   /* Obtains information from web api and displays them.*/
-  async function getInformation() {
+  async function getInitialInfo() {
     // axios get requests return a promise
     let topArtistsReq = promiseHandler(axios.get(config.URLs.getTopArtists));
     let topTracksShortTermReq = promiseHandler(
@@ -397,7 +414,7 @@ const infoRetrieval = (function () {
     displayCardInfo.initDisplay(playlistObjs, topTrackObjsShortTerm, ctx);
   }
   return {
-    getInformation,
+    getInitialInfo,
     selectionLock,
     topTrackObjsShortTerm,
     topTrackObjsMidTerm,
@@ -414,6 +431,7 @@ const displayCardInfo = (function () {
   );
   var chart = null;
   var chartEl = null;
+
   function initDisplay(playlistObjs, trackObjs, chartElement) {
     displayPlaylistCards(playlistObjs);
     chartEl = chartElement;
@@ -440,69 +458,123 @@ const displayCardInfo = (function () {
       displayTrackPopularityPieChart(trackObjs, chartEl);
     } else {
       let { names, popularities } = getNamesAndPopularity(trackObjs);
-      updateChart(names, popularities);
+      updateChart(trackObjs, names, popularities);
     }
 
     return cardHtmls;
   }
-
   function getNamesAndPopularity(trackObjs) {
     const names = trackObjs.map((track) => track.name);
     const popularities = trackObjs.map((track) => track.popularity);
     return { names, popularities };
   }
+  async function loadTracksFeatures(trackObjs, tracksVerLoading) {
+    let featLoadingPromises = [];
+    trackObjs.forEach((trackObj) => {
+      if (trackObj.features == null) {
+        featLoadingPromises.push(trackObj.getFeatures());
+      }
+    });
+
+    let featureList = await Promise.all(featLoadingPromises);
+
+    return { featureList, tracksVerLoaded: tracksVerLoading };
+  }
+
+  function loadFeaturesLock(trackObjs, callback) {
+    const selectionLock = new AsyncSelectionLock();
+    let tracksVerSelected = trackTimeRangeSelection.value;
+    selectionLock.selectionChanged(tracksVerSelected);
+
+    loadTracksFeatures(trackObjs, tracksVerSelected).then(
+      ({ featureList, tracksVerLoaded }) => {
+        if (!selectionLock.isUnlocked(tracksVerLoaded)) {
+          return;
+        }
+        selectionLock.hasLoadedCurrSelected = true;
+        console.log(featureList);
+        callback(featureList);
+      }
+    );
+  }
+
   function displayTrackPopularityPieChart(trackObjs, chartEl) {
+    // display loading spinner, then load features of each track.
     let { names, popularities } = getNamesAndPopularity(trackObjs);
-    chart = new Chart(chartEl, {
-      type: "bar",
-      data: {
-        labels: names,
-        datasets: [
-          {
-            label: "Popularity",
-            data: popularities,
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.2)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(255, 206, 86, 0.2)",
-              "rgba(75, 192, 192, 0.2)",
-              "rgba(153, 102, 255, 0.2)",
-            ],
-            borderColor: [
-              "rgba(255, 99, 132, 1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-              "rgba(153, 102, 255, 1)",
-            ],
-            borderWidth: 1,
+    loadFeaturesLock(trackObjs, (featureList) => {
+      // remove loading spinner for chart
+      chart = new Chart(chartEl, {
+        type: "bar",
+        data: {
+          labels: names,
+          datasets: [
+            {
+              label: "Popularity",
+              data: popularities,
+              backgroundColor: [
+                "rgba(255, 99, 132, 0.2)",
+                "rgba(54, 162, 235, 0.2)",
+                "rgba(255, 206, 86, 0.2)",
+                "rgba(75, 192, 192, 0.2)",
+                "rgba(153, 102, 255, 0.2)",
+              ],
+              borderColor: [
+                "rgba(255, 99, 132, 1)",
+                "rgba(54, 162, 235, 1)",
+                "rgba(255, 206, 86, 1)",
+                "rgba(75, 192, 192, 1)",
+                "rgba(153, 102, 255, 1)",
+              ],
+              borderWidth: 1,
+            },
+            {
+              label: "Acousticness",
+              data: popularities,
+              backgroundColor: [
+                "rgba(255, 99, 132, 0.2)",
+                "rgba(54, 162, 235, 0.2)",
+                "rgba(255, 206, 86, 0.2)",
+                "rgba(75, 192, 192, 0.2)",
+                "rgba(153, 102, 255, 0.2)",
+              ],
+              borderColor: [
+                "rgba(255, 99, 132, 1)",
+                "rgba(54, 162, 235, 1)",
+                "rgba(255, 206, 86, 1)",
+                "rgba(75, 192, 192, 1)",
+                "rgba(153, 102, 255, 1)",
+              ],
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          plugins: {
+            title: {
+              display: true,
+              text: "Top Tracks Popularity Comparison",
+            },
           },
-        ],
-      },
-      options: {
-        plugins: {
-          title: {
-            display: true,
-            text: "Top Tracks Popularity Comparison",
+          responsive: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              suggestedMin: 0,
+              suggestedMax: 100,
+            },
           },
         },
-        responsive: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            suggestedMin: 0,
-            suggestedMax: 100,
-          },
-        },
-      },
+      });
     });
   }
-  function updateChart(names, data) {
-    chart.data.labels = [];
-    chart.data.datasets[0].data = [];
-    chart.data.labels = names;
-    chart.data.datasets[0].data = data;
-    chart.update();
+  function updateChart(trackObjs, names, data) {
+    loadFeaturesLock(trackObjs, (featureList) => {
+      chart.data.labels = [];
+      chart.data.datasets[0].data = [];
+      chart.data.labels = names;
+      chart.data.datasets[0].data = data;
+      chart.update();
+    });
   }
   return {
     displayTrackCards,
@@ -691,20 +763,19 @@ const addEventListeners = (function () {
     });
   }
   function addTopTrackCardsSelectionEvent() {
-    let selection = document.getElementById("tracks-term-selection");
-    selection.addEventListener("change", () => {
+    trackTimeRangeSelection.addEventListener("change", () => {
       let cardHtmls = null;
       // cards displayed do not have the appear class because thats supposed to be added through animation,
       // so return the elements from .displayTrackCards and add the appear class to those elements' class list.
-      if (selection.value == "short-term") {
+      if (trackTimeRangeSelection.value == "short-term") {
         cardHtmls = displayCardInfo.displayTrackCards(
           infoRetrieval.topTrackObjsShortTerm
         );
-      } else if (selection.value == "medium-term") {
+      } else if (trackTimeRangeSelection.value == "medium-term") {
         cardHtmls = displayCardInfo.displayTrackCards(
           infoRetrieval.topTrackObjsMidTerm
         );
-      } else if (selection.value == "long-term") {
+      } else if (trackTimeRangeSelection.value == "long-term") {
         cardHtmls = displayCardInfo.displayTrackCards(
           infoRetrieval.topTrackObjsLongTerm
         );
@@ -822,7 +893,7 @@ const addEventListeners = (function () {
         infoContainer.style.display = "block";
         // render and get information
         infoRetrieval
-          .getInformation()
+          .getInitialInfo()
           .then(() => {
             // Run .then() when information has been obtained and innerhtml has been changed
             animationControl.addAnimateOnScroll();
