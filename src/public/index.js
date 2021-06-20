@@ -309,8 +309,18 @@ const trackActions = (function () {
       );
     });
   }
+  function getCurrentlySelTopTracks() {
+    if (trackTimeRangeSelection.value == "short-term") {
+      return infoRetrieval.topTrackObjsShortTerm;
+    } else if (trackTimeRangeSelection.value == "medium-term") {
+      return infoRetrieval.topTrackObjsMidTerm;
+    } else if (trackTimeRangeSelection.value == "long-term") {
+      return infoRetrieval.topTrackObjsLongTerm;
+    }
+  }
   return {
     addOnTrackCardClick,
+    getCurrentlySelTopTracks,
   };
 })();
 
@@ -449,10 +459,8 @@ const displayCardInfo = (function () {
     });
     trackActions.addOnTrackCardClick(trackObjs);
     if (chartsManager.charts.tracksChart == null) {
-      chartsManager.displayTracksChart(trackObjs);
+      chartsManager.generateTracksChart(trackObjs);
     } else {
-      let { names, popularities } =
-        chartsManager.getNamesAndPopularity(trackObjs);
       chartsManager.updateTracksChart(trackObjs, names, popularities);
     }
 
@@ -466,14 +474,20 @@ const displayCardInfo = (function () {
 })();
 
 const chartsManager = (function () {
-  const tracksChartEl = document.getElementById("popularity-chart");
+  const tracksChartEl = document.getElementById(config.CSS.IDs.tracksChart);
   const charts = { tracksChart: null };
+
+  const TRACK_FEATS = {
+    popularity: "POPULARITY",
+    acousticness: "ACOUSTICNESS",
+    energy: "ENERGY",
+  };
+
   function getNamesAndPopularity(trackObjs) {
     const names = trackObjs.map((track) => track.name);
     const popularities = trackObjs.map((track) => track.popularity);
     return { names, popularities };
   }
-
   // obtains all the features for each track in a selected time range
   async function loadTracksFeatures(trackObjs, tracksVerLoading) {
     let featLoadingPromises = [];
@@ -515,7 +529,7 @@ const chartsManager = (function () {
     return { acousticnesses, energies };
   }
 
-  function displayTracksChart(trackObjs) {
+  function generateTracksChart(trackObjs) {
     // display loading spinner, then load features of each track.
     let { names, popularities } = getNamesAndPopularity(trackObjs);
     loadFeaturesVerif(trackObjs, (featureList) => {
@@ -531,49 +545,11 @@ const chartsManager = (function () {
               label: "Popularity",
               data: popularities,
               backgroundColor: [
-                "rgba(255, 99, 132, 0.2)",
-                "rgba(54, 162, 235, 0.2)",
-                "rgba(255, 206, 86, 0.2)",
-                "rgba(75, 192, 192, 0.2)",
-                "rgba(153, 102, 255, 0.2)",
-              ],
-              borderColor: [
-                "rgba(255, 99, 132, 1)",
-                "rgba(54, 162, 235, 1)",
-                "rgba(255, 206, 86, 1)",
-                "rgba(75, 192, 192, 1)",
-                "rgba(153, 102, 255, 1)",
-              ],
-              borderWidth: 1,
-            },
-            {
-              label: "Acousticness",
-              data: acousticnesses,
-              backgroundColor: [
-                "rgba(255, 99, 132, 0.2)",
-                "rgba(54, 162, 235, 0.2)",
-                "rgba(255, 206, 86, 0.2)",
-                "rgba(75, 192, 192, 0.2)",
-                "rgba(153, 102, 255, 0.2)",
-              ],
-              borderColor: [
-                "rgba(255, 99, 132, 1)",
-                "rgba(54, 162, 235, 1)",
-                "rgba(255, 206, 86, 1)",
-                "rgba(75, 192, 192, 1)",
-                "rgba(153, 102, 255, 1)",
-              ],
-              borderWidth: 1,
-            },
-            {
-              label: "Energy",
-              data: energies,
-              backgroundColor: [
-                "rgba(255, 99, 132, 0.2)",
-                "rgba(54, 162, 235, 0.2)",
-                "rgba(255, 206, 86, 0.2)",
-                "rgba(75, 192, 192, 0.2)",
-                "rgba(153, 102, 255, 0.2)",
+                "rgba(255, 99, 132, 0.5)",
+                "rgba(54, 162, 235, 0.5)",
+                "rgba(255, 206, 86, 0.5)",
+                "rgba(75, 192, 192, 0.5)",
+                "rgba(153, 102, 255, 0.5)",
               ],
               borderColor: [
                 "rgba(255, 99, 132, 1)",
@@ -590,7 +566,7 @@ const chartsManager = (function () {
           plugins: {
             title: {
               display: true,
-              text: "Top Tracks Popularity Comparison",
+              text: "Top Tracks Comparison",
             },
           },
           responsive: false,
@@ -599,13 +575,23 @@ const chartsManager = (function () {
               beginAtZero: true,
               suggestedMin: 0,
               suggestedMax: 100,
+              grid: {
+                color: "#4b4b4ba9",
+              },
+            },
+            x: {
+              grid: {
+                color: "#4b4b4ba9",
+              },
             },
           },
         },
       });
     });
   }
-  function updateTracksChart(trackObjs, names, popularities) {
+  function updateTracksChart(trackObjs, selection = TRACK_FEATS.popularity) {
+    let { names, popularities } =
+      chartsManager.getNamesAndPopularity(trackObjs);
     // display loading spinner, then load features of each track.
     loadFeaturesVerif(trackObjs, (featureList) => {
       // remove loading spinner for chart
@@ -613,22 +599,28 @@ const chartsManager = (function () {
       let chart = charts.tracksChart;
       chart.data.labels = [];
       chart.data.datasets[0].data = [];
-      chart.data.datasets[1].data = [];
-      chart.data.datasets[2].data = [];
 
       chart.data.labels = names;
-      chart.data.datasets[0].data = popularities;
-      chart.data.datasets[1].data = acousticnesses;
-      chart.data.datasets[2].data = energies;
+      if (selection == TRACK_FEATS.popularity) {
+        chart.data.datasets[0].data = popularities;
+        chart.data.datasets[0].label = "Popularity";
+      } else if (selection == TRACK_FEATS.acousticness) {
+        chart.data.datasets[0].data = acousticnesses;
+        chart.data.datasets[0].label = "Acousticness";
+      } else if (selection == TRACK_FEATS.energy) {
+        chart.data.datasets[0].data = energies;
+        chart.data.datasets[0].label = "Energy";
+      }
       chart.update();
     });
   }
 
   return {
-    displayTracksChart,
+    generateTracksChart,
     updateTracksChart,
     getNamesAndPopularity,
     charts,
+    TRACK_FEATS,
   };
 })();
 
@@ -813,28 +805,17 @@ const addEventListeners = (function () {
     });
   }
   function addTopTrackCardsSelectionEvent() {
-    trackTimeRangeSelection.addEventListener("change", () => {
-      let cardHtmls = null;
+    function onChange() {
       // cards displayed do not have the appear class because thats supposed to be added through animation,
       // so return the elements from .displayTrackCards and add the appear class to those elements' class list.
-      if (trackTimeRangeSelection.value == "short-term") {
-        cardHtmls = displayCardInfo.displayTrackCards(
-          infoRetrieval.topTrackObjsShortTerm
-        );
-      } else if (trackTimeRangeSelection.value == "medium-term") {
-        cardHtmls = displayCardInfo.displayTrackCards(
-          infoRetrieval.topTrackObjsMidTerm
-        );
-      } else if (trackTimeRangeSelection.value == "long-term") {
-        cardHtmls = displayCardInfo.displayTrackCards(
-          infoRetrieval.topTrackObjsLongTerm
-        );
-      }
+      let currTracks = trackActions.getCurrentlySelTopTracks();
+      let cardHtmls = displayCardInfo.displayTrackCards(currTracks);
 
       cardHtmls.forEach((card) => {
         card.classList.add("appear");
       });
-    });
+    }
+    trackTimeRangeSelection.addEventListener("change", () => onChange());
   }
   function addDeleteRecentlyAddedTrackEvent() {
     function onClick() {
@@ -910,6 +891,38 @@ const addEventListeners = (function () {
 
     undoBtn.addEventListener("click", () => onClick());
   }
+  function addTrackFeatureButtonEvents() {
+    function onClick(btn, featBtns) {
+      const feature = btn.getAttribute(config.CSS.ATTRIBUTES.dataSelection);
+      let selectedFeat = chartsManager.TRACK_FEATS[feature];
+      if (selectedFeat == undefined) {
+        console.error(
+          "The selected attribute " +
+            feature +
+            " from " +
+            config.CSS.ATTRIBUTES.dataSelection +
+            " is not valid. Occured in element(see next log):"
+        );
+        console.error(btn);
+        return;
+      }
+      for (let i = 0; i < featBtns.length; i++) {
+        let btn = featBtns[i];
+        btn.classList.remove("selected");
+      }
+      btn.classList.add("selected");
+      let currTracks = trackActions.getCurrentlySelTopTracks();
+      chartsManager.updateTracksChart(currTracks, selectedFeat);
+    }
+
+    let featBtns = document
+      .getElementById("feature-selections")
+      .getElementsByTagName("button");
+    for (let i = 0; i < featBtns.length; i++) {
+      let btn = featBtns[i];
+      btn.addEventListener("click", () => onClick(btn, featBtns));
+    }
+  }
 
   return {
     addExpandedPlaylistModsSearchbarEvent,
@@ -917,6 +930,7 @@ const addEventListeners = (function () {
     addDeleteRecentlyAddedTrackEvent,
     addUndoPlaylistTrackDeleteEvent,
     addTopTrackCardsSelectionEvent,
+    addTrackFeatureButtonEvents,
   };
 })();
 
@@ -965,4 +979,5 @@ const addEventListeners = (function () {
   addEventListeners.addDeleteRecentlyAddedTrackEvent();
   addEventListeners.addUndoPlaylistTrackDeleteEvent();
   addEventListeners.addTopTrackCardsSelectionEvent();
+  addEventListeners.addTrackFeatureButtonEvents();
 })();

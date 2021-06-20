@@ -38,6 +38,7 @@ export const config = {
       expandedPlaylistMods: "expanded-playlist-mods",
       playlistMods: "playlist-mods",
       tracksData: "tracks-data",
+      tracksChart: "tracks-chart",
     },
     CLASSES: {
       glow: "glow",
@@ -60,7 +61,8 @@ export const config = {
       popularityIdx: "popularity-index",
     },
     ATTRIBUTES: {
-      elementsToAnimate: "elements-to-animate",
+      elementsToAnimate: "data-elements-to-animate",
+      dataSelection: "data-selection",
     },
   },
   URLs: {
