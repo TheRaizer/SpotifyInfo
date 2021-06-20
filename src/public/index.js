@@ -104,20 +104,20 @@ var expandablePlaylistTracks = [];
 
 const cardActions = (function () {
   // returns whether the card was succesfully clicked with all actions run
-  function onCardClick(currSelCardEl, cardEl, corrObjList) {
-    if (currSelCardEl === cardEl) {
+  function onCardClick(storedSelCardEl, selCardEl, corrObjList) {
+    if (storedSelCardEl === selCardEl) {
       return { cardEl: null, corrObj: null, ok: false };
     }
     // get corrosponding playlist object using the elements id
-    let corrObj = corrObjList.find((x) => x.cardId === cardEl.id);
+    let corrObj = corrObjList.find((x) => x.cardId === selCardEl.id);
     // if there is an existing playlist selected, unselect it
-    if (currSelCardEl) {
-      currSelCardEl.classList.remove(config.CSS.CLASSES.selected);
+    if (storedSelCardEl) {
+      storedSelCardEl.classList.remove(config.CSS.CLASSES.selected);
     }
 
     // on click add the selected class onto the element which runs a transition
-    cardEl.classList.add(config.CSS.CLASSES.selected);
-    return { cardEl: cardEl, corrObj: corrObj, ok: true };
+    selCardEl.classList.add(config.CSS.CLASSES.selected);
+    return { selCardEl, corrObj: corrObj, ok: true };
   }
 
   return {
@@ -153,9 +153,6 @@ const playlistActions = (function () {
   const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
 
   function loadPlaylistTracksToHtmlString(playlistObj, callback) {
-    playlistSearchInput.value = "";
-    playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
-    playlistOrder.classList.add(config.CSS.CLASSES.hide);
     // synchronously assign the currently selected playlist to be this playlist
     infoRetrieval.selectionLock.selectionChanged(playlistObj);
 
@@ -179,6 +176,7 @@ const playlistActions = (function () {
   }
   function whenTracksLoading() {
     // hide these while loading tracks
+    playlistSearchInput.value = "";
     playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
     playlistOrder.classList.add(config.CSS.CLASSES.hide);
   }
@@ -207,17 +205,17 @@ const playlistActions = (function () {
     });
   }
   function addOnPlaylistCardClick(playlistObjs) {
-    var currSelPlaylistEl = null;
+    var storedSelPlaylistEl = null;
     function onPlaylistCardClick(playlistCard, playlistObjs) {
-      let { cardEl, corrObj, ok } = cardActions.onCardClick(
-        currSelPlaylistEl,
+      let { selCardEl, corrObj, ok } = cardActions.onCardClick(
+        storedSelPlaylistEl,
         playlistCard,
         playlistObjs
       );
       if (!ok) {
         return;
       }
-      currSelPlaylistEl = cardEl;
+      storedSelPlaylistEl = selCardEl;
 
       showExpandedPlaylist(corrObj);
     }
@@ -240,7 +238,6 @@ const playlistActions = (function () {
 })();
 
 const trackActions = (function () {
-  const selectionLock = new AsyncSelectionVerif();
   const trackInfoEls = (function () {
     const trackInfoEl = document
       .getElementById(config.CSS.IDs.tracksData)
@@ -265,39 +262,56 @@ const trackActions = (function () {
       popularityEl,
     };
   })();
-
-  function loadTrackFeatures(trackObj, callback) {
-    selectionLock.selectionChanged(trackObj);
-    trackObj.getFeatures().then((features) => {
-      if (!selectionLock.isValid(trackObj)) {
-        return;
+  // obtains all the features for each track in a given list
+  async function loadTracksFeatures(trackObjs, tracksVerLoading) {
+    let featLoadingPromises = [];
+    trackObjs.forEach((trackObj) => {
+      if (trackObj.features == null) {
+        featLoadingPromises.push(trackObj.getFeatures());
       }
-      callback(features);
     });
-    // this function is very similar to 'playlistActions.loadPlaylistTracksToHtmlString()'
+
+    let featureList = await Promise.all(featLoadingPromises);
+
+    return { featureList, tracksVerLoaded: tracksVerLoading };
   }
+  // uses the AsyncSelectionLock class to create a lock when using loadTracksFeatures()
+  function loadFeaturesVerif(trackObjs, callback) {
+    const selectionLock = new AsyncSelectionVerif();
+    let tracksVerSelected = trackTimeRangeSelection.value;
+    selectionLock.selectionChanged(tracksVerSelected);
+
+    loadTracksFeatures(trackObjs, tracksVerSelected).then(
+      ({ featureList, tracksVerLoaded }) => {
+        if (!selectionLock.isValid(tracksVerLoaded)) {
+          return;
+        }
+        selectionLock.hasLoadedCurrSelected = true;
+        callback(featureList);
+      }
+    );
+  }
+  // MODIFY THIS WHEN USING CARD FLIPPING TO SHOW INFO
   function showTrackInfo(trackObj) {
-    loadTrackFeatures(trackObj, (features) => {
-      // stuff has been loaded now so remove loading spinner and show info
-      trackInfoEls.titleEl.textContent = "Title: " + trackObj.name;
-      trackInfoEls.releaseDateEl.textContent =
-        "Release Date: " + trackObj.releaseDate.toDateString();
-      trackInfoEls.popularityEl.textContent =
-        "Popularity Index: " + trackObj.popularity;
-    });
+    trackInfoEls.titleEl.textContent = "Title: " + trackObj.name;
+    trackInfoEls.releaseDateEl.textContent =
+      "Release Date: " + trackObj.releaseDate.toDateString();
+    trackInfoEls.popularityEl.textContent =
+      "Popularity Index: " + trackObj.popularity;
   }
+  // MODIFY THE ONTRACKCARDCLICK FUNCTION IN THIS FUNCTION WHEN USING CARD FLIPPING INSTEAD OF TURNING THE CARD GREEN
   function addOnTrackCardClick(trackObjs) {
-    var currSelTrackEl = null;
+    var storedSelTrackEl = null;
     function onTrackCardClick(trackCard, trackObjs) {
-      let { cardEl, corrObj, ok } = cardActions.onCardClick(
-        currSelTrackEl,
+      let { selCardEl, corrObj, ok } = cardActions.onCardClick(
+        storedSelTrackEl,
         trackCard,
         trackObjs
       );
       if (!ok) {
         return;
       }
-      currSelTrackEl = cardEl;
+      storedSelTrackEl = selCardEl;
 
       showTrackInfo(corrObj);
     }
@@ -312,7 +326,7 @@ const trackActions = (function () {
       );
     });
   }
-  function getCurrentlySelTopTracks() {
+  function getCurrSelTopTracks() {
     if (trackTimeRangeSelection.value == "short-term") {
       return infoRetrieval.topTrackObjsShortTerm;
     } else if (trackTimeRangeSelection.value == "medium-term") {
@@ -323,7 +337,8 @@ const trackActions = (function () {
   }
   return {
     addOnTrackCardClick,
-    getCurrentlySelTopTracks,
+    getCurrSelTopTracks,
+    loadFeaturesVerif,
   };
 })();
 
@@ -491,35 +506,6 @@ const chartsManager = (function () {
     const popularities = trackObjs.map((track) => track.popularity);
     return { names, popularities };
   }
-  // obtains all the features for each track in a selected time range
-  async function loadTracksFeatures(trackObjs, tracksVerLoading) {
-    let featLoadingPromises = [];
-    trackObjs.forEach((trackObj) => {
-      if (trackObj.features == null) {
-        featLoadingPromises.push(trackObj.getFeatures());
-      }
-    });
-
-    let featureList = await Promise.all(featLoadingPromises);
-
-    return { featureList, tracksVerLoaded: tracksVerLoading };
-  }
-  // uses the AsyncSelectionLock class to create a lock when using loadTracksFeatures()
-  function loadFeaturesVerif(trackObjs, callback) {
-    const selectionLock = new AsyncSelectionVerif();
-    let tracksVerSelected = trackTimeRangeSelection.value;
-    selectionLock.selectionChanged(tracksVerSelected);
-
-    loadTracksFeatures(trackObjs, tracksVerSelected).then(
-      ({ featureList, tracksVerLoaded }) => {
-        if (!selectionLock.isValid(tracksVerLoaded)) {
-          return;
-        }
-        selectionLock.hasLoadedCurrSelected = true;
-        callback(featureList);
-      }
-    );
-  }
 
   function createFeatureLists(featureList) {
     let acousticnesses = featureList.map((features) =>
@@ -535,7 +521,7 @@ const chartsManager = (function () {
   function generateTracksChart(trackObjs) {
     // display loading spinner, then load features of each track.
     let { names, popularities } = getNamesAndPopularity(trackObjs);
-    loadFeaturesVerif(trackObjs, (featureList) => {
+    trackActions.loadFeaturesVerif(trackObjs, (featureList) => {
       // remove loading spinner for chart
       charts.tracksChart = new Chart(tracksChartEl, {
         type: "bar",
@@ -594,7 +580,7 @@ const chartsManager = (function () {
     let { names, popularities } =
       chartsManager.getNamesAndPopularity(trackObjs);
     // display loading spinner, then load features of each track.
-    loadFeaturesVerif(trackObjs, (featureList) => {
+    trackActions.loadFeaturesVerif(trackObjs, (featureList) => {
       // remove loading spinner for chart
       let { acousticnesses, energies } = createFeatureLists(featureList);
       let chart = charts.tracksChart;
@@ -810,7 +796,7 @@ const addEventListeners = (function () {
     function onChange() {
       // cards displayed do not have the appear class because thats supposed to be added through animation,
       // so return the elements from .displayTrackCards and add the appear class to those elements' class list.
-      let currTracks = trackActions.getCurrentlySelTopTracks();
+      let currTracks = trackActions.getCurrSelTopTracks();
       let cardHtmls = displayCardInfo.displayTrackCards(currTracks);
 
       cardHtmls.forEach((card) => {
@@ -913,7 +899,7 @@ const addEventListeners = (function () {
         btn.classList.remove("selected");
       }
       btn.classList.add("selected");
-      let currTracks = trackActions.getCurrentlySelTopTracks();
+      let currTracks = trackActions.getCurrSelTopTracks();
       chartsManager.selections.feature = selectedFeat;
       chartsManager.updateTracksChart(currTracks);
     }
