@@ -464,7 +464,7 @@ const displayCardInfo = (function () {
     if (chartsManager.charts.tracksChart == null) {
       chartsManager.generateTracksChart(trackObjs);
     } else {
-      chartsManager.updateTracksChart(trackObjs, names, popularities);
+      chartsManager.updateTracksChart(trackObjs);
     }
 
     return cardHtmls;
@@ -479,12 +479,12 @@ const displayCardInfo = (function () {
 const chartsManager = (function () {
   const tracksChartEl = document.getElementById(config.CSS.IDs.tracksChart);
   const charts = { tracksChart: null };
-
   const TRACK_FEATS = {
     popularity: "POPULARITY",
     acousticness: "ACOUSTICNESS",
     energy: "ENERGY",
   };
+  const selections = { feature: TRACK_FEATS.popularity };
 
   function getNamesAndPopularity(trackObjs) {
     const names = trackObjs.map((track) => track.name);
@@ -590,7 +590,7 @@ const chartsManager = (function () {
       });
     });
   }
-  function updateTracksChart(trackObjs, selection = TRACK_FEATS.popularity) {
+  function updateTracksChart(trackObjs) {
     let { names, popularities } =
       chartsManager.getNamesAndPopularity(trackObjs);
     // display loading spinner, then load features of each track.
@@ -602,13 +602,13 @@ const chartsManager = (function () {
       chart.data.datasets[0].data = [];
 
       chart.data.labels = names;
-      if (selection == TRACK_FEATS.popularity) {
+      if (selections.feature == TRACK_FEATS.popularity) {
         chart.data.datasets[0].data = popularities;
         chart.data.datasets[0].label = "Popularity";
-      } else if (selection == TRACK_FEATS.acousticness) {
+      } else if (selections.feature == TRACK_FEATS.acousticness) {
         chart.data.datasets[0].data = acousticnesses;
         chart.data.datasets[0].label = "Acousticness";
-      } else if (selection == TRACK_FEATS.energy) {
+      } else if (selections.feature == TRACK_FEATS.energy) {
         chart.data.datasets[0].data = energies;
         chart.data.datasets[0].label = "Energy";
       }
@@ -622,6 +622,7 @@ const chartsManager = (function () {
     getNamesAndPopularity,
     charts,
     TRACK_FEATS,
+    selections,
   };
 })();
 
@@ -913,7 +914,8 @@ const addEventListeners = (function () {
       }
       btn.classList.add("selected");
       let currTracks = trackActions.getCurrentlySelTopTracks();
-      chartsManager.updateTracksChart(currTracks, selectedFeat);
+      chartsManager.selections.feature = selectedFeat;
+      chartsManager.updateTracksChart(currTracks);
     }
 
     let featBtns = document
