@@ -1,6 +1,6 @@
-import Track from "./components/track.js";
-import AsyncSelectionVerif from "./components/asyncSelectionVerif.js";
-import { config } from "./config.js";
+import Track from "../../components/track.js";
+import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
+import { config } from "../../config.js";
 
 const trackTimeRangeSelection = document.getElementById(
   config.CSS.IDs.tracksTermSelections

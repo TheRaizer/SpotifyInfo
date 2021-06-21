@@ -1,6 +1,6 @@
-import Playlist from "./components/playlist.js";
-import AsyncSelectionVerif from "./components/asyncSelectionVerif.js";
-import { config, htmlToEl } from "./config.js";
+import Playlist from "../../components/playlist.js";
+import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
+import { config, htmlToEl } from "../../config.js";
 
 const expandedPlaylistMods = document.getElementById(
   config.CSS.IDs.expandedPlaylistMods
