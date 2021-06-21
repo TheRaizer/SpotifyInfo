@@ -31,7 +31,6 @@
   </head>
   <body>
     <div class="container" id="main-container">
-      <h1 id="allow-access-header">Allow Access</h1>
       <div id="spotify-container"></div>
       <img id="get-token-loading-spinner" src="200pxLoadingSpinner.svg" />
       <section id="info-container">
@@ -47,9 +46,14 @@
           src="200pxLoadingSpinner.svg"
         />
         <section id="playlists-section">
-          <section class="card-grid" id="playlist-cards-container"></section>
+          <div class="scroll-bar" id="playlist-card-scroll-area">
+            <section class="card-grid" id="playlist-cards-container"></section>
+          </div>
           <div id="expanded-playlist-container">
-            <div class="expanded-playlist" id="expanded-playlist-mods">
+            <div
+              class="expanded-playlist scroll-bar"
+              id="expanded-playlist-mods"
+            >
               <header class="sticky-area">
                 <h2 class="ellipsis-wrap">Please Select a Playlist</h2>
                 <select class="playlist-order">
@@ -81,40 +85,7 @@
             </section>
           </div>
         </section>
-
-        <section>
-          <header>
-            <h1 id="top-tracks-header" data-elements-to-animate=".track">
-              Your Top Tracks
-            </h1>
-            <select id="tracks-term-selection">
-              <option value="short-term">Short Term (last 4 weeks)</option>
-              <option value="medium-term">Mid Term (last 6 months)</option>
-              <option value="long-term">Long Term (of all time)</option>
-            </select>
-          </header>
-          <img class="info-loading-spinner" src="200pxLoadingSpinner.svg" />
-          <div class="card-grid" id="track-cards-container"></div>
-          <div class="border-connected-btn-container" id="feature-selections">
-            <button data-selection="popularity" class="selected">
-              Popularity
-            </button>
-            <button data-selection="acousticness">Acousticness</button>
-            <button data-selection="energy">Energy</button>
-          </div>
-          <section id="tracks-data">
-            <canvas id="tracks-chart" width="800px" height="550px"></canvas>
-            <div class="tracks-info">
-              <h2>Track Info</h2>
-              <h4 class="info-title">Title: N/A</h4>
-              <h4 class="album-name">Album Name: N/A</h4>
-              <h4 class="release-date">Release Date: N/A</h4>
-              <h4 class="popularity-index">Popularity Index: N/A</h4>
-            </div>
-          </section>
-        </section>
       </section>
-      <footer></footer>
     </div>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script
@@ -125,6 +96,6 @@
     ></script>
     <script type="module" src="components/track.js"></script>
     <script type="module" src="config.js"></script>
-    <script type="module" src="index.js"></script>
+    <script type="module" src="playlists.js"></script>
   </body>
 </html>

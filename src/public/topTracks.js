@@ -6,16 +6,14 @@ const trackTimeRangeSelection = document.getElementById(
   config.CSS.IDs.tracksTermSelections
 );
 
-function createSpotifyLoginButton(changeAccount = false) {
+function createChangeAccountBtn() {
   // Create anchor element.
   let btn = document.createElement("button");
   btn.style.width = "100px";
   btn.style.height = "50px";
 
   // Create the text node for anchor element.
-  let link = document.createTextNode(
-    changeAccount ? "Change Account" : "Login To Spotify"
-  );
+  let link = document.createTextNode("Change Account");
   // Append the text node to anchor element.
   btn.appendChild(link);
   btn.classList.add(config.CSS.CLASSES.glow);
@@ -55,35 +53,6 @@ async function obtainTokens() {
     (res) => (hasToken = res.data)
   );
 
-  if (hasToken) {
-    console.log("has token");
-    return hasToken;
-  }
-
-  console.log("get tokens");
-  // create a parameter searcher in the URL after '?' which holds the requests body parameters
-  const urlParams = new URLSearchParams(window.location.search);
-
-  // Get the code from the parameter called 'code' in the url which
-  // hopefully came back from the spotify GET request otherwise it is null
-  let authCode = urlParams.get("code");
-
-  if (authCode) {
-    await promiseHandler(
-      axios.get(`${config.URLs.getTokensPrefix}${authCode}`),
-
-      // if the request was succesful we have recieved a token
-      () => (hasToken = true)
-    );
-    authCode = "";
-  } else {
-    // create spotify button if no auth code was found in the url
-    createSpotifyLoginButton();
-  }
-
-  // because the code has been obtained we want to change the url
-  // so it doesn't have the code without refreshing the page
-  window.history.pushState(null, null, "/");
   return hasToken;
 }
 
@@ -653,13 +622,8 @@ const addEventListeners = (function () {
       const infoContainer = document.getElementById(
         config.CSS.IDs.infoContainer
       );
-      const allowAccessHeader = document.getElementById(
-        config.CSS.IDs.allowAccessHeader
-      );
       if (hasToken) {
-        // if there is a token remove the allow access header from DOM
-        allowAccessHeader.parentNode.removeChild(allowAccessHeader);
-        createSpotifyLoginButton(true);
+        createChangeAccountBtn(true);
         infoContainer.style.display = "block";
         // render and get information
         infoRetrieval
@@ -673,9 +637,8 @@ const addEventListeners = (function () {
             console.error(err);
           });
       } else {
-        // if there is no token show the allow access header and hide the info
-        allowAccessHeader.style.display = "block";
-        infoContainer.style.display = "none";
+        // if there is no token redirect to allow access page
+        window.location.href = "http://localhost:3000/";
       }
     })
     .catch((err) => console.error(err));

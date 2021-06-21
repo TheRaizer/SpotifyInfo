@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- IE 10+ "Metro" Tiles - 144x144 pixels in size icon should be transparent -->
+    <meta name="msapplication-TileColor" content="#D83434" />
+    <meta name="msapplication-TileImage" content="icons/SI_144x144.ico" />
+
+    <!-- Touch Icons - iOS and Android 2.1+ 152x152 pixels in size. -->
+    <link rel="apple-touch-icon-precomposed" href="icons/SI_152x152.ico" />
+
+    <!-- Firefox, Chrome, Safari, IE 11+ and Opera. 96x96 pixels in size. -->
+    <link rel="icon" href="icons/SI_96x96.ico" />
+    <meta http-equiv="content-language" content="en" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="keywords" content="website, spotify, information" />
+    <meta name="author" content="Aidan Fu" />
+    <meta name="publisher" content="Aidan Fu" />
+    <meta name="copyright" content="Aidan Fu" />
+    <meta
+      name="description"
+      content="View your spotify information and make streamlined changes."
+    />
+    <meta name="page-topic" content="Media" />
+    <meta name="page-type" content="Information" />
+    <meta name="audience" content="Everyone" />
+    <meta name="robots" content="index, follow" />
+    <title>Spotify Info</title>
+    <link rel="stylesheet" href="stylesheets/reset.css" />
+    <link rel="stylesheet" href="stylesheets/index.css" />
+  </head>
+  <body>
+    <div class="container" id="main-container">
+      <h1 id="allow-access-header">Allow Access</h1>
+      <div id="spotify-container"></div>
+      <img id="get-token-loading-spinner" src="200pxLoadingSpinner.svg" />
+      <section id="info-container">
+        <header>
+          <h1 id="top-tracks-header" data-elements-to-animate=".track">
+            Your Top Tracks
+          </h1>
+        </header>
+        <div class="border-connected-btn-container" id="tracks-term-selections">
+          <button class="selected" data-selection="short-term">
+            Short Term (last 4 weeks)
+          </button>
+          <button data-selection="medium-term">Mid Term (last 6 months)</button>
+          <button data-selection="long-term">Long Term (of all time)</button>
+        </div>
+        <div class="border-container" id="term-border-container">
+          <img class="info-loading-spinner" src="200pxLoadingSpinner.svg" />
+          <div class="card-grid" id="track-cards-container"></div>
+          <div class="border-connected-btn-container" id="feature-selections">
+            <button data-selection="popularity" class="selected">
+              Popularity
+            </button>
+            <button data-selection="valence">Valence</button>
+            <button data-selection="danceability">Danceability</button>
+            <button data-selection="instrumentalness">Instrumentalness</button>
+            <button data-selection="energy">Energy</button>
+            <button data-selection="acousticness">Acousticness</button>
+          </div>
+          <section id="tracks-data" class="border-container">
+            <canvas id="tracks-chart" width="800px" height="550px"></canvas>
+            <div class="chart-info">
+              <h2>Chart Info</h2>
+              <div class="feature-definition">
+                <h3>Definition</h3>
+                <h4>N/A</h4>
+              </div>
+              <div class="tendency">
+                <h3>Tendency</h3>
+                <h4>N/A</h4>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+      <footer></footer>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"
+      integrity="sha512-VCHVc5miKoln972iJPvkQrUYYq7XpxXzvqNfiul1H4aZDwGBGC0lq373KNleaB2LpnC2a/iNfE5zoRYmB4TRDQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script type="module" src="components/track.js"></script>
+    <script type="module" src="config.js"></script>
+    <script type="module" src="index.js"></script>
+  </body>
+</html>

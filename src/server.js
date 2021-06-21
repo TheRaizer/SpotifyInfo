@@ -76,7 +76,13 @@ app.use(express.static(__dirname + "/public"));
 
 // '/' represents the home page which will render index.html from express server
 app.get("/", function (_req, res) {
-  res.sendFile(__dirname + "/" + "index.html");
+  res.sendFile(__dirname + "/public/index.html");
+}); // '/' represents the home page which will render index.html from express server
+app.get("/playlists", function (_req, res) {
+  res.sendFile(__dirname + "/public/playlists.html");
+});
+app.get("/top-tracks", function (_req, res) {
+  res.sendFile(__dirname + "/public/topTracks.html");
 });
 
 app.use("/tokens", tokens);
