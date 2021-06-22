@@ -99,7 +99,7 @@ const playlistActions = (function () {
 
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
-      .getTracks()
+      .loadTracks()
       .then((tracks) => {
         // because .then() can run when the currently selected playlist has already changed we need a check
         if (!infoRetrieval.selectionLock.isValid(playlistObj)) {
@@ -139,11 +139,18 @@ const playlistActions = (function () {
     removeAllChildNodes(trackListUl);
     trackListUl.appendChild(spinnerEl);
 
-    whenTracksLoading();
-    loadPlaylistTracksToHtmlString(playlistObj, () => {
+    if (!playlistObj.trackObjs) {
+      // load the tracks async
+      whenTracksLoading();
+      loadPlaylistTracksToHtmlString(playlistObj, () => {
+        manageTracks.sortExpandedTracksToOrder();
+        onTracksLoadingDone();
+      });
+    } else {
+      // use loaded tracks
+      expandablePlaylistTracks = playlistObj.trackObjs;
       manageTracks.sortExpandedTracksToOrder();
-      onTracksLoadingDone();
-    });
+    }
   }
   function addOnPlaylistCardClick(playlistObjs) {
     var storedSelPlaylistEl = null;

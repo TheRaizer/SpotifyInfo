@@ -35,7 +35,7 @@ class Playlist {
     }
   }
 
-  async getTracks() {
+  async loadTracks() {
     let response = await axios
       .get(config.URLs.getPlaylistTracks + this.id)
       .catch((err) => {
@@ -66,6 +66,7 @@ class Playlist {
         trackObjs.push(new Track(props));
       }
     });
+    this.trackObjs = trackObjs;
     return trackObjs;
   }
 }

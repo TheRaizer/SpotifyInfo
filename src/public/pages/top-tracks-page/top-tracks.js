@@ -208,13 +208,12 @@ const infoRetrieval = (function () {
     // promise.all will also stop function execution if a error is thrown in any of the promises.
 
     // promise.settleAll will not throw error however it will store the state of each request. (rejected state is equivalent to a thrown error)
-    let responses = await Promise.all([
+    await Promise.all([
       topArtistsReq,
       topTracksShortTermReq,
       topTracksMidTermReq,
       topTracksLongTermReq,
     ]);
-    console.log(responses);
     // remove the info loading spinners as info has been loaded
     let infoSpinners = Array.from(
       document.getElementsByClassName(config.CSS.CLASSES.infoLoadingSpinners)
@@ -348,9 +347,8 @@ const chartsManager = (function () {
 
   function generateTracksChart(trackObjs) {
     // display loading spinner, then load features of each track.
-    let { names, popularities } = getNamesAndPopularity(trackObjs);
-    let featureList = trackObjs.map((track) => track.features);
-    console.log(featureList);
+    let { names } = getNamesAndPopularity(trackObjs);
+    trackObjs.map((track) => track.features);
     changeTracksChartExpl();
     // remove loading spinner for chart
     charts.tracksChart = new Chart(tracksChartEl, {
@@ -359,8 +357,8 @@ const chartsManager = (function () {
         labels: names,
         datasets: [
           {
-            label: "Popularity",
-            data: popularities,
+            label: selections.feature.value,
+            data: selections.feature.data,
             backgroundColor: [
               "rgba(255, 99, 132, 0.5)",
               "rgba(54, 162, 235, 0.5)",
