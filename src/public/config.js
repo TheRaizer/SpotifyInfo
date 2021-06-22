@@ -58,9 +58,10 @@ export const config = {
       playlistOrder: "playlist-order",
       chartInfo: "chart-info",
       featureDefinition: "feature-definition",
-      albumName: "album-name",
-      releaseDate: "release-date",
-      popularityIdx: "popularity-index",
+      flipCardInner: "flip-card-inner",
+      flipCardFront: "flip-card-front",
+      flipCardBack: "flip-card-back",
+      flipCard: "flip-card",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",

@@ -37,9 +37,14 @@ class Track {
     let id = `${config.CSS.IDs.trackPrefix}${idx}`;
     this.cardId = id;
     let html = `
-            <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.track}" id="${id}">
-              <img src="${this.imgURL}"></img>
-              <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
+            <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.flipCard} ${config.CSS.CLASSES.track}" id="${id}">
+              <div class=${config.CSS.CLASSES.flipCardFront}>
+                <img src="${this.imgURL}"></img>
+                <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
+              </div>
+              <div class=${config.CSS.CLASSES.flipCardBack}>
+              <p>ASDSD</p>
+              </div>
             </button>
           `;
     return htmlToEl(html);
@@ -61,12 +66,17 @@ class Track {
     return htmlToEl(html);
   }
 
-  async getFeatures() {
+  async loadFeatures() {
     let response = await axios
       .get(config.URLs.getTrackFeatures + this.id)
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        throw new Error(err);
+      });
 
-    return response.data;
+    if (response) {
+      this.features = response.data;
+    }
   }
 }
 

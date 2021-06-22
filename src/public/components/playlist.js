@@ -38,7 +38,9 @@ class Playlist {
   async getTracks() {
     let response = await axios
       .get(config.URLs.getPlaylistTracks + this.id)
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        throw new Error(err);
+      });
     if (!response) {
       return [];
     }

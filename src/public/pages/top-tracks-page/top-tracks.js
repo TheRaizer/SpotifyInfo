@@ -1,5 +1,4 @@
 import Track from "../../components/track.js";
-import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 import { config } from "../../config.js";
 
 const trackTimeRangeSelection = document.getElementById(
@@ -36,11 +35,17 @@ async function promiseHandler(
   try {
     const res = await promise;
     onSuccesful(res);
-    return { res: res, err: null };
+    return {
+      res: res,
+      err: null,
+    };
   } catch (err) {
     console.error(err);
     onFailure(err);
-    return { res: null, err: err };
+    return {
+      res: null,
+      err: err,
+    };
   }
 }
 
@@ -60,7 +65,11 @@ const cardActions = (function () {
   // returns whether the card was succesfully clicked with all actions run
   function onCardClick(storedSelCardEl, selCardEl, corrObjList) {
     if (storedSelCardEl === selCardEl) {
-      return { cardEl: null, corrObj: null, ok: false };
+      return {
+        cardEl: null,
+        corrObj: null,
+        ok: false,
+      };
     }
     // get corrosponding playlist object using the elements id
     let corrObj = corrObjList.find((x) => x.cardId === selCardEl.id);
@@ -71,7 +80,11 @@ const cardActions = (function () {
 
     // on click add the selected class onto the element which runs a transition
     selCardEl.classList.add(config.CSS.CLASSES.selected);
-    return { selCardEl, corrObj: corrObj, ok: true };
+    return {
+      selCardEl,
+      corrObj: corrObj,
+      ok: true,
+    };
   }
 
   return {
@@ -80,41 +93,15 @@ const cardActions = (function () {
 })();
 
 const trackActions = (function () {
-  const selections = { trackTerm: "short-term" };
-  // obtains all the features for each track in a given list
-  async function loadTracksFeatures(trackObjs, tracksVerLoading) {
-    let featLoadingPromises = [];
-    trackObjs.forEach((trackObj) => {
-      if (trackObj.features == null) {
-        featLoadingPromises.push(trackObj.getFeatures());
-      }
-    });
-
-    let featureList = await Promise.all(featLoadingPromises);
-
-    return { featureList, tracksVerLoaded: tracksVerLoading };
-  }
-  // uses the AsyncSelectionLock class to create a lock when using loadTracksFeatures()
-  function loadFeaturesVerif(trackObjs, callback) {
-    const selectionLock = new AsyncSelectionVerif();
-    let tracksVerSelected = selections.trackTerm;
-    selectionLock.selectionChanged(tracksVerSelected);
-
-    loadTracksFeatures(trackObjs, tracksVerSelected).then(
-      ({ featureList, tracksVerLoaded }) => {
-        if (!selectionLock.isValid(tracksVerLoaded)) {
-          return;
-        }
-        selectionLock.hasLoadedCurrSelected = true;
-        callback(featureList);
-      }
-    );
-  }
+  const selections = {
+    trackTerm: "short-term",
+  };
   // MODIFY THIS WHEN USING CARD FLIPPING TO SHOW INFO
   function showTrackInfo(trackObj) {}
   // MODIFY THE ONTRACKCARDCLICK FUNCTION IN THIS FUNCTION WHEN USING CARD FLIPPING INSTEAD OF TURNING THE CARD GREEN
   function addOnTrackCardClick(trackObjs) {
     var storedSelTrackEl = null;
+
     function onTrackCardClick(trackCard, trackObjs) {
       let { selCardEl, corrObj, ok } = cardActions.onCardClick(
         storedSelTrackEl,
@@ -139,6 +126,7 @@ const trackActions = (function () {
       );
     });
   }
+
   function getCurrSelTopTracks() {
     if (selections.trackTerm == "short-term") {
       return infoRetrieval.topTrackObjsShortTerm;
@@ -148,10 +136,19 @@ const trackActions = (function () {
       return infoRetrieval.topTrackObjsLongTerm;
     }
   }
+
+  function getFeatLoadingPromises(tracks) {
+    let promiseList = [];
+    tracks.forEach((track) => {
+      promiseList.push(track.loadFeatures());
+    });
+
+    return promiseList;
+  }
   return {
     addOnTrackCardClick,
     getCurrSelTopTracks,
-    loadFeaturesVerif,
+    getFeatLoadingPromises,
     selections,
   };
 })();
@@ -162,12 +159,8 @@ const infoRetrieval = (function () {
   const topTrackObjsMidTerm = [];
   const topTrackObjsLongTerm = [];
 
-  function loadDataToTrackLists(
-    shortTrackDatas,
-    midTrackDatas,
-    longTrackDatas
-  ) {
-    shortTrackDatas.forEach((data) => {
+  function loadDatasToTrackLists(datas, trackList) {
+    datas.forEach((data) => {
       let props = {
         name: data.name,
         images: data.album.images,
@@ -177,45 +170,38 @@ const infoRetrieval = (function () {
         releaseDate: data.album.release_date,
         id: data.id,
       };
-      topTrackObjsShortTerm.push(new Track(props));
+      trackList.push(new Track(props));
     });
-    midTrackDatas.forEach((data) => {
-      let props = {
-        name: data.name,
-        images: data.album.images,
-        duration: data.duration_ms,
-        uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
-        popularity: data.popularity,
-        releaseDate: data.album.release_date,
-        id: data.id,
-      };
-      topTrackObjsMidTerm.push(new Track(props));
-    });
-    longTrackDatas.forEach((data) => {
-      let props = {
-        name: data.name,
-        images: data.album.images,
-        duration: data.duration_ms,
-        uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
-        popularity: data.popularity,
-        releaseDate: data.album.release_date,
-        id: data.id,
-      };
-      topTrackObjsLongTerm.push(new Track(props));
-    });
+    return trackList;
   }
+
+  async function retrieveTracks(term, trackList) {
+    let { res, err } = await promiseHandler(
+      axios.get(config.URLs.getTopTracks + term)
+    );
+    if (err) {
+      throw new Error(err);
+    }
+    loadDatasToTrackLists(res.data, trackList);
+    let promiseList = trackActions.getFeatLoadingPromises(trackList);
+    await Promise.all(promiseList);
+  }
+
   /* Obtains information from web api and displays them.*/
   async function getInitialInfo() {
     // axios get requests return a promise
     let topArtistsReq = promiseHandler(axios.get(config.URLs.getTopArtists));
-    let topTracksShortTermReq = promiseHandler(
-      axios.get(config.URLs.getTopTracks + "short_term")
+    let topTracksShortTermReq = retrieveTracks(
+      "short_term",
+      topTrackObjsShortTerm
     );
-    let topTracksMidTermReq = promiseHandler(
-      axios.get(config.URLs.getTopTracks + "medium_term")
+    let topTracksMidTermReq = retrieveTracks(
+      "medium_term",
+      topTrackObjsMidTerm
     );
-    let topTracksLongTermReq = promiseHandler(
-      axios.get(config.URLs.getTopTracks + "long_term")
+    let topTracksLongTermReq = retrieveTracks(
+      "long_term",
+      topTrackObjsLongTerm
     );
 
     // promise.all runs each promise in parallel before returning their values once theyre all done.
@@ -229,7 +215,6 @@ const infoRetrieval = (function () {
       topTracksLongTermReq,
     ]);
     console.log(responses);
-
     // remove the info loading spinners as info has been loaded
     let infoSpinners = Array.from(
       document.getElementsByClassName(config.CSS.CLASSES.infoLoadingSpinners)
@@ -237,12 +222,6 @@ const infoRetrieval = (function () {
     infoSpinners.forEach((spinner) => {
       spinner.parentNode.removeChild(spinner);
     });
-
-    const shortTrackDatas = responses[1].res.data;
-    const midTrackDatas = responses[2].res.data;
-    const longTrackDatas = responses[3].res.data;
-    loadDataToTrackLists(shortTrackDatas, midTrackDatas, longTrackDatas);
-
     displayCardInfo.initDisplay(topTrackObjsShortTerm);
   }
   return {
@@ -261,6 +240,7 @@ const displayCardInfo = (function () {
   function initDisplay(trackObjs) {
     displayTrackCards(trackObjs);
   }
+
   function displayTrackCards(trackObjs, show = false) {
     removeAllChildNodes(tracksContainer);
     let cardHtmls = [];
@@ -293,7 +273,9 @@ const displayCardInfo = (function () {
 
 const chartsManager = (function () {
   const tracksChartEl = document.getElementById(config.CSS.IDs.tracksChart);
-  const charts = { tracksChart: null };
+  const charts = {
+    tracksChart: null,
+  };
   const TRACK_FEATS = {
     popularity: {
       value: "Popularity",
@@ -333,12 +315,17 @@ const chartsManager = (function () {
         "Acousticness describes how acoustic a song is. Which is measured by the amount of the song that does not contain electrical amplification",
     },
   };
-  const selections = { feature: TRACK_FEATS.popularity };
+  const selections = {
+    feature: TRACK_FEATS.popularity,
+  };
 
   function getNamesAndPopularity(trackObjs) {
     const names = trackObjs.map((track) => track.name);
     TRACK_FEATS.popularity.data = trackObjs.map((track) => track.popularity);
-    return { names, popularities: TRACK_FEATS.popularity.data };
+    return {
+      names,
+      popularities: TRACK_FEATS.popularity.data,
+    };
   }
 
   function updateFeatureData(featureList) {
@@ -358,83 +345,82 @@ const chartsManager = (function () {
       Math.round(features.acousticness * 100)
     );
   }
+
   function generateTracksChart(trackObjs) {
     // display loading spinner, then load features of each track.
     let { names, popularities } = getNamesAndPopularity(trackObjs);
-    trackActions.loadFeaturesVerif(trackObjs, (featureList) => {
-      console.log(featureList);
-      changeTracksChartExpl();
-      // remove loading spinner for chart
-      charts.tracksChart = new Chart(tracksChartEl, {
-        type: "bar",
-        data: {
-          labels: names,
-          datasets: [
-            {
-              label: "Popularity",
-              data: popularities,
-              backgroundColor: [
-                "rgba(255, 99, 132, 0.5)",
-                "rgba(54, 162, 235, 0.5)",
-                "rgba(255, 206, 86, 0.5)",
-                "rgba(75, 192, 192, 0.5)",
-                "rgba(153, 102, 255, 0.5)",
-              ],
-              borderColor: [
-                "rgba(255, 99, 132, 1)",
-                "rgba(54, 162, 235, 1)",
-                "rgba(255, 206, 86, 1)",
-                "rgba(75, 192, 192, 1)",
-                "rgba(153, 102, 255, 1)",
-              ],
-              borderWidth: 1,
-            },
-          ],
-        },
-        options: {
-          plugins: {
-            title: {
-              display: true,
-              text: "Top Tracks Comparison",
-            },
+    let featureList = trackObjs.map((track) => track.features);
+    console.log(featureList);
+    changeTracksChartExpl();
+    // remove loading spinner for chart
+    charts.tracksChart = new Chart(tracksChartEl, {
+      type: "bar",
+      data: {
+        labels: names,
+        datasets: [
+          {
+            label: "Popularity",
+            data: popularities,
+            backgroundColor: [
+              "rgba(255, 99, 132, 0.5)",
+              "rgba(54, 162, 235, 0.5)",
+              "rgba(255, 206, 86, 0.5)",
+              "rgba(75, 192, 192, 0.5)",
+              "rgba(153, 102, 255, 0.5)",
+            ],
+            borderColor: [
+              "rgba(255, 99, 132, 1)",
+              "rgba(54, 162, 235, 1)",
+              "rgba(255, 206, 86, 1)",
+              "rgba(75, 192, 192, 1)",
+              "rgba(153, 102, 255, 1)",
+            ],
+            borderWidth: 1,
           },
-          responsive: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              suggestedMin: 0,
-              suggestedMax: 100,
-              grid: {
-                color: "#4b4b4ba9",
-              },
-            },
-            x: {
-              grid: {
-                color: "#4b4b4ba9",
-              },
-            },
+        ],
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: "Top Tracks Comparison",
           },
         },
-      });
+        responsive: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMin: 0,
+            suggestedMax: 100,
+            grid: {
+              color: "#4b4b4ba9",
+            },
+          },
+          x: {
+            grid: {
+              color: "#4b4b4ba9",
+            },
+          },
+        },
+      },
     });
   }
+
   function updateTracksChart(trackObjs) {
     let { names } = chartsManager.getNamesAndPopularity(trackObjs);
-    // display loading spinner, then load features of each track.
-    trackActions.loadFeaturesVerif(trackObjs, (featureList) => {
-      // remove loading spinner for chart
-      updateFeatureData(featureList);
-      changeTracksChartExpl();
-      let chart = charts.tracksChart;
-      chart.data.labels = [];
-      chart.data.datasets[0].data = [];
+    let featureList = trackObjs.map((track) => track.features);
+    updateFeatureData(featureList);
+    changeTracksChartExpl();
+    let chart = charts.tracksChart;
+    chart.data.labels = [];
+    chart.data.datasets[0].data = [];
 
-      chart.data.labels = names;
-      chart.data.datasets[0].data = selections.feature.data;
-      chart.data.datasets[0].label = selections.feature.value;
-      chart.update();
-    });
+    chart.data.labels = names;
+    chart.data.datasets[0].data = selections.feature.data;
+    chart.data.datasets[0].label = selections.feature.value;
+    chart.update();
   }
+
   function changeTracksChartExpl() {
     const chartInfosEl = (function () {
       const chartInfoEl = document
@@ -521,6 +507,7 @@ This is done on set intervals.
       }, animationInterval);
     });
   }
+
   function addAnimateOnScroll() {
     const tracksArea = document.getElementById("top-tracks-header");
     appearOnScrollObserver.observe(tracksArea);
@@ -547,6 +534,7 @@ const addEventListeners = (function () {
     }
     trackTimeRangeSelection.addEventListener("change", () => onChange());
   }
+
   function addTrackFeatureButtonEvents() {
     function onClick(btn, featBtns) {
       const feature = btn.getAttribute(config.CSS.ATTRIBUTES.dataSelection);
@@ -580,6 +568,7 @@ const addEventListeners = (function () {
       btn.addEventListener("click", () => onClick(btn, featBtns));
     }
   }
+
   function addTrackTermButtonEvents() {
     function onClick(btn, termBtns) {
       trackActions.selections.trackTerm = btn.getAttribute(
@@ -635,6 +624,7 @@ const addEventListeners = (function () {
           .catch((err) => {
             console.log("Problem when getting information");
             console.error(err);
+            // redirect to 404 not found page
           });
       } else {
         // if there is no token redirect to allow access page
