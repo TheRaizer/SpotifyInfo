@@ -37,7 +37,7 @@ var sesh = {
   saveUninitialized: false,
   cookie: {
     signed: true,
-    maxAge: 3_600_000, // 1 hours to ms
+    maxAge: 8.64e7, // 1 day to ms
   },
 };
 

@@ -1,5 +1,6 @@
 import Track from "../../components/track.js";
-import { config } from "../../config.js";
+import { config, promiseHandler } from "../../config.js";
+import { checkIfHasTokens } from "../../manage-tokens.js";
 
 const trackTimeRangeSelection = document.getElementById(
   config.CSS.IDs.tracksTermSelections
@@ -25,40 +26,6 @@ function createChangeAccountBtn() {
 
   // Append the anchor element to the body.
   document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(btn);
-}
-
-async function promiseHandler(
-  promise,
-  onSuccesful = (res) => {},
-  onFailure = (res) => {}
-) {
-  try {
-    const res = await promise;
-    onSuccesful(res);
-    return {
-      res: res,
-      err: null,
-    };
-  } catch (err) {
-    console.error(err);
-    onFailure(err);
-    return {
-      res: null,
-      err: err,
-    };
-  }
-}
-
-async function obtainTokens() {
-  let hasToken = false;
-  // await promise resolve that returns whether the session has tokens.
-  // because token is stored in session we need to reassign 'hasToken' to the client so we do not need to run this method again on refresh
-  await promiseHandler(
-    axios.get(config.URLs.getHasTokens),
-    (res) => (hasToken = res.data)
-  );
-
-  return hasToken;
 }
 
 const cardActions = (function () {
@@ -597,7 +564,7 @@ const addEventListeners = (function () {
 })();
 
 (function () {
-  obtainTokens()
+  checkIfHasTokens()
     .then((hasToken) => {
       let getTokensSpinner = document.getElementById(
         config.CSS.IDs.getTokenLoadingSpinner

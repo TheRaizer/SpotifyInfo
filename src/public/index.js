@@ -1,4 +1,5 @@
-import { config } from "./config.js";
+import { config, promiseHandler } from "./config.js";
+import { checkIfHasTokens, getTokens } from "./manage-tokens.js";
 
 function createSpotifyLoginButton(changeAccount = false) {
   // Create anchor element.
@@ -24,60 +25,18 @@ function createSpotifyLoginButton(changeAccount = false) {
   document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(btn);
 }
 
-async function promiseHandler(
-  promise,
-  onSuccesful = (res) => {},
-  onFailure = (res) => {}
-) {
-  try {
-    const res = await promise;
-    onSuccesful(res);
-    return { res: res, err: null };
-  } catch (err) {
-    console.error(err);
-    onFailure(err);
-    return { res: null, err: err };
-  }
-}
-
 async function obtainTokens() {
-  let hasToken = false;
-  // await promise resolve that returns whether the session has tokens.
-  // because token is stored in session we need to reassign 'hasToken' to the client so we do not need to run this method again on refresh
-  await promiseHandler(
-    axios.get(config.URLs.getHasTokens),
-    (res) => (hasToken = res.data)
-  );
-
+  let hasToken = await checkIfHasTokens();
   if (hasToken) {
-    console.log("has token");
-    return hasToken;
+    createSpotifyLoginButton(true);
+    return;
   }
 
-  console.log("get tokens");
-  // create a parameter searcher in the URL after '?' which holds the requests body parameters
-  const urlParams = new URLSearchParams(window.location.search);
-
-  // Get the code from the parameter called 'code' in the url which
-  // hopefully came back from the spotify GET request otherwise it is null
-  let authCode = urlParams.get("code");
-
-  if (authCode) {
-    await promiseHandler(
-      axios.get(`${config.URLs.getTokensPrefix}${authCode}`),
-
-      // if the request was succesful we have recieved a token
-      () => (hasToken = true)
-    );
-    authCode = "";
-  } else {
+  hasToken = await getTokens(() => {
     // create spotify button if no auth code was found in the url
-    createSpotifyLoginButton();
-  }
-
-  // because the code has been obtained we want to change the url
-  // so it doesn't have the code without refreshing the page
-  window.history.pushState(null, null, "/");
+    createSpotifyLoginButton(false);
+  });
+  console.log("get tokens");
   return hasToken;
 }
 (function () {

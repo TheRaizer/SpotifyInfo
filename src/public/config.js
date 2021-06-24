@@ -82,6 +82,7 @@ export const config = {
     deletePlaylistTracks: "/spotify/delete-playlist-items?playlist_id=",
     postPlaylistTracks: "/spotify/post-playlist-items?playlist_id=",
     getTrackFeatures: "/spotify/get-track-features?track_id=",
+    postRefreshAccessToken: "/tokens/refresh-token",
   },
 };
 
@@ -97,4 +98,20 @@ export function htmlToEl(html) {
   html = html.trim(); // Never return a space text node as a result
   temp.innerHTML = html;
   return temp.content.firstChild;
+}
+
+export async function promiseHandler(
+  promise,
+  onSuccesful = (res) => {},
+  onFailure = (res) => {}
+) {
+  try {
+    const res = await promise;
+    onSuccesful(res);
+    return { res: res, err: null };
+  } catch (err) {
+    console.error(err);
+    onFailure(err);
+    return { res: null, err: err };
+  }
 }
