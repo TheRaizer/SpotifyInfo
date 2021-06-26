@@ -121,6 +121,8 @@ const playlistActions = (function () {
       });
     } else {
       // use loaded tracks
+      whenTracksLoading();
+      onTracksLoadingDone();
       expandablePlaylistTracks = playlistObj.trackObjs;
       manageTracks.sortExpandedTracksToOrder();
     }

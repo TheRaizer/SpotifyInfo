@@ -1,0 +1,107 @@
+@import "expanded-playlist.less";
+
+.playlist-order {
+    background-color: #1b1b1b;
+    color: rgb(216, 216, 216);
+    margin-right: 5%;
+    height: 30%;
+}
+
+.playlist-search {
+    margin-right: 5%;
+    height: 30%;
+    background-color: #1b1b1b;
+    color: rgb(216, 216, 216);
+}
+
+.playlist-track {
+    margin-top: 2%;
+    margin-bottom: 2%;
+    margin-left: 2%;
+
+    display: grid;
+    grid-template-columns: minmax(auto, 10%) minmax(auto, 20%) minmax(auto, 20%) minmax(auto,
+            30%);
+    grid-row: 1;
+    align-items: center;
+    text-align: left;
+    color: rgb(212, 212, 212);
+}
+
+.playlist-track>img {
+    width: 60px;
+    height: 60px;
+}
+
+.playlist-track>h4 {
+    margin-left: 2%;
+    font-weight: bold;
+}
+
+.playlist-track>h5 {
+    color: rgb(156, 156, 156);
+    margin-left: 80%;
+}
+
+#expanded-playlist-container {
+    flex: 1 1 auto;
+    opacity: 0;
+    transition: opacity 250ms ease-in;
+}
+
+#expanded-playlist-container.appear {
+    opacity: 1;
+    transition: opacity 250ms ease-in;
+}
+
+#playlist-mods {
+    display: none;
+    background-color: #303030;
+    width: @expanded-playlist-width;
+    border-radius: @expanded-playlist-border-radius;
+    height: fit-content;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#playlist-mods>button {
+    width: 60px;
+    height: 30px;
+}
+
+#playlists-section {
+    display: flex;
+}
+
+#playlist-card-scroll-area {
+    overflow-y: scroll;
+    height: inherit;
+    /* Firefox */
+    width: -moz-calc(100% - 8px);
+    /* WebKit */
+    width: -webkit-calc(100% - 8px);
+    /* Opera */
+    width: -o-calc(100% - 8px);
+    /* Standard */
+    width: calc(100% - 8px);
+}
+
+#playlist-card-scroll-area-webkit-resizer {
+    background-color: red;
+}
+
+#playlists-section>.resize-container {
+    flex: 0 0 auto;
+    height: @expanded-playlist-height;
+    max-width: 70vw;
+    min-width: fit-content;
+    box-sizing: border-box;
+    touch-action: none;
+
+    border-style: double;
+    border-right-color: #6d6d6d;
+    border-right-width: 10px;
+}

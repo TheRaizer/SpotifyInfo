@@ -1,0 +1,27 @@
+@expanded-playlist-width: 100%;
+@expanded-playlist-height: 88vh;
+@expanded-playlist-border-radius: 10px;
+
+.expanded-playlist {
+    position: relative;
+    background-color: @info-bg-color;
+    color: white;
+    width: @expanded-playlist-width;
+    height: @expanded-playlist-height;
+    border-radius: @expanded-playlist-border-radius;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    &>.sticky-area{
+        grid-template-columns: minmax(auto, 60%) minmax(auto, 20%) minmax(auto, 25%);
+    }
+    &>ul {
+        height: calc(100% - @sticky-area-height);
+        overflow-y: scroll;
+        list-style-type: none;
+    }
+    
+}
