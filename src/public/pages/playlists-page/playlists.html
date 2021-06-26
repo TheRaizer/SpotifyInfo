@@ -37,9 +37,7 @@
         <h1
           id="playlists-header"
           data-elements-to-animate=".playlist,#expanded-playlist-container"
-        >
-          Playlists
-        </h1>
+        ></h1>
         <img
           class="info-loading-spinner"
           id="playlists-loading"
@@ -50,10 +48,7 @@
             <section class="card-grid" id="playlist-cards-container"></section>
           </div>
           <div id="expanded-playlist-container">
-            <div
-              class="expanded-playlist scroll-bar"
-              id="expanded-playlist-mods"
-            >
+            <div class="expanded-playlist" id="expanded-playlist-mods">
               <header class="sticky-area">
                 <h2 class="ellipsis-wrap">Please Select a Playlist</h2>
                 <select class="playlist-order">
@@ -67,7 +62,7 @@
                   placeholder="Search in playlist"
                 />
               </header>
-              <ul>
+              <ul class="scroll-bar">
                 <li>Select a Playlist</li>
               </ul>
             </div>

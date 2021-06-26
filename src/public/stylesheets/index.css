@@ -1,12 +1,15 @@
 :root {
   --main-bg-color: #191414;
   --main-green: #1db954;
-  --expanded-playlist-width: 55vw;
-  --expanded-playlist-height: 80vh;
+  --expanded-playlist-width: 100%;
+  --expanded-playlist-height: 90vh;
   --expanded-playlist-border-radius: 10px;
   --info-bg-color: #202020;
   --connected-border: 1px solid rgb(110, 110, 110);
   --connected-border-hover: 1px solid rgba(110, 110, 110, 0.342);
+  --card-width: 150px;
+  --card-height: 170px;
+  --sticky-area-height: 60px;
 }
 button,
 input[type="submit"],
@@ -102,8 +105,8 @@ footer {
   visibility: hidden;
   /* Make relative to allow movement from normal position during animations */
   position: relative;
-  width: 150px;
-  height: 170px;
+  width: var(--card-width);
+  height: var(--card-height);
 
   background-color: rgb(48, 48, 48);
 
@@ -175,9 +178,7 @@ footer {
 
 .expanded-playlist {
   position: relative;
-  overflow-y: auto;
   background-color: var(--info-bg-color);
-  margin-bottom: 5vh;
   color: white;
   width: var(--expanded-playlist-width);
   height: var(--expanded-playlist-height);
@@ -205,7 +206,7 @@ footer {
 }
 
 .sticky-area {
-  height: 10%;
+  height: var(--sticky-area-height);
   min-height: fit-content;
   display: grid;
   grid-row: 1;
@@ -240,6 +241,8 @@ footer {
 }
 
 .expanded-playlist > ul {
+  height: calc(100% - var(--sticky-area-height));
+  overflow-y: scroll;
   list-style-type: none;
 }
 
@@ -247,13 +250,11 @@ footer {
   background-color: #1b1b1b;
   color: rgb(216, 216, 216);
   margin-right: 5%;
-  margin-top: 20%;
   height: 30%;
 }
 
 .playlist-search {
   margin-right: 5%;
-  margin-top: 15%;
   height: 30%;
   background-color: #1b1b1b;
   color: rgb(216, 216, 216);
@@ -381,6 +382,7 @@ footer {
 }
 
 #expanded-playlist-container {
+  flex: 1 1 auto;
   opacity: 0;
   transition: opacity 250ms ease-in;
 }
@@ -409,9 +411,7 @@ footer {
 }
 
 #playlists-section {
-  display: grid;
-  grid-template-columns: auto fit-content(800px);
-  grid-row: 1;
+  display: flex;
 }
 
 #remove-early-added > button {
@@ -433,7 +433,13 @@ footer {
 }
 
 #playlist-card-scroll-area {
-  overflow-y: auto;
+  flex: 0 0 auto;
+  overflow-y: scroll;
   height: var(--expanded-playlist-height);
+  max-width: 70vw;
+  min-width: fit-content;
   resize: horizontal;
+}
+#playlist-card-scroll-area-webkit-resizer {
+  background-color: red;
 }
