@@ -44,8 +44,13 @@
           src="200pxLoadingSpinner.svg"
         />
         <section id="playlists-section">
-          <div class="scroll-bar" id="playlist-card-scroll-area">
-            <section class="card-grid" id="playlist-cards-container"></section>
+          <div class="resize-container">
+            <div class="scroll-bar" id="playlist-card-scroll-area">
+              <section
+                class="card-grid"
+                id="playlist-cards-container"
+              ></section>
+            </div>
           </div>
           <div id="expanded-playlist-container">
             <div class="expanded-playlist" id="expanded-playlist-mods">
@@ -82,10 +87,15 @@
         </section>
       </section>
     </div>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"
-      integrity="sha512-VCHVc5miKoln972iJPvkQrUYYq7XpxXzvqNfiul1H4aZDwGBGC0lq373KNleaB2LpnC2a/iNfE5zoRYmB4TRDQ=="
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+      integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"
+      integrity="sha512-8hBiY/UwsVieg6BAQbtKG1HOFx8tJs1Iowlr8W1ju7ROpT9sY8JtbMY+xcDqDKGXKwkL7RA2Tkg4c5m3qNx7YA=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>

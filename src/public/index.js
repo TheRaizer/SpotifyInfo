@@ -48,17 +48,8 @@ async function obtainTokens() {
 
       // remove token spinner because by this line we have obtained the token
       getTokensSpinner.parentNode.removeChild(getTokensSpinner);
-
-      const allowAccessHeader = document.getElementById(
-        config.CSS.IDs.allowAccessHeader
-      );
       if (hasToken) {
-        // if there is a token remove the allow access header from DOM
-        allowAccessHeader.parentNode.removeChild(allowAccessHeader);
         createSpotifyLoginButton(true);
-      } else {
-        // if there is no token show the allow access header and hide the info
-        allowAccessHeader.style.display = "block";
       }
     })
     .catch((err) => console.error(err));

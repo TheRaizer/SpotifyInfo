@@ -2,7 +2,7 @@
   --main-bg-color: #191414;
   --main-green: #1db954;
   --expanded-playlist-width: 100%;
-  --expanded-playlist-height: 90vh;
+  --expanded-playlist-height: 88vh;
   --expanded-playlist-border-radius: 10px;
   --info-bg-color: #202020;
   --connected-border: 1px solid rgb(110, 110, 110);
@@ -54,6 +54,11 @@ footer {
   background: linear-gradient(180deg, #1db954af, var(--main-bg-color));
   height: 30vh;
   min-height: 150px;
+}
+
+.top-header > div {
+  display: flex;
+  justify-content: space-between;
 }
 
 .container {
@@ -327,6 +332,7 @@ footer {
 .border-connected-btn-container > button {
   border-radius: 1px;
   width: 13%;
+  min-width: fit-content;
   height: 40px;
   pointer-events: all;
 }
@@ -374,10 +380,6 @@ footer {
 }
 
 #info-container {
-  display: none;
-}
-
-#allow-access-header {
   display: none;
 }
 
@@ -433,13 +435,35 @@ footer {
 }
 
 #playlist-card-scroll-area {
-  flex: 0 0 auto;
   overflow-y: scroll;
+  height: inherit;
+  /* Firefox */
+  width: -moz-calc(100% - 8px);
+  /* WebKit */
+  width: -webkit-calc(100% - 8px);
+  /* Opera */
+  width: -o-calc(100% - 8px);
+  /* Standard */
+  width: calc(100% - 8px);
+}
+
+#playlist-card-scroll-area-webkit-resizer {
+  background-color: red;
+}
+
+#playlists-section > .resize-container {
+  flex: 0 0 auto;
   height: var(--expanded-playlist-height);
   max-width: 70vw;
   min-width: fit-content;
-  resize: horizontal;
+  box-sizing: border-box;
+  touch-action: none;
+
+  border-style: double;
+  border-right-color: #6d6d6d;
+  border-right-width: 10px;
 }
-#playlist-card-scroll-area-webkit-resizer {
-  background-color: red;
+
+#spotify-container {
+  margin: 10px 10px 10px 10px;
 }
