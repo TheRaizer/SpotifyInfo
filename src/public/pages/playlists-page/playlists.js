@@ -1,7 +1,7 @@
 import Playlist from "../../components/playlist.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 import { config, htmlToEl, promiseHandler } from "../../config.js";
-import { checkIfHasTokens } from "../../manage-tokens.js";
+import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 
 const expandedPlaylistMods = document.getElementById(
   config.CSS.IDs.expandedPlaylistMods
@@ -14,28 +14,6 @@ const trackListUl = expandedPlaylistMods.getElementsByTagName("ul")[0];
 const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
   config.CSS.CLASSES.playlistSearch
 )[0];
-
-function createChangeAccountBtn() {
-  // Create anchor element.
-  let btn = document.createElement("button");
-  btn.style.width = "100px";
-  btn.style.height = "50px";
-
-  // Create the text node for anchor element.
-  let link = document.createTextNode("Change Account");
-  // Append the text node to anchor element.
-  btn.appendChild(link);
-  btn.classList.add(config.CSS.CLASSES.glow);
-
-  // clear current tokens when clicked
-  btn.addEventListener("click", () => {
-    axios.post(config.URLs.postClearTokens).catch((err) => console.error(err));
-    window.location.href = config.URLs.auth;
-  });
-
-  // Append the anchor element to the body.
-  document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(btn);
-}
 
 // order of items should never change
 var expandablePlaylistTracks = [];
@@ -472,7 +450,7 @@ const addEventListeners = (function () {
         config.CSS.IDs.infoContainer
       );
       if (hasToken) {
-        createChangeAccountBtn(true);
+        generateNavLogin();
         infoContainer.style.display = "block";
         // render and get information
         infoRetrieval

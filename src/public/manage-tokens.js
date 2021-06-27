@@ -50,3 +50,27 @@ export async function getTokens(onNoToken) {
   window.history.pushState(null, null, "/");
   return hasToken;
 }
+
+export function generateNavLogin(changeAccount = true) {
+  // Create anchor element.
+  let a = document.createElement("a");
+  a.href = config.URLs.auth;
+  // Create the text node for anchor element.
+  let link = document.createTextNode(
+    changeAccount ? "Change Account" : "Login To Spotify"
+  );
+  // Append the text node to anchor element.
+  a.appendChild(link);
+  a.classList.add("right");
+
+  // clear current tokens when clicked
+  a.addEventListener("click", () => {
+    axios.post(config.URLs.postClearTokens).catch((err) => console.error(err));
+  });
+
+  // Append the anchor element to the body.
+  document
+    .getElementsByClassName("topnav")[0]
+    .getElementsByClassName("right")[0]
+    .appendChild(a);
+}
