@@ -1,4 +1,8 @@
+@import "main-colors.less";
+
 @max-z-index: 1000;
+@hover-color: rgba(221, 221, 221, 0.815);
+@border: 1px solid @hover-color;
 
 ul.topnav {
     z-index: @max-z-index;
@@ -6,7 +10,7 @@ ul.topnav {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #333;
+    background-color:#303030b7;
     font-family: arial;
     text-align: left;
     width: 100%;
@@ -23,18 +27,26 @@ ul.topnav {
             text-decoration: none;
             float: left;
             font-size: 17px;
-            border-right: 1px solid #bbb;
+            font-weight: 400;
+
+            border-left: @border;
+            transition: background-color 300ms ease-out;
 
             &:hover:not(.active) {
-                background-color: #ddd;
+                background-color: @hover-color;
                 color: black;
             }
-            &.active {
-                background-color: #4CAF50;
+            &.active:hover {
+                background-color: @main-green;
             }
+            
         }
         &.right {
             float: right;
+            border-left: @border;
+        }
+        &.last {
+            border-right: @border;
         }
     }   
 }

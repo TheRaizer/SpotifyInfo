@@ -22,7 +22,6 @@ footer {
 }
 .top-header {
   color: #ebebeb;
-  background: linear-gradient(180deg, #1db954af, #191414);
   height: 30vh;
   min-height: 150px;
 }
@@ -356,7 +355,7 @@ ul.topnav {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #333;
+  background-color: #303030b7;
   font-family: arial;
   text-align: left;
   width: 100%;
@@ -374,17 +373,23 @@ ul.topnav li a {
   text-decoration: none;
   float: left;
   font-size: 17px;
-  border-right: 1px solid #bbb;
+  font-weight: 400;
+  border-left: 1px solid rgba(221, 221, 221, 0.815);
+  transition: background-color 300ms ease-out;
 }
 ul.topnav li a:hover:not(.active) {
-  background-color: #ddd;
+  background-color: rgba(221, 221, 221, 0.815);
   color: black;
 }
-ul.topnav li a.active {
-  background-color: #4CAF50;
+ul.topnav li a.active:hover {
+  background-color: #1db954;
 }
 ul.topnav li.right {
   float: right;
+  border-left: 1px solid rgba(221, 221, 221, 0.815);
+}
+ul.topnav li.last {
+  border-right: 1px solid rgba(221, 221, 221, 0.815);
 }
 @media screen and (max-width: 720px) {
   ul.topnav li {

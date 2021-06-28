@@ -45,8 +45,6 @@ export async function getTokens(onNoToken) {
     onNoToken();
   }
 
-  // because the code has been obtained we want to change the url
-  // so it doesn't have the code without refreshing the page
   window.history.pushState(null, null, "/");
   return hasToken;
 }
