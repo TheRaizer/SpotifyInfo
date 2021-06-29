@@ -1,6 +1,6 @@
 body {
-    background-color: @main-bg-color;
-    color: @main-green;
+    background-color: @primary-bg-color;
+    color: @primary-green;
     font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
@@ -25,18 +25,6 @@ footer {
     margin-top: 20%;
 }
 
-.top-header {
-    color: rgb(235, 235, 235);
-    background: linear-gradient(180deg, @dark-main, @main-bg-color);
-    height: 30vh;
-    min-height: 150px;
-
-    &>div {
-        display: flex;
-        justify-content: space-between;
-    }
-}
-
 .container {
     text-align: center;
     justify-content: center;
@@ -56,11 +44,11 @@ footer {
 
     color: white;
     font-weight: bold;
-    background-color: @main-green;
+    background-color: @primary-green;
     text-decoration: none;
     width: fit-content;
     height: fit-content;
-    border-color: @main-green;
+    border-color: @primary-green;
     border-width: 2px;
     border-radius: 5px;
 
@@ -68,7 +56,7 @@ footer {
 
     &:hover {
         /* Box shadow adds Glow */
-        box-shadow: 0px 0px 10px 5px @main-green;
+        box-shadow: 0px 0px 10px 5px @primary-green;
     }
 }
 
@@ -128,4 +116,5 @@ footer {
 @import "border-connected.less";
 @import "sticky.less";
 @import "navbar.less";
+@import "home-page.less";
 @import "appear-hide.less";

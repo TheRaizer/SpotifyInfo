@@ -5,6 +5,30 @@ import {
   generateNavLogin,
 } from "./manage-tokens.js";
 
+function createSpotifyLoginButton(changeAccount = false) {
+  // Create anchor element.
+  let btn = document.createElement("button");
+  btn.style.width = "100px";
+  btn.style.height = "50px";
+
+  // Create the text node for anchor element.
+  let link = document.createTextNode(
+    changeAccount ? "Change Account" : "Login To Spotify"
+  );
+  // Append the text node to anchor element.
+  btn.appendChild(link);
+  btn.classList.add(config.CSS.CLASSES.glow);
+
+  // clear current tokens when clicked
+  btn.addEventListener("click", () => {
+    axios.post(config.URLs.postClearTokens).catch((err) => console.error(err));
+    window.location.href = config.URLs.auth;
+  });
+
+  // Append the anchor element to the body.
+  document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(btn);
+}
+
 async function obtainTokens() {
   let hasToken = await checkIfHasTokens();
   if (hasToken) {
@@ -15,6 +39,7 @@ async function obtainTokens() {
   hasToken = await getTokens(() => {
     // create spotify button if no auth code was found in the url
     generateNavLogin(false);
+    createSpotifyLoginButton();
   });
   console.log("get tokens");
   return hasToken;
