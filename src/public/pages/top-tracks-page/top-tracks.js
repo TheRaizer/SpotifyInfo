@@ -185,7 +185,15 @@ const displayCardInfo = (function () {
     displayTrackCards(trackObjs);
   }
 
-  function displayTrackCards(trackObjs, show = false) {
+  function makeCardsVisible(className) {
+    let trackCards = tracksContainer.getElementsByClassName(className);
+    for (let i = 0; i < trackCards.length; i++) {
+      let trackCard = trackCards[i];
+      trackCard.classList.add(config.CSS.CLASSES.appear);
+    }
+  }
+
+  function displayTrackCards(trackObjs) {
     removeAllChildNodes(tracksContainer);
     let cardHtmls = [];
     trackObjs.map((trackObj, idx) => {
@@ -194,18 +202,8 @@ const displayCardInfo = (function () {
       tracksContainer.appendChild(cardHtml);
     });
     trackActions.addOnTrackCardClick(trackObjs);
-    if (chartsManager.charts.tracksChart == null) {
-      chartsManager.generateTracksChart(trackObjs);
-    } else {
-      chartsManager.updateTracksChart(trackObjs);
-    }
-
-    if (show) {
-      cardHtmls.forEach((card) => {
-        card.classList.add("appear");
-      });
-    }
-
+    chartsManager.changeTracksChart(trackObjs);
+    makeCardsVisible(config.CSS.CLASSES.track);
     return cardHtmls;
   }
 
@@ -263,6 +261,13 @@ const chartsManager = (function () {
     feature: TRACK_FEATS.popularity,
   };
 
+  function changeTracksChart(trackObjs) {
+    if (charts.tracksChart == null) {
+      generateTracksChart(trackObjs);
+    } else {
+      updateTracksChart(trackObjs);
+    }
+  }
   function getNamesAndPopularity(trackObjs) {
     const names = trackObjs.map((track) => track.name);
     TRACK_FEATS.popularity.data = trackObjs.map((track) => track.popularity);
@@ -385,79 +390,10 @@ const chartsManager = (function () {
     generateTracksChart,
     updateTracksChart,
     getNamesAndPopularity,
+    changeTracksChart,
     charts,
     TRACK_FEATS,
     selections,
-  };
-})();
-
-const animationControl = (function () {
-  const animateOptions = {
-    // the entire element should be visible before the observer counts it as intersecting
-    threshold: 1,
-    // how far down the screen the element needs to be before the observer counts it as intersecting
-    rootMargin: "0px 0px -150px 0px",
-  };
-  const appearOnScrollObserver = new IntersectionObserver(function (
-    entries,
-    appearOnScroll
-  ) {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) {
-        return;
-      }
-
-      const animationInterval = 25;
-
-      // observable element that causes animation on scroll should contain a 'data-class-to-animate' attribute
-      intervalElementsTransitions(
-        entry.target.getAttribute(config.CSS.ATTRIBUTES.elementsToAnimate),
-        config.CSS.CLASSES.appear,
-        animationInterval
-      );
-      appearOnScroll.unobserve(entry.target);
-    });
-  },
-  animateOptions);
-  /*Adds a class to each element causing a transition to the changed css attributes
-of the added class while still retaining unchanged attributes from original class.
-
-This is done on set intervals.
-
-@param {string} className - The class that all the transitioning elements contain
-@param {string} classToTransitionToo - The class that all the transitioning elements will add
-@param {number} animationInterval - The interval to wait between animation of elements
- */
-  function intervalElementsTransitions(
-    elementsToAnimate,
-    classToTransitionToo,
-    animationInterval
-  ) {
-    let attributes = elementsToAnimate.split(",");
-    attributes.forEach((attr) => {
-      let elements = document.querySelectorAll(attr);
-      let idx = 0;
-      // in intervals play their initial animations
-      let interval = setInterval(() => {
-        if (idx === elements.length) {
-          clearInterval(interval);
-          return;
-        }
-        let element = elements[idx];
-        // add the class to the elements classes in order to run the transition
-        element.classList.add(classToTransitionToo);
-        idx += 1;
-      }, animationInterval);
-    });
-  }
-
-  function addAnimateOnScroll() {
-    const tracksArea = document.getElementById("top-tracks-header");
-    appearOnScrollObserver.observe(tracksArea);
-  }
-  return {
-    addAnimateOnScroll,
-    intervalElementsTransitions,
   };
 })();
 
@@ -473,7 +409,7 @@ const addEventListeners = (function () {
       // cards displayed do not have the appear class because thats supposed to be added through animation,
       // so return the elements from .displayTrackCards and add the appear class to those elements' class list.
       let currTracks = trackActions.getCurrSelTopTracks();
-      displayCardInfo.displayTrackCards(currTracks, true);
+      displayCardInfo.displayTrackCards(currTracks);
     }
     trackTimeRangeSelection.addEventListener("change", () => onChange());
   }
@@ -523,7 +459,7 @@ const addEventListeners = (function () {
       }
       btn.classList.add("selected");
       let currTracks = trackActions.getCurrSelTopTracks();
-      displayCardInfo.displayTrackCards(currTracks, true);
+      displayCardInfo.displayTrackCards(currTracks);
     }
     let trackTermBtns = document
       .getElementById(config.CSS.IDs.tracksTermSelections)
@@ -558,17 +494,11 @@ const addEventListeners = (function () {
         generateNavLogin();
         infoContainer.style.display = "block";
         // render and get information
-        infoRetrieval
-          .getInitialInfo()
-          .then(() => {
-            // Run .then() when information has been obtained and innerhtml has been changed
-            animationControl.addAnimateOnScroll();
-          })
-          .catch((err) => {
-            console.log("Problem when getting information");
-            console.error(err);
-            // redirect to 404 not found page
-          });
+        infoRetrieval.getInitialInfo().catch((err) => {
+          console.log("Problem when getting information");
+          console.error(err);
+          // redirect to 404 not found page
+        });
       } else {
         // if there is no token redirect to allow access page
         window.location.href = "http://localhost:3000/";
