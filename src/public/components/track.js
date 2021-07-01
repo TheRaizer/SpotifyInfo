@@ -38,13 +38,20 @@ class Track {
     this.cardId = id;
     let html = `
             <div class="${config.CSS.CLASSES.flipCard}">
-              <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.flipCardInner} ${config.CSS.CLASSES.track}" id="${id}">
+              <button class="${config.CSS.CLASSES.card} ${
+      config.CSS.CLASSES.flipCardInner
+    } ${config.CSS.CLASSES.track}" id="${id}">
                 <div class="${config.CSS.CLASSES.flipCardFront}">
                   <img src="${this.imgURL}"></img>
-                  <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
+                  <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${
+      this.name
+    }</h4>
                 </div>
                 <div class=${config.CSS.CLASSES.flipCardBack}>
-                <p>ASDSD</p>
+                <h3>Duration:</h3>
+                <p>${this.duration}</p>
+                <h3>Release Date:</h3>
+                <p>${this.releaseDate.toDateString()}</p>
                 </div>
               </button>
             </div>
