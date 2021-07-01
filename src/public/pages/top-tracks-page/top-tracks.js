@@ -1,5 +1,5 @@
 import Track from "../../components/track.js";
-import { config, promiseHandler } from "../../config.js";
+import { config, promiseHandler, htmlToEl } from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 
 const trackTimeRangeSelection = document.getElementById(
@@ -39,7 +39,7 @@ const cardActions = (function () {
 
 const trackActions = (function () {
   const selections = {
-    trackTerm: "short-term",
+    trackTerm: "short_term",
   };
   // MODIFY THIS WHEN USING CARD FLIPPING TO SHOW INFO
   function showTrackInfo(trackObj) {}
@@ -73,11 +73,11 @@ const trackActions = (function () {
   }
 
   function getCurrSelTopTracks() {
-    if (selections.trackTerm == "short-term") {
+    if (selections.trackTerm == "short_term") {
       return infoRetrieval.topTrackObjsShortTerm;
-    } else if (selections.trackTerm == "medium-term") {
+    } else if (selections.trackTerm == "medium_term") {
       return infoRetrieval.topTrackObjsMidTerm;
-    } else if (selections.trackTerm == "long-term") {
+    } else if (selections.trackTerm == "long_term") {
       return infoRetrieval.topTrackObjsLongTerm;
     }
   }
@@ -104,7 +104,7 @@ const infoRetrieval = (function () {
   const topTrackObjsMidTerm = [];
   const topTrackObjsLongTerm = [];
 
-  function loadDatasToTrackLists(datas, trackList) {
+  function loadDatasToTrackList(datas, trackList) {
     datas.forEach((data) => {
       let props = {
         name: data.name,
@@ -120,56 +120,19 @@ const infoRetrieval = (function () {
     return trackList;
   }
 
-  async function retrieveTracks(term, trackList) {
+  async function retrieveTracks(trackList) {
     let { res, err } = await promiseHandler(
-      axios.get(config.URLs.getTopTracks + term)
+      axios.get(config.URLs.getTopTracks + trackActions.selections.trackTerm)
     );
     if (err) {
       throw new Error(err);
     }
-    loadDatasToTrackLists(res.data, trackList);
+    loadDatasToTrackList(res.data, trackList);
     let promiseList = trackActions.getFeatLoadingPromises(trackList);
     await Promise.all(promiseList);
   }
-
-  /* Obtains information from web api and displays them.*/
-  async function getInitialInfo() {
-    // axios get requests return a promise
-    let topArtistsReq = promiseHandler(axios.get(config.URLs.getTopArtists));
-    let topTracksShortTermReq = retrieveTracks(
-      "short_term",
-      topTrackObjsShortTerm
-    );
-    let topTracksMidTermReq = retrieveTracks(
-      "medium_term",
-      topTrackObjsMidTerm
-    );
-    let topTracksLongTermReq = retrieveTracks(
-      "long_term",
-      topTrackObjsLongTerm
-    );
-
-    // promise.all runs each promise in parallel before returning their values once theyre all done.
-    // promise.all will also stop function execution if a error is thrown in any of the promises.
-
-    // promise.settleAll will not throw error however it will store the state of each request. (rejected state is equivalent to a thrown error)
-    await Promise.all([
-      topArtistsReq,
-      topTracksShortTermReq,
-      topTracksMidTermReq,
-      topTracksLongTermReq,
-    ]);
-    // remove the info loading spinners as info has been loaded
-    let infoSpinners = Array.from(
-      document.getElementsByClassName(config.CSS.CLASSES.infoLoadingSpinners)
-    );
-    infoSpinners.forEach((spinner) => {
-      spinner.parentNode.removeChild(spinner);
-    });
-    displayCardInfo.initDisplay(topTrackObjsShortTerm);
-  }
   return {
-    getInitialInfo,
+    retrieveTracks,
     topTrackObjsShortTerm,
     topTrackObjsMidTerm,
     topTrackObjsLongTerm,
@@ -193,18 +156,41 @@ const displayCardInfo = (function () {
     }
   }
 
-  function displayTrackCards(trackObjs) {
-    removeAllChildNodes(tracksContainer);
+  function showCards(trackObjs) {
     let cardHtmls = [];
+
     trackObjs.map((trackObj, idx) => {
       let cardHtml = trackObj.getTrackCardHtml(idx);
       cardHtmls.push(cardHtml);
       tracksContainer.appendChild(cardHtml);
     });
+
     trackActions.addOnTrackCardClick(trackObjs);
     chartsManager.changeTracksChart(trackObjs);
     makeCardsVisible(config.CSS.CLASSES.track);
     return cardHtmls;
+  }
+
+  function startLoadingTracks(trackObjs) {
+    // initially show the playlist with the loading spinner
+    const htmlString = `
+            <li>
+              <img src="200pxLoadingSpinner.svg" />
+            </li>`;
+    let spinnerEl = htmlToEl(htmlString);
+
+    removeAllChildNodes(tracksContainer);
+    tracksContainer.appendChild(spinnerEl);
+
+    infoRetrieval.retrieveTracks(trackObjs);
+  }
+
+  function displayTrackCards(trackObjs) {
+    if (trackObjs.length > 0) {
+      return showCards(trackObjs);
+    } else {
+      startLoadingTracks(trackObjs);
+    }
   }
 
   return {
@@ -494,11 +480,7 @@ const addEventListeners = (function () {
         generateNavLogin();
         infoContainer.style.display = "block";
         // render and get information
-        infoRetrieval.getInitialInfo().catch((err) => {
-          console.log("Problem when getting information");
-          console.error(err);
-          // redirect to 404 not found page
-        });
+        displayCardInfo.displayTrackCards(infoRetrieval.topTrackObjsShortTerm);
       } else {
         // if there is no token redirect to allow access page
         window.location.href = "http://localhost:3000/";

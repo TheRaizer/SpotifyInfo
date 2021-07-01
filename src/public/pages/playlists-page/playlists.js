@@ -42,24 +42,22 @@ const cardActions = (function () {
 })();
 
 const playlistActions = (function () {
+  const selectionVerif = new AsyncSelectionVerif();
   const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
 
   function loadPlaylistTracksToHtmlString(playlistObj, callback) {
-    // synchronously assign the currently selected playlist to be this playlist
-    infoRetrieval.selectionLock.selectionChanged(playlistObj);
-
     // asynchronously load the tracks and replace the html once it loads
     playlistObj
       .loadTracks()
       .then((tracks) => {
         // because .then() can run when the currently selected playlist has already changed we need a check
-        if (!infoRetrieval.selectionLock.isValid(playlistObj)) {
+        if (!selectionVerif.isValid(playlistObj)) {
           return;
         }
         expandablePlaylistTracks = tracks;
         callback();
 
-        infoRetrieval.selectionLock.hasLoadedCurrSelected = true;
+        selectionVerif.hasLoadedCurrSelected = true;
       })
       .catch((err) => {
         console.log("Error when getting tracks");
@@ -90,6 +88,8 @@ const playlistActions = (function () {
     removeAllChildNodes(trackListUl);
     trackListUl.appendChild(spinnerEl);
 
+    selectionVerif.selectionChanged(playlistObj);
+
     if (!playlistObj.trackObjs) {
       // load the tracks async
       whenTracksLoading();
@@ -98,7 +98,6 @@ const playlistActions = (function () {
         onTracksLoadingDone();
       });
     } else {
-      // use loaded tracks
       whenTracksLoading();
       onTracksLoadingDone();
       expandablePlaylistTracks = playlistObj.trackObjs;
@@ -135,12 +134,11 @@ const playlistActions = (function () {
   return {
     addOnPlaylistCardClick,
     showExpandedPlaylist,
+    selectionVerif,
   };
 })();
 
 const infoRetrieval = (function () {
-  // MOVE THIS TO PLAYLIST ACTIONS SCOPE
-  const selectionLock = new AsyncSelectionVerif();
   const playlistObjs = [];
 
   /* Obtains information from web api and displays them.*/
@@ -165,7 +163,6 @@ const infoRetrieval = (function () {
   }
   return {
     getInitialInfo,
-    selectionLock,
   };
 })();
 
@@ -374,7 +371,7 @@ const addEventListeners = (function () {
         (track) => !tracksToRemove.includes(track)
       );
 
-      let currPlaylist = infoRetrieval.selectionLock.currSelectedVal;
+      let currPlaylist = playlistActions.selectionVerif.currSelectedVal;
 
       currPlaylist.addToUndoList(tracksToRemove);
 
@@ -398,7 +395,7 @@ const addEventListeners = (function () {
   }
   function addUndoPlaylistTrackDeleteEvent() {
     function onClick() {
-      const currPlaylist = infoRetrieval.selectionLock.currSelectedVal;
+      const currPlaylist = playlistActions.selectionVerif.currSelectedVal;
       if (!currPlaylist || currPlaylist.undoList.length == 0) {
         return;
       }
@@ -412,11 +409,12 @@ const addEventListeners = (function () {
           // if the request was succesful and the user is
           // still looking at the playlist that was undone back, reload it.
           if (
-            undonePlaylistId == infoRetrieval.selectionLock.currSelectedVal.id
+            undonePlaylistId ==
+            playlistActions.selectionVerif.currSelectedVal.id
           ) {
             // reload the playlist after adding tracks in order to show the tracks added back
             playlistActions.showExpandedPlaylist(
-              infoRetrieval.selectionLock.currSelectedVal
+              playlistActions.selectionVerif.currSelectedVal
             );
           }
         }
