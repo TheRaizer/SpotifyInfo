@@ -112,8 +112,6 @@ const trackActions = (function () {
     loadDatasToTrackList(res.data, trackList);
     let promiseList = getFeatLoadingPromises(trackList);
     await Promise.all(promiseList);
-
-    return true;
   }
   return {
     addOnTrackCardClick,
@@ -153,6 +151,7 @@ const displayCardInfo = (function () {
     removeAllChildNodes(tracksContainer);
     let cardHtmls = [];
 
+    // fill list of card elements and append them to DOM
     trackObjs.map((trackObj, idx) => {
       let cardHtml = trackObj.getTrackCardHtml(idx);
       cardHtmls.push(cardHtml);
@@ -166,7 +165,7 @@ const displayCardInfo = (function () {
   }
 
   function startLoadingTracks(trackObjs) {
-    // initially show the playlist with the loading spinner
+    // initially show the loading spinner
     const htmlString = `
             <div>
               <img src="200pxLoadingSpinner.svg" />
@@ -176,15 +175,12 @@ const displayCardInfo = (function () {
     removeAllChildNodes(tracksContainer);
     tracksContainer.appendChild(spinnerEl);
 
-    trackActions.retrieveTracks(trackObjs).then((success) => {
+    trackActions.retrieveTracks(trackObjs).then(() => {
+      // after retrieving async verify if it is the correct list of tracks
       if (!trackActions.selectionVerif.isValid(trackObjs)) {
         return;
       }
-      if (success) {
-        return showCards(trackObjs);
-      } else {
-        return;
-      }
+      return showCards(trackObjs);
     });
   }
 
