@@ -37,15 +37,17 @@ class Track {
     let id = `${config.CSS.IDs.trackPrefix}${idx}`;
     this.cardId = id;
     let html = `
-            <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.flipCard} ${config.CSS.CLASSES.track}" id="${id}">
-              <div class=${config.CSS.CLASSES.flipCardFront}>
-                <img src="${this.imgURL}"></img>
-                <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
-              </div>
-              <div class=${config.CSS.CLASSES.flipCardBack}>
-              <p>ASDSD</p>
-              </div>
-            </button>
+            <div class="${config.CSS.CLASSES.flipCard}">
+              <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.flipCardInner} ${config.CSS.CLASSES.track}" id="${id}">
+                <div class="${config.CSS.CLASSES.flipCardFront}">
+                  <img src="${this.imgURL}"></img>
+                  <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
+                </div>
+                <div class=${config.CSS.CLASSES.flipCardBack}>
+                <p>ASDSD</p>
+                </div>
+              </button>
+            </div>
           `;
     return htmlToEl(html);
   }
