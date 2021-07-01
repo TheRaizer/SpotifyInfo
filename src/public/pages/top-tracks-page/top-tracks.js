@@ -1,10 +1,7 @@
 import Track from "../../components/track.js";
 import { config, promiseHandler, htmlToEl } from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
-
-const trackTimeRangeSelection = document.getElementById(
-  config.CSS.IDs.tracksTermSelections
-);
+import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 
 const cardActions = (function () {
   // returns whether the card was succesfully clicked with all actions run
@@ -38,12 +35,10 @@ const cardActions = (function () {
 })();
 
 const trackActions = (function () {
+  const selectionVerif = new AsyncSelectionVerif();
   const selections = {
     trackTerm: "short_term",
   };
-  // MODIFY THIS WHEN USING CARD FLIPPING TO SHOW INFO
-  function showTrackInfo(trackObj) {}
-  // MODIFY THE ONTRACKCARDCLICK FUNCTION IN THIS FUNCTION WHEN USING CARD FLIPPING INSTEAD OF TURNING THE CARD GREEN
   function addOnTrackCardClick(trackObjs) {
     var storedSelTrackEl = null;
 
@@ -74,11 +69,13 @@ const trackActions = (function () {
 
   function getCurrSelTopTracks() {
     if (selections.trackTerm == "short_term") {
-      return infoRetrieval.topTrackObjsShortTerm;
+      return trackLists.topTrackObjsShortTerm;
     } else if (selections.trackTerm == "medium_term") {
-      return infoRetrieval.topTrackObjsMidTerm;
+      return trackLists.topTrackObjsMidTerm;
     } else if (selections.trackTerm == "long_term") {
-      return infoRetrieval.topTrackObjsLongTerm;
+      return trackLists.topTrackObjsLongTerm;
+    } else {
+      throw new Error("Selected track term is invalid " + selections.trackTerm);
     }
   }
 
@@ -90,20 +87,6 @@ const trackActions = (function () {
 
     return promiseList;
   }
-  return {
-    addOnTrackCardClick,
-    getCurrSelTopTracks,
-    getFeatLoadingPromises,
-    selections,
-  };
-})();
-
-const infoRetrieval = (function () {
-  // MOVE THIS TO PLAYLIST ACTIONS SCOPE
-  const topTrackObjsShortTerm = [];
-  const topTrackObjsMidTerm = [];
-  const topTrackObjsLongTerm = [];
-
   function loadDatasToTrackList(datas, trackList) {
     datas.forEach((data) => {
       let props = {
@@ -119,20 +102,34 @@ const infoRetrieval = (function () {
     });
     return trackList;
   }
-
   async function retrieveTracks(trackList) {
     let { res, err } = await promiseHandler(
-      axios.get(config.URLs.getTopTracks + trackActions.selections.trackTerm)
+      axios.get(config.URLs.getTopTracks + selections.trackTerm)
     );
     if (err) {
       throw new Error(err);
     }
     loadDatasToTrackList(res.data, trackList);
-    let promiseList = trackActions.getFeatLoadingPromises(trackList);
+    let promiseList = getFeatLoadingPromises(trackList);
     await Promise.all(promiseList);
+
+    return true;
   }
   return {
+    addOnTrackCardClick,
+    getCurrSelTopTracks,
     retrieveTracks,
+    selections,
+    selectionVerif,
+  };
+})();
+
+const trackLists = (function () {
+  const topTrackObjsShortTerm = [];
+  const topTrackObjsMidTerm = [];
+  const topTrackObjsLongTerm = [];
+
+  return {
     topTrackObjsShortTerm,
     topTrackObjsMidTerm,
     topTrackObjsLongTerm,
@@ -144,10 +141,6 @@ const displayCardInfo = (function () {
     config.CSS.IDs.trackCardsContainer
   );
 
-  function initDisplay(trackObjs) {
-    displayTrackCards(trackObjs);
-  }
-
   function makeCardsVisible(className) {
     let trackCards = tracksContainer.getElementsByClassName(className);
     for (let i = 0; i < trackCards.length; i++) {
@@ -157,6 +150,7 @@ const displayCardInfo = (function () {
   }
 
   function showCards(trackObjs) {
+    removeAllChildNodes(tracksContainer);
     let cardHtmls = [];
 
     trackObjs.map((trackObj, idx) => {
@@ -174,28 +168,37 @@ const displayCardInfo = (function () {
   function startLoadingTracks(trackObjs) {
     // initially show the playlist with the loading spinner
     const htmlString = `
-            <li>
+            <div>
               <img src="200pxLoadingSpinner.svg" />
-            </li>`;
+            </div>`;
     let spinnerEl = htmlToEl(htmlString);
 
     removeAllChildNodes(tracksContainer);
     tracksContainer.appendChild(spinnerEl);
 
-    infoRetrieval.retrieveTracks(trackObjs);
+    trackActions.retrieveTracks(trackObjs).then((success) => {
+      if (!trackActions.selectionVerif.isValid(trackObjs)) {
+        return;
+      }
+      if (success) {
+        return showCards(trackObjs);
+      } else {
+        return;
+      }
+    });
   }
 
   function displayTrackCards(trackObjs) {
+    trackActions.selectionVerif.selectionChanged(trackObjs);
     if (trackObjs.length > 0) {
       return showCards(trackObjs);
     } else {
-      startLoadingTracks(trackObjs);
+      return startLoadingTracks(trackObjs);
     }
   }
 
   return {
     displayTrackCards,
-    initDisplay,
   };
 })();
 
@@ -390,16 +393,6 @@ function removeAllChildNodes(parent) {
 }
 
 const addEventListeners = (function () {
-  function addTopTrackCardsSelectionEvent() {
-    function onChange() {
-      // cards displayed do not have the appear class because thats supposed to be added through animation,
-      // so return the elements from .displayTrackCards and add the appear class to those elements' class list.
-      let currTracks = trackActions.getCurrSelTopTracks();
-      displayCardInfo.displayTrackCards(currTracks);
-    }
-    trackTimeRangeSelection.addEventListener("change", () => onChange());
-  }
-
   function addTrackFeatureButtonEvents() {
     function onClick(btn, featBtns) {
       const feature = btn.getAttribute(config.CSS.ATTRIBUTES.dataSelection);
@@ -439,14 +432,17 @@ const addEventListeners = (function () {
       trackActions.selections.trackTerm = btn.getAttribute(
         config.CSS.ATTRIBUTES.dataSelection
       );
+
       for (let i = 0; i < termBtns.length; i++) {
         let btn = termBtns[i];
         btn.classList.remove("selected");
       }
+
       btn.classList.add("selected");
       let currTracks = trackActions.getCurrSelTopTracks();
       displayCardInfo.displayTrackCards(currTracks);
     }
+
     let trackTermBtns = document
       .getElementById(config.CSS.IDs.tracksTermSelections)
       .getElementsByTagName("button");
@@ -457,7 +453,6 @@ const addEventListeners = (function () {
   }
 
   return {
-    addTopTrackCardsSelectionEvent,
     addTrackFeatureButtonEvents,
     addTrackTermButtonEvents,
   };
@@ -479,8 +474,10 @@ const addEventListeners = (function () {
       if (hasToken) {
         generateNavLogin();
         infoContainer.style.display = "block";
-        // render and get information
-        displayCardInfo.displayTrackCards(infoRetrieval.topTrackObjsShortTerm);
+
+        // when entering the page always show short term tracks first
+        trackActions.selections.trackTerm = "short_term";
+        displayCardInfo.displayTrackCards(trackLists.topTrackObjsShortTerm);
       } else {
         // if there is no token redirect to allow access page
         window.location.href = "http://localhost:3000/";
@@ -488,7 +485,6 @@ const addEventListeners = (function () {
     })
     .catch((err) => console.error(err));
 
-  addEventListeners.addTopTrackCardsSelectionEvent();
   addEventListeners.addTrackFeatureButtonEvents();
   addEventListeners.addTrackTermButtonEvents();
 })();
