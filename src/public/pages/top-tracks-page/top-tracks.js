@@ -5,12 +5,20 @@ import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 
 const cardActions = (function () {
   // returns whether the card was succesfully clicked with all actions run
-  function onCardClick(storedSelCardEl, selCardEl, corrObjList) {
+  function onCardClick(
+    storedSelCardEl,
+    selCardEl,
+    corrObjList,
+    allowUnselectSelected
+  ) {
     if (storedSelCardEl === selCardEl) {
+      if (allowUnselectSelected) {
+        storedSelCardEl.classList.remove(config.CSS.CLASSES.selected);
+      }
       return {
         cardEl: null,
         corrObj: null,
-        ok: false,
+        ok: allowUnselectSelected ? true : false,
       };
     }
     // get corrosponding playlist object using the elements id
@@ -46,7 +54,8 @@ const trackActions = (function () {
       let { selCardEl, corrObj, ok } = cardActions.onCardClick(
         storedSelTrackEl,
         trackCard,
-        trackObjs
+        trackObjs,
+        true
       );
       if (!ok) {
         return;
@@ -139,6 +148,7 @@ const displayCardInfo = (function () {
     config.CSS.IDs.trackCardsContainer
   );
 
+  // add appear class name to elements of a given class.
   function makeCardsVisible(className) {
     let trackCards = tracksContainer.getElementsByClassName(className);
     for (let i = 0; i < trackCards.length; i++) {
@@ -146,8 +156,8 @@ const displayCardInfo = (function () {
       trackCard.classList.add(config.CSS.CLASSES.appear);
     }
   }
-
-  function showCards(trackObjs) {
+  // generates the cards to the DOM then makes them visible
+  function generateCards(trackObjs) {
     removeAllChildNodes(tracksContainer);
     let cardHtmls = [];
 
@@ -163,7 +173,7 @@ const displayCardInfo = (function () {
     makeCardsVisible(config.CSS.CLASSES.track);
     return cardHtmls;
   }
-
+  // begins retrieving tracks then verifies it is the correct selected tracks
   function startLoadingTracks(trackObjs) {
     // initially show the loading spinner
     const htmlString = `
@@ -180,14 +190,14 @@ const displayCardInfo = (function () {
       if (!trackActions.selectionVerif.isValid(trackObjs)) {
         return;
       }
-      return showCards(trackObjs);
+      return generateCards(trackObjs);
     });
   }
-
+  // load track objects if not loaded, then generate cards with the objects.
   function displayTrackCards(trackObjs) {
     trackActions.selectionVerif.selectionChanged(trackObjs);
     if (trackObjs.length > 0) {
-      return showCards(trackObjs);
+      return generateCards(trackObjs);
     } else {
       return startLoadingTracks(trackObjs);
     }
