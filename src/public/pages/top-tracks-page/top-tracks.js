@@ -2,45 +2,7 @@ import Track from "../../components/track.js";
 import { config, promiseHandler, htmlToEl } from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
-
-const cardActions = (function () {
-  // returns whether the card was succesfully clicked with all actions run
-  function onCardClick(
-    storedSelCardEl,
-    selCardEl,
-    corrObjList,
-    allowUnselectSelected
-  ) {
-    if (storedSelCardEl === selCardEl) {
-      if (allowUnselectSelected) {
-        storedSelCardEl.classList.remove(config.CSS.CLASSES.selected);
-      }
-      return {
-        cardEl: null,
-        corrObj: null,
-        ok: allowUnselectSelected ? true : false,
-      };
-    }
-    // get corrosponding playlist object using the elements id
-    let corrObj = corrObjList.find((x) => x.cardId === selCardEl.id);
-    // if there is an existing playlist selected, unselect it
-    if (storedSelCardEl) {
-      storedSelCardEl.classList.remove(config.CSS.CLASSES.selected);
-    }
-
-    // on click add the selected class onto the element which runs a transition
-    selCardEl.classList.add(config.CSS.CLASSES.selected);
-    return {
-      selCardEl,
-      corrObj: corrObj,
-      ok: true,
-    };
-  }
-
-  return {
-    onCardClick,
-  };
-})();
+import { onCardClick } from "../../card-actions.js";
 
 const trackActions = (function () {
   const selectionVerif = new AsyncSelectionVerif();
@@ -51,7 +13,7 @@ const trackActions = (function () {
     var storedSelTrackEl = null;
 
     function onTrackCardClick(trackCard, trackObjs) {
-      let { selCardEl, corrObj, ok } = cardActions.onCardClick(
+      let { selCardEl, ok } = onCardClick(
         storedSelTrackEl,
         trackCard,
         trackObjs,
@@ -61,8 +23,6 @@ const trackActions = (function () {
         return;
       }
       storedSelTrackEl = selCardEl;
-
-      showTrackInfo(corrObj);
     }
 
     let trackCards = Array.from(

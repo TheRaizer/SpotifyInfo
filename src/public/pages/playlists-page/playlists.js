@@ -2,6 +2,7 @@ import Playlist from "../../components/playlist.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 import { config, htmlToEl, promiseHandler } from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
+import { onCardClick } from "../../card-actions.js";
 
 const expandedPlaylistMods = document.getElementById(
   config.CSS.IDs.expandedPlaylistMods
@@ -17,29 +18,6 @@ const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
 
 // order of items should never change
 var expandablePlaylistTracks = [];
-
-const cardActions = (function () {
-  // returns whether the card was succesfully clicked with all actions run
-  function onCardClick(storedSelCardEl, selCardEl, corrObjList) {
-    if (storedSelCardEl === selCardEl) {
-      return { cardEl: null, corrObj: null, ok: false };
-    }
-    // get corrosponding playlist object using the elements id
-    let corrObj = corrObjList.find((x) => x.cardId === selCardEl.id);
-    // if there is an existing playlist selected, unselect it
-    if (storedSelCardEl) {
-      storedSelCardEl.classList.remove(config.CSS.CLASSES.selected);
-    }
-
-    // on click add the selected class onto the element which runs a transition
-    selCardEl.classList.add(config.CSS.CLASSES.selected);
-    return { selCardEl, corrObj: corrObj, ok: true };
-  }
-
-  return {
-    onCardClick,
-  };
-})();
 
 const playlistActions = (function () {
   const selectionVerif = new AsyncSelectionVerif();
@@ -107,7 +85,7 @@ const playlistActions = (function () {
   function addOnPlaylistCardClick(playlistObjs) {
     var storedSelPlaylistEl = null;
     function onPlaylistCardClick(playlistCard, playlistObjs) {
-      let { selCardEl, corrObj, ok } = cardActions.onCardClick(
+      let { selCardEl, corrObj, ok } = onCardClick(
         storedSelPlaylistEl,
         playlistCard,
         playlistObjs
