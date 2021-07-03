@@ -25,6 +25,7 @@ class Track {
     this.dateAddedToPlaylist = new Date(dateAddedToPlaylist);
     this.releaseDate = new Date(releaseDate);
 
+    // obtain the correct image
     if (this.images.length > 0) {
       let img = this.images[0];
       this.imgURL = img.url;
@@ -33,6 +34,11 @@ class Track {
     }
   }
 
+  /** Produces the card element of this track.
+   *
+   * @param {Number} idx - The card index to use for the elements id suffix
+   * @returns {ChildNode} - The converted html string to an element
+   */
   getTrackCardHtml(idx) {
     let id = `${config.CSS.IDs.trackPrefix}${idx}`;
     this.cardId = id;
@@ -59,6 +65,10 @@ class Track {
     return htmlToEl(html);
   }
 
+  /** Get a track html to be placed as a list element.
+   *
+   * @returns {ChildNode} - The converted html string to an element
+   */
   getPlaylistTrackHtml() {
     let html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
@@ -75,6 +85,9 @@ class Track {
     return htmlToEl(html);
   }
 
+  /** Load the feeatures of a track from the spotify web api and store them.
+   *
+   */
   async loadFeatures() {
     let response = await axios
       .get(config.URLs.getTrackFeatures + this.id)

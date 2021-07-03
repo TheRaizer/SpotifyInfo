@@ -7,6 +7,7 @@ class Playlist {
     this.name = name;
     this.id = id;
     this.undoList = [];
+
     // the id of the playlist card element
     this.cardId = "";
   }
@@ -15,6 +16,11 @@ class Playlist {
     this.undoList.push(tracks);
   }
 
+  /** Produces the card element of this playlist.
+   *
+   * @param {Number} idx - The card index to use for the elements id suffix
+   * @returns {ChildNode} - The converted html string to an element
+   */
   getPlaylistCardHtml(idx) {
     let url = "";
     let id = `${config.CSS.IDs.playlistPrefix}${idx}`;
@@ -35,6 +41,10 @@ class Playlist {
     }
   }
 
+  /** Produces list of Track class instances using track datas from spotify web api.
+   *
+   * @returns {List} - List of track classes created using the obtained track datas.
+   */
   async loadTracks() {
     let response = await axios
       .get(config.URLs.getPlaylistTracks + this.id)
@@ -48,7 +58,7 @@ class Playlist {
     var trackObjs = [];
 
     tracksData.forEach((data) => {
-      // if the data is not null or undefined etc.
+      // if the data exists
       if (data && data.track) {
         let props = {
           name: data.track.name,
@@ -63,9 +73,12 @@ class Playlist {
           releaseDate: data.track.album.release_date,
           id: data.track.id,
         };
+
+        // push an instance of a Track class to the list
         trackObjs.push(new Track(props));
       }
     });
+
     this.trackObjs = trackObjs;
     return trackObjs;
   }

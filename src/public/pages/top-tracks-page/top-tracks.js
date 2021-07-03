@@ -146,7 +146,7 @@ const displayCardInfo = (function () {
     tracksContainer.appendChild(spinnerEl);
 
     trackActions.retrieveTracks(trackObjs).then(() => {
-      // after retrieving async verify if it is the correct list of tracks
+      // after retrieving async verify if it is the same list of trackObjs as what was selected
       if (!trackActions.selectionVerif.isValid(trackObjs)) {
         return;
       }

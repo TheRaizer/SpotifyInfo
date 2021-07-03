@@ -28,7 +28,7 @@ const playlistActions = (function () {
     playlistObj
       .loadTracks()
       .then((tracks) => {
-        // because .then() can run when the currently selected playlist has already changed we need a check
+        // because .then() can run when the currently selected playlist has already changed we need to verify
         if (!selectionVerif.isValid(playlistObj)) {
           return;
         }
