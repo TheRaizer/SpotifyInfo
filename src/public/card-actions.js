@@ -1,18 +1,15 @@
 import { config } from "../../config.js";
 
-/* Manages selecting a card and deselecting the previous selected one
-when a cards on click event listener is triggered.
-
-@param {HTML} prevSelCardEl - the card that was previously selected
-@param {HTML} selCardEl - the card that executed this function when clicked
-@param {List} corrObjList - the list of objects that contains one that corrosponds to the selected card,
-each object should have the cardId attribute.
-@param {boolean} allowUnselSelected - whether to allow unselecting of the selected card by clicking on it again
-
-@returns {HTML} selCardEl - the card that is currently selected
-@returns {Object} corrObj - the object that corrosponds to the currently selected card
-@returns {boolean} ok - whether the action of selecting the card succesfully occured
-*/
+/** Manages selecting a card and deselecting the previous selected one
+ * when a cards on click event listener is triggered.
+ *
+ * @param {HTML} prevSelCardEl - the card that was previously selected
+ * @param {HTML} selCardEl - the card that executed this function when clicked
+ * @param {List} corrObjList - the list of objects that contains one that corrosponds to the selected card,
+ * each object should have the cardId attribute.
+ * @param {boolean} allowUnselSelected - whether to allow unselecting of the selected card by clicking on it again
+ * @returns {boolean} ok - whether the action of selecting the card succesfully occured
+ */
 export function onCardClick(
   prevSelCardEl,
   selCardEl,

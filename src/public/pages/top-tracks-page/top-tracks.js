@@ -255,6 +255,7 @@ const chartsManager = (function () {
     let { names } = getNamesAndPopularity(trackObjs);
     trackObjs.map((track) => track.features);
     changeTracksChartExpl();
+
     // remove loading spinner for chart
     charts.tracksChart = new Chart(tracksChartEl, {
       type: "bar",
@@ -300,6 +301,16 @@ const chartsManager = (function () {
             },
           },
           x: {
+            ticks: {
+              callback: function (value) {
+                let val = this.getLabelForValue(value).substr(0, 20);
+                if (val.length == this.getLabelForValue(value).length) {
+                  return val;
+                } else {
+                  return val + "...";
+                }
+              },
+            },
             grid: {
               color: "#4b4b4ba9",
             },

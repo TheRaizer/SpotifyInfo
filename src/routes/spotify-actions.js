@@ -161,3 +161,10 @@ router.post("/post-playlist-items", async function (req, res, next) {
       next(err);
     });
 });
+
+router.post("/add-session-data", function (req, res) {
+  req.session.access_token = "";
+  req.session.refresh_token = "";
+
+  res.send("recieved post request to clear tokens");
+});
