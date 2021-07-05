@@ -1,6 +1,6 @@
 import Playlist from "../../components/playlist.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
-import { config, htmlToEl, promiseHandler } from "../../config.js";
+import { config, htmlToEl, promiseHandler, searchUl } from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 import { onCardClick } from "../../card-actions.js";
 
@@ -16,6 +16,10 @@ const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
   config.CSS.CLASSES.playlistSearch
 )[0];
 
+const cardResizeContainer = document
+  .getElementById(config.CSS.IDs.playlistsSection)
+  .getElementsByClassName(config.CSS.CLASSES.resizeContainer)[0];
+
 // order of items should never change
 var expandablePlaylistTracks = [];
 
@@ -23,8 +27,12 @@ const playlistActions = (function () {
   const selectionVerif = new AsyncSelectionVerif();
   const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
 
+  /** Asynchronously load a playlists tracks and replace the track ul html once it loads
+   *
+   * @param {Playlist} playlistObj - a Playlist instance whose tracks will be loaded
+   * @param {Function} callback - callback function to run when loading was succesful
+   */
   function loadPlaylistTracksToHtmlString(playlistObj, callback) {
-    // asynchronously load the tracks and replace the html once it loads
     playlistObj
       .loadTracks()
       .then((tracks) => {
@@ -53,8 +61,15 @@ const playlistActions = (function () {
     playlistSearchInput.classList.remove(config.CSS.CLASSES.hide);
     playlistOrder.classList.remove(config.CSS.CLASSES.hide);
   }
+  /** Empty the track list and replace it with newly loaded html track list.
+   *
+   * @param {Playlist} playlistObj - a Playlist instance whose tracks will be loaded
+   */
   function showExpandedPlaylist(playlistObj) {
     playlistTitleh2.textContent = playlistObj.name;
+
+    // empty the track list html
+    removeAllChildNodes(trackListUl);
 
     // initially show the playlist with the loading spinner
     const htmlString = `
@@ -62,26 +77,29 @@ const playlistActions = (function () {
               <img src="200pxLoadingSpinner.svg" />
             </li>`;
     let spinnerEl = htmlToEl(htmlString);
-
-    removeAllChildNodes(trackListUl);
     trackListUl.appendChild(spinnerEl);
 
     selectionVerif.selectionChanged(playlistObj);
 
     if (!playlistObj.trackObjs) {
-      // load the tracks async
+      // lazy load tracks then show them
       whenTracksLoading();
       loadPlaylistTracksToHtmlString(playlistObj, () => {
         manageTracks.sortExpandedTracksToOrder();
         onTracksLoadingDone();
       });
     } else {
+      // tracks are already loaded so show them
       whenTracksLoading();
       onTracksLoadingDone();
       expandablePlaylistTracks = playlistObj.trackObjs;
       manageTracks.sortExpandedTracksToOrder();
     }
   }
+  /** Add an on click listener to each Playlist instance in the given list.
+   *
+   * @param {List<Playlist>} playlistObjs - list of Playlist instances whose on click event listeners are being initialized
+   */
   function addOnPlaylistCardClick(playlistObjs) {
     var storedSelPlaylistEl = null;
     function onPlaylistCardClick(playlistCard, playlistObjs) {
@@ -94,7 +112,7 @@ const playlistActions = (function () {
         return;
       }
       storedSelPlaylistEl = selCardEl;
-
+      // show the selected Playlist instance's tracks
       showExpandedPlaylist(corrObj);
     }
 
@@ -119,9 +137,9 @@ const playlistActions = (function () {
 const infoRetrieval = (function () {
   const playlistObjs = [];
 
-  /* Obtains information from web api and displays them.*/
+  /* Obtains playlist info from web api and displays their cards.*/
   async function getInitialInfo() {
-    // axios get requests return a promise
+    // axios get request return a promise
     let response = await promiseHandler(axios.get(config.URLs.getPlaylists));
 
     // remove the info loading spinners as info has been loaded
@@ -133,11 +151,12 @@ const infoRetrieval = (function () {
     });
 
     const playlistDatas = response.res.data;
+
     playlistDatas.forEach((data) => {
       playlistObjs.push(new Playlist(data.name, data.images, data.id));
     });
 
-    displayCardInfo.initDisplay(playlistObjs);
+    displayCardInfo.displayPlaylistCards(playlistObjs);
   }
   return {
     getInitialInfo,
@@ -148,36 +167,22 @@ const displayCardInfo = (function () {
   const playlistsContainer = document.getElementById(
     config.CSS.IDs.playlistCardsContainer
   );
-  function initDisplay(playlistObjs) {
-    displayPlaylistCards(playlistObjs);
-  }
+
   function displayPlaylistCards(playlistObjs) {
     removeAllChildNodes(playlistsContainer);
+
+    // add card html to container element
     playlistObjs.map((playlistObj, idx) => {
       playlistsContainer.appendChild(playlistObj.getPlaylistCardHtml(idx));
     });
+    // add event listener to cards
     playlistActions.addOnPlaylistCardClick(playlistObjs);
   }
 
   return {
-    initDisplay,
+    displayPlaylistCards,
   };
 })();
-
-function searchUl(ul, input, stdDisplay = "grid") {
-  let tracksLi = ul.getElementsByTagName("li");
-  let filter = input.value.toUpperCase();
-
-  for (let i = 0; i < tracksLi.length; i++) {
-    let name = tracksLi[i].getElementsByClassName(config.CSS.CLASSES.name)[0];
-    let nameTxt = name.textContent || name.innerText;
-    if (nameTxt.toUpperCase().indexOf(filter) > -1) {
-      tracksLi[i].style.display = stdDisplay;
-    } else {
-      tracksLi[i].style.display = "none";
-    }
-  }
-}
 
 const animationControl = (function () {
   const animateOptions = {
@@ -195,6 +200,19 @@ const animationControl = (function () {
         return;
       }
 
+      // if there is no elements to animate attribute throw error
+      if (
+        entry.target.getAttribute(config.CSS.ATTRIBUTES.elementsToAnimate) ==
+        null
+      ) {
+        throw new Error(
+          "Element to observe " +
+            entry +
+            " does not contain attribute: " +
+            config.CSS.ATTRIBUTES.elementsToAnimate
+        );
+      }
+
       const animationInterval = 25;
 
       // observable element that causes animation on scroll should contain a 'data-class-to-animate' attribute
@@ -207,21 +225,24 @@ const animationControl = (function () {
     });
   },
   animateOptions);
-  /*Adds a class to each element causing a transition to the changed css attributes
-of the added class while still retaining unchanged attributes from original class.
 
-This is done on set intervals.
-
-@param {string} className - The class that all the transitioning elements contain
-@param {string} classToTransitionToo - The class that all the transitioning elements will add
-@param {number} animationInterval - The interval to wait between animation of elements
- */
+  /** Adds a class to each element causing a transition to the changed css attributes
+   * of the added class while still retaining unchanged attributes from original class.
+   * This is done on set intervals.
+   *
+   *
+   * @param {String} className - The class that all the transitioning elements contain
+   * @param {String} classToTransitionToo - The class that all the transitioning elements will add
+   * @param {Number} animationInterval - The interval to wait between animation of elements
+   */
   function intervalElementsTransitions(
     elementsToAnimate,
     classToTransitionToo,
     animationInterval
   ) {
+    // list of html selectors that point to elements to animate
     let attributes = elementsToAnimate.split(",");
+
     attributes.forEach((attr) => {
       let elements = document.querySelectorAll(attr);
       let idx = 0;
@@ -238,9 +259,12 @@ This is done on set intervals.
       }, animationInterval);
     });
   }
+  /** Use IntersectionObserver to observe some elements that will run some
+   * animations when seen on the viewport.
+   *
+   */
   function addAnimateOnScroll() {
     const playlistsArea = document.getElementById("playlists-header");
-
     appearOnScrollObserver.observe(playlistsArea);
   }
   return {
@@ -451,7 +475,12 @@ const addEventListeners = (function () {
   addEventListeners.addDeleteRecentlyAddedTrackEvent();
   addEventListeners.addUndoPlaylistTrackDeleteEvent();
 
-  interact("#playlists-section>.resize-container").resizable({
+  interact(
+    "#" +
+      config.CSS.IDs.playlistsSection +
+      ">." +
+      config.CSS.CLASSES.resizeContainer
+  ).resizable({
     edges: { top: false, left: false, bottom: false, right: true },
     listeners: {
       move: function (event) {

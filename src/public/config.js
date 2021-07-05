@@ -41,6 +41,7 @@ export const config = {
       tracksChart: "tracks-chart",
       tracksTermSelections: "tracks-term-selections",
       featureSelections: "feature-selections",
+      playlistsSection: "playlists-section",
     },
     CLASSES: {
       glow: "glow",
@@ -62,6 +63,7 @@ export const config = {
       flipCardFront: "flip-card-front",
       flipCardBack: "flip-card-back",
       flipCard: "flip-card",
+      resizeContainer: "resize-container",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",
@@ -113,5 +115,31 @@ export async function promiseHandler(
     console.error(err);
     onFailure(err);
     return { res: null, err: err };
+  }
+}
+
+/** Filters 'li' elements to either be hidden or not depending on if
+ * they contain some given input text.
+ *
+ * @param {HTML} ul - unordered list element that contains the 'li' to be filtered
+ * @param {HTML} input - input element whose value will be used to filter
+ * @param {String} stdDisplay - the standard display the 'li' should have when not 'none'
+ */
+export function searchUl(ul, input, stdDisplay = "grid") {
+  let liEls = ul.getElementsByTagName("li");
+  let filter = input.value.toUpperCase();
+
+  for (let i = 0; i < liEls.length; i++) {
+    // get the name child el in the li el
+    let name = liEls[i].getElementsByClassName(config.CSS.CLASSES.name)[0];
+    let nameTxt = name.textContent || name.innerText;
+
+    if (nameTxt.toUpperCase().indexOf(filter) > -1) {
+      // show li's whose name contains the the entered string
+      liEls[i].style.display = stdDisplay;
+    } else {
+      // otherwise hide it
+      liEls[i].style.display = "none";
+    }
   }
 }
