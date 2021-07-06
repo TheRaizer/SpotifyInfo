@@ -49,9 +49,10 @@ class Track {
     } ${config.CSS.CLASSES.track}" id="${id}">
                 <div class="${config.CSS.CLASSES.flipCardFront}">
                   <img src="${this.imgURL}"></img>
-                  <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${
-      this.name
-    }</h4>
+                  <div>
+                    <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}
+                    </h4>
+                  </div>
                 </div>
                 <div class=${config.CSS.CLASSES.flipCardBack}>
                 <h3>Duration:</h3>

@@ -2,36 +2,23 @@ import Track from "../../components/track.js";
 import { config, promiseHandler, htmlToEl } from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
-import { onCardClick } from "../../card-actions.js";
+import { CardActionsHandler } from "../../card-actions.js";
 
 const trackActions = (function () {
   const selectionVerif = new AsyncSelectionVerif();
+  const cardActionsHandler = new CardActionsHandler(50);
   const selections = {
     trackTerm: "short_term",
   };
-  function addOnTrackCardClick(trackObjs) {
-    var storedSelTrackEl = null;
-
-    function onTrackCardClick(trackCard, trackObjs) {
-      let { selCardEl, ok } = onCardClick(
-        storedSelTrackEl,
-        trackCard,
-        trackObjs,
-        true
-      );
-      if (!ok) {
-        return;
-      }
-      storedSelTrackEl = selCardEl;
-    }
-
+  function addTrackCardClick(trackObjs) {
+    cardActionsHandler.clearSelectedEls();
     let trackCards = Array.from(
       document.getElementsByClassName(config.CSS.CLASSES.track)
     );
 
     trackCards.forEach((trackCard) => {
       trackCard.addEventListener("click", () =>
-        onTrackCardClick(trackCard, trackObjs)
+        cardActionsHandler.onCardClick(trackCard, trackObjs, null, true, false)
       );
     });
   }
@@ -83,7 +70,7 @@ const trackActions = (function () {
     await Promise.all(promiseList);
   }
   return {
-    addOnTrackCardClick,
+    addOnTrackCardClick: addTrackCardClick,
     getCurrSelTopTracks,
     retrieveTracks,
     selections,

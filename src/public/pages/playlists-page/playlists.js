@@ -2,7 +2,7 @@ import Playlist from "../../components/playlist.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 import { config, htmlToEl, promiseHandler, searchUl } from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
-import { onCardClick } from "../../card-actions.js";
+import { CardActionsHandler } from "../../card-actions.js";
 
 const expandedPlaylistMods = document.getElementById(
   config.CSS.IDs.expandedPlaylistMods
@@ -25,6 +25,7 @@ var expandablePlaylistTracks = [];
 
 const playlistActions = (function () {
   const selectionVerif = new AsyncSelectionVerif();
+  const cardActionsHandler = new CardActionsHandler(1);
   const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
 
   /** Asynchronously load a playlists tracks and replace the track ul html once it loads
@@ -101,28 +102,15 @@ const playlistActions = (function () {
    * @param {List<Playlist>} playlistObjs - list of Playlist instances whose on click event listeners are being initialized
    */
   function addOnPlaylistCardClick(playlistObjs) {
-    var storedSelPlaylistEl = null;
-    function onPlaylistCardClick(playlistCard, playlistObjs) {
-      let { selCardEl, corrObj, ok } = onCardClick(
-        storedSelPlaylistEl,
-        playlistCard,
-        playlistObjs
-      );
-      if (!ok) {
-        return;
-      }
-      storedSelPlaylistEl = selCardEl;
-      // show the selected Playlist instance's tracks
-      showExpandedPlaylist(corrObj);
-    }
-
     let playlistCards = Array.from(
       document.getElementsByClassName(config.CSS.CLASSES.playlist)
     );
 
     playlistCards.forEach((playlistCard) => {
       playlistCard.addEventListener("click", () =>
-        onPlaylistCardClick(playlistCard, playlistObjs)
+        cardActionsHandler.onCardClick(playlistCard, playlistObjs, (selObj) =>
+          showExpandedPlaylist(selObj)
+        )
       );
     });
   }
