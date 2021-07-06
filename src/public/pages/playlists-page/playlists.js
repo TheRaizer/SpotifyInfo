@@ -101,22 +101,29 @@ const playlistActions = (function () {
    *
    * @param {List<Playlist>} playlistObjs - list of Playlist instances whose on click event listeners are being initialized
    */
-  function addOnPlaylistCardClick(playlistObjs) {
+  function addOnPlaylistCardListeners(playlistObjs) {
     let playlistCards = Array.from(
       document.getElementsByClassName(config.CSS.CLASSES.playlist)
     );
 
     playlistCards.forEach((playlistCard) => {
-      playlistCard.addEventListener("click", () =>
+      playlistCard.addEventListener("click", () => {
         cardActionsHandler.onCardClick(playlistCard, playlistObjs, (selObj) =>
           showExpandedPlaylist(selObj)
-        )
-      );
+        );
+      });
+
+      playlistCard.addEventListener("mouseenter", () => {
+        cardActionsHandler.scrollTextOnCardEnter(playlistCard);
+      });
+      playlistCard.addEventListener("mouseleave", () => {
+        cardActionsHandler.scrollTextOnCardLeave(playlistCard);
+      });
     });
   }
 
   return {
-    addOnPlaylistCardClick,
+    addOnPlaylistCardListeners,
     showExpandedPlaylist,
     selectionVerif,
   };
@@ -164,7 +171,7 @@ const displayCardInfo = (function () {
       playlistsContainer.appendChild(playlistObj.getPlaylistCardHtml(idx));
     });
     // add event listener to cards
-    playlistActions.addOnPlaylistCardClick(playlistObjs);
+    playlistActions.addOnPlaylistCardListeners(playlistObjs);
   }
 
   return {

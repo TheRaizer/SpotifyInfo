@@ -10,7 +10,7 @@ const trackActions = (function () {
   const selections = {
     trackTerm: "short_term",
   };
-  function addTrackCardClick(trackObjs) {
+  function addTrackCardListeners(trackObjs) {
     cardActionsHandler.clearSelectedEls();
     let trackCards = Array.from(
       document.getElementsByClassName(config.CSS.CLASSES.track)
@@ -20,6 +20,12 @@ const trackActions = (function () {
       trackCard.addEventListener("click", () =>
         cardActionsHandler.onCardClick(trackCard, trackObjs, null, true, false)
       );
+      trackCard.addEventListener("mouseenter", () => {
+        cardActionsHandler.scrollTextOnCardEnter(trackCard);
+      });
+      trackCard.addEventListener("mouseleave", () => {
+        cardActionsHandler.scrollTextOnCardLeave(trackCard);
+      });
     });
   }
 
@@ -70,7 +76,7 @@ const trackActions = (function () {
     await Promise.all(promiseList);
   }
   return {
-    addOnTrackCardClick: addTrackCardClick,
+    addTrackCardListeners,
     getCurrSelTopTracks,
     retrieveTracks,
     selections,
@@ -115,7 +121,7 @@ const displayCardInfo = (function () {
       tracksContainer.appendChild(cardHtml);
     });
 
-    trackActions.addOnTrackCardClick(trackObjs);
+    trackActions.addTrackCardListeners(trackObjs);
     chartsManager.changeTracksChart(trackObjs);
     makeCardsVisible(config.CSS.CLASSES.track);
     return cardHtmls;

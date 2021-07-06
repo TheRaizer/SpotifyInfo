@@ -50,8 +50,9 @@ class Track {
                 <div class="${config.CSS.CLASSES.flipCardFront}">
                   <img src="${this.imgURL}"></img>
                   <div>
-                    <h4 class="${config.CSS.CLASSES.ellipsisWrap}">${this.name}
-                    </h4>
+                    <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
+      config.CSS.CLASSES.scrollingText
+    }">${this.name}</h4>
                   </div>
                 </div>
                 <div class=${config.CSS.CLASSES.flipCardBack}>
