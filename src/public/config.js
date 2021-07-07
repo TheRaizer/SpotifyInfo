@@ -77,7 +77,7 @@ export const config = {
       "%20"
     )}&response_type=code&show_dialog=true`,
     getHasTokens: "/tokens/has-tokens",
-    getTokensPrefix: "/tokens/get-tokens?code=",
+    getTokensPrefix: "/tokens/retrieve-tokens?code=",
     getTopArtists: "/spotify/get-top-artists?time_range=medium_term",
     getTopTracks: "/spotify/get-top-tracks?time_range=",
     getPlaylists: "/spotify/get-playlists",
@@ -87,6 +87,8 @@ export const config = {
     postPlaylistTracks: "/spotify/post-playlist-items?playlist_id=",
     getTrackFeatures: "/spotify/get-track-features?track_id=",
     postRefreshAccessToken: "/tokens/refresh-token",
+    postSessionData: "/spotify/post-session-data?attr=",
+    getSessionData: "/spotify/get-session-data?attr=",
   },
 };
 

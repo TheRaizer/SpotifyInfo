@@ -17,7 +17,7 @@ router.get("/has-tokens", async function (req, res, next) {
     // if its been more then 1 hour since this session's tokens were obtained
     if (hasBeenMoreOneHour(new Date(req.session.updateDate))) {
       // refresh tokens
-      await getTokensPromise(req, true).catch((err) => {
+      await retrieveTokensPromise(req, true).catch((err) => {
         console.log(err);
         next(err);
       });
@@ -29,7 +29,7 @@ router.get("/has-tokens", async function (req, res, next) {
 });
 
 router.post("/refresh-token", async function (req, _res, next) {
-  await getTokensPromise(req, true).catch((err) => {
+  await retrieveTokensPromise(req, true).catch((err) => {
     console.log(err);
     next(err);
   });
@@ -43,7 +43,7 @@ router.post("/clear-tokens", function (req, res) {
   res.send("recieved post request to clear tokens");
 });
 
-const getTokensPromise = async (req, isRefresh) => {
+const retrieveTokensPromise = async (req, isRefresh) => {
   const tokenURL = "https://accounts.spotify.com/api/token";
   const headers = {
     headers: {
@@ -83,9 +83,9 @@ const getTokensPromise = async (req, isRefresh) => {
   });
 };
 
-// expecting /get_tokens?code=XXXX
-router.get("/get-tokens", async function (req, res, next) {
-  await getTokensPromise(req, false).catch((err) => {
+// expecting /retrieve_tokens?code=XXXX
+router.get("/retrieve-tokens", async function (req, res, next) {
+  await retrieveTokensPromise(req, false).catch((err) => {
     console.error(err);
     next(err);
   });

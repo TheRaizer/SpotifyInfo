@@ -162,9 +162,25 @@ router.post("/post-playlist-items", async function (req, res, next) {
     });
 });
 
-router.post("/add-session-data", function (req, res) {
-  req.session.access_token = "";
-  req.session.refresh_token = "";
+router.post("/post-session-data", function (req, res, next) {
+  let attr = req.query.attr;
+  let val = req.query.val;
 
-  res.send("recieved post request to clear tokens");
+  if (attr == "refresh_token" || attr == "access_token") {
+    next(new Error("Invalid Attribute"));
+  } else {
+    req.session[attr] = val;
+    console.log(req.session);
+
+    res.send("recieved post request to clear tokens");
+  }
+});
+router.get("/get-session-data", function (req, res, next) {
+  let attr = req.query.attr;
+
+  if (attr == "refresh_token" || attr == "access_token") {
+    next(new Error("Invalid Attribute"));
+  } else {
+    res.send(req.session[attr]);
+  }
 });
