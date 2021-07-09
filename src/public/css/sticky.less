@@ -1,4 +1,4 @@
-@sticky-area-height: 60px;
+@sticky-area-height: 70px;
 
 .sticky-area {
   height: @sticky-area-height;
@@ -17,13 +17,16 @@
   font-weight: 700;
 
   & > div {
-    display: grid;
-    grid-row: 1;
+    display: flex;
     height: fit-content;
     & > h2 {
+      flex-grow: 3;
       font-size: 150%;
       margin-left: 5%;
       margin-right: 5%;
     }
   }
+}
+#playlist-descriptors {
+  justify-content: space-around;
 }

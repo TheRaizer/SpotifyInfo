@@ -129,7 +129,7 @@ export async function promiseHandler(
  * @param {HTML} input - input element whose value will be used to filter
  * @param {String} stdDisplay - the standard display the 'li' should have when not 'none'
  */
-export function searchUl(ul, input, stdDisplay = "grid") {
+export function searchUl(ul, input, stdDisplay = "flex") {
   let liEls = ul.getElementsByTagName("li");
   let filter = input.value.toUpperCase();
 
