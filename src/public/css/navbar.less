@@ -5,58 +5,57 @@
 @border: 1px solid @hover-color;
 
 ul.topnav {
-    z-index: @max-z-index;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color:#303030b7;
-    font-family: arial;
-    text-align: left;
-    width: 100%;
-    position: sticky;
-    top: 0;
+  z-index: @max-z-index;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #303030;
+  font-family: arial;
+  text-align: left;
+  width: 100%;
+  position: sticky;
+  top: 0;
 
-    & li {
-        float: left;
-        & a {
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            float: left;
-            font-size: 17px;
-            font-weight: 400;
+  & li {
+    float: left;
+    & a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      float: left;
+      font-size: 17px;
+      font-weight: 400;
 
-            border-left: @border;
-            transition: background-color 300ms ease-out;
+      border-left: @border;
+      transition: background-color 300ms ease-out;
 
-            &:hover:not(.active) {
-                background-color: @hover-color;
-                color: black;
-            }
-            &.active:hover {
-                background-color: @primary-green;
-            }
-            
-        }
-        &.right {
-            float: right;
-            border-left: @border;
-        }
-        &.last {
-            border-right: @border;
-        }
-    }   
+      &:hover:not(.active) {
+        background-color: @hover-color;
+        color: black;
+      }
+      &.active:hover {
+        background-color: @primary-green;
+      }
+    }
+    &.right {
+      float: right;
+      border-left: @border;
+    }
+    &.last {
+      border-right: @border;
+    }
+  }
 }
 
 @media screen and (max-width: 720px) {
-    ul.topnav li {
-        width: 100%;
-    }
+  ul.topnav li {
+    width: 100%;
+  }
 
-    ul.topnav a {
-        width: 100%;
-    }
+  ul.topnav a {
+    width: 100%;
+  }
 }

@@ -1,113 +1,113 @@
 body {
-    background-color: @primary-bg-color;
-    color: @primary-green;
-    font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: @primary-bg-color;
+  color: @primary-green;
+  font-family: "Proxima Nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 img {
-    -webkit-user-drag: none;
-    -khtml-user-drag: none;
-    -moz-user-drag: none;
-    -o-user-drag: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
 }
 
 h1 {
-    font-size: 400%;
-    font-weight: bold;
+  font-size: 400%;
+  font-weight: bold;
 
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 footer {
-    margin-top: 20%;
+  margin-top: 20%;
 }
 
 .container {
-    text-align: center;
-    justify-content: center;
-    align-content: center;
+  text-align: center;
+  justify-content: center;
+  align-content: center;
 
-    & h1 {
-        margin-top: 2%;
-        margin-bottom: 2%;
-    }
+  & h1 {
+    margin-top: 2%;
+    margin-bottom: 2%;
+  }
 }
 
 .glow {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 
-    color: white;
-    font-weight: bold;
-    background-color: @primary-green;
-    text-decoration: none;
-    width: fit-content;
-    height: fit-content;
-    border-color: @primary-green;
-    border-width: 2px;
-    border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  background-color: @primary-green;
+  text-decoration: none;
+  width: fit-content;
+  height: fit-content;
+  border-color: @primary-green;
+  border-width: 2px;
+  border-radius: 5px;
 
-    transition: all 0.1s linear;
+  transition: all 0.1s linear;
 
-    &:hover {
-        /* Box shadow adds Glow */
-        box-shadow: 0px 0px 10px 5px @primary-green;
-    }
+  &:hover {
+    /* Box shadow adds Glow */
+    box-shadow: 0px 0px 10px 5px @primary-green;
+  }
 }
 
 .loading-spinner {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 
-    width: 150px;
-    height: 150px;
+  width: 150px;
+  height: 150px;
 }
 
-.scroll-bar{
-    &::-webkit-scrollbar {
-        width: 12px;
-        /* width of the entire scrollbar */
-    }
+.scroll-bar {
+  &::-webkit-scrollbar {
+    width: 12px;
+    /* width of the entire scrollbar */
+  }
 
-    &::-webkit-scrollbar-track {
-        background: rgb(0, 0, 0);
-    }
+  &::-webkit-scrollbar-track {
+    background: rgb(0, 0, 0);
+  }
 
-    &::-webkit-scrollbar-thumb {
-        background-color: rgb(110, 110, 110);
-        border-radius: 20px;
-        border: 3px solid rgb(206, 206, 206);
-    }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(110, 110, 110);
+    border-radius: 20px;
+    border: 3px solid rgb(206, 206, 206);
+  }
 }
 
 .ellipsis-wrap {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 #info-container {
-    display: none;
+  display: none;
 }
 
-#remove-early-added>button {
-    height: 100%;
-    width: 20%;
+#remove-early-added > button {
+  height: 100%;
+  width: 20%;
 }
 
 #tracks-data {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 
-    padding: 10px;
+  padding: 10px;
 }
 @import "chart-info.less";
 @import "main-colors.less";

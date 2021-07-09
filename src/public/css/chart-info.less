@@ -1,36 +1,36 @@
 @info-bg-color: #202020;
 
 .chart-info {
-    background-color: @info-bg-color;
-    display: flex;
-    flex-direction: column;
-    width: 30%;
+  background-color: @info-bg-color;
+  display: flex;
+  flex-direction: column;
+  width: 30%;
 
-    align-items: center;
-    border: 3px solid green;
+  align-items: center;
+  border: 3px solid green;
 
-    &>h2 {
-        font-size: 200%;
-        font-weight: bold;
+  & > h2 {
+    font-size: 200%;
+    font-weight: bold;
+  }
+
+  & > div {
+    margin-top: 10%;
+    margin-bottom: 10%;
+
+    & > h3 {
+      font-size: 120%;
+      font-weight: bold;
+      color: rgb(170, 170, 170);
     }
 
-    &>div {
-        margin-top: 10%;
-        margin-bottom: 10%;
-
-        &>h3 {
-            font-size: 120%;
-            font-weight: bold;
-            color: rgb(170, 170, 170);
-        }
-
-        &>h4 {
-            color: rgb(170, 170, 170);
-        }
+    & > h4 {
+      color: rgb(170, 170, 170);
     }
+  }
 
-    &>h2 {
-        font-size: 200%;
-        font-weight: bold;
-    }
+  & > h2 {
+    font-size: 200%;
+    font-weight: bold;
+  }
 }

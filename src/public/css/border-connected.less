@@ -2,32 +2,32 @@
 @connected-border-hover: 1px solid rgba(110, 110, 110, 0.342);
 
 .border-connected-btn-container {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 
-    &>button {
-        border-radius: 1px;
-        width: 13%;
-        min-width: fit-content;
-        height: 40px;
-        pointer-events: all;
-        &.selected {
-            border-top: @connected-border;
-            border-right: @connected-border;
-            border-left: @connected-border;
-            pointer-events: none;
-        }
-        &:hover:not(.selected) {
-            border-top: @connected-border-hover;
-            border-right: @connected-border-hover;
-            border-left: @connected-border-hover;
-        }
+  & > button {
+    border-radius: 1px;
+    width: 13%;
+    min-width: fit-content;
+    height: 40px;
+    pointer-events: all;
+    &.selected {
+      border-top: @connected-border;
+      border-right: @connected-border;
+      border-left: @connected-border;
+      pointer-events: none;
     }
+    &:hover:not(.selected) {
+      border-top: @connected-border-hover;
+      border-right: @connected-border-hover;
+      border-left: @connected-border-hover;
+    }
+  }
 }
 
 .border-container {
-    margin-left: 5vw;
-    margin-right: 5vw;
+  margin-left: 5vw;
+  margin-right: 5vw;
 
-    border-top: @connected-border;
+  border-top: @connected-border;
 }

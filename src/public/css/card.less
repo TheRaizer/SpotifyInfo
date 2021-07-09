@@ -4,120 +4,120 @@
 @card-height: 170px;
 
 .card-grid {
-    justify-content: space-around;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, max-content));
+  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, max-content));
 
-    /* size of rows that are created due to a wrap/implicitly */
-    grid-auto-rows: minmax(200px, max-content);
-    align-self: center;
+  /* size of rows that are created due to a wrap/implicitly */
+  grid-auto-rows: minmax(200px, max-content);
+  align-self: center;
 }
 
 .card {
-    visibility: hidden;
-    /* Make relative to allow movement from normal position during animations */
-    position: relative;
-    width: @card-width;
-    height: @card-height;
+  visibility: hidden;
+  /* Make relative to allow movement from normal position during animations */
+  position: relative;
+  width: @card-width;
+  height: @card-height;
 
-    background-color: rgb(48, 48, 48);
+  background-color: rgb(48, 48, 48);
 
-    border-radius: 5px;
-    border-width: 2px;
+  border-radius: 5px;
+  border-width: 2px;
 
-    margin: 5% 5% 5% 5%;
-    padding-top: 5%;
-    box-shadow: 0px 0px 15px 4px rgb(14, 14, 14);
+  margin: 5% 5% 5% 5%;
+  padding-top: 5%;
+  box-shadow: 0px 0px 15px 4px rgb(14, 14, 14);
 
-    top: -500px;
-    left: 0;
-    opacity: 0;
+  top: -500px;
+  left: 0;
+  opacity: 0;
 
-    transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out,
-        opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out,
+    opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
 
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 
-    & img{
-        width: 110px;
-        height: 110px;
-        box-shadow: 0px 0px 10px 6px rgb(19, 19, 19);
-    }
+  & img {
+    width: 110px;
+    height: 110px;
+    box-shadow: 0px 0px 10px 6px rgb(19, 19, 19);
+  }
 
-    & h4 {
-        color: rgb(212, 212, 212);
-        color: #d4d4d4;
-        font-weight: bold;
-        margin-top: 5%;
-        margin-left: 5%;
-        margin-right: 5%;
-    }
-    &:hover {
-        z-index: 5;
-        transform: scale(1.15);
-        box-shadow: 0px 0px 15px 8px rgb(14, 14, 14);
-    }
-    &.selected{
-        background-color: @primary-green;
-    }
+  & h4 {
+    color: rgb(212, 212, 212);
+    color: #d4d4d4;
+    font-weight: bold;
+    margin-top: 5%;
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+  &:hover {
+    z-index: 5;
+    transform: scale(1.15);
+    box-shadow: 0px 0px 15px 8px rgb(14, 14, 14);
+  }
+  &.selected {
+    background-color: @primary-green;
+  }
 }
 
 .flip-card {
-    perspective: 1000px;
-    &>.selected{
-        background-color: initial;
-    }
-    &.selected {
-        background-color: #303030;
-    }
+  perspective: 1000px;
+  & > .selected {
+    background-color: initial;
+  }
+  &.selected {
+    background-color: #303030;
+  }
 }
 
 .flip-card-inner {
-    position: relative;
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
+  position: relative;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
 
-    &.selected {
-        transform: rotateY(180deg);
-    }
+  &.selected {
+    transform: rotateY(180deg);
+  }
 }
 
 .flip-card-front,
 .flip-card-back {
-    border-radius: 5px;
-    margin-top: 15%;
+  border-radius: 5px;
+  margin-top: 15%;
 
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .flip-card-front {
-    top: 0%;
+  top: 0%;
 }
 
 .flip-card-back {
-    bottom: 0%;
+  bottom: 0%;
 }
 
 .flip-card-back {
-    background-color: #2980b9;
-    color: white;
-    transform: rotateY(180deg);
+  background-color: #2980b9;
+  color: white;
+  transform: rotateY(180deg);
 
-    &>h3{
-        font-weight: bold;
-        font-size: 1.05em;
-        margin-top: 10px;
-    }
+  & > h3 {
+    font-weight: bold;
+    font-size: 1.05em;
+    margin-top: 10px;
+  }
 }
 
 #track-cards-container {
-    margin-bottom: 3%;
-    margin-top: 3%;
+  margin-bottom: 3%;
+  margin-top: 3%;
 }

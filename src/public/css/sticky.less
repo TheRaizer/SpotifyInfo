@@ -1,26 +1,29 @@
 @sticky-area-height: 60px;
 
 .sticky-area {
-    height: @sticky-area-height;
-    min-height: fit-content;
+  height: @sticky-area-height;
+  min-height: fit-content;
+
+  align-items: center;
+
+  top: 0;
+  margin: 0 0 0 0;
+
+  position: -webkit-sticky;
+  position: sticky;
+
+  z-index: 1;
+  background: #303030;
+  font-weight: 700;
+
+  & > div {
     display: grid;
     grid-row: 1;
-
-    align-items: center;
-
-    top: 0;
-    margin: 0 0 0 0;
-
-    position: -webkit-sticky;
-    position: sticky;
-
-    z-index: 1;
-    background: #303030;
-    font-weight: 700;
-
-    &>h2 {
-        font-size: 150%;
-        margin-left: 5%;
-        margin-right: 5%;
+    height: fit-content;
+    & > h2 {
+      font-size: 150%;
+      margin-left: 5%;
+      margin-right: 5%;
     }
+  }
 }

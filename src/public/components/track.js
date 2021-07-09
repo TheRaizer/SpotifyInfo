@@ -11,6 +11,7 @@ class Track {
       dateAddedToPlaylist = "",
       releaseDate,
       id,
+      album,
     } = props;
 
     this.id = id;
@@ -24,6 +25,7 @@ class Track {
     this.cardId = "";
     this.dateAddedToPlaylist = new Date(dateAddedToPlaylist);
     this.releaseDate = new Date(releaseDate);
+    this.album = album;
 
     // obtain the correct image
     if (this.images.length > 0) {
@@ -60,6 +62,10 @@ class Track {
                 <p>${this.duration}</p>
                 <h3>Release Date:</h3>
                 <p>${this.releaseDate.toDateString()}</p>
+                <h3>Album Name:</h3>
+                <p class="${config.CSS.CLASSES.ellipsisWrap}">${
+      this.album.albumName
+    }</p>
                 </div>
               </button>
             </div>

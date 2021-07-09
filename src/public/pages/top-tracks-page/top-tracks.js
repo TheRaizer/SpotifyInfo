@@ -50,6 +50,7 @@ const trackActions = (function () {
     return promiseList;
   }
   function loadDatasToTrackList(datas, trackList) {
+    console.log(datas);
     datas.forEach((data) => {
       let props = {
         name: data.name,
@@ -59,6 +60,7 @@ const trackActions = (function () {
         popularity: data.popularity,
         releaseDate: data.album.release_date,
         id: data.id,
+        album: { albumName: data.album.name },
       };
       trackList.push(new Track(props));
     });
