@@ -48,11 +48,25 @@
           </h1>
         </header>
         <div class="border-connected-btn-container" id="tracks-term-selections">
-          <button class="selected" data-selection="short_term">
+          <button
+            class="selected"
+            data-selection="short_term"
+            title="Click to view top tracks short term"
+          >
             Short Term (last 4 weeks)
           </button>
-          <button data-selection="medium_term">Mid Term (last 6 months)</button>
-          <button data-selection="long_term">Long Term (of all time)</button>
+          <button
+            data-selection="medium_term"
+            title="Click to view top tracks mid term"
+          >
+            Mid Term (last 6 months)
+          </button>
+          <button
+            data-selection="long_term"
+            title="Click to view top tracks long term"
+          >
+            Long Term (of all time)
+          </button>
         </div>
         <div class="border-container" id="term-border-container">
           <div class="card-grid" id="track-cards-container"></div>
@@ -60,11 +74,30 @@
             <button data-selection="popularity" class="selected">
               Popularity
             </button>
-            <button data-selection="valence">Valence</button>
-            <button data-selection="danceability">Danceability</button>
-            <button data-selection="instrumentalness">Instrumentalness</button>
-            <button data-selection="energy">Energy</button>
-            <button data-selection="acousticness">Acousticness</button>
+            <button data-selection="valence" title="Click to view valence data">
+              Valence
+            </button>
+            <button
+              data-selection="danceability"
+              title="Click to view danceability data"
+            >
+              Danceability
+            </button>
+            <button
+              data-selection="instrumentalness"
+              title="Click to view instrumentalness data"
+            >
+              Instrumentalness
+            </button>
+            <button data-selection="energy" title="Click to view energy data">
+              Energy
+            </button>
+            <button
+              data-selection="acousticness"
+              title="Click to view acousticness data"
+            >
+              Acousticness
+            </button>
           </div>
           <section id="tracks-data" class="border-container">
             <canvas id="tracks-chart" width="800px" height="550px"></canvas>

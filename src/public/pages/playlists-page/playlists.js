@@ -428,9 +428,12 @@ const addEventListeners = (function () {
     const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
     const openModsSection = document.getElementById(config.CSS.IDs.modsOpener);
 
-    openModsSection.addEventListener("click", () =>
-      modsSection.classList.toggle(config.CSS.CLASSES.appear)
-    );
+    openModsSection.addEventListener("click", () => {
+      modsSection.classList.toggle(config.CSS.CLASSES.appear);
+      openModsSection
+        .getElementsByTagName("img")[0]
+        .classList.toggle(config.CSS.CLASSES.selected);
+    });
   }
   return {
     addExpandedPlaylistModsSearchbarEvent,

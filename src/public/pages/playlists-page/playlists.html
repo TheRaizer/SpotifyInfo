@@ -63,11 +63,24 @@
           <div class="expanded-playlist" id="expanded-playlist-mods">
             <header>
               <section>
+                <a id="mods-opener" title="Open Playlist Modifications">
+                  <img
+                    src="/images/wrench-static.png"
+                    onmouseenter="this.src='/images/wrench-anim.gif'"
+                    onmouseout="this.src='/images/wrench-static.png'"
+                    alt="something pithy"
+                  />
+                </a>
                 <h2 class="ellipsis-wrap">Select a Playlist</h2>
                 <select class="playlist-order">
                   <option value="custom-order">Custom order</option>
-                  <option value="name">Name</option>
-                  <option value="date-added">Date Added</option>
+                  <option value="name" title="Sort from A-Z">Name</option>
+                  <option
+                    value="date-added"
+                    title="Sort by date added to playlist"
+                  >
+                    Date Added
+                  </option>
                 </select>
                 <input
                   type="text"
@@ -83,18 +96,17 @@
             </header>
             <div class="content">
               <section id="playlist-mods">
-                <button class="glow" id="undo">Undo</button>
-                <button class="glow" id="redo">Redo</button>
+                <button class="glow" id="undo" title="Undo Change">Undo</button>
+                <button class="glow" id="redo" title="Redo Change">Redo</button>
                 <div id="remove-early-added">
                   <input
                     type="number"
-                    value="3"
-                    placeholder="Number of early added songs to remove..."
+                    placeholder="Early added to remove..."
+                    title="Number of early added songs to remove"
                   />
-                  <button class="glow">Remove Early Added</button>
+                  <button class="glow" title="Remove Early Added">RME</button>
                 </div>
               </section>
-              <button id="mods-opener"></button>
               <section id="tracks-section">
                 <ul class="scroll-bar">
                   <li>Select a Playlist</li>
@@ -103,6 +115,10 @@
             </div>
           </div>
         </section>
+        <a target="_blank" href="https://icons8.com/icon/1h8QtOB0BPcF/wrench"
+          >Wrench</a
+        >
+        icon by <a target="_blank" href="https://icons8.com">Icons8</a>
       </section>
     </div>
     <script

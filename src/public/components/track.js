@@ -49,7 +49,9 @@ class Track {
               <button class="${config.CSS.CLASSES.card} ${
       config.CSS.CLASSES.flipCardInner
     } ${config.CSS.CLASSES.track}" id="${id}">
-                <div class="${config.CSS.CLASSES.flipCardFront}">
+                <div class="${
+                  config.CSS.CLASSES.flipCardFront
+                }"  title="Click to view more Info">
                   <img src="${this.imgURL}"></img>
                   <div>
                     <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${

@@ -1,3 +1,5 @@
+@import "main-colors.less";
+
 .expanded-playlist {
   flex: 0 1 auto;
   position: relative;
@@ -22,7 +24,6 @@
 
     & > #tracks-section {
       flex: 0 1 100%;
-      min-width: 0;
       min-height: 0;
     }
     & section > ul {
@@ -31,6 +32,9 @@
       width: 100%;
       height: 100%;
       align-items: center;
+    }
+    & > * {
+      min-width: 0;
     }
   }
   & > header {
@@ -50,6 +54,9 @@
         font-size: 150%;
         margin-left: 5%;
         margin-right: 5%;
+      }
+      & > * {
+        min-width: 0;
       }
     }
   }
@@ -121,12 +128,12 @@
   &.appear {
     height: 10%;
   }
-  & > button {
+  & button {
     width: 60px;
     height: 30px;
   }
 
-  & > input {
+  & input {
     width: 50%;
   }
 }
@@ -161,26 +168,18 @@
   background-color: red;
 }
 
-#remove-early-added {
-  overflow: hidden;
-
-  & > button {
-    height: 100%;
-    width: 20%;
-  }
-
-  & > input {
-    width: 100%;
-  }
-}
-
 #mods-opener {
-  align-self: center;
-  width: 20px;
-  height: 20px;
-  background-color: #858585;
-  background-image: url("../images/expand-vert-arrows.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  & > img {
+    margin-left: 20%;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 4px solid black;
+    &:hover {
+      border-color: @primary-dark;
+    }
+    &.selected {
+      border-color: @primary-green;
+    }
+  }
 }
