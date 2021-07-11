@@ -76,7 +76,7 @@ const playlistActions = (function () {
     // initially show the playlist with the loading spinner
     const htmlString = `
             <li>
-              <img src="200pxLoadingSpinner.svg" />
+              <img src="${config.PATHS.spinner}" />
             </li>`;
     let spinnerEl = htmlToEl(htmlString);
     trackListUl.appendChild(spinnerEl);

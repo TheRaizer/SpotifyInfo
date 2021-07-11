@@ -93,6 +93,9 @@ export const config = {
     postSessionData: "/spotify/post-session-data?attr=",
     getSessionData: "/spotify/get-session-data?attr=",
   },
+  PATHS: {
+    spinner: "/images/200pxLoadingSpinner.svg",
+  },
 };
 
 export function millisToMinutesAndSeconds(millis) {

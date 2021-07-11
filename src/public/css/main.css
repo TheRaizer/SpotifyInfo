@@ -275,6 +275,16 @@ footer {
 #remove-early-added > input {
   width: 100%;
 }
+#mods-opener {
+  align-self: center;
+  width: 20px;
+  height: 20px;
+  background-color: #858585;
+  background-image: url("../images/expand-vert-arrows.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
 .card-grid {
   justify-content: space-around;
   display: grid;

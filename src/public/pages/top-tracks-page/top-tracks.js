@@ -133,7 +133,7 @@ const displayCardInfo = (function () {
     // initially show the loading spinner
     const htmlString = `
             <div>
-              <img src="200pxLoadingSpinner.svg" />
+              <img src="${config.PATHS.spinner}" />
             </div>`;
     let spinnerEl = htmlToEl(htmlString);
 
