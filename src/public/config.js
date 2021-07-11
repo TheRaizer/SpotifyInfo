@@ -42,6 +42,9 @@ export const config = {
       tracksTermSelections: "tracks-term-selections",
       featureSelections: "feature-selections",
       playlistsSection: "playlists-section",
+      undo: "undo",
+      redo: "redo",
+      modsOpener: "mods-opener",
     },
     CLASSES: {
       glow: "glow",

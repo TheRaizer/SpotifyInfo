@@ -129,16 +129,14 @@ footer {
 }
 .expanded-playlist > .content {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: calc(100% - 70px);
   width: 100%;
 }
 .expanded-playlist > .content > #tracks-section {
   flex: 0 1 100%;
   min-width: 0;
-}
-.expanded-playlist > .content section {
-  height: 100%;
+  min-height: 0;
 }
 .expanded-playlist > .content section > ul {
   overflow-y: scroll;
@@ -213,16 +211,23 @@ footer {
   color: #9c9c9c;
 }
 #playlist-mods {
-  flex: 0 0 5vw;
-  background-color: #303030;
-  width: 5vw;
+  flex: 0 0 auto;
+  display: flex;
+  background-color: #292929;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
   min-width: 0;
+  min-height: auto;
   border-radius: 10px;
-  height: fit-content;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  transition: height 200ms ease-in-out;
+}
+#playlist-mods.appear {
+  height: 10%;
 }
 #playlist-mods > button {
   width: 60px;

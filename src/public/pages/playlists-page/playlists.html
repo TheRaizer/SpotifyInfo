@@ -79,14 +79,9 @@
               </section>
             </header>
             <div class="content">
-              <section id="tracks-section">
-                <ul class="scroll-bar">
-                  <li>Select a Playlist</li>
-                </ul>
-              </section>
               <section id="playlist-mods">
-                <button class="glow">Undo</button>
-                <button class="glow">Redo</button>
+                <button class="glow" id="undo">Undo</button>
+                <button class="glow" id="redo">Redo</button>
                 <div id="remove-early-added">
                   <input
                     type="number"
@@ -95,6 +90,12 @@
                   />
                   <button class="glow">Remove Early Added</button>
                 </div>
+              </section>
+              <button class="glow" id="mods-opener">Mods opener</button>
+              <section id="tracks-section">
+                <ul class="scroll-bar">
+                  <li>Select a Playlist</li>
+                </ul>
               </section>
             </div>
           </div>

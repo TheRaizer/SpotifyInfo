@@ -424,11 +424,20 @@ const addEventListeners = (function () {
 
     undoBtn.addEventListener("click", () => onClick());
   }
+  function addModsOpenerEvent() {
+    const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
+    const openModsSection = document.getElementById(config.CSS.IDs.modsOpener);
+
+    openModsSection.addEventListener("click", () =>
+      modsSection.classList.toggle(config.CSS.CLASSES.appear)
+    );
+  }
   return {
     addExpandedPlaylistModsSearchbarEvent,
     addExpandedPlaylistModsOrderEvent,
     addDeleteRecentlyAddedTrackEvent,
     addUndoPlaylistTrackDeleteEvent,
+    addModsOpenerEvent,
   };
 })();
 
@@ -490,6 +499,7 @@ function loadResizeWidth() {
   addEventListeners.addExpandedPlaylistModsOrderEvent();
   addEventListeners.addDeleteRecentlyAddedTrackEvent();
   addEventListeners.addUndoPlaylistTrackDeleteEvent();
+  addEventListeners.addModsOpenerEvent();
 
   loadResizeWidth();
   interact(
