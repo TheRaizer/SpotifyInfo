@@ -131,14 +131,42 @@ footer {
   opacity: 0;
   transition: opacity 250ms ease-in;
 }
-.expanded-playlist > ul {
+.expanded-playlist > section {
   height: calc(100% - 70px);
+}
+.expanded-playlist > section > ul {
   overflow-y: scroll;
   list-style-type: none;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+.expanded-playlist > header {
+  height: 70px;
+  min-height: fit-content;
+  align-items: center;
+  top: 0;
+  margin: 0 0 0 0;
+  z-index: 1;
+  background: #303030;
+  font-weight: 700;
+}
+.expanded-playlist > header > section {
+  display: flex;
+}
+.expanded-playlist > header > section > h2 {
+  flex-grow: 3;
+  font-size: 150%;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 .expanded-playlist.appear {
   opacity: 1;
   transition: opacity 250ms ease-in;
+}
+#playlist-descriptors {
+  justify-content: space-around;
+  color: #9c9c9c;
 }
 .playlist-order {
   background-color: #1b1b1b;
@@ -245,8 +273,7 @@ footer {
   top: -500px;
   left: 0;
   opacity: 0;
-  transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out,
-    opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out, opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -345,31 +372,6 @@ footer {
   margin-left: 5vw;
   margin-right: 5vw;
   border-top: 1px solid #6e6e6e;
-}
-.sticky-area {
-  height: 70px;
-  min-height: fit-content;
-  align-items: center;
-  top: 0;
-  margin: 0 0 0 0;
-  position: -webkit-sticky;
-  position: sticky;
-  z-index: 1;
-  background: #303030;
-  font-weight: 700;
-}
-.sticky-area > div {
-  display: flex;
-  height: fit-content;
-}
-.sticky-area > div > h2 {
-  flex-grow: 3;
-  font-size: 150%;
-  margin-left: 5%;
-  margin-right: 5%;
-}
-#playlist-descriptors {
-  justify-content: space-around;
 }
 ul.topnav {
   z-index: 1000;
@@ -478,8 +480,7 @@ ul.topnav li.last {
   opacity: 1;
   top: 0;
   /* overwrites previouse classes transitions */
-  transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out,
-    opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out, opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .hidden {
   opacity: 0;

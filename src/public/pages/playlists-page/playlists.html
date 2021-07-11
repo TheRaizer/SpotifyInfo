@@ -58,9 +58,9 @@
             </div>
           </div>
           <div class="expanded-playlist" id="expanded-playlist-mods">
-            <header class="sticky-area">
-              <div>
-                <h2 class="ellipsis-wrap">Please Select a Playlist</h2>
+            <header>
+              <section>
+                <h2 class="ellipsis-wrap">Select a Playlist</h2>
                 <select class="playlist-order">
                   <option value="custom-order">Custom order</option>
                   <option value="name">Name</option>
@@ -71,29 +71,31 @@
                   class="playlist-search"
                   placeholder="Search in playlist"
                 />
-              </div>
-              <div id="playlist-descriptors">
+              </section>
+              <section id="playlist-descriptors">
                 <p>Title</p>
                 <p>Duration</p>
                 <p>Date Added</p>
-              </div>
+              </section>
             </header>
-            <ul class="scroll-bar">
-              <li>Select a Playlist</li>
-            </ul>
+            <section id="playlist-mods">
+              <button class="glow">Undo</button>
+              <button class="glow">Redo</button>
+              <div id="remove-early-added">
+                <input
+                  type="number"
+                  value="3"
+                  placeholder="Number of early added songs to remove..."
+                />
+                <button class="glow">Remove Early Added</button>
+              </div>
+            </section>
+            <section>
+              <ul class="scroll-bar">
+                <li>Select a Playlist</li>
+              </ul>
+            </section>
           </div>
-          <section id="playlist-mods">
-            <button class="glow">Undo</button>
-            <button class="glow">Redo</button>
-            <div id="remove-early-added">
-              <input
-                type="number"
-                value="3"
-                placeholder="Number of early added songs to remove..."
-              />
-              <button class="glow">Remove Early Added</button>
-            </div>
-          </section>
         </section>
       </section>
     </div>

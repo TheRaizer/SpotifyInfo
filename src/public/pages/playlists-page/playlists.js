@@ -56,6 +56,7 @@ const playlistActions = (function () {
     playlistSearchInput.value = "";
     playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
     playlistOrder.classList.add(config.CSS.CLASSES.hide);
+    trackListUl.scrollTop = 0;
   }
   function onTracksLoadingDone() {
     // show them once tracks have loaded
