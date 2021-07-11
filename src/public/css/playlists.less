@@ -1,6 +1,5 @@
 @expanded-playlist-width: 100%;
 @expanded-playlist-height: 88vh;
-@expanded-playlist-border-radius: 10px;
 @header-height: 70px;
 
 .expanded-playlist {
@@ -21,14 +20,24 @@
   opacity: 0;
   transition: opacity 250ms ease-in;
 
-  & > section {
-    height: calc(100% - @header-height);
-    & > ul {
-      overflow-y: scroll;
-      list-style-type: none;
-      width: 100%;
+  & > .content {
+    display: flex;
+    flex-direction: row;
+    height: calc(100% - 70px);
+    width: 100%;
+    & > #tracks-section {
+      flex: 0 1 100%;
+      min-width: 0;
+    }
+    & section {
       height: 100%;
-      align-items: center;
+      & > ul {
+        overflow-y: scroll;
+        list-style-type: none;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+      }
     }
   }
   & > header {
@@ -106,25 +115,41 @@
 }
 
 #playlist-mods {
-  display: none;
+  flex: 0 0 5vw;
   background-color: #303030;
-  width: @expanded-playlist-width;
-  border-radius: @expanded-playlist-border-radius;
+  width: 5vw;
+  min-width: 0;
+  border-radius: 10px;
   height: fit-content;
-
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
 
-#playlist-mods > button {
-  width: 60px;
-  height: 30px;
+  & > button {
+    width: 60px;
+    height: 30px;
+  }
+  & > input {
+    width: 50%;
+  }
 }
 
 #playlists-section {
   display: flex;
+
+  & > .resize-container {
+    flex: 0 0 auto;
+    height: @expanded-playlist-height;
+    max-width: 70vw;
+    min-width: fit-content;
+    box-sizing: border-box;
+    touch-action: none;
+
+    border-style: double;
+    border-right-color: #6d6d6d;
+    border-right-width: 10px;
+  }
 }
 
 #playlist-card-scroll-area {
@@ -144,15 +169,15 @@
   background-color: red;
 }
 
-#playlists-section > .resize-container {
-  flex: 0 0 auto;
-  height: @expanded-playlist-height;
-  max-width: 70vw;
-  min-width: fit-content;
-  box-sizing: border-box;
-  touch-action: none;
+#remove-early-added {
+  overflow: hidden;
 
-  border-style: double;
-  border-right-color: #6d6d6d;
-  border-right-width: 10px;
+  & > button {
+    height: 100%;
+    width: 20%;
+  }
+
+  & > input {
+    width: 100%;
+  }
 }
