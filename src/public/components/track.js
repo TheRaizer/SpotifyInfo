@@ -12,11 +12,15 @@ class Track {
       releaseDate,
       id,
       album,
+      externalUrl,
+      artists,
     } = props;
 
+    this.externalUrl = externalUrl;
     this.id = id;
     this.name = name;
     this.images = images;
+    this.filterDataFromArtists(artists);
     this.duration = millisToMinutesAndSeconds(duration);
 
     // either the normal uri, or the linked_from.uri
@@ -34,6 +38,27 @@ class Track {
     } else {
       this.imgURL = "";
     }
+  }
+
+  filterDataFromArtists(artists) {
+    this.artists = artists.map((artist) => {
+      return { name: artist.name, externalUrl: artist.external_urls.spotify };
+    });
+  }
+
+  generateHTMLArtistNames() {
+    let artistNames = "";
+    console.log(this.artists);
+    for (let i = 0; i < this.artists.length; i++) {
+      const artist = this.artists[i];
+      artistNames += `<a href="${artist.externalUrl}">${artist.name}</a>`;
+
+      if (i < this.artists.length - 1) {
+        artistNames += ", ";
+      }
+    }
+
+    return artistNames;
   }
 
   /** Produces the card element of this track.
@@ -83,10 +108,17 @@ class Track {
     let html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
               <img src="${this.imgURL}"></img>
-              <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
+              <div>
+                <a href="${this.externalUrl}">
+                  <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.name
     }">${this.name}
-              </h4>
+                  </h4>
+                <a/>
+                <div class="${config.CSS.CLASSES.ellipsisWrap}">
+                  ${this.generateHTMLArtistNames()}
+                </div>
+              </div>
               <h5>${this.duration}</h5>
               <h5>${this.dateAddedToPlaylist.toLocaleDateString()}</h5>
             </li>

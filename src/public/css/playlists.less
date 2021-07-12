@@ -67,7 +67,7 @@
 }
 #playlist-descriptors {
   justify-content: space-around;
-  color: #9c9c9c;
+  color: @grayed-color;
 }
 .playlist-order {
   background-color: #1b1b1b;
@@ -95,17 +95,37 @@
     width: 60px;
     height: 60px;
   }
-  & > h4 {
+  & > div {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 20%;
     margin-left: 5%;
     width: 20%;
-    font-weight: bold;
+    max-width: 20%;
+    & a {
+      font-size: 0.9em;
+      margin-top: 5px;
+      color: @grayed-color;
+      font-weight: normal;
+
+      &:hover {
+        color: white;
+        text-decoration: underline;
+      }
+    }
+    & h4 {
+      margin-top: 0;
+      color: white;
+      font-weight: bold;
+      font-size: 1.15em;
+    }
   }
   & > h5 {
     text-align: center;
     width: 40%;
     min-width: fit-content;
     max-width: 40%;
-    color: #9c9c9c;
+    color: @grayed-color;
   }
 }
 #playlist-mods {

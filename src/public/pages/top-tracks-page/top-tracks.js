@@ -61,6 +61,8 @@ const trackActions = (function () {
         releaseDate: data.album.release_date,
         id: data.id,
         album: { albumName: data.album.name },
+        externalUrl: data.external_urls.spotify,
+        artists: data.artists,
       };
       trackList.push(new Track(props));
     });

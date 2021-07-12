@@ -217,10 +217,29 @@ footer {
   width: 60px;
   height: 60px;
 }
-.playlist-track > h4 {
+.playlist-track > div {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 20%;
   margin-left: 5%;
   width: 20%;
+  max-width: 20%;
+}
+.playlist-track > div a {
+  font-size: 0.9em;
+  margin-top: 5px;
+  color: #9c9c9c;
+  font-weight: normal;
+}
+.playlist-track > div a:hover {
+  color: white;
+  text-decoration: underline;
+}
+.playlist-track > div h4 {
+  margin-top: 0;
+  color: white;
   font-weight: bold;
+  font-size: 1.15em;
 }
 .playlist-track > h5 {
   text-align: center;

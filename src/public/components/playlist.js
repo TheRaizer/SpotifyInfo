@@ -61,19 +61,20 @@ class Playlist {
 
     tracksData.forEach((data) => {
       // if the data exists
+      let track = data.track;
       if (data && data.track) {
         let props = {
-          name: data.track.name,
-          images: data.track.album.images,
-          duration: data.track.duration_ms,
+          name: track.name,
+          images: track.album.images,
+          duration: track.duration_ms,
           uri:
-            data.track.linked_from !== undefined
-              ? data.track.linked_from.uri
-              : data.track.uri,
-          popularity: data.track.popularity,
+            track.linked_from !== undefined ? track.linked_from.uri : track.uri,
+          popularity: track.popularity,
           dateAddedToPlaylist: data.added_at,
-          releaseDate: data.track.album.release_date,
-          id: data.track.id,
+          releaseDate: track.album.release_date,
+          id: track.id,
+          externalUrl: track.external_urls.spotify,
+          artists: track.artists,
         };
 
         // push an instance of a Track class to the list
