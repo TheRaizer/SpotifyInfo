@@ -83,13 +83,19 @@ footer {
   justify-content: space-around;
   padding: 10px;
 }
-.static {
-  position: absolute;
-  background: white;
-  background-color: red;
+.icon8 {
+  color: #6e6e6e;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-left: 1px solid #6e6e6e;
+  border-right: 1px solid #6e6e6e;
 }
-.static:hover {
-  opacity: 0;
+.icon8 a {
+  text-decoration: underline;
+  color: inherit;
+}
+#icon8-links {
+  display: inline-flex;
 }
 .chart-info {
   background-color: #202020;
@@ -200,9 +206,9 @@ footer {
 .playlist-track {
   display: flex;
   align-items: center;
-  margin-top: 2%;
-  margin-bottom: 2%;
-  margin-left: 2%;
+  margin-top: 1%;
+  margin-bottom: 1%;
+  margin-left: 1%;
   justify-content: flex-start;
   text-align: left;
   color: #d4d4d4;
@@ -232,7 +238,6 @@ footer {
   overflow: hidden;
   min-width: 0;
   min-height: auto;
-  border-radius: 10px;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -243,8 +248,22 @@ footer {
   height: 10%;
 }
 #playlist-mods button {
-  width: 60px;
-  height: 30px;
+  margin: 5px 5px 5px 5px;
+  padding: 4px 4px 4px 4px;
+  width: fit-content;
+  height: fit-content;
+}
+#playlist-mods img {
+  margin-left: 3px;
+  margin-right: 3px;
+}
+#playlist-mods img:hover {
+  -webkit-filter: drop-shadow(1px 1px 0 #1db954af) drop-shadow(-1px 1px 0 #1db954af) drop-shadow(1px -1px 0 #1db954af) drop-shadow(-1px -1px 0 #1db954af);
+  filter: drop-shadow(1px 1px 0 #1db954af) drop-shadow(-1px 1px 0 #1db954af) drop-shadow(1px -1px 0 #1db954af) drop-shadow(-1px -1px 0 #1db954af);
+}
+#playlist-mods img:active {
+  -webkit-filter: drop-shadow(1px 1px 0 #1db954) drop-shadow(-1px 1px 0 #1db954) drop-shadow(1px -1px 0 #1db954) drop-shadow(-1px -1px 0 #1db954);
+  filter: drop-shadow(1px 1px 0 #1db954) drop-shadow(-1px 1px 0 #1db954) drop-shadow(1px -1px 0 #1db954) drop-shadow(-1px -1px 0 #1db954);
 }
 #playlist-mods input {
   width: 50%;
@@ -275,10 +294,8 @@ footer {
   /* Standard */
   width: calc(100% - 8px);
 }
-#playlist-card-scroll-area-webkit-resizer {
-  background-color: red;
-}
 #mods-opener > img {
+  margin-top: 20%;
   margin-left: 20%;
   width: 30px;
   height: 30px;

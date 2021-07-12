@@ -418,9 +418,7 @@ const addEventListeners = (function () {
         }
       );
     }
-    const undoBtn = document
-      .getElementById(config.CSS.IDs.playlistMods)
-      .getElementsByTagName("button")[0];
+    const undoBtn = document.getElementById(config.CSS.IDs.undo);
 
     undoBtn.addEventListener("click", () => onClick());
   }

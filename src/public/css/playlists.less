@@ -84,9 +84,9 @@
 .playlist-track {
   display: flex;
   align-items: center;
-  margin-top: 2%;
-  margin-bottom: 2%;
-  margin-left: 2%;
+  margin-top: 1%;
+  margin-bottom: 1%;
+  margin-left: 1%;
   justify-content: flex-start;
   text-align: left;
   color: #d4d4d4;
@@ -117,7 +117,6 @@
   overflow: hidden;
   min-width: 0;
   min-height: auto;
-  border-radius: 10px;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -129,8 +128,38 @@
     height: 10%;
   }
   & button {
-    width: 60px;
-    height: 30px;
+    margin: 5px 5px 5px 5px;
+    padding: 4px 4px 4px 4px;
+    width: fit-content;
+    height: fit-content;
+  }
+
+  & img {
+    margin-left: 3px;
+    margin-right: 3px;
+
+    &:hover {
+      -webkit-filter: drop-shadow(1px 1px 0 @primary-dark)
+        drop-shadow(-1px 1px 0 @primary-dark)
+        drop-shadow(1px -1px 0 @primary-dark)
+        drop-shadow(-1px -1px 0 @primary-dark);
+
+      filter: drop-shadow(1px 1px 0 @primary-dark)
+        drop-shadow(-1px 1px 0 @primary-dark)
+        drop-shadow(1px -1px 0 @primary-dark)
+        drop-shadow(-1px -1px 0 @primary-dark);
+    }
+    &:active {
+      -webkit-filter: drop-shadow(1px 1px 0 @primary-green)
+        drop-shadow(-1px 1px 0 @primary-green)
+        drop-shadow(1px -1px 0 @primary-green)
+        drop-shadow(-1px -1px 0 @primary-green);
+
+      filter: drop-shadow(1px 1px 0 @primary-green)
+        drop-shadow(-1px 1px 0 @primary-green)
+        drop-shadow(1px -1px 0 @primary-green)
+        drop-shadow(-1px -1px 0 @primary-green);
+    }
   }
 
   & input {
@@ -164,12 +193,10 @@
   /* Standard */
   width: calc(100% - 8px);
 }
-#playlist-card-scroll-area-webkit-resizer {
-  background-color: red;
-}
 
 #mods-opener {
   & > img {
+    margin-top: 20%;
     margin-left: 20%;
     width: 30px;
     height: 30px;

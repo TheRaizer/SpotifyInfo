@@ -105,14 +105,21 @@ footer {
   padding: 10px;
 }
 
-.static {
-  position: absolute;
-  background: white;
-  background-color: red;
+.icon8 {
+  color: rgb(110, 110, 110);
+  margin-left: 5px;
+  margin-right: 5px;
+  border-left: 1px solid rgb(110, 110, 110);
+  border-right: 1px solid rgb(110, 110, 110);
+
+  & a {
+    text-decoration: underline;
+    color: inherit;
+  }
 }
 
-.static:hover {
-  opacity: 0;
+#icon8-links {
+  display: inline-flex;
 }
 
 @import "chart-info.less";
