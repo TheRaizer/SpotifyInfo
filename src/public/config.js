@@ -61,7 +61,6 @@ export const config = {
       name: "name",
       playlistOrder: "playlist-order",
       chartInfo: "chart-info",
-      featureDefinition: "feature-definition",
       flipCardInner: "flip-card-inner",
       flipCardFront: "flip-card-front",
       flipCardBack: "flip-card-back",
@@ -69,6 +68,7 @@ export const config = {
       resizeContainer: "resize-container",
       scrollLeft: "scroll-left",
       scrollingText: "scrolling-text",
+      noSelect: "no-select",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",

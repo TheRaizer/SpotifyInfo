@@ -40,6 +40,7 @@
       <img
         id="get-token-loading-spinner"
         src="/images/200pxLoadingSpinner.svg"
+        alt="Loading..."
       />
       <section id="info-container">
         <header>
@@ -47,7 +48,10 @@
             Your Top Tracks
           </h1>
         </header>
-        <div class="border-connected-btn-container" id="tracks-term-selections">
+        <div
+          class="border-connected-btn-container no-select"
+          id="tracks-term-selections"
+        >
           <button
             class="selected"
             data-selection="short_term"
@@ -70,8 +74,15 @@
         </div>
         <div class="border-container" id="term-border-container">
           <div class="card-grid" id="track-cards-container"></div>
-          <div class="border-connected-btn-container" id="feature-selections">
-            <button data-selection="popularity" class="selected">
+          <div
+            class="border-connected-btn-container no-select"
+            id="feature-selections"
+          >
+            <button
+              data-selection="popularity"
+              class="selected"
+              title="Click to view popularity data"
+            >
               Popularity
             </button>
             <button data-selection="valence" title="Click to view valence data">
@@ -102,20 +113,71 @@
           <section id="tracks-data" class="border-container">
             <canvas id="tracks-chart" width="800px" height="550px"></canvas>
             <div class="chart-info">
-              <h2>Chart Info</h2>
-              <div class="feature-definition">
-                <h3>Definition</h3>
-                <h4>N/A</h4>
+              <div>
+                <img
+                  class="no-select"
+                  src="/images/book-icon.png"
+                  alt="Definition"
+                />
+                <div>
+                  <p class="ellipsis-wrap">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Maxime mollitia, molestiae quas vel sint commodi repudiandae
+                    consequuntur voluptatum laborum numquam blanditiis harum
+                    quisquam eius sed odit fugiat iusto fuga praesentium optio,
+                    eaque rerum! Provident similique accusantium nemo autem.
+                    Veritatis obcaecati tenetur iure eius earum ut molestias
+                    architecto voluptate aliquam nihil, eveniet aliquid culpa
+                    officia aut! Impedit sit sunt quaerat, odit, tenetur error,
+                    harum nesciunt ipsum debitis quas aliquid. Reprehenderit,
+                    quia. Quo neque error repudiandae fuga? Ipsa laudantium
+                    molestias eos sapiente officiis modi at sunt excepturi
+                    expedita sint? Sed quibusdam recusandae alias error harum
+                    maxime adipisci amet laborum. Perspiciatis minima nesciunt
+                    dolorem! Officiis iure rerum voluptates a cumque velit
+                    quibusdam sed amet tempora. Sit laborum ab, eius fugit
+                    doloribus tenetur fugiat, temporibus enim commodi iusto
+                    libero magni deleniti quod quam consequuntur! Commodi minima
+                    excepturi repudiandae velit hic maxime doloremque. Quaerat
+                    provident commodi consectetur veniam similique ad earum
+                    omnis ipsum saepe, voluptas, hic voluptates pariatur est
+                    explicabo fugiat, dolorum eligendi quam cupiditate excepturi
+                    mollitia maiores labore suscipit quas? Nulla, placeat.
+                    Voluptatem quaerat non architecto ab laudantium modi minima
+                    sunt esse temporibus sint culpa, recusandae aliquam numquam
+                    totam ratione voluptas quod exercitationem fuga. Possimus
+                    quis earum veniam quasi aliquam eligendi, placeat qui
+                    corporis!
+                  </p>
+                </div>
               </div>
-              <div class="average">
-                <h3>Average</h3>
-                <h4>N/A</h4>
+              <div>
+                <img
+                  class="no-select"
+                  src="/images/user-icon.png"
+                  alt="Tendency"
+                />
               </div>
             </div>
           </section>
         </div>
       </section>
-      <footer></footer>
+      <footer>
+        <section id="icon8-links">
+          <div class="icon8">
+            <a target="_blank" href="https://icons8.com/icon/84898/male-user"
+              >Male User</a
+            >
+            icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+          </div>
+          <div class="icon8">
+            <a target="_blank" href="https://icons8.com/icon/52991/open-book"
+              >Open Book</a
+            >
+            icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+          </div>
+        </section>
+      </footer>
     </div>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"

@@ -12,10 +12,6 @@ img {
 h1 {
   font-size: 400%;
   font-weight: bold;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 footer {
   margin-top: 20%;
@@ -29,11 +25,13 @@ footer {
   margin-top: 2%;
   margin-bottom: 2%;
 }
-.glow {
+.no-select {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.glow {
   color: white;
   font-weight: bold;
   background-color: #1db954;
@@ -50,10 +48,6 @@ footer {
   box-shadow: 0px 0px 10px 5px #1db954;
 }
 .loading-spinner {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   width: 150px;
   height: 150px;
 }
@@ -98,32 +92,30 @@ footer {
   display: inline-flex;
 }
 .chart-info {
-  background-color: #202020;
   display: flex;
   flex-direction: column;
   width: 30%;
-  align-items: center;
-  border: 3px solid green;
-}
-.chart-info > h2 {
-  font-size: 200%;
-  font-weight: bold;
 }
 .chart-info > div {
-  margin-top: 10%;
-  margin-bottom: 10%;
+  border-radius: 70px;
+  display: flex;
+  background-color: #202020;
+  width: 100%;
+  min-width: 0;
+  min-height: 64px;
+  height: fit-content;
+  margin-top: 5%;
+  margin-bottom: 5%;
 }
-.chart-info > div > h3 {
-  font-size: 120%;
-  font-weight: bold;
-  color: #aaaaaa;
+.chart-info > div > img {
+  margin-left: 5%;
+  height: fit-content;
+  width: fit-content;
 }
-.chart-info > div > h4 {
-  color: #aaaaaa;
-}
-.chart-info > h2 {
-  font-size: 200%;
-  font-weight: bold;
+.chart-info > div > div {
+  display: flex;
+  align-items: center;
+  min-width: 0;
 }
 .expanded-playlist {
   flex: 0 1 auto;
@@ -134,10 +126,6 @@ footer {
   width: 100%;
   height: 88vh;
   border-radius: 10px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   opacity: 0;
   transition: opacity 250ms ease-in;
 }
@@ -257,10 +245,6 @@ footer {
   overflow: hidden;
   min-width: 0;
   min-height: auto;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   transition: height 200ms ease-in-out;
 }
 #playlist-mods.appear {
@@ -351,10 +335,6 @@ footer {
   left: 0;
   opacity: 0;
   transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out, opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 .card img {
   width: 110px;

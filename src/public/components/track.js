@@ -70,7 +70,9 @@ class Track {
     let id = `${config.CSS.IDs.trackPrefix}${idx}`;
     this.cardId = id;
     let html = `
-            <div class="${config.CSS.CLASSES.flipCard}">
+            <div class="${config.CSS.CLASSES.flipCard} ${
+      config.CSS.CLASSES.noSelect
+    }">
               <button class="${config.CSS.CLASSES.card} ${
       config.CSS.CLASSES.flipCardInner
     } ${config.CSS.CLASSES.track}" id="${id}">
@@ -107,7 +109,9 @@ class Track {
   getPlaylistTrackHtml() {
     let html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
-              <img src="${this.imgURL}"></img>
+              <img class="${config.CSS.CLASSES.noSelect}" src="${
+      this.imgURL
+    }"></img>
               <div>
                 <a href="${this.externalUrl}">
                   <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${

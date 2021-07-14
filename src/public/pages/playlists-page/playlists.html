@@ -40,6 +40,7 @@
       <img
         id="get-token-loading-spinner"
         src="/images/200pxLoadingSpinner.svg"
+        alt="Loading..."
       />
       <section id="info-container">
         <h1
@@ -50,6 +51,7 @@
           class="info-loading-spinner"
           id="playlists-loading"
           src="/images/200pxLoadingSpinner.svg"
+          alt="Loading..."
         />
         <section id="playlists-section">
           <div class="resize-container">
@@ -65,10 +67,11 @@
               <section>
                 <a id="mods-opener" title="Open Playlist Modifications">
                   <img
+                    class="no-select"
                     src="/images/wrench-static.png"
                     onmouseenter="this.src='/images/wrench-anim.gif'"
                     onmouseout="this.src='/images/wrench-static.png'"
-                    alt="something pithy"
+                    alt="Open Modifications"
                   />
                 </a>
                 <h2 class="ellipsis-wrap">Select a Playlist</h2>
@@ -96,19 +99,19 @@
             </header>
             <div class="content">
               <section id="playlist-mods">
-                <a id="undo" title="Undo Change">
+                <a class="no-select" id="undo" title="Undo Change">
                   <img src="/images/undo-icon.png" alt="undo" />
                 </a>
-                <a id="redo" title="Redo Change">
+                <a class="no-select" id="redo" title="Redo Change">
                   <img src="/images/redo-icon.png" alt="redo" />
                 </a>
                 <div id="remove-early-added">
                   <input
                     type="number"
-                    placeholder="Early added to remove..."
+                    placeholder="# of Early added to remove..."
                     title="Number of early added songs to remove"
                   />
-                  <button class="glow" title="Remove Early Added">
+                  <button class="glow no-select" title="Remove Early Added">
                     Remove Early Added
                   </button>
                 </div>

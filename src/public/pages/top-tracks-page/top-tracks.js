@@ -50,7 +50,6 @@ const trackActions = (function () {
     return promiseList;
   }
   function loadDatasToTrackList(datas, trackList) {
-    console.log(datas);
     datas.forEach((data) => {
       let props = {
         name: data.name,
@@ -334,19 +333,8 @@ const chartsManager = (function () {
 
   function changeTracksChartExpl() {
     const chartInfosEl = (function () {
-      const chartInfoEl = document
-        .getElementById(config.CSS.IDs.tracksData)
-        .getElementsByClassName(config.CSS.CLASSES.chartInfo)[0];
-      const featureDefEl = chartInfoEl
-        .getElementsByClassName(config.CSS.CLASSES.featureDefinition)[0]
-        .getElementsByTagName("h4")[0];
-
-      return {
-        chartInfoEl,
-        featureDefEl,
-      };
+      return {};
     })();
-    chartInfosEl.featureDefEl.textContent = selections.feature.definition;
   }
 
   return {

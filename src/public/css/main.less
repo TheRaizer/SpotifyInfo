@@ -14,11 +14,6 @@ img {
 h1 {
   font-size: 400%;
   font-weight: bold;
-
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 footer {
@@ -36,12 +31,14 @@ footer {
   }
 }
 
-.glow {
+.no-select {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
 
+.glow {
   color: white;
   font-weight: bold;
   background-color: @primary-green;
@@ -61,11 +58,6 @@ footer {
 }
 
 .loading-spinner {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-
   width: 150px;
   height: 150px;
 }
