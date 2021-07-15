@@ -414,7 +414,7 @@ const addEventListeners = (function () {
     }
   }
 
-  function addDropDownInfoEvents() {
+  function addExpandDescOnHoverEvents() {
     // get each description area for the chart info
     const descDivs = document.getElementsByClassName(
       config.CSS.CLASSES.chartInfo
@@ -423,21 +423,18 @@ const addEventListeners = (function () {
     for (let i = 0; i < descDivs.length; i++) {
       // obtain the description and the drop down button
       let desc = descDivs[i];
-      let dropDown = desc.getElementsByClassName(
-        config.CSS.CLASSES.dropDown
+      let textContainer = desc.getElementsByClassName(
+        config.CSS.CLASSES.expandableTxtContainer
       )[0];
-      if (!dropDown) {
+      if (!textContainer) {
         continue;
       }
-
-      dropDown.addEventListener("click", () => {
-        // obtain the expandable text located in the description
-        let expandableText = desc.getElementsByClassName(
-          config.CSS.CLASSES.expandableTxtContainer
-        )[0].children[0];
-
-        // toggle the ellipsis wrap in order to expand the text
-        expandableText.classList.toggle(config.CSS.CLASSES.ellipsisWrap);
+      let ellipsisText = textContainer.children[0];
+      desc.addEventListener("mouseenter", () => {
+        ellipsisText.classList.remove(config.CSS.CLASSES.ellipsisWrap);
+      });
+      desc.addEventListener("mouseleave", () => {
+        ellipsisText.classList.add(config.CSS.CLASSES.ellipsisWrap);
       });
     }
   }
@@ -445,7 +442,7 @@ const addEventListeners = (function () {
   return {
     addTrackFeatureButtonEvents,
     addTrackTermButtonEvents,
-    addDropDownInfoEvents,
+    addExpandDescOnHoverEvents,
   };
 })();
 
@@ -478,5 +475,5 @@ const addEventListeners = (function () {
 
   addEventListeners.addTrackFeatureButtonEvents();
   addEventListeners.addTrackTermButtonEvents();
-  addEventListeners.addDropDownInfoEvents();
+  addEventListeners.addExpandDescOnHoverEvents();
 })();
