@@ -4,6 +4,7 @@
 @icon-height: 64px;
 
 .chart-info {
+  flex: 0 0 30%;
   color: @reading-color;
   display: flex;
   flex-direction: column;
@@ -42,7 +43,7 @@
       width: fit-content;
     }
     & .expandable-text-container {
-      margin-top: 25px;
+      margin-top: 20px;
       margin-bottom: 25px;
       flex-basis: 70%;
       display: flex;
@@ -55,4 +56,11 @@
       height: 30px;
     }
   }
+}
+
+.chart-container {
+  flex: 0 0 70%;
+  min-width: 0;
+  width: 70%;
+  height: 60vh;
 }

@@ -286,7 +286,8 @@ const chartsManager = (function () {
             text: "Top Tracks Comparison",
           },
         },
-        responsive: false,
+        responsive: true,
+        maintainAspectRatio: false,
         scales: {
           y: {
             beginAtZero: true,
