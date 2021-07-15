@@ -332,9 +332,9 @@ const chartsManager = (function () {
   }
 
   function changeTracksChartExpl() {
-    const chartInfosEl = (function () {
-      return {};
-    })();
+    const featDef = document.getElementById(config.CSS.IDs.featDef);
+
+    featDef.textContent = selections.feature.definition;
   }
 
   return {
@@ -421,31 +421,31 @@ const addEventListeners = (function () {
 })();
 
 (function () {
-  checkIfHasTokens()
-    .then((hasToken) => {
-      let getTokensSpinner = document.getElementById(
-        config.CSS.IDs.getTokenLoadingSpinner
-      );
+  function onSuccessfulTokenCall(hasToken) {
+    let getTokensSpinner = document.getElementById(
+      config.CSS.IDs.getTokenLoadingSpinner
+    );
 
-      // remove token spinner because by this line we have obtained the token
-      getTokensSpinner.parentNode.removeChild(getTokensSpinner);
+    // remove token spinner because by this line we have obtained the token
+    getTokensSpinner.parentNode.removeChild(getTokensSpinner);
 
-      const infoContainer = document.getElementById(
-        config.CSS.IDs.infoContainer
-      );
-      if (hasToken) {
-        generateNavLogin();
-        infoContainer.style.display = "block";
+    const infoContainer = document.getElementById(config.CSS.IDs.infoContainer);
+    if (hasToken) {
+      generateNavLogin();
+      infoContainer.style.display = "block";
 
-        // when entering the page always show short term tracks first
-        trackActions.selections.trackTerm = "short_term";
-        displayCardInfo.displayTrackCards(trackLists.topTrackObjsShortTerm);
-      } else {
-        // if there is no token redirect to allow access page
-        window.location.href = "http://localhost:3000/";
-      }
-    })
-    .catch((err) => console.error(err));
+      // when entering the page always show short term tracks first
+      trackActions.selections.trackTerm = "short_term";
+      displayCardInfo.displayTrackCards(trackLists.topTrackObjsShortTerm);
+    } else {
+      // if there is no token redirect to allow access page
+      window.location.href = "http://localhost:3000/";
+    }
+  }
+
+  promiseHandler(checkIfHasTokens(), (hasToken) =>
+    onSuccessfulTokenCall(hasToken)
+  );
 
   addEventListeners.addTrackFeatureButtonEvents();
   addEventListeners.addTrackTermButtonEvents();

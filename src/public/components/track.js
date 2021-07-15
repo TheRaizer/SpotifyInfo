@@ -48,7 +48,6 @@ class Track {
 
   generateHTMLArtistNames() {
     let artistNames = "";
-    console.log(this.artists);
     for (let i = 0; i < this.artists.length; i++) {
       const artist = this.artists[i];
       artistNames += `<a href="${artist.externalUrl}">${artist.name}</a>`;
@@ -79,7 +78,7 @@ class Track {
                 <div class="${
                   config.CSS.CLASSES.flipCardFront
                 }"  title="Click to view more Info">
-                  <img src="${this.imgURL}"></img>
+                  <img src="${this.imgURL}" alt="Album Cover"></img>
                   <div>
                     <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.scrollingText

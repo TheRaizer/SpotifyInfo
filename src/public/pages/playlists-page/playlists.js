@@ -443,58 +443,54 @@ const addEventListeners = (function () {
 })();
 
 function saveResizeWidth() {
-  axios
-    .post(
+  promiseHandler(
+    axios.post(
       config.URLs.postSessionData +
         `playlist-resize-width&val=${
           cardResizeContainer.getBoundingClientRect().width
         }`
     )
-    .catch((err) => console.error(err));
+  );
   console.log("end resize");
 }
 function loadResizeWidth() {
-  axios
-    .get(config.URLs.getSessionData + "playlist-resize-width")
-    .then((res) => {
-      cardResizeContainer.style.width = res.data + "px";
-    })
-    .catch((err) => console.error(err));
+  promiseHandler(
+    axios
+      .get(config.URLs.getSessionData + "playlist-resize-width")
+      .then((res) => {
+        cardResizeContainer.style.width = res.data + "px";
+      })
+  );
 }
 
 (function () {
-  checkIfHasTokens()
-    .then((hasToken) => {
-      let getTokensSpinner = document.getElementById(
-        config.CSS.IDs.getTokenLoadingSpinner
-      );
+  function onSuccesfulTokenCall(hasToken) {
+    let getTokensSpinner = document.getElementById(
+      config.CSS.IDs.getTokenLoadingSpinner
+    );
 
-      // remove token spinner because by this line we have obtained the token
-      getTokensSpinner.parentNode.removeChild(getTokensSpinner);
+    // remove token spinner because by this line we have obtained the token
+    getTokensSpinner.parentNode.removeChild(getTokensSpinner);
 
-      const infoContainer = document.getElementById(
-        config.CSS.IDs.infoContainer
+    const infoContainer = document.getElementById(config.CSS.IDs.infoContainer);
+    if (hasToken) {
+      generateNavLogin();
+      infoContainer.style.display = "block";
+      // render and get information
+      promiseHandler(
+        infoRetrieval.getInitialInfo(),
+        () => animationControl.addAnimateOnScroll(),
+        () => console.log("Problem when getting information")
       );
-      if (hasToken) {
-        generateNavLogin();
-        infoContainer.style.display = "block";
-        // render and get information
-        infoRetrieval
-          .getInitialInfo()
-          .then(() => {
-            // Run .then() when information has been obtained and innerhtml has been changed
-            animationControl.addAnimateOnScroll();
-          })
-          .catch((err) => {
-            console.log("Problem when getting information");
-            console.error(err);
-          });
-      } else {
-        // if there is no token redirect to allow access page
-        window.location.href = "http://localhost:3000/";
-      }
-    })
-    .catch((err) => console.error(err));
+    } else {
+      // if there is no token redirect to allow access page
+      window.location.href = "http://localhost:3000/";
+    }
+  }
+
+  promiseHandler(checkIfHasTokens(), (hasToken) => {
+    onSuccesfulTokenCall(hasToken);
+  });
 
   addEventListeners.addExpandedPlaylistModsSearchbarEvent();
   addEventListeners.addExpandedPlaylistModsOrderEvent();

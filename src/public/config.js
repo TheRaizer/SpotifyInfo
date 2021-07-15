@@ -45,6 +45,7 @@ export const config = {
       undo: "undo",
       redo: "redo",
       modsOpener: "mods-opener",
+      featDef: "feat-definition",
     },
     CLASSES: {
       glow: "glow",
