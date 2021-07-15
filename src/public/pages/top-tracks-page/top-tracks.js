@@ -134,7 +134,7 @@ const displayCardInfo = (function () {
     // initially show the loading spinner
     const htmlString = `
             <div>
-              <img src="${config.PATHS.spinner}" />
+              <img src="${config.PATHS.spinner}" alt="Loading..." />
             </div>`;
     let spinnerEl = htmlToEl(htmlString);
 
@@ -414,9 +414,38 @@ const addEventListeners = (function () {
     }
   }
 
+  function addDropDownInfoEvents() {
+    // get each description area for the chart info
+    const descDivs = document.getElementsByClassName(
+      config.CSS.CLASSES.chartInfo
+    )[0].children;
+
+    for (let i = 0; i < descDivs.length; i++) {
+      // obtain the description and the drop down button
+      let desc = descDivs[i];
+      let dropDown = desc.getElementsByClassName(
+        config.CSS.CLASSES.dropDown
+      )[0];
+      if (!dropDown) {
+        continue;
+      }
+
+      dropDown.addEventListener("click", () => {
+        // obtain the expandable text located in the description
+        let expandableText = desc.getElementsByClassName(
+          config.CSS.CLASSES.expandableTxtContainer
+        )[0].children[0];
+
+        // toggle the ellipsis wrap in order to expand the text
+        expandableText.classList.toggle(config.CSS.CLASSES.ellipsisWrap);
+      });
+    }
+  }
+
   return {
     addTrackFeatureButtonEvents,
     addTrackTermButtonEvents,
+    addDropDownInfoEvents,
   };
 })();
 
@@ -449,4 +478,5 @@ const addEventListeners = (function () {
 
   addEventListeners.addTrackFeatureButtonEvents();
   addEventListeners.addTrackTermButtonEvents();
+  addEventListeners.addDropDownInfoEvents();
 })();

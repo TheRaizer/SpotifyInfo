@@ -1,1 +1,3 @@
 For display flex I may want to reset the min-width, as the natural value using flex is min-content, which prevents truncation.
+
+Using #/ID to change styles is marked as more important then anything else, therefore it will override styles done by referencing it by class.

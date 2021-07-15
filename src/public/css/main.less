@@ -123,3 +123,12 @@ footer {
 @import "home-page.less";
 @import "scrolling-text";
 @import "appear-hide.less";
+
+.border-selected {
+  &:hover {
+    border-color: @primary-dark;
+  }
+  &.selected {
+    border-color: @primary-green;
+  }
+}

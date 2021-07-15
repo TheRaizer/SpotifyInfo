@@ -1,5 +1,6 @@
 @import "main-colors.less";
 
+@bg-color: #202020;
 @icon-height: 64px;
 
 .chart-info {
@@ -11,7 +12,7 @@
   & > div {
     border-radius: 70px;
     display: flex;
-    background-color: #202020;
+    background-color: @bg-color;
     width: 100%;
     min-width: 0;
     min-height: @icon-height;
@@ -25,10 +26,15 @@
       height: fit-content;
       width: fit-content;
     }
-    & > div {
+    & .expandable-text-container {
+      flex-basis: 70%;
       display: flex;
       align-items: center;
       min-width: 0;
+    }
+    & .drop-down {
+      width: 30px;
+      height: 30px;
     }
   }
 }

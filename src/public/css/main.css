@@ -113,10 +113,15 @@ footer {
   height: fit-content;
   width: fit-content;
 }
-.chart-info > div > div {
+.chart-info > div .expandable-text-container {
+  flex-basis: 70%;
   display: flex;
   align-items: center;
   min-width: 0;
+}
+.chart-info > div .drop-down {
+  width: 30px;
+  height: 30px;
 }
 .expanded-playlist {
   flex: 0 1 auto;
@@ -298,19 +303,13 @@ footer {
   /* Standard */
   width: calc(100% - 8px);
 }
-#mods-opener > img {
+.playlist-config img {
   margin-top: 20%;
   margin-left: 20%;
   width: 30px;
   height: 30px;
   border-radius: 50%;
   border: 4px solid black;
-}
-#mods-opener > img:hover {
-  border-color: #1db954af;
-}
-#mods-opener > img.selected {
-  border-color: #1db954;
 }
 .card-grid {
   justify-content: space-around;
@@ -543,4 +542,10 @@ ul.topnav li.last {
 .hidden {
   opacity: 0;
   pointer-events: none;
+}
+.border-selected:hover {
+  border-color: #1db954af;
+}
+.border-selected.selected {
+  border-color: #1db954;
 }

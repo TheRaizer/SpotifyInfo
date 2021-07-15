@@ -70,6 +70,8 @@ export const config = {
       scrollLeft: "scroll-left",
       scrollingText: "scrolling-text",
       noSelect: "no-select",
+      dropDown: "drop-down",
+      expandableTxtContainer: "expandable-text-container",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",
