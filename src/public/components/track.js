@@ -137,8 +137,7 @@ class Track {
     let response = await axios
       .get(config.URLs.getTrackFeatures + this.id)
       .catch((err) => {
-        console.error(err);
-        throw new Error(err);
+        throw err;
       });
 
     if (response) {

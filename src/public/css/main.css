@@ -430,13 +430,16 @@ footer {
 .border-connected-btn-container {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
 }
 .border-connected-btn-container > button {
   border-radius: 1px;
   width: 13%;
-  min-width: fit-content;
+  min-width: max-content;
   height: 40px;
   pointer-events: all;
+  padding-right: 10px;
+  padding-left: 10px;
 }
 .border-connected-btn-container > button.selected {
   border-top: 1px solid #6e6e6e;
@@ -453,6 +456,24 @@ footer {
   margin-left: 5vw;
   margin-right: 5vw;
   border-top: 1px solid #6e6e6e;
+}
+@media only screen and (max-width: 1200px) {
+  .border-connected-btn-container {
+    flex-wrap: wrap;
+  }
+  .border-connected-btn-container > button.selected {
+    border: 1px solid #6e6e6e;
+    pointer-events: none;
+  }
+  .border-connected-btn-container > button:hover:not(.selected) {
+    border: 1px solid rgba(110, 110, 110, 0.342);
+  }
+}
+@media only screen and (max-width: 600px) {
+  /*Big smartphones [426px -> 600px]*/
+}
+@media only screen and (max-width: 425px) {
+  /*Small smartphones [325px -> 425px]*/
 }
 ul.topnav {
   z-index: 1000;
@@ -496,7 +517,7 @@ ul.topnav li.right {
 ul.topnav li.last {
   border-right: 1px solid rgba(221, 221, 221, 0.815);
 }
-@media screen and (max-width: 720px) {
+@media only screen and (max-width: 600px) {
   ul.topnav li {
     width: 100%;
   }
