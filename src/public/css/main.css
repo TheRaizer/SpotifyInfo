@@ -413,8 +413,8 @@ footer {
   bottom: 0%;
 }
 .flip-card-back {
-  background-color: #2980b9;
-  color: white;
+  background-color: #1db954af;
+  color: #d4d4d4;
   transform: rotateY(180deg);
 }
 .flip-card-back > h3 {
