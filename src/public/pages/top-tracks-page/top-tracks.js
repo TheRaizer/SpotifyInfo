@@ -180,14 +180,14 @@ const chartsManager = (function () {
       value: "Valence",
       data: null,
       definition:
-        "Higher valence sound more positive (e.g. happy, cheerful, euphoric). Lower valence sound more negative (e.g. sad, depressed, angry)",
+        "Higher valence sound more positive (e.g. happy, cheerful, euphoric). Lower valence sound more negative (e.g. sad, depressed, angry).",
     },
     danceability: {
       value: "Danceability",
       data: null,
       definition:
         "Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, \
-        rhythm stability, beat strength, and overall regularity",
+        rhythm stability, beat strength, and overall regularity.",
     },
     instrumentalness: {
       value: "Instrumentalness",
@@ -199,13 +199,13 @@ const chartsManager = (function () {
       value: "Energy",
       data: null,
       definition:
-        "Energy represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy",
+        "Energy represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy.",
     },
     acousticness: {
       value: "Acousticness",
       data: null,
       definition:
-        "Acousticness describes how acoustic a song is. Which is measured by the amount of the song that does not contain electrical amplification",
+        "Acousticness describes how acoustic a song is. Which is measured by the amount of the song that does not contain electrical amplification.",
     },
   };
   const selections = {
@@ -416,7 +416,8 @@ const addEventListeners = (function () {
   }
 
   function addExpandDescOnHoverEvents() {
-    const DEFAULT_FLEX_BASIS = 20;
+    const DEFAULT_FLEX_BASIS = 60;
+    const TOP_PADDING = 20;
     const BTM_PADDING = 10;
     // get each description area for the chart info
     const descDivs = document.getElementsByClassName(
@@ -435,12 +436,8 @@ const addEventListeners = (function () {
       let ellipsisText = textContainer.children[0];
       desc.addEventListener("mouseenter", () => {
         ellipsisText.classList.remove(config.CSS.CLASSES.ellipsisWrap);
-        console.log(desc.style.flexBasis);
         desc.style.flexBasis =
-          DEFAULT_FLEX_BASIS +
-          BTM_PADDING +
-          parseInt(window.getComputedStyle(textContainer).height, 10) +
-          "px";
+          TOP_PADDING + BTM_PADDING + textContainer.offsetHeight + "px";
       });
       desc.addEventListener("mouseleave", () => {
         ellipsisText.classList.add(config.CSS.CLASSES.ellipsisWrap);

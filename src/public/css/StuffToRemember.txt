@@ -1,3 +1,8 @@
 For display flex I may want to reset the min-width, as the natural value using flex is min-content, which prevents truncation.
 
 Using #/ID to change styles is marked as more important then anything else, therefore it will override styles done by referencing it by class.
+
+I thought there was a delay when transitioning my flex basis through JS. The reason why was because the flex basis I set was smaller then the actual height of the
+so as it would transition from lets say 20px to 70px, you would see a delay as it goes from 20px to 60px because the flex areas actual height was 60px. After the transition
+to 60px, you would then see the flex area enlarge to 70px. This caused what seemed like a delay. TO FIX: Use the CSS in the console, and change the transitioning value there. It will
+show you how it transitions, and will allow you to set the proper original flex basis before any transitions.
