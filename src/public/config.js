@@ -91,7 +91,7 @@ export const config = {
     postClearTokens: "/tokens/clear-tokens",
     deletePlaylistTracks: "/spotify/delete-playlist-items?playlist_id=",
     postPlaylistTracks: "/spotify/post-playlist-items?playlist_id=",
-    getTrackFeatures: "/spotify/get-track-features?track_id=",
+    getTrackFeatures: "/spotify/get-tracks-features?track_ids=",
     postRefreshAccessToken: "/tokens/refresh-token",
     postSessionData: "/spotify/post-session-data?attr=",
     getSessionData: "/spotify/get-session-data?attr=",

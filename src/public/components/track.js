@@ -129,21 +129,6 @@ class Track {
 
     return htmlToEl(html);
   }
-
-  /** Load the feeatures of a track from the spotify web api and store them.
-   *
-   */
-  async loadFeatures() {
-    let response = await axios
-      .get(config.URLs.getTrackFeatures + this.id)
-      .catch((err) => {
-        throw err;
-      });
-
-    if (response) {
-      this.features = response.data;
-    }
-  }
 }
 
 export default Track;

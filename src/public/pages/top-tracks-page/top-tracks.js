@@ -41,13 +41,29 @@ const trackActions = (function () {
     }
   }
 
-  function getFeatLoadingPromises(tracks) {
-    let promiseList = [];
-    tracks.forEach((track) => {
-      promiseList.push(track.loadFeatures());
-    });
-
-    return promiseList;
+  /** Load the features of each track in the given list from the
+   * spotify web api and store them.
+   *
+   */
+  async function loadFeatures(trackList) {
+    let ids = trackList.map((track) => track.id);
+    let res = await axios
+      .get(config.URLs.getTrackFeatures + ids)
+      .catch((err) => {
+        throw err;
+      });
+    console.log(res.data.audio_features);
+    for (let i = 0; i < trackList.length; i++) {
+      let track = trackList[i];
+      let feats = res.data.audio_features[i];
+      track.features = {
+        danceability: feats.danceability,
+        acousticness: feats.acousticness,
+        instrumentalness: feats.instrumentalness,
+        valence: feats.valence,
+        energy: feats.energy,
+      };
+    }
   }
   function loadDatasToTrackList(datas, trackList) {
     datas.forEach((data) => {
@@ -74,9 +90,10 @@ const trackActions = (function () {
     if (err) {
       throw new Error(err);
     }
+    console.log(trackList);
     loadDatasToTrackList(res.data, trackList);
-    let promiseList = getFeatLoadingPromises(trackList);
-    await Promise.all(promiseList);
+
+    await promiseHandler(loadFeatures(trackList));
   }
   return {
     addTrackCardListeners,
@@ -250,7 +267,7 @@ const chartsManager = (function () {
     // display loading spinner, then load features of each track.
     let { names } = getNamesAndPopularity(trackObjs);
     trackObjs.map((track) => track.features);
-    changeTracksChartExpl();
+    changeTracksChartInfo();
 
     // remove loading spinner for chart
     charts.tracksChart = new Chart(tracksChartEl, {
@@ -321,7 +338,7 @@ const chartsManager = (function () {
     let { names } = chartsManager.getNamesAndPopularity(trackObjs);
     let featureList = trackObjs.map((track) => track.features);
     updateFeatureData(featureList);
-    changeTracksChartExpl();
+    changeTracksChartInfo();
     let chart = charts.tracksChart;
     chart.data.labels = [];
     chart.data.datasets[0].data = [];
@@ -332,7 +349,7 @@ const chartsManager = (function () {
     chart.update();
   }
 
-  function changeTracksChartExpl() {
+  function changeTracksChartInfo() {
     const featDef = document.getElementById(config.CSS.IDs.featDef);
 
     featDef.textContent = selections.feature.definition;

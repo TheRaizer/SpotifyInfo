@@ -50,7 +50,6 @@ router.get("/get-top-tracks", async function (req, res, next) {
       res.send(response);
     })
     .catch((err) => {
-      console.log("ERROR IN GET TOP TRACK");
       console.error(err);
       // run next to pass this error down to a middleware that will handle it
       next(err);
@@ -94,12 +93,12 @@ router.get("/get-playlist-tracks", async function (req, res, next) {
     });
 });
 
-router.get("/get-track-features", async function (req, res, next) {
-  var track_id = req.query.track_id;
+router.get("/get-tracks-features", async function (req, res, next) {
+  var track_ids = req.query.track_ids;
 
   await axios({
     method: "get",
-    url: `https://api.spotify.com/v1/audio-features/${track_id}`,
+    url: `https://api.spotify.com/v1/audio-features?ids=${track_ids}`,
     headers: spotifyGetHeaders(req),
   })
     .then(function (response) {
