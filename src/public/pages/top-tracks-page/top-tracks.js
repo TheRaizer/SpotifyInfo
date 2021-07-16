@@ -416,6 +416,8 @@ const addEventListeners = (function () {
   }
 
   function addExpandDescOnHoverEvents() {
+    const DEFAULT_FLEX_BASIS = 20;
+    const BTM_PADDING = 10;
     // get each description area for the chart info
     const descDivs = document.getElementsByClassName(
       config.CSS.CLASSES.chartInfo
@@ -433,9 +435,16 @@ const addEventListeners = (function () {
       let ellipsisText = textContainer.children[0];
       desc.addEventListener("mouseenter", () => {
         ellipsisText.classList.remove(config.CSS.CLASSES.ellipsisWrap);
+        console.log(desc.style.flexBasis);
+        desc.style.flexBasis =
+          DEFAULT_FLEX_BASIS +
+          BTM_PADDING +
+          parseInt(window.getComputedStyle(textContainer).height, 10) +
+          "px";
       });
       desc.addEventListener("mouseleave", () => {
         ellipsisText.classList.add(config.CSS.CLASSES.ellipsisWrap);
+        desc.style.flexBasis = DEFAULT_FLEX_BASIS + "px";
       });
     }
   }
