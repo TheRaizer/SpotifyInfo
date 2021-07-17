@@ -111,7 +111,18 @@
   }
 }
 
+.rank-card {
+  display: flex;
+  flex-direction: row;
+
+  & > h4 {
+    color: @reading-color;
+    font-weight: bold;
+  }
+}
+
 #track-cards-container {
+  grid-template-columns: repeat(auto-fit, minmax(200px, max-content));
   margin-bottom: 3%;
   margin-top: 3%;
 }

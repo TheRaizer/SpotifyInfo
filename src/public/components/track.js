@@ -69,33 +69,36 @@ class Track {
     let id = `${config.CSS.IDs.trackPrefix}${idx}`;
     this.cardId = id;
     let html = `
-            <div class="${config.CSS.CLASSES.flipCard} ${
+            <div class="${config.CSS.CLASSES.rankCard}">
+              <h4 id="${config.CSS.IDs.rank}">${idx + 1}.</h4>
+              <div class="${config.CSS.CLASSES.flipCard} ${
       config.CSS.CLASSES.noSelect
     }">
-              <button class="${config.CSS.CLASSES.card} ${
+                <button class="${config.CSS.CLASSES.card} ${
       config.CSS.CLASSES.flipCardInner
     } ${config.CSS.CLASSES.track}" id="${id}">
-                <div class="${
-                  config.CSS.CLASSES.flipCardFront
-                }"  title="Click to view more Info">
-                  <img src="${this.imgURL}" alt="Album Cover"></img>
-                  <div>
-                    <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
+                  <div class="${
+                    config.CSS.CLASSES.flipCardFront
+                  }"  title="Click to view more Info">
+                    <img src="${this.imgURL}" alt="Album Cover"></img>
+                    <div>
+                      <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.scrollingText
     }">${this.name}</h4>
+                    </div>
                   </div>
-                </div>
-                <div class=${config.CSS.CLASSES.flipCardBack}>
-                <h3>Duration:</h3>
-                <p>${this.duration}</p>
-                <h3>Release Date:</h3>
-                <p>${this.releaseDate.toDateString()}</p>
-                <h3>Album Name:</h3>
-                <p class="${config.CSS.CLASSES.ellipsisWrap}">${
+                  <div class=${config.CSS.CLASSES.flipCardBack}>
+                  <h3>Duration:</h3>
+                  <p>${this.duration}</p>
+                  <h3>Release Date:</h3>
+                  <p>${this.releaseDate.toDateString()}</p>
+                  <h3>Album Name:</h3>
+                  <p class="${config.CSS.CLASSES.ellipsisWrap}">${
       this.album.albumName
     }</p>
-                </div>
-              </button>
+                  </div>
+                </button>
+              </div>
             </div>
           `;
     return htmlToEl(html);

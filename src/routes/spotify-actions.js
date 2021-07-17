@@ -18,7 +18,7 @@ const getTopPromise = (req, url) => {
       req.query.time_range === undefined ? "short_term" : req.query.time_range;
     axios({
       method: "get",
-      url: `${url}?time_range=${timeRange}&limit=5`,
+      url: `${url}?time_range=${timeRange}&limit=50`,
       headers: spotifyGetHeaders(req),
     })
       .then((res) => {

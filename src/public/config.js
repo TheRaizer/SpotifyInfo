@@ -46,6 +46,8 @@ export const config = {
       redo: "redo",
       modsOpener: "mods-opener",
       featDef: "feat-definition",
+      rank: "rank",
+      viewAllTopTracks: "view-all-top-tracks",
     },
     CLASSES: {
       glow: "glow",
@@ -72,6 +74,7 @@ export const config = {
       noSelect: "no-select",
       dropDown: "drop-down",
       expandableTxtContainer: "expandable-text-container",
+      rankCard: "rank-card",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",

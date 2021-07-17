@@ -8,6 +8,7 @@ const trackActions = (function () {
   const selectionVerif = new AsyncSelectionVerif();
   const cardActionsHandler = new CardActionsHandler(50);
   const selections = {
+    numViewableCards: 5,
     trackTerm: "short_term",
   };
   function addTrackCardListeners(trackObjs) {
@@ -52,7 +53,6 @@ const trackActions = (function () {
       .catch((err) => {
         throw err;
       });
-    console.log(res.data.audio_features);
     for (let i = 0; i < trackList.length; i++) {
       let track = trackList[i];
       let feats = res.data.audio_features[i];
@@ -90,7 +90,6 @@ const trackActions = (function () {
     if (err) {
       throw new Error(err);
     }
-    console.log(trackList);
     loadDatasToTrackList(res.data, trackList);
 
     await promiseHandler(loadFeatures(trackList));
@@ -135,14 +134,22 @@ const displayCardInfo = (function () {
     let cardHtmls = [];
 
     // fill list of card elements and append them to DOM
-    trackObjs.map((trackObj, idx) => {
-      let cardHtml = trackObj.getTrackCardHtml(idx);
-      cardHtmls.push(cardHtml);
-      tracksContainer.appendChild(cardHtml);
-    });
+    let tracksDisplayed = [];
+    for (let i = 0; i < trackObjs.length; i++) {
+      let trackObj = trackObjs[i];
+      if (i < trackActions.selections.numViewableCards) {
+        let cardHtml = trackObj.getTrackCardHtml(i);
+        tracksDisplayed.push(trackObj);
+        cardHtmls.push(cardHtml);
+        tracksContainer.appendChild(cardHtml);
+      } else {
+        break;
+      }
+    }
 
+    console.log(tracksDisplayed);
     trackActions.addTrackCardListeners(trackObjs);
-    chartsManager.changeTracksChart(trackObjs);
+    chartsManager.changeTracksChart(tracksDisplayed);
     makeCardsVisible(config.CSS.CLASSES.track);
     return cardHtmls;
   }
@@ -395,7 +402,9 @@ const addEventListeners = (function () {
       btn.classList.add("selected");
       let currTracks = trackActions.getCurrSelTopTracks();
       chartsManager.selections.feature = selectedFeat;
-      chartsManager.updateTracksChart(currTracks);
+      chartsManager.updateTracksChart(
+        currTracks.slice(0, trackActions.selections.numViewableCards)
+      );
     }
 
     let featBtns = document
@@ -463,10 +472,23 @@ const addEventListeners = (function () {
     }
   }
 
+  function addViewNextTracksEvent() {
+    function onClick() {
+      trackActions.selections.numViewableCards += 5;
+      let currTracks = trackActions.getCurrSelTopTracks();
+      displayCardInfo.displayTrackCards(currTracks);
+    }
+
+    let viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks);
+
+    viewAllEl.addEventListener("click", () => onClick());
+  }
+
   return {
     addTrackFeatureButtonEvents,
     addTrackTermButtonEvents,
     addExpandDescOnHoverEvents,
+    addViewNextTracksEvent,
   };
 })();
 
@@ -500,4 +522,5 @@ const addEventListeners = (function () {
   addEventListeners.addTrackFeatureButtonEvents();
   addEventListeners.addTrackTermButtonEvents();
   addEventListeners.addExpandDescOnHoverEvents();
+  addEventListeners.addViewNextTracksEvent();
 })();

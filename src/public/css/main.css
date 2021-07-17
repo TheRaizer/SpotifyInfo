@@ -422,7 +422,16 @@ footer {
   font-size: 1.05em;
   margin-top: 10px;
 }
+.rank-card {
+  display: flex;
+  flex-direction: row;
+}
+.rank-card > h4 {
+  color: #d4d4d4;
+  font-weight: bold;
+}
 #track-cards-container {
+  grid-template-columns: repeat(auto-fit, minmax(200px, max-content));
   margin-bottom: 3%;
   margin-top: 3%;
 }
