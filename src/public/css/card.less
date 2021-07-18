@@ -112,17 +112,15 @@
 }
 
 .rank-card {
-  display: flex;
-  flex-direction: row;
-
   & > h4 {
+    position: absolute;
     color: @reading-color;
     font-weight: bold;
   }
 }
 
 #track-cards-container {
-  grid-template-columns: repeat(auto-fit, minmax(200px, max-content));
+  grid-template-columns: repeat(auto-fit, 200px);
   margin-bottom: 3%;
   margin-top: 3%;
 }

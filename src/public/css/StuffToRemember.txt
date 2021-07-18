@@ -6,3 +6,28 @@ I thought there was a delay when transitioning my flex basis through JS. The rea
 so as it would transition from lets say 20px to 70px, you would see a delay as it goes from 20px to 60px because the flex areas actual height was 60px. After the transition
 to 60px, you would then see the flex area enlarge to 70px. This caused what seemed like a delay. TO FIX: Use the CSS in the console, and change the transitioning value there. It will
 show you how it transitions, and will allow you to set the proper original flex basis before any transitions.
+
+
+Media queries
+
+@media only screen and (max-width: 1200px) {
+  .border-connected-btn-container {
+    flex-wrap: wrap;
+
+    & > button {
+      &.selected {
+        border: @connected-border;
+        pointer-events: none;
+      }
+      &:hover:not(.selected) {
+        border: @connected-border-hover;
+      }
+    }
+  }
+}
+@media only screen and (max-width: 600px) {
+  /*Big smartphones [426px -> 600px]*/
+}
+@media only screen and (max-width: 425px) {
+  /*Small smartphones [325px -> 425px]*/
+}

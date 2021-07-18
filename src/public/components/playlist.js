@@ -6,14 +6,14 @@ class Playlist {
     this.images = images;
     this.name = name;
     this.id = id;
-    this.undoList = [];
+    this.undoArr = [];
 
     // the id of the playlist card element
     this.cardId = "";
   }
 
-  addToUndoList(tracks) {
-    this.undoList.push(tracks);
+  addToUndoArr(tracks) {
+    this.undoArr.push(tracks);
   }
 
   /** Produces the card element of this playlist.

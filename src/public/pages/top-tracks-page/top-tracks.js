@@ -1,14 +1,21 @@
 import Track from "../../components/track.js";
-import { config, promiseHandler, htmlToEl } from "../../config.js";
+import {
+  config,
+  promiseHandler,
+  htmlToEl,
+  capitalizeFirstLetter,
+} from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 import { CardActionsHandler } from "../../card-actions.js";
+
+const DEFAULT_VIEWABLE_CARDS = 5;
 
 const trackActions = (function () {
   const selectionVerif = new AsyncSelectionVerif();
   const cardActionsHandler = new CardActionsHandler(50);
   const selections = {
-    numViewableCards: 5,
+    numViewableCards: DEFAULT_VIEWABLE_CARDS,
     trackTerm: "short_term",
   };
   function addTrackCardListeners(trackObjs) {
@@ -32,29 +39,30 @@ const trackActions = (function () {
 
   function getCurrSelTopTracks() {
     if (selections.trackTerm == "short_term") {
-      return trackLists.topTrackObjsShortTerm;
+      return trackArrs.topTrackObjsShortTerm;
     } else if (selections.trackTerm == "medium_term") {
-      return trackLists.topTrackObjsMidTerm;
+      return trackArrs.topTrackObjsMidTerm;
     } else if (selections.trackTerm == "long_term") {
-      return trackLists.topTrackObjsLongTerm;
+      return trackArrs.topTrackObjsLongTerm;
     } else {
       throw new Error("Selected track term is invalid " + selections.trackTerm);
     }
   }
 
-  /** Load the features of each track in the given list from the
+  /** Load the features of each track in the given arr from the
    * spotify web api and store them.
    *
+   * @param {Array<Track>} trackArr - Array containing instances of Track whose features should be loaded.
    */
-  async function loadFeatures(trackList) {
-    let ids = trackList.map((track) => track.id);
+  async function loadFeatures(trackArr) {
+    let ids = trackArr.map((track) => track.id);
     let res = await axios
       .get(config.URLs.getTrackFeatures + ids)
       .catch((err) => {
         throw err;
       });
-    for (let i = 0; i < trackList.length; i++) {
-      let track = trackList[i];
+    for (let i = 0; i < trackArr.length; i++) {
+      let track = trackArr[i];
       let feats = res.data.audio_features[i];
       track.features = {
         danceability: feats.danceability,
@@ -65,7 +73,7 @@ const trackActions = (function () {
       };
     }
   }
-  function loadDatasToTrackList(datas, trackList) {
+  function loadDatasToTrackArr(datas, trackArr) {
     datas.forEach((data) => {
       let props = {
         name: data.name,
@@ -79,23 +87,23 @@ const trackActions = (function () {
         externalUrl: data.external_urls.spotify,
         artists: data.artists,
       };
-      trackList.push(new Track(props));
+      trackArr.push(new Track(props));
     });
-    return trackList;
+    return trackArr;
   }
-  async function retrieveTracks(trackList) {
+  async function retrieveTracks(trackArr) {
     let { res, err } = await promiseHandler(
       axios.get(config.URLs.getTopTracks + selections.trackTerm)
     );
     if (err) {
       throw new Error(err);
     }
-    loadDatasToTrackList(res.data, trackList);
+    loadDatasToTrackArr(res.data, trackArr);
 
-    await promiseHandler(loadFeatures(trackList));
+    await promiseHandler(loadFeatures(trackArr));
   }
   return {
-    addTrackCardListeners,
+    addTrackCardListeners: addTrackCardListeners,
     getCurrSelTopTracks,
     retrieveTracks,
     selections,
@@ -103,7 +111,7 @@ const trackActions = (function () {
   };
 })();
 
-const trackLists = (function () {
+const trackArrs = (function () {
   const topTrackObjsShortTerm = [];
   const topTrackObjsMidTerm = [];
   const topTrackObjsLongTerm = [];
@@ -133,7 +141,7 @@ const displayCardInfo = (function () {
     removeAllChildNodes(tracksContainer);
     let cardHtmls = [];
 
-    // fill list of card elements and append them to DOM
+    // fill arr of card elements and append them to DOM
     let tracksDisplayed = [];
     for (let i = 0; i < trackObjs.length; i++) {
       let trackObj = trackObjs[i];
@@ -147,7 +155,6 @@ const displayCardInfo = (function () {
       }
     }
 
-    console.log(tracksDisplayed);
     trackActions.addTrackCardListeners(trackObjs);
     chartsManager.changeTracksChart(tracksDisplayed);
     makeCardsVisible(config.CSS.CLASSES.track);
@@ -166,7 +173,7 @@ const displayCardInfo = (function () {
     tracksContainer.appendChild(spinnerEl);
 
     trackActions.retrieveTracks(trackObjs).then(() => {
-      // after retrieving async verify if it is the same list of trackObjs as what was selected
+      // after retrieving async verify if it is the same arr of trackObjs as what was selected
       if (!trackActions.selectionVerif.isValid(trackObjs)) {
         return;
       }
@@ -188,49 +195,78 @@ const displayCardInfo = (function () {
   };
 })();
 
+// The feature keys that are used in the objects outputted by the spotify web api.
+const FEATURE_KEYS = {
+  POPULARITY: "popularity",
+  VALENCE: "valence",
+  DANCEABILITY: "danceability",
+  INSTRUMENTALNESS: "instrumentalness",
+  ENERGY: "energy",
+  ACOUSTICNESS: "acousticness",
+};
+Object.freeze(FEATURE_KEYS);
+
+class Feature {
+  constructor(featKey, definition) {
+    this.featKey = featKey;
+    this.data = null;
+    this.EMA = 0;
+    this.average = 0;
+    this.definition = definition;
+  }
+
+  /** Calculate the Exponentially weighted moving average (EMA) of items in a arr.
+   * We assume the arr was given in order of most important/recent to least.
+   * We reverse the arr so that least important gets calculated as such in the EMA.
+   *
+   * @returns {Number} - The average calculated
+   */
+  calculateAverages() {
+    const beta = 0.7;
+    let emaAverage = 0;
+    let average = 0;
+    let revArr = this.data.slice().reverse();
+    revArr.forEach((val) => {
+      emaAverage = beta * emaAverage + (1 - beta) * val;
+      average += val;
+    });
+    average /= revArr.length;
+    this.EMA = Math.round(emaAverage);
+    this.average = Math.round(average);
+  }
+}
+
 const chartsManager = (function () {
   const tracksChartEl = document.getElementById(config.CSS.IDs.tracksChart);
   const charts = {
     tracksChart: null,
   };
   const TRACK_FEATS = {
-    popularity: {
-      value: "Popularity",
-      data: null,
-      definition:
-        "Popularity is the value of how often this song has been listened too by everyone on spotify.",
-    },
-    valence: {
-      value: "Valence",
-      data: null,
-      definition:
-        "Higher valence sound more positive (e.g. happy, cheerful, euphoric). Lower valence sound more negative (e.g. sad, depressed, angry).",
-    },
-    danceability: {
-      value: "Danceability",
-      data: null,
-      definition:
-        "Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, \
-        rhythm stability, beat strength, and overall regularity.",
-    },
-    instrumentalness: {
-      value: "Instrumentalness",
-      data: null,
-      definition:
-        "Instrumentalness represents the amount of vocals in the song. The closer it is to 100, the less vocals there are in the song.",
-    },
-    energy: {
-      value: "Energy",
-      data: null,
-      definition:
-        "Energy represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy.",
-    },
-    acousticness: {
-      value: "Acousticness",
-      data: null,
-      definition:
-        "Acousticness describes how acoustic a song is. Which is measured by the amount of the song that does not contain electrical amplification.",
-    },
+    popularity: new Feature(
+      FEATURE_KEYS.POPULARITY,
+      "Popularity is the value of how often this song has been arrened too by everyone on spotify."
+    ),
+    valence: new Feature(
+      FEATURE_KEYS.VALENCE,
+      "Higher valence sound more positive (e.g. happy, cheerful, euphoric). Lower valence sound more negative (e.g. sad, depressed, angry)."
+    ),
+    danceability: new Feature(
+      FEATURE_KEYS.DANCEABILITY,
+      "Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, \
+        rhythm stability, beat strength, and overall regularity."
+    ),
+    instrumentalness: new Feature(
+      FEATURE_KEYS.INSTRUMENTALNESS,
+      "Instrumentalness represents the amount of vocals in the song. The closer it is to 100, the less vocals there are in the song."
+    ),
+    energy: new Feature(
+      FEATURE_KEYS.ENERGY,
+      "Energy represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy."
+    ),
+    acousticness: new Feature(
+      FEATURE_KEYS.ACOUSTICNESS,
+      "Acousticness describes how acoustic a song is. Which is measured by the amount of the song that does not contain electrical amplification."
+    ),
   };
   const selections = {
     feature: TRACK_FEATS.popularity,
@@ -246,34 +282,36 @@ const chartsManager = (function () {
   function getNamesAndPopularity(trackObjs) {
     const names = trackObjs.map((track) => track.name);
     TRACK_FEATS.popularity.data = trackObjs.map((track) => track.popularity);
+    TRACK_FEATS.popularity.calculateAverages();
     return {
       names,
       popularities: TRACK_FEATS.popularity.data,
     };
   }
 
-  function updateFeatureData(featureList) {
-    TRACK_FEATS.valence.data = featureList.map((features) =>
-      Math.round(features.valence * 100)
-    );
-    TRACK_FEATS.danceability.data = featureList.map((features) =>
-      Math.round(features.danceability * 100)
-    );
-    TRACK_FEATS.instrumentalness.data = featureList.map((features) =>
-      Math.round(features.instrumentalness * 100)
-    );
-    TRACK_FEATS.energy.data = featureList.map((features) =>
-      Math.round(features.energy * 100)
-    );
-    TRACK_FEATS.acousticness.data = featureList.map((features) =>
-      Math.round(features.acousticness * 100)
-    );
+  /** Recalculate/Update the attributes for each feature.
+   *
+   * @param {Array} featArr - contains the objects that hold features for each Track instance
+   */
+  function updateFeatureAttr(featArr) {
+    const keys = Object.keys(TRACK_FEATS);
+    keys.forEach((key) => {
+      // avoid the popularity key as that is not contained in a tracks features
+      if (key != FEATURE_KEYS.POPULARITY) {
+        const feat = TRACK_FEATS[key];
+        feat.data = featArr.map((features) =>
+          Math.round(features[feat.featKey] * 100)
+        );
+        feat.calculateAverages();
+      }
+    });
   }
 
   function generateTracksChart(trackObjs) {
     // display loading spinner, then load features of each track.
     let { names } = getNamesAndPopularity(trackObjs);
-    trackObjs.map((track) => track.features);
+    let featureArr = trackObjs.map((track) => track.features);
+    updateFeatureAttr(featureArr);
     changeTracksChartInfo();
 
     // remove loading spinner for chart
@@ -283,7 +321,7 @@ const chartsManager = (function () {
         labels: names,
         datasets: [
           {
-            label: selections.feature.value,
+            label: capitalizeFirstLetter(selections.feature.featKey),
             data: selections.feature.data,
             backgroundColor: [
               "rgba(255, 99, 132, 0.5)",
@@ -343,8 +381,8 @@ const chartsManager = (function () {
 
   function updateTracksChart(trackObjs) {
     let { names } = chartsManager.getNamesAndPopularity(trackObjs);
-    let featureList = trackObjs.map((track) => track.features);
-    updateFeatureData(featureList);
+    let featureArr = trackObjs.map((track) => track.features);
+    updateFeatureAttr(featureArr);
     changeTracksChartInfo();
     let chart = charts.tracksChart;
     chart.data.labels = [];
@@ -352,14 +390,21 @@ const chartsManager = (function () {
 
     chart.data.labels = names;
     chart.data.datasets[0].data = selections.feature.data;
-    chart.data.datasets[0].label = selections.feature.value;
+    chart.data.datasets[0].label = capitalizeFirstLetter(
+      selections.feature.featKey
+    );
     chart.update();
   }
 
   function changeTracksChartInfo() {
     const featDef = document.getElementById(config.CSS.IDs.featDef);
-
+    const featAverage = document.getElementById(config.CSS.IDs.featAverage);
     featDef.textContent = selections.feature.definition;
+    featAverage.textContent =
+      "Exponentially Weighted Moving Average = " +
+      selections.feature.EMA +
+      " || Arithmetic Mean = " +
+      selections.feature.average;
   }
 
   return {
@@ -418,6 +463,7 @@ const addEventListeners = (function () {
 
   function addTrackTermButtonEvents() {
     function onClick(btn, termBtns) {
+      trackActions.selections.numViewableCards = DEFAULT_VIEWABLE_CARDS;
       trackActions.selections.trackTerm = btn.getAttribute(
         config.CSS.ATTRIBUTES.dataSelection
       );
@@ -508,7 +554,7 @@ const addEventListeners = (function () {
 
       // when entering the page always show short term tracks first
       trackActions.selections.trackTerm = "short_term";
-      displayCardInfo.displayTrackCards(trackLists.topTrackObjsShortTerm);
+      displayCardInfo.displayTrackCards(trackArrs.topTrackObjsShortTerm);
     } else {
       // if there is no token redirect to allow access page
       window.location.href = "http://localhost:3000/";

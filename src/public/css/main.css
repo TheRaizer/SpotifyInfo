@@ -422,16 +422,13 @@ footer {
   font-size: 1.05em;
   margin-top: 10px;
 }
-.rank-card {
-  display: flex;
-  flex-direction: row;
-}
 .rank-card > h4 {
+  position: absolute;
   color: #d4d4d4;
   font-weight: bold;
 }
 #track-cards-container {
-  grid-template-columns: repeat(auto-fit, minmax(200px, max-content));
+  grid-template-columns: repeat(auto-fit, 200px);
   margin-bottom: 3%;
   margin-top: 3%;
 }
@@ -477,12 +474,6 @@ footer {
   .border-connected-btn-container > button:hover:not(.selected) {
     border: 1px solid rgba(110, 110, 110, 0.342);
   }
-}
-@media only screen and (max-width: 600px) {
-  /*Big smartphones [426px -> 600px]*/
-}
-@media only screen and (max-width: 425px) {
-  /*Small smartphones [325px -> 425px]*/
 }
 ul.topnav {
   z-index: 1000;

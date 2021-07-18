@@ -46,6 +46,7 @@ export const config = {
       redo: "redo",
       modsOpener: "mods-opener",
       featDef: "feat-definition",
+      featAverage: "feat-average",
       rank: "rank",
       viewAllTopTracks: "view-all-top-tracks",
     },
@@ -181,4 +182,8 @@ export function getTextWidth(text, font) {
 
 export function isEllipsisActive(el) {
   return el.offsetWidth < el.scrollWidth;
+}
+
+export function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }

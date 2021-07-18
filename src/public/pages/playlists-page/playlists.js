@@ -11,7 +11,7 @@ const expandedPlaylistMods = document.getElementById(
 const playlistOrder = expandedPlaylistMods.getElementsByClassName(
   config.CSS.CLASSES.playlistOrder
 )[0];
-const trackListUl = expandedPlaylistMods.getElementsByTagName("ul")[0];
+const trackArrUl = expandedPlaylistMods.getElementsByTagName("ul")[0];
 const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
   config.CSS.CLASSES.playlistSearch
 )[0];
@@ -56,22 +56,22 @@ const playlistActions = (function () {
     playlistSearchInput.value = "";
     playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
     playlistOrder.classList.add(config.CSS.CLASSES.hide);
-    trackListUl.scrollTop = 0;
+    trackArrUl.scrollTop = 0;
   }
   function onTracksLoadingDone() {
     // show them once tracks have loaded
     playlistSearchInput.classList.remove(config.CSS.CLASSES.hide);
     playlistOrder.classList.remove(config.CSS.CLASSES.hide);
   }
-  /** Empty the track list and replace it with newly loaded html track list.
+  /** Empty the track arr and replace it with newly loaded html track arr.
    *
    * @param {Playlist} playlistObj - a Playlist instance whose tracks will be loaded
    */
   function showExpandedPlaylist(playlistObj) {
     playlistTitleh2.textContent = playlistObj.name;
 
-    // empty the track list html
-    removeAllChildNodes(trackListUl);
+    // empty the track arr html
+    removeAllChildNodes(trackArrUl);
 
     // initially show the playlist with the loading spinner
     const htmlString = `
@@ -79,7 +79,7 @@ const playlistActions = (function () {
               <img src="${config.PATHS.spinner}" />
             </li>`;
     let spinnerEl = htmlToEl(htmlString);
-    trackListUl.appendChild(spinnerEl);
+    trackArrUl.appendChild(spinnerEl);
 
     selectionVerif.selectionChanged(playlistObj);
 
@@ -98,9 +98,9 @@ const playlistActions = (function () {
       manageTracks.sortExpandedTracksToOrder();
     }
   }
-  /** Add an on click listener to each Playlist instance in the given list.
+  /** Add an on click listener to each Playlist instance in the given arr.
    *
-   * @param {List<Playlist>} playlistObjs - list of Playlist instances whose on click event listeners are being initialized
+   * @param {Arr<Playlist>} playlistObjs - arr of Playlist instances whose on click event listeners are being initialized
    */
   function addOnPlaylistCardListeners(playlistObjs) {
     let playlistCards = Array.from(
@@ -236,7 +236,7 @@ const animationControl = (function () {
     classToTransitionToo,
     animationInterval
   ) {
-    // list of html selectors that point to elements to animate
+    // arr of html selectors that point to elements to animate
     let attributes = elementsToAnimate.split(",");
 
     attributes.forEach((attr) => {
@@ -278,13 +278,13 @@ function removeAllChildNodes(parent) {
 const manageTracks = (function () {
   function sortExpandedTracksToOrder() {
     if (playlistOrder.value == "custom-order") {
-      rerenderPlaylistTracks(expandablePlaylistTracks, trackListUl);
+      rerenderPlaylistTracks(expandablePlaylistTracks, trackArrUl);
     } else if (playlistOrder.value == "name") {
       let tracks = orderTracksByName(expandablePlaylistTracks);
-      rerenderPlaylistTracks(tracks, trackListUl);
+      rerenderPlaylistTracks(tracks, trackArrUl);
     } else if (playlistOrder.value == "date-added") {
       let tracks = orderTracksByDateAdded(expandablePlaylistTracks);
-      rerenderPlaylistTracks(tracks, trackListUl);
+      rerenderPlaylistTracks(tracks, trackArrUl);
     }
   }
   function orderTracksByName(tracks) {
@@ -321,10 +321,10 @@ const manageTracks = (function () {
     });
     return tracksCopy;
   }
-  function rerenderPlaylistTracks(tracks, trackListUl) {
-    removeAllChildNodes(trackListUl);
+  function rerenderPlaylistTracks(tracks, trackArrUl) {
+    removeAllChildNodes(trackArrUl);
     tracks.map((track) => {
-      trackListUl.appendChild(track.getPlaylistTrackHtml());
+      trackArrUl.appendChild(track.getPlaylistTrackHtml());
     });
   }
 
@@ -340,7 +340,7 @@ const addEventListeners = (function () {
     expandedPlaylistMods
       .getElementsByClassName(config.CSS.CLASSES.playlistSearch)[0]
       .addEventListener("keyup", () => {
-        searchUl(trackListUl, playlistSearchInput);
+        searchUl(trackArrUl, playlistSearchInput);
       });
   }
   function addExpandedPlaylistModsOrderEvent() {
@@ -371,7 +371,7 @@ const addEventListeners = (function () {
 
       let currPlaylist = playlistActions.selectionVerif.currSelectedVal;
 
-      currPlaylist.addToUndoList(tracksToRemove);
+      currPlaylist.addToUndoArr(tracksToRemove);
 
       manageTracks.sortExpandedTracksToOrder(expandablePlaylistTracks);
 
@@ -394,11 +394,11 @@ const addEventListeners = (function () {
   function addUndoPlaylistTrackDeleteEvent() {
     function onClick() {
       const currPlaylist = playlistActions.selectionVerif.currSelectedVal;
-      if (!currPlaylist || currPlaylist.undoList.length == 0) {
+      if (!currPlaylist || currPlaylist.undoArr.length == 0) {
         return;
       }
       const undonePlaylistId = currPlaylist.id;
-      let tracksRemoved = currPlaylist.undoList.pop();
+      let tracksRemoved = currPlaylist.undoArr.pop();
       promiseHandler(
         axios.post(config.URLs.postPlaylistTracks + currPlaylist.id, {
           data: { tracks: tracksRemoved },
