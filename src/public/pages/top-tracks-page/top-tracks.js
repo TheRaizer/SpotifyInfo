@@ -222,16 +222,12 @@ class Feature {
    * @returns {Number} - The average calculated
    */
   calculateAverages() {
-    const beta = 0.7;
-    let emaAverage = 0;
     let average = 0;
     let revArr = this.data.slice().reverse();
     revArr.forEach((val) => {
-      emaAverage = beta * emaAverage + (1 - beta) * val;
       average += val;
     });
     average /= revArr.length;
-    this.EMA = Math.round(emaAverage);
     this.average = Math.round(average);
   }
 }
@@ -400,11 +396,7 @@ const chartsManager = (function () {
     const featDef = document.getElementById(config.CSS.IDs.featDef);
     const featAverage = document.getElementById(config.CSS.IDs.featAverage);
     featDef.textContent = selections.feature.definition;
-    featAverage.textContent =
-      "Exponentially Weighted Moving Average = " +
-      selections.feature.EMA +
-      " || Arithmetic Mean = " +
-      selections.feature.average;
+    featAverage.textContent = "Average: " + selections.feature.average;
   }
 
   return {
