@@ -38,6 +38,7 @@ footer {
   text-decoration: none;
   width: fit-content;
   height: fit-content;
+  padding: 3px 6px;
   border-color: #1db954;
   border-width: 2px;
   border-radius: 5px;
@@ -428,9 +429,13 @@ footer {
   font-weight: bold;
 }
 #track-cards-container {
+  position: relative;
   grid-template-columns: repeat(auto-fit, 200px);
   margin-bottom: 3%;
   margin-top: 3%;
+}
+#view-all-top-tracks {
+  margin: 20px 0px;
 }
 .border-connected-btn-container {
   display: flex;

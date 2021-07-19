@@ -533,8 +533,7 @@ const addEventListeners = (function () {
         resetViewableCards();
       }
       let currTracks = trackActions.getCurrSelTopTracks();
-      displayCardInfo.displayTrackCards(currTracks);
-      viewingAll = !viewingAll;
+      displayCardInfo.displayTrackCards(currTracks, true);
     }
 
     viewAllEl.addEventListener("click", () => onClick());
