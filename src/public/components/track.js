@@ -65,9 +65,10 @@ class Track {
    * @param {Number} idx - The card index to use for the elements id suffix
    * @returns {ChildNode} - The converted html string to an element
    */
-  getTrackCardHtml(idx) {
+  getTrackCardHtml(idx, autoAppear = false) {
     let id = `${config.CSS.IDs.trackPrefix}${idx}`;
     this.cardId = id;
+    let appearClass = autoAppear ? config.CSS.CLASSES.appear : "";
     let html = `
             <div class="${config.CSS.CLASSES.rankCard}">
               <h4 id="${config.CSS.IDs.rank}">${idx + 1}.</h4>
@@ -76,7 +77,7 @@ class Track {
     }">
                 <button class="${config.CSS.CLASSES.card} ${
       config.CSS.CLASSES.flipCardInner
-    } ${config.CSS.CLASSES.track}" id="${id}">
+    } ${config.CSS.CLASSES.track} ${appearClass}" id="${id}">
                   <div class="${
                     config.CSS.CLASSES.flipCardFront
                   }"  title="Click to view more Info">

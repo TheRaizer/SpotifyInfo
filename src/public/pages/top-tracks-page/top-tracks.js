@@ -10,6 +10,7 @@ import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 import { CardActionsHandler } from "../../card-actions.js";
 
 const DEFAULT_VIEWABLE_CARDS = 5;
+const MAX_VIEWABLE_CARDS = 50;
 
 const trackActions = (function () {
   const selectionVerif = new AsyncSelectionVerif();
@@ -137,7 +138,7 @@ const displayCardInfo = (function () {
     }
   }
   // generates the cards to the DOM then makes them visible
-  function generateCards(trackObjs) {
+  function generateCards(trackObjs, autoAppear) {
     removeAllChildNodes(tracksContainer);
     let cardHtmls = [];
 
@@ -146,7 +147,7 @@ const displayCardInfo = (function () {
     for (let i = 0; i < trackObjs.length; i++) {
       let trackObj = trackObjs[i];
       if (i < trackActions.selections.numViewableCards) {
-        let cardHtml = trackObj.getTrackCardHtml(i);
+        let cardHtml = trackObj.getTrackCardHtml(i, autoAppear);
         tracksDisplayed.push(trackObj);
         cardHtmls.push(cardHtml);
         tracksContainer.appendChild(cardHtml);
@@ -157,7 +158,9 @@ const displayCardInfo = (function () {
 
     trackActions.addTrackCardListeners(trackObjs);
     chartsManager.changeTracksChart(tracksDisplayed);
-    makeCardsVisible(config.CSS.CLASSES.track);
+    if (!autoAppear) {
+      makeCardsVisible(config.CSS.CLASSES.track);
+    }
     return cardHtmls;
   }
   // begins retrieving tracks then verifies it is the correct selected tracks
@@ -180,11 +183,18 @@ const displayCardInfo = (function () {
       return generateCards(trackObjs);
     });
   }
-  // load track objects if not loaded, then generate cards with the objects.
-  function displayTrackCards(trackObjs) {
+
+  /** Load track objects if not loaded, then generate cards with the objects.
+   *
+   * @param {Array<Track>} trackObjs - List of track objects whose cards should be generated or
+   * empty list that should be filled when loading tracks.
+   * @param {Boolean} autoAppear whether to show the cards without animation.
+   * @returns {Array<HTML>} list of Card HTML's.
+   */
+  function displayTrackCards(trackObjs, autoAppear = false) {
     trackActions.selectionVerif.selectionChanged(trackObjs);
     if (trackObjs.length > 0) {
-      return generateCards(trackObjs);
+      return generateCards(trackObjs, autoAppear);
     } else {
       return startLoadingTracks(trackObjs);
     }
@@ -215,19 +225,16 @@ class Feature {
     this.definition = definition;
   }
 
-  /** Calculate the Exponentially weighted moving average (EMA) of items in a arr.
-   * We assume the arr was given in order of most important/recent to least.
-   * We reverse the arr so that least important gets calculated as such in the EMA.
+  /** Calculate the arithemtic average.
    *
    * @returns {Number} - The average calculated
    */
-  calculateAverages() {
+  calculateAverage() {
     let average = 0;
-    let revArr = this.data.slice().reverse();
-    revArr.forEach((val) => {
+    this.data.forEach((val) => {
       average += val;
     });
-    average /= revArr.length;
+    average /= this.data.length;
     this.average = Math.round(average);
   }
 }
@@ -278,7 +285,7 @@ const chartsManager = (function () {
   function getNamesAndPopularity(trackObjs) {
     const names = trackObjs.map((track) => track.name);
     TRACK_FEATS.popularity.data = trackObjs.map((track) => track.popularity);
-    TRACK_FEATS.popularity.calculateAverages();
+    TRACK_FEATS.popularity.calculateAverage();
     return {
       names,
       popularities: TRACK_FEATS.popularity.data,
@@ -298,7 +305,7 @@ const chartsManager = (function () {
         feat.data = featArr.map((features) =>
           Math.round(features[feat.featKey] * 100)
         );
-        feat.calculateAverages();
+        feat.calculateAverage();
       }
     });
   }
@@ -453,9 +460,15 @@ const addEventListeners = (function () {
     }
   }
 
+  function resetViewableCards() {
+    let viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks);
+    trackActions.selections.numViewableCards = DEFAULT_VIEWABLE_CARDS;
+    viewAllEl.textContent = "See All 50";
+  }
+
   function addTrackTermButtonEvents() {
     function onClick(btn, termBtns) {
-      trackActions.selections.numViewableCards = DEFAULT_VIEWABLE_CARDS;
+      resetViewableCards();
       trackActions.selections.trackTerm = btn.getAttribute(
         config.CSS.ATTRIBUTES.dataSelection
       );
@@ -510,14 +523,19 @@ const addEventListeners = (function () {
     }
   }
 
-  function addViewNextTracksEvent() {
+  function addViewAllTracksEvent() {
+    let viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks);
     function onClick() {
-      trackActions.selections.numViewableCards += 5;
+      if (trackActions.selections.numViewableCards == DEFAULT_VIEWABLE_CARDS) {
+        trackActions.selections.numViewableCards = MAX_VIEWABLE_CARDS;
+        viewAllEl.textContent = "See Less";
+      } else {
+        resetViewableCards();
+      }
       let currTracks = trackActions.getCurrSelTopTracks();
       displayCardInfo.displayTrackCards(currTracks);
+      viewingAll = !viewingAll;
     }
-
-    let viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks);
 
     viewAllEl.addEventListener("click", () => onClick());
   }
@@ -526,7 +544,7 @@ const addEventListeners = (function () {
     addTrackFeatureButtonEvents,
     addTrackTermButtonEvents,
     addExpandDescOnHoverEvents,
-    addViewNextTracksEvent,
+    addViewAllTracksEvent,
   };
 })();
 
@@ -560,5 +578,5 @@ const addEventListeners = (function () {
   addEventListeners.addTrackFeatureButtonEvents();
   addEventListeners.addTrackTermButtonEvents();
   addEventListeners.addExpandDescOnHoverEvents();
-  addEventListeners.addViewNextTracksEvent();
+  addEventListeners.addViewAllTracksEvent();
 })();
