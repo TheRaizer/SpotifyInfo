@@ -503,6 +503,9 @@ ul.topnav li a {
   border-left: 1px solid rgba(221, 221, 221, 0.815);
   transition: background-color 300ms ease-out;
 }
+ul.topnav li a.spotify-logo {
+  padding: 10px 16px;
+}
 ul.topnav li a:hover:not(.active) {
   background-color: rgba(221, 221, 221, 0.815);
   color: black;
@@ -542,30 +545,6 @@ ul.topnav li.last {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-}
-.home-infos-container {
-  margin-top: 60px;
-  margin-left: 50px;
-  margin-bottom: auto;
-}
-.home-infos-container > div {
-  min-width: fit-content;
-  min-height: fit-content;
-  width: 20vw;
-  height: 30vh;
-  border: 1px solid rgba(221, 221, 221, 0.815);
-}
-.home-infos-container > div > h2 {
-  font-size: 2em;
-  font-weight: bold;
-}
-.home-infos-container :nth-child(1) {
-  position: relative;
-  right: 100%;
-}
-.home-infos-container :nth-child(3) {
-  position: relative;
-  left: 100%;
 }
 #spotify-container {
   margin-top: 30px;

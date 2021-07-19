@@ -50,7 +50,7 @@ class Track {
     let artistNames = "";
     for (let i = 0; i < this.artists.length; i++) {
       const artist = this.artists[i];
-      artistNames += `<a href="${artist.externalUrl}">${artist.name}</a>`;
+      artistNames += `<a href="${artist.externalUrl}" target="_blank">${artist.name}</a>`;
 
       if (i < this.artists.length - 1) {
         artistNames += ", ";
@@ -116,7 +116,7 @@ class Track {
       this.imgURL
     }"></img>
               <div>
-                <a href="${this.externalUrl}">
+                <a href="${this.externalUrl}" target="_blank">
                   <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.name
     }">${this.name}
