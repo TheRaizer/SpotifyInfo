@@ -112,10 +112,23 @@
 }
 
 .rank-card {
+  position: relative;
+  visibility: hidden;
+  top: -500px;
+  opacity: 0;
+
+  transition: transform 250ms ease-in-out;
+
   & > h4 {
     position: absolute;
     color: @reading-color;
     font-weight: bold;
+  }
+
+  & .card {
+    top: 0;
+    visibility: visible;
+    opacity: 1;
   }
 }
 

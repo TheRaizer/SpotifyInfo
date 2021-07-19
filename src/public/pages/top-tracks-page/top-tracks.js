@@ -53,7 +53,7 @@ const trackActions = (function () {
   /** Load the features of each track in the given arr from the
    * spotify web api and store them.
    *
-   * @param {Array<Track>} trackArr - Array containing instances of Track whose features should be loaded.
+   * @param {Array<Track>} trackArr - Array containing instances of Track whose features will be loaded.
    */
   async function loadFeatures(trackArr) {
     let ids = trackArr.map((track) => track.id);
@@ -129,15 +129,30 @@ const displayCardInfo = (function () {
     config.CSS.IDs.trackCardsContainer
   );
 
-  // add appear class name to elements of a given class.
+  /** Show each element of a given className by adding the appear class.
+   *
+   * @param {String} className the class that each track card contains.
+   */
   function makeCardsVisible(className) {
     let trackCards = tracksContainer.getElementsByClassName(className);
-    for (let i = 0; i < trackCards.length; i++) {
-      let trackCard = trackCards[i];
-      trackCard.classList.add(config.CSS.CLASSES.appear);
-    }
+    let idx = 0;
+
+    let interval = setInterval(() => {
+      if (idx == trackCards.length) {
+        clearInterval(interval);
+        return;
+      }
+      let card = trackCards[idx];
+      card.classList.add(config.CSS.CLASSES.appear);
+      idx += 1;
+    }, 80);
   }
-  // generates the cards to the DOM then makes them visible
+  /** Generates the cards to the DOM then makes them visible
+   *
+   * @param {Array<Track>} trackObjs array of track objects whose cards should be generated.
+   * @param {Boolean} autoAppear whether to show the card without animation or with animation.
+   * @returns {Array<HTML>} array of the card elements.
+   */
   function generateCards(trackObjs, autoAppear) {
     removeAllChildNodes(tracksContainer);
     let cardHtmls = [];
@@ -159,11 +174,14 @@ const displayCardInfo = (function () {
     trackActions.addTrackCardListeners(trackObjs);
     chartsManager.changeTracksChart(tracksDisplayed);
     if (!autoAppear) {
-      makeCardsVisible(config.CSS.CLASSES.track);
+      makeCardsVisible(config.CSS.CLASSES.rankCard);
     }
     return cardHtmls;
   }
-  // begins retrieving tracks then verifies it is the correct selected tracks
+  /** Begins retrieving tracks then verifies it is the correct selected tracks.
+   *
+   * @param {Array<Track>} trackObjs array to load tracks into.
+   */
   function startLoadingTracks(trackObjs) {
     // initially show the loading spinner
     const htmlString = `
@@ -205,7 +223,7 @@ const displayCardInfo = (function () {
   };
 })();
 
-// The feature keys that are used in the objects outputted by the spotify web api.
+/** The feature keys that are used in the 'feature' objectsobjects outputted by the spotify web api. */
 const FEATURE_KEYS = {
   POPULARITY: "popularity",
   VALENCE: "valence",
@@ -216,6 +234,7 @@ const FEATURE_KEYS = {
 };
 Object.freeze(FEATURE_KEYS);
 
+/** Manages a feature's information.*/
 class Feature {
   constructor(featKey, definition) {
     this.featKey = featKey;
@@ -225,7 +244,7 @@ class Feature {
     this.definition = definition;
   }
 
-  /** Calculate the arithemtic average.
+  /** Calculate the arithemtic average of the data for this feature.
    *
    * @returns {Number} - The average calculated
    */
@@ -310,12 +329,12 @@ const chartsManager = (function () {
     });
   }
 
+  /** Creates the chart.js chart with the initial trackObjects given.
+   *
+   * @param {Array<Track>} trackObjs tracks whose features will be used in the chart.
+   */
   function generateTracksChart(trackObjs) {
-    // display loading spinner, then load features of each track.
-    let { names } = getNamesAndPopularity(trackObjs);
-    let featureArr = trackObjs.map((track) => track.features);
-    updateFeatureAttr(featureArr);
-    changeTracksChartInfo();
+    let names = updateInfos(trackObjs);
 
     // remove loading spinner for chart
     charts.tracksChart = new Chart(tracksChartEl, {
@@ -382,11 +401,26 @@ const chartsManager = (function () {
     });
   }
 
-  function updateTracksChart(trackObjs) {
-    let { names } = chartsManager.getNamesAndPopularity(trackObjs);
+  /** Update the infos with the features of the given Track's.
+   *
+   * @param {Array<Track>} trackObjs tracks whose features will be used to update info.
+   * @returns {Array<String>} array holding the name of each track.
+   */
+  function updateInfos(trackObjs) {
+    let { names } = getNamesAndPopularity(trackObjs);
     let featureArr = trackObjs.map((track) => track.features);
     updateFeatureAttr(featureArr);
-    changeTracksChartInfo();
+    updateTracksChartInfo();
+    return names;
+  }
+
+  /** Update the chart.js chart, feature attributes, and chart info
+   *  with the given track object's feature data.
+   *
+   * @param {Array<Track>} trackObjs array of Track's whose feature data will update the chart.
+   */
+  function updateTracksChart(trackObjs) {
+    let names = updateInfos(trackObjs);
     let chart = charts.tracksChart;
     chart.data.labels = [];
     chart.data.datasets[0].data = [];
@@ -399,7 +433,8 @@ const chartsManager = (function () {
     chart.update();
   }
 
-  function changeTracksChartInfo() {
+  /** Update the info in the chart info section of the page. */
+  function updateTracksChartInfo() {
     const featDef = document.getElementById(config.CSS.IDs.featDef);
     const featAverage = document.getElementById(config.CSS.IDs.featAverage);
     featDef.textContent = selections.feature.definition;
@@ -533,7 +568,7 @@ const addEventListeners = (function () {
         resetViewableCards();
       }
       let currTracks = trackActions.getCurrSelTopTracks();
-      displayCardInfo.displayTrackCards(currTracks, true);
+      displayCardInfo.displayTrackCards(currTracks);
     }
 
     viewAllEl.addEventListener("click", () => onClick());

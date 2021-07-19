@@ -423,10 +423,22 @@ footer {
   font-size: 1.05em;
   margin-top: 10px;
 }
+.rank-card {
+  position: relative;
+  visibility: hidden;
+  top: -500px;
+  opacity: 0;
+  transition: transform 250ms ease-in-out;
+}
 .rank-card > h4 {
   position: absolute;
   color: #d4d4d4;
   font-weight: bold;
+}
+.rank-card .card {
+  top: 0;
+  visibility: visible;
+  opacity: 1;
 }
 #track-cards-container {
   position: relative;

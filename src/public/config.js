@@ -54,6 +54,7 @@ export const config = {
       glow: "glow",
       playlist: "playlist",
       track: "track",
+      rankCard: "rank-card",
       playlistTrack: "playlist-track",
       infoLoadingSpinners: "info-loading-spinner",
       appear: "appear",
