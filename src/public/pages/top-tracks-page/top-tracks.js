@@ -145,7 +145,7 @@ const displayCardInfo = (function () {
       let card = trackCards[idx];
       card.classList.add(config.CSS.CLASSES.appear);
       idx += 1;
-    }, 80);
+    }, 30);
   }
   /** Generates the cards to the DOM then makes them visible
    *
@@ -240,7 +240,7 @@ class Feature {
     this.featKey = featKey;
     this.data = null;
     this.EMA = 0;
-    this.average = 0;
+    this.mean = 0;
     this.definition = definition;
   }
 
@@ -249,12 +249,24 @@ class Feature {
    * @returns {Number} - The average calculated
    */
   calculateAverage() {
-    let average = 0;
+    let mean = 0;
     this.data.forEach((val) => {
-      average += val;
+      mean += val;
     });
-    average /= this.data.length;
-    this.average = Math.round(average);
+    mean /= this.data.length;
+    this.mean = Math.round(mean);
+  }
+
+  calculateStd() {
+    let sum = 0;
+    this.data.forEach((val) => {
+      let distance = Math.abs(val - this.mean) ** 2;
+      sum += distance;
+    });
+
+    sum /= this.data.length;
+
+    return Math.sqrt(sum);
   }
 }
 
@@ -435,10 +447,38 @@ const chartsManager = (function () {
 
   /** Update the info in the chart info section of the page. */
   function updateTracksChartInfo() {
+    function computeTendency() {
+      let std = selections.feature.calculateStd();
+      console.log(std);
+      if (selections.feature.mean <= 40) {
+        featAverage.textContent =
+          "On average you tend to like tracks with LESS " +
+          selections.feature.featKey +
+          ".";
+      } else if (selections.feature.mean >= 60) {
+        featAverage.textContent =
+          "On average you tend to like tracks with MORE " +
+          selections.feature.featKey +
+          ".";
+      } else {
+        featAverage.textContent =
+          "On average you have a NEUTRAL tendency towards a track's " +
+          selections.feature.featKey +
+          ".";
+      }
+
+      if (std > 15) {
+        featAverage.textContent +=
+          " However some tracks vary GREATLY from others.";
+      } else if (std > 10) {
+        featAverage.textContent +=
+          " However some tracks vary SLIGHTLY from others.";
+      }
+    }
     const featDef = document.getElementById(config.CSS.IDs.featDef);
     const featAverage = document.getElementById(config.CSS.IDs.featAverage);
     featDef.textContent = selections.feature.definition;
-    featAverage.textContent = "Average: " + selections.feature.average;
+    computeTendency();
   }
 
   return {
