@@ -105,6 +105,13 @@ export const config = {
   PATHS: {
     spinner: "/images/200pxLoadingSpinner.svg",
     acousticEmoji: "/images/Emojis/AcousticEmoji.svg",
+    nonAcousticEmoji: "/images/Emojis/ElectricGuitarEmoji.svg",
+    happyEmoji: "/images/Emojis/HappyEmoji.svg",
+    neutralEmoji: "/images/Emojis/NeutralEmoji.svg",
+    sadEmoji: "/images/Emojis/SadEmoji.svg",
+    instrumentEmoji: "/images/Emojis/InstrumentEmoji.svg",
+    singerEmoji: "/images/Emojis/SingerEmoji.svg",
+    dancingEmoji: "/images/Emojis/DancingEmoji.svg",
   },
 };
 

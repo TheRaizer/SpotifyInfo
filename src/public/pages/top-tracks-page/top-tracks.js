@@ -287,6 +287,8 @@ class Feature {
 
 const featureManager = (function () {
   const tracksChartEl = document.getElementById(config.CSS.IDs.tracksChart);
+  const FEAT_HIGH = 60;
+  const FEAT_LOW = 40;
   const charts = {
     tracksChart: null,
   };
@@ -428,15 +430,16 @@ const featureManager = (function () {
     });
   }
 
-  /** Update the infos with the features of the given Tracks.
+  /** Update the feature data using the given tracks.
    *
-   * @param {Array<Track>} trackObjs tracks whose features will be used to update info.
+   * @param {Array<Track>} trackObjs tracks whose features will be used to update the data.
    * @returns {Array<String>} array holding the name of each track.
    */
   function updateFeatData(trackObjs) {
     let { names } = getNamesAndPopularity(trackObjs);
     let featureArr = trackObjs.map((track) => track.features);
     updateFeaturesAttrs(featureArr);
+    generateEmojis();
     return names;
   }
 
@@ -464,14 +467,14 @@ const featureManager = (function () {
   /** Update the info in the chart info section of the page. */
   function updateTracksChartInfo() {
     let selFeat = selections.feature;
-    console.log(selFeat);
+
     function computeTendency() {
-      if (selFeat.mean <= 40) {
+      if (selFeat.mean <= FEAT_LOW) {
         featAverage.textContent =
           "On average you tend to like tracks with LESS " +
           selFeat.featKey +
           ".";
-      } else if (selFeat.mean >= 60) {
+      } else if (selFeat.mean >= FEAT_HIGH) {
         featAverage.textContent =
           "On average you tend to like tracks with MORE " +
           selFeat.featKey +
@@ -498,17 +501,61 @@ const featureManager = (function () {
   }
 
   function generateEmojis() {
-    function getEmojiHtml(path) {
-      let html = `<img src=${path} alt="emoji"/>`;
+    const emojiHelpers = (function () {
+      function valenceEmoji() {
+        if (TRACK_FEATS.valence.mean >= FEAT_HIGH) {
+          emojiContainer.appendChild(getEmojiHtml(config.PATHS.happyEmoji));
+        } else if (TRACK_FEATS.valence.mean <= FEAT_LOW) {
+          emojiContainer.appendChild(getEmojiHtml(config.PATHS.sad));
+        } else {
+          emojiContainer.appendChild(getEmojiHtml(config.PATHS.neutralEmoji));
+        }
+      }
+      function acousticEmoji() {
+        if (TRACK_FEATS.acousticness.mean >= FEAT_HIGH) {
+          emojiContainer.appendChild(getEmojiHtml(config.PATHS.acousticEmoji));
+        } else if (TRACK_FEATS.acousticness.mean <= FEAT_LOW) {
+          emojiContainer.appendChild(
+            getEmojiHtml(config.PATHS.nonAcousticEmoji)
+          );
+        } else {
+        }
+      }
+      function instrumentalEmoji() {
+        if (TRACK_FEATS.instrumentalness.mean >= FEAT_HIGH) {
+          emojiContainer.appendChild(
+            getEmojiHtml(config.PATHS.instrumentEmoji)
+          );
+        } else if (TRACK_FEATS.instrumentalness.mean <= FEAT_LOW) {
+          emojiContainer.appendChild(getEmojiHtml(config.PATHS.singerEmoji));
+        } else {
+        }
+      }
+      function danceEmoji() {
+        if (TRACK_FEATS.danceability.mean >= FEAT_HIGH) {
+          emojiContainer.appendChild(getEmojiHtml(config.PATHS.dancingEmoji));
+        } else if (TRACK_FEATS.danceability.mean <= FEAT_LOW) {
+        } else {
+        }
+      }
+      function getEmojiHtml(path) {
+        let html = `<img src=${path} alt="emoji"/>`;
 
-      return htmlToEl(html);
-    }
+        return htmlToEl(html);
+      }
+      return {
+        valenceEmoji,
+        acousticEmoji,
+        instrumentalEmoji,
+        danceEmoji,
+      };
+    })();
+
     const emojiContainer = document.getElementById(config.CSS.IDs.emojis);
     removeAllChildNodes(emojiContainer);
-
-    if (TRACK_FEATS.acousticness.mean > 55) {
-      emojiContainer.appendChild(getEmojiHtml(config.PATHS.acousticEmoji));
-    }
+    Object.entries(emojiHelpers).forEach(([key, generator]) => {
+      generator();
+    });
   }
 
   return {
