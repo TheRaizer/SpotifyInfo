@@ -258,20 +258,30 @@ class Feature {
 
   /** Calculate the arithemtic average of the data for this feature. */
   calculateAverageAndStd() {
+    this.calculateAverage();
+    this.calculateStd();
+  }
+  calculateAverage() {
     let mean = 0;
-    let sum = 0;
 
     this.data.forEach((val) => {
       mean += val;
+    });
+    mean /= this.data.length;
 
+    this.mean = Math.round(mean);
+  }
+
+  calculateStd() {
+    let sum = 0;
+
+    this.data.forEach((val) => {
       let distance = Math.abs(val - this.mean) ** 2;
       sum += distance;
     });
     sum /= this.data.length;
-    mean /= this.data.length;
 
     this.std = Math.sqrt(sum);
-    this.mean = Math.round(mean);
   }
 }
 
@@ -312,6 +322,7 @@ const featureManager = (function () {
   };
 
   function changeTracksChart(trackObjs) {
+    updateFeatData(trackObjs);
     if (charts.tracksChart == null) {
       generateTracksChart(trackObjs);
     } else {
@@ -331,7 +342,7 @@ const featureManager = (function () {
    *
    * @param {Array} featArr - contains the objects that hold features for each Track instance
    */
-  function updateFeatureAttr(featArr) {
+  function updateFeaturesAttrs(featArr) {
     const keys = Object.keys(TRACK_FEATS);
     keys.forEach((key) => {
       // avoid the popularity key as that is not contained in a tracks features
@@ -349,7 +360,8 @@ const featureManager = (function () {
    * @param {Array<Track>} trackObjs tracks whose features will be used in the chart.
    */
   function generateTracksChart(trackObjs) {
-    let names = updateInfos(trackObjs);
+    let names = updateFeatData(trackObjs);
+    updateTracksChartInfo();
 
     // remove loading spinner for chart
     charts.tracksChart = new Chart(tracksChartEl, {
@@ -421,11 +433,10 @@ const featureManager = (function () {
    * @param {Array<Track>} trackObjs tracks whose features will be used to update info.
    * @returns {Array<String>} array holding the name of each track.
    */
-  function updateInfos(trackObjs) {
+  function updateFeatData(trackObjs) {
     let { names } = getNamesAndPopularity(trackObjs);
     let featureArr = trackObjs.map((track) => track.features);
-    updateFeatureAttr(featureArr);
-    updateTracksChartInfo();
+    updateFeaturesAttrs(featureArr);
     return names;
   }
 
@@ -435,7 +446,9 @@ const featureManager = (function () {
    * @param {Array<Track>} trackObjs array of Track's whose feature data will update the chart.
    */
   function updateTracksChart(trackObjs) {
-    let names = updateInfos(trackObjs);
+    let { names } = getNamesAndPopularity(trackObjs);
+    updateTracksChartInfo();
+
     let chart = charts.tracksChart;
     chart.data.labels = [];
     chart.data.datasets[0].data = [];
@@ -450,43 +463,58 @@ const featureManager = (function () {
 
   /** Update the info in the chart info section of the page. */
   function updateTracksChartInfo() {
+    let selFeat = selections.feature;
+    console.log(selFeat);
     function computeTendency() {
-      if (selections.feature.mean <= 40) {
+      if (selFeat.mean <= 40) {
         featAverage.textContent =
           "On average you tend to like tracks with LESS " +
-          selections.feature.featKey +
+          selFeat.featKey +
           ".";
-      } else if (selections.feature.mean >= 60) {
+      } else if (selFeat.mean >= 60) {
         featAverage.textContent =
           "On average you tend to like tracks with MORE " +
-          selections.feature.featKey +
+          selFeat.featKey +
           ".";
       } else {
         featAverage.textContent =
           "On average you have a NEUTRAL tendency towards a track's " +
-          selections.feature.featKey +
+          selFeat.featKey +
           ".";
       }
 
-      if (selections.feature.std > 15) {
+      if (selFeat.std > 15) {
         featAverage.textContent +=
           " However some tracks vary GREATLY from others.";
-      } else if (selections.feature.std > 10) {
+      } else if (selFeat.std > 10) {
         featAverage.textContent +=
           " However some tracks vary SLIGHTLY from others.";
       }
     }
     const featDef = document.getElementById(config.CSS.IDs.featDef);
     const featAverage = document.getElementById(config.CSS.IDs.featAverage);
-    featDef.textContent = selections.feature.definition;
+    featDef.textContent = selFeat.definition;
     computeTendency();
   }
 
-  function generateEmojis() {}
+  function generateEmojis() {
+    function getEmojiHtml(path) {
+      let html = `<img src=${path} alt="emoji"/>`;
+
+      return htmlToEl(html);
+    }
+    const emojiContainer = document.getElementById(config.CSS.IDs.emojis);
+    removeAllChildNodes(emojiContainer);
+
+    if (TRACK_FEATS.acousticness.mean > 55) {
+      emojiContainer.appendChild(getEmojiHtml(config.PATHS.acousticEmoji));
+    }
+  }
 
   return {
     updateTracksChart,
     changeTracksChart,
+    updateFeatData,
     TRACK_FEATS,
     selections,
   };

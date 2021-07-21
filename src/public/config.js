@@ -49,6 +49,7 @@ export const config = {
       featAverage: "feat-average",
       rank: "rank",
       viewAllTopTracks: "view-all-top-tracks",
+      emojis: "emojis",
     },
     CLASSES: {
       glow: "glow",
@@ -103,6 +104,7 @@ export const config = {
   },
   PATHS: {
     spinner: "/images/200pxLoadingSpinner.svg",
+    acousticEmoji: "/images/Emojis/AcousticEmoji.svg",
   },
 };
 
