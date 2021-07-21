@@ -4,16 +4,17 @@
 @icon-height: 64px;
 
 .chart-info {
-  flex: 0 0 40%;
-  width: 40%;
+  flex: 0 0 35%;
+  width: 35%;
   color: @reading-color;
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
+  margin-left: 4vw;
 
   & > div {
     display: flex;
     text-align: start;
-    border-radius: 70px;
     background-color: @bg-color;
 
     min-width: 0;
@@ -59,8 +60,42 @@
 }
 
 .chart-container {
-  flex: 0 0 50%;
-  width: 50%;
+  flex: 0 0 55%;
+  width: 55%;
   min-width: 0;
   height: 60vh;
+}
+
+#tracks-data {
+  display: flex;
+}
+
+.vibe {
+  margin-top: 10vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & > div {
+    display: flex;
+    width: 50vw;
+    height: 10vw;
+    background-color: @bg-color;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  #tracks-data {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .chart-container {
+    flex: 1 0 100%;
+    width: 100%;
+  }
+  .chart-info {
+    flex: 0 0 100%;
+    width: 100%;
+  }
 }

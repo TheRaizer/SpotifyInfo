@@ -72,12 +72,6 @@ footer {
 #info-container {
   display: none;
 }
-#tracks-data {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  padding: 10px;
-}
 .icon8 {
   color: #6e6e6e;
   margin-left: 5px;
@@ -93,16 +87,17 @@ footer {
   display: inline-flex;
 }
 .chart-info {
-  flex: 0 0 40%;
-  width: 40%;
+  flex: 0 0 35%;
+  width: 35%;
   color: #d4d4d4;
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
+  margin-left: 4vw;
 }
 .chart-info > div {
   display: flex;
   text-align: start;
-  border-radius: 70px;
   background-color: #202020;
   min-width: 0;
   min-height: 64px;
@@ -140,10 +135,40 @@ footer {
   height: 30px;
 }
 .chart-container {
-  flex: 0 0 50%;
-  width: 50%;
+  flex: 0 0 55%;
+  width: 55%;
   min-width: 0;
   height: 60vh;
+}
+#tracks-data {
+  display: flex;
+}
+.vibe {
+  margin-top: 10vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.vibe > div {
+  display: flex;
+  width: 50vw;
+  height: 10vw;
+  background-color: #202020;
+}
+@media only screen and (max-width: 1200px) {
+  #tracks-data {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .chart-container {
+    flex: 1 0 100%;
+    width: 100%;
+  }
+  .chart-info {
+    flex: 0 0 100%;
+    width: 100%;
+  }
 }
 .expanded-playlist {
   flex: 0 1 auto;
@@ -153,7 +178,6 @@ footer {
   min-width: 0;
   width: 100%;
   height: 88vh;
-  border-radius: 10px;
   opacity: 0;
   transition: opacity 250ms ease-in;
 }
@@ -312,8 +336,8 @@ footer {
   box-sizing: border-box;
   touch-action: none;
   border-style: double;
-  border-right-color: #6d6d6d;
-  border-right-width: 10px;
+  border-right-color: #5f5f5f;
+  border-right-width: 7px;
 }
 #playlist-card-scroll-area {
   overflow-y: scroll;
@@ -350,7 +374,6 @@ footer {
   width: 150px;
   height: 170px;
   background-color: #303030;
-  border-radius: 5px;
   border-width: 2px;
   margin: 5% 5% 5% 5%;
   padding-top: 5%;
@@ -358,7 +381,6 @@ footer {
   top: -500px;
   left: 0;
   opacity: 0;
-  transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out, opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .card img {
   width: 110px;
@@ -391,7 +413,7 @@ footer {
 }
 .flip-card-inner {
   position: relative;
-  transition: transform 0.6s;
+  transition: transform 300ms;
   transform-style: preserve-3d;
 }
 .flip-card-inner.selected {
@@ -399,7 +421,6 @@ footer {
 }
 .flip-card-front,
 .flip-card-back {
-  border-radius: 5px;
   margin-top: 15%;
   position: absolute;
   width: 100%;

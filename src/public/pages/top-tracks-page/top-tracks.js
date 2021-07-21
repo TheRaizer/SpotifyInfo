@@ -125,6 +125,7 @@ const trackArrs = (function () {
 })();
 
 const displayCardInfo = (function () {
+  const cardsVisibleInterval = { interval: null };
   const tracksContainer = document.getElementById(
     config.CSS.IDs.trackCardsContainer
   );
@@ -137,11 +138,16 @@ const displayCardInfo = (function () {
     let trackCards = tracksContainer.getElementsByClassName(className);
     let idx = 0;
 
-    let interval = setInterval(() => {
+    if (cardsVisibleInterval.interval) {
+      clearInterval(cardsVisibleInterval.interval);
+    }
+
+    cardsVisibleInterval.interval = setInterval(() => {
       if (idx == trackCards.length) {
-        clearInterval(interval);
+        clearInterval(cardsVisibleInterval.interval);
         return;
       }
+
       let card = trackCards[idx];
       card.classList.add(config.CSS.CLASSES.appear);
       idx += 1;
@@ -172,7 +178,7 @@ const displayCardInfo = (function () {
     }
 
     trackActions.addTrackCardListeners(trackObjs);
-    chartsManager.changeTracksChart(tracksDisplayed);
+    featureManager.changeTracksChart(tracksDisplayed);
     if (!autoAppear) {
       makeCardsVisible(config.CSS.CLASSES.rankCard);
     }
@@ -241,36 +247,35 @@ class Feature {
     this.data = null;
     this.EMA = 0;
     this.mean = 0;
+    this.std = 0;
     this.definition = definition;
   }
 
-  /** Calculate the arithemtic average of the data for this feature.
-   *
-   * @returns {Number} - The average calculated
-   */
-  calculateAverage() {
-    let mean = 0;
-    this.data.forEach((val) => {
-      mean += val;
-    });
-    mean /= this.data.length;
-    this.mean = Math.round(mean);
+  setData(data) {
+    this.data = data;
+    this.calculateAverageAndStd();
   }
 
-  calculateStd() {
+  /** Calculate the arithemtic average of the data for this feature. */
+  calculateAverageAndStd() {
+    let mean = 0;
     let sum = 0;
+
     this.data.forEach((val) => {
+      mean += val;
+
       let distance = Math.abs(val - this.mean) ** 2;
       sum += distance;
     });
-
     sum /= this.data.length;
+    mean /= this.data.length;
 
-    return Math.sqrt(sum);
+    this.std = Math.sqrt(sum);
+    this.mean = Math.round(mean);
   }
 }
 
-const chartsManager = (function () {
+const featureManager = (function () {
   const tracksChartEl = document.getElementById(config.CSS.IDs.tracksChart);
   const charts = {
     tracksChart: null,
@@ -278,7 +283,7 @@ const chartsManager = (function () {
   const TRACK_FEATS = {
     popularity: new Feature(
       FEATURE_KEYS.POPULARITY,
-      "Popularity is the value of how often this song has been arrened too by everyone on spotify."
+      "Popularity is the value of how often this song has been listened too by everyone on spotify."
     ),
     valence: new Feature(
       FEATURE_KEYS.VALENCE,
@@ -315,8 +320,7 @@ const chartsManager = (function () {
   }
   function getNamesAndPopularity(trackObjs) {
     const names = trackObjs.map((track) => track.name);
-    TRACK_FEATS.popularity.data = trackObjs.map((track) => track.popularity);
-    TRACK_FEATS.popularity.calculateAverage();
+    TRACK_FEATS.popularity.setData(trackObjs.map((track) => track.popularity));
     return {
       names,
       popularities: TRACK_FEATS.popularity.data,
@@ -333,10 +337,9 @@ const chartsManager = (function () {
       // avoid the popularity key as that is not contained in a tracks features
       if (key != FEATURE_KEYS.POPULARITY) {
         const feat = TRACK_FEATS[key];
-        feat.data = featArr.map((features) =>
-          Math.round(features[feat.featKey] * 100)
+        feat.setData(
+          featArr.map((features) => Math.round(features[feat.featKey] * 100))
         );
-        feat.calculateAverage();
       }
     });
   }
@@ -413,7 +416,7 @@ const chartsManager = (function () {
     });
   }
 
-  /** Update the infos with the features of the given Track's.
+  /** Update the infos with the features of the given Tracks.
    *
    * @param {Array<Track>} trackObjs tracks whose features will be used to update info.
    * @returns {Array<String>} array holding the name of each track.
@@ -448,8 +451,6 @@ const chartsManager = (function () {
   /** Update the info in the chart info section of the page. */
   function updateTracksChartInfo() {
     function computeTendency() {
-      let std = selections.feature.calculateStd();
-      console.log(std);
       if (selections.feature.mean <= 40) {
         featAverage.textContent =
           "On average you tend to like tracks with LESS " +
@@ -467,10 +468,10 @@ const chartsManager = (function () {
           ".";
       }
 
-      if (std > 15) {
+      if (selections.feature.std > 15) {
         featAverage.textContent +=
           " However some tracks vary GREATLY from others.";
-      } else if (std > 10) {
+      } else if (selections.feature.std > 10) {
         featAverage.textContent +=
           " However some tracks vary SLIGHTLY from others.";
       }
@@ -481,12 +482,11 @@ const chartsManager = (function () {
     computeTendency();
   }
 
+  function generateEmojis() {}
+
   return {
-    generateTracksChart,
     updateTracksChart,
-    getNamesAndPopularity,
     changeTracksChart,
-    charts,
     TRACK_FEATS,
     selections,
   };
@@ -502,7 +502,7 @@ const addEventListeners = (function () {
   function addTrackFeatureButtonEvents() {
     function onClick(btn, featBtns) {
       const feature = btn.getAttribute(config.CSS.ATTRIBUTES.dataSelection);
-      let selectedFeat = chartsManager.TRACK_FEATS[feature];
+      let selectedFeat = featureManager.TRACK_FEATS[feature];
       if (selectedFeat == undefined) {
         console.error(
           "The selected attribute " +
@@ -520,8 +520,8 @@ const addEventListeners = (function () {
       }
       btn.classList.add("selected");
       let currTracks = trackActions.getCurrSelTopTracks();
-      chartsManager.selections.feature = selectedFeat;
-      chartsManager.updateTracksChart(
+      featureManager.selections.feature = selectedFeat;
+      featureManager.updateTracksChart(
         currTracks.slice(0, trackActions.selections.numViewableCards)
       );
     }
@@ -543,7 +543,6 @@ const addEventListeners = (function () {
 
   function addTrackTermButtonEvents() {
     function onClick(btn, termBtns) {
-      resetViewableCards();
       trackActions.selections.trackTerm = btn.getAttribute(
         config.CSS.ATTRIBUTES.dataSelection
       );
