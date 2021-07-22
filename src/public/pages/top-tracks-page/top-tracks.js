@@ -502,6 +502,14 @@ const featureManager = (function () {
 
   function generateEmojis() {
     const emojiHelpers = (function () {
+      function popularityEmoji() {
+        if (TRACK_FEATS.popularity.mean >= FEAT_HIGH) {
+          emojiContainer.appendChild(getEmojiHtml(config.PATHS.sheepEmoji));
+        } else if (TRACK_FEATS.popularity.mean <= FEAT_LOW) {
+          emojiContainer.appendChild(getEmojiHtml(config.PATHS.wolfEmoji));
+        } else {
+        }
+      }
       function valenceEmoji() {
         if (TRACK_FEATS.valence.mean >= FEAT_HIGH) {
           emojiContainer.appendChild(getEmojiHtml(config.PATHS.happyEmoji));
@@ -544,6 +552,7 @@ const featureManager = (function () {
         return htmlToEl(html);
       }
       return {
+        popularityEmoji,
         valenceEmoji,
         acousticEmoji,
         instrumentalEmoji,
@@ -553,7 +562,7 @@ const featureManager = (function () {
 
     const emojiContainer = document.getElementById(config.CSS.IDs.emojis);
     removeAllChildNodes(emojiContainer);
-    Object.entries(emojiHelpers).forEach(([key, generator]) => {
+    Object.entries(emojiHelpers).forEach(([, generator]) => {
       generator();
     });
   }

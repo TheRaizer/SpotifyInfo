@@ -41,7 +41,6 @@ footer {
   padding: 3px 6px;
   border-color: #1db954;
   border-width: 2px;
-  border-radius: 5px;
   transition: all 0.1s linear;
 }
 .glow:hover {
@@ -146,14 +145,28 @@ footer {
 .vibe {
   margin-top: 10vw;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
+.vibe > h2 {
+  color: #d4d4d4;
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 2vw;
+}
 .vibe > div {
   display: flex;
+  justify-content: center;
   width: 50vw;
+  min-width: fit-content;
+  min-height: fit-content;
   height: 10vw;
   background-color: #202020;
+}
+.vibe > div > img {
+  width: fit-content;
+  height: fit-content;
 }
 @media only screen and (max-width: 1200px) {
   #tracks-data {

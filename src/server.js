@@ -86,6 +86,10 @@ app.get("/top-tracks", function (_req, res) {
   res.sendFile(__dirname + "/public/pages/top-tracks-page/top-tracks.html");
 });
 
+app.get("/top-artists", function (_req, res) {
+  res.sendFile(__dirname + "/public/pages/top-artists-page/top-artists.html");
+});
+
 app.use("/tokens", tokens);
 app.use("/spotify", spotifyActions);
 

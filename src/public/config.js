@@ -112,6 +112,8 @@ export const config = {
     instrumentEmoji: "/images/Emojis/InstrumentEmoji.svg",
     singerEmoji: "/images/Emojis/SingerEmoji.svg",
     dancingEmoji: "/images/Emojis/DancingEmoji.svg",
+    sheepEmoji: "/images/Emojis/SheepEmoji.svg",
+    wolfEmoji: "/images/Emojis/WolfEmoji.svg",
   },
 };
 

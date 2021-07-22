@@ -73,14 +73,30 @@
 .vibe {
   margin-top: 10vw;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
+  & > h2 {
+    color: @reading-color;
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 2vw;
+  }
+
   & > div {
     display: flex;
+    justify-content: center;
     width: 50vw;
+    min-width: fit-content;
+    min-height: fit-content;
     height: 10vw;
     background-color: @bg-color;
+
+    & > img {
+      width: fit-content;
+      height: fit-content;
+    }
   }
 }
 
