@@ -80,16 +80,24 @@
 .playlist-track {
   display: flex;
   align-items: center;
-  margin-top: 1%;
-  margin-bottom: 1%;
+  margin-top: 8px;
+  margin-bottom: 8px;
   margin-left: 1%;
   justify-content: flex-start;
   text-align: left;
+  border-width: 2px;
+  border-radius: 5px;
   color: @reading-color;
+
+  &:hover {
+    background-color: #5f5f5fd0;
+  }
 
   & > img {
     width: 60px;
     height: 60px;
+    border-width: 2px;
+    border-radius: 5px;
   }
   & > div {
     display: flex;
