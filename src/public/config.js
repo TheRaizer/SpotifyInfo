@@ -78,6 +78,7 @@ export const config = {
       dropDown: "drop-down",
       expandableTxtContainer: "expandable-text-container",
       rankCard: "rank-card",
+      borderCover: "border-cover",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",

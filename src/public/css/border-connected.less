@@ -1,4 +1,7 @@
+@import "main-colors.less";
+
 @connected-border: 1px solid rgb(110, 110, 110);
+@connected-bottom: 5px solid @primary-bg-color;
 @connected-border-hover: 1px solid rgba(110, 110, 110, 0.342);
 
 .border-connected-btn-container {
@@ -7,27 +10,46 @@
   justify-content: center;
   flex-wrap: wrap;
 
-  & > button {
-    border-radius: 1px;
+  & > div {
+    position: relative;
     width: 13%;
     min-width: max-content;
-    height: 40px;
-    pointer-events: all;
-    padding-right: 10px;
-    padding-left: 10px;
+    & > button {
+      width: 100%;
+      min-width: max-content;
+      height: 40px;
+      pointer-events: all;
+      padding-right: 10px;
+      padding-left: 10px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
 
-    &.selected {
-      border-top: @connected-border;
-      border-right: @connected-border;
-      border-left: @connected-border;
-      pointer-events: none;
-    }
-    &:hover:not(.selected) {
-      border-top: @connected-border-hover;
-      border-right: @connected-border-hover;
-      border-left: @connected-border-hover;
+      &.selected {
+        border-top: @connected-border;
+        border-right: @connected-border;
+        border-left: @connected-border;
+        pointer-events: none;
+      }
+      &:hover:not(.selected) {
+        border-top: @connected-border-hover;
+        border-right: @connected-border-hover;
+        border-left: @connected-border-hover;
+      }
     }
   }
+}
+
+.border-cover {
+  &.selected {
+    border-top: @connected-bottom;
+  }
+  &:hover:not(.selected) {
+    border-top: @connected-bottom;
+  }
+  z-index: 5;
+  position: absolute;
+  width: 100%;
+  height: 1px;
 }
 
 .border-container {
@@ -41,13 +63,15 @@
   .border-connected-btn-container {
     flex-wrap: wrap;
 
-    & > button {
-      &.selected {
-        border: @connected-border;
-        pointer-events: none;
-      }
-      &:hover:not(.selected) {
-        border: @connected-border-hover;
+    & > div {
+      & > button {
+        &.selected {
+          border: @connected-border;
+          pointer-events: none;
+        }
+        &:hover:not(.selected) {
+          border: @connected-border-hover;
+        }
       }
     }
   }

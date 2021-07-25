@@ -583,8 +583,40 @@ function removeAllChildNodes(parent) {
 }
 
 const addEventListeners = (function () {
+  class SelectableEls {
+    constructor(btn, borderCover) {
+      this.btn = btn;
+      this.borderCover = borderCover;
+    }
+    unselectEls() {
+      this.btn.classList.remove(config.CSS.CLASSES.selected);
+      this.borderCover.classList.remove(config.CSS.CLASSES.selected);
+    }
+    selectEls() {
+      this.btn.classList.add(config.CSS.CLASSES.selected);
+      this.borderCover.classList.add(config.CSS.CLASSES.selected);
+    }
+  }
+  const selections = {
+    featureEls: new SelectableEls(
+      document
+        .getElementById(config.CSS.IDs.featureSelections)
+        .getElementsByTagName("button")[0],
+      document
+        .getElementById(config.CSS.IDs.featureSelections)
+        .getElementsByClassName(config.CSS.CLASSES.borderCover)[0]
+    ),
+    termEls: new SelectableEls(
+      document
+        .getElementById(config.CSS.IDs.tracksTermSelections)
+        .getElementsByTagName("button")[0],
+      document
+        .getElementById(config.CSS.IDs.tracksTermSelections)
+        .getElementsByClassName(config.CSS.CLASSES.borderCover)[0]
+    ),
+  };
   function addTrackFeatureButtonEvents() {
-    function onClick(btn, featBtns) {
+    function onClick(btn, borderCover) {
       const feature = btn.getAttribute(config.CSS.ATTRIBUTES.dataSelection);
       let selectedFeat = featureManager.TRACK_FEATS[feature];
       if (selectedFeat == undefined) {
@@ -598,11 +630,11 @@ const addEventListeners = (function () {
         console.error(btn);
         return;
       }
-      for (let i = 0; i < featBtns.length; i++) {
-        let btn = featBtns[i];
-        btn.classList.remove("selected");
-      }
-      btn.classList.add("selected");
+      selections.featureEls.unselectEls();
+      selections.featureEls.btn = btn;
+      selections.featureEls.borderCover = borderCover;
+      selections.featureEls.selectEls();
+
       let currTracks = trackActions.getCurrSelTopTracks();
       featureManager.selections.feature = selectedFeat;
       featureManager.updateTracksChart(
@@ -613,9 +645,18 @@ const addEventListeners = (function () {
     let featBtns = document
       .getElementById(config.CSS.IDs.featureSelections)
       .getElementsByTagName("button");
+    let featBorderCovers = document
+      .getElementById(config.CSS.IDs.featureSelections)
+      .getElementsByClassName(config.CSS.CLASSES.borderCover);
+    if (featBtns.length != featBorderCovers.length) {
+      console.error("Not all feat buttons contain a border cover");
+      return;
+    }
+
     for (let i = 0; i < featBtns.length; i++) {
       let btn = featBtns[i];
-      btn.addEventListener("click", () => onClick(btn, featBtns));
+      let borderCover = featBorderCovers[i];
+      btn.addEventListener("click", () => onClick(btn, borderCover));
     }
   }
 
@@ -626,17 +667,15 @@ const addEventListeners = (function () {
   }
 
   function addTrackTermButtonEvents() {
-    function onClick(btn, termBtns) {
+    function onClick(btn, borderCover) {
       trackActions.selections.trackTerm = btn.getAttribute(
         config.CSS.ATTRIBUTES.dataSelection
       );
+      selections.termEls.unselectEls();
+      selections.termEls.btn = btn;
+      selections.termEls.borderCover = borderCover;
+      selections.termEls.selectEls();
 
-      for (let i = 0; i < termBtns.length; i++) {
-        let btn = termBtns[i];
-        btn.classList.remove("selected");
-      }
-
-      btn.classList.add("selected");
       let currTracks = trackActions.getCurrSelTopTracks();
       displayCardInfo.displayTrackCards(currTracks);
     }
@@ -644,9 +683,18 @@ const addEventListeners = (function () {
     let trackTermBtns = document
       .getElementById(config.CSS.IDs.tracksTermSelections)
       .getElementsByTagName("button");
+    let trackTermBorderCovers = document
+      .getElementById(config.CSS.IDs.tracksTermSelections)
+      .getElementsByClassName(config.CSS.CLASSES.borderCover);
+
+    if (trackTermBorderCovers.length != trackTermBtns.length) {
+      console.error("Not all track term buttons contain a border cover");
+      return;
+    }
     for (let i = 0; i < trackTermBtns.length; i++) {
       let btn = trackTermBtns[i];
-      btn.addEventListener("click", () => onClick(btn, trackTermBtns));
+      let borderCover = trackTermBorderCovers[i];
+      btn.addEventListener("click", () => onClick(btn, borderCover));
     }
   }
 
