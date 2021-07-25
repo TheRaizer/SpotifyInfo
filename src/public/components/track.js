@@ -1,4 +1,9 @@
-import { config, millisToMinutesAndSeconds, htmlToEl } from "../config.js";
+import {
+  config,
+  millisToMinutesAndSeconds,
+  htmlToEl,
+  getValidImage,
+} from "../config.js";
 
 class Track {
   constructor(props) {
@@ -19,7 +24,6 @@ class Track {
     this.externalUrl = externalUrl;
     this.id = id;
     this.name = name;
-    this.images = images;
     this.filterDataFromArtists(artists);
     this.duration = millisToMinutesAndSeconds(duration);
 
@@ -31,13 +35,7 @@ class Track {
     this.releaseDate = new Date(releaseDate);
     this.album = album;
 
-    // obtain the correct image
-    if (this.images.length > 0) {
-      let img = this.images[0];
-      this.imgURL = img.url;
-    } else {
-      this.imgURL = "";
-    }
+    this.imageUrl = getValidImage(images);
   }
 
   filterDataFromArtists(artists) {
@@ -81,7 +79,7 @@ class Track {
                   <div class="${
                     config.CSS.CLASSES.flipCardFront
                   }"  title="Click to view more Info">
-                    <img src="${this.imgURL}" alt="Album Cover"></img>
+                    <img src="${this.imageUrl}" alt="Album Cover"></img>
                     <div>
                       <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.scrollingText
@@ -94,9 +92,11 @@ class Track {
                   <h3>Release Date:</h3>
                   <p>${this.releaseDate.toDateString()}</p>
                   <h3>Album Name:</h3>
+                  <a href="${this.album.externalUrl}">
                   <p class="${config.CSS.CLASSES.ellipsisWrap}">${
-      this.album.albumName
+      this.album.name
     }</p>
+                  </a>
                   </div>
                 </button>
               </div>
@@ -113,7 +113,7 @@ class Track {
     let html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
               <img class="${config.CSS.CLASSES.noSelect}" src="${
-      this.imgURL
+      this.imageUrl
     }"></img>
               <div>
                 <a href="${this.externalUrl}" target="_blank">

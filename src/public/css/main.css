@@ -70,6 +70,9 @@ footer {
 #info-container {
   display: none;
 }
+#info-container > header {
+  margin-bottom: 5vw;
+}
 .icon8 {
   color: #6e6e6e;
   margin-left: 5px;

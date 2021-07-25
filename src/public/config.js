@@ -91,7 +91,7 @@ export const config = {
     )}&response_type=code&show_dialog=true`,
     getHasTokens: "/tokens/has-tokens",
     getTokensPrefix: "/tokens/retrieve-tokens?code=",
-    getTopArtists: "/spotify/get-top-artists?time_range=medium_term",
+    getTopArtists: "/spotify/get-top-artists?time_range=",
     getTopTracks: "/spotify/get-top-tracks?time_range=",
     getPlaylists: "/spotify/get-playlists",
     getPlaylistTracks: "/spotify/get-playlist-tracks?playlist_id=",
@@ -199,4 +199,14 @@ export function isEllipsisActive(el) {
 
 export function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+export function getValidImage(images) {
+  // obtain the correct image
+  if (images.length > 0) {
+    let img = images[0];
+    return img.url;
+  } else {
+    return "";
+  }
 }

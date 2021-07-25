@@ -57,26 +57,35 @@
           class="border-connected-btn-container no-select"
           id="tracks-term-selections"
         >
-          <button
-            class="selected left"
-            data-selection="short_term"
-            title="Click to view top tracks short term"
-          >
-            Short Term (last 4 weeks)
-          </button>
-          <button
-            data-selection="medium_term"
-            title="Click to view top tracks mid term"
-          >
-            Mid Term (last 6 months)
-          </button>
-          <button
-            class="right"
-            data-selection="long_term"
-            title="Click to view top tracks long term"
-          >
-            Long Term (of all time)
-          </button>
+          <div>
+            <button
+              class="selected left"
+              data-selection="short_term"
+              title="Click to view top tracks short term"
+            >
+              Short Term (last 4 weeks)
+            </button>
+            <div class="selected border-cover"></div>
+          </div>
+          <div>
+            <button
+              data-selection="medium_term"
+              title="Click to view top tracks mid term"
+            >
+              Mid Term (last 6 months)
+            </button>
+            <div class="border-cover"></div>
+          </div>
+          <div>
+            <button
+              class="right"
+              data-selection="long_term"
+              title="Click to view top tracks long term"
+            >
+              Long Term (of all time)
+            </button>
+            <div class="border-cover"></div>
+          </div>
         </div>
         <div class="border-container" id="term-border-container">
           <div class="expand-to-children">
@@ -87,37 +96,59 @@
             class="border-connected-btn-container no-select"
             id="feature-selections"
           >
-            <button
-              data-selection="popularity"
-              class="selected"
-              title="Click to view popularity data"
-            >
-              Popularity
-            </button>
-            <button data-selection="valence" title="Click to view valence data">
-              Valence
-            </button>
-            <button
-              data-selection="danceability"
-              title="Click to view danceability data"
-            >
-              Danceability
-            </button>
-            <button
-              data-selection="instrumentalness"
-              title="Click to view instrumentalness data"
-            >
-              Instrumentalness
-            </button>
-            <button data-selection="energy" title="Click to view energy data">
-              Energy
-            </button>
-            <button
-              data-selection="acousticness"
-              title="Click to view acousticness data"
-            >
-              Acousticness
-            </button>
+            <div>
+              <button
+                class="selected left"
+                data-selection="popularity"
+                title="Click to view popularity data"
+              >
+                Popularity
+              </button>
+              <div class="selected border-cover"></div>
+            </div>
+            <div>
+              <button
+                data-selection="valence"
+                title="Click to view valence data"
+              >
+                Valence
+              </button>
+              <div class="border-cover"></div>
+            </div>
+            <div>
+              <button
+                data-selection="danceability"
+                title="Click to view danceability data"
+              >
+                Danceability
+              </button>
+              <div class="border-cover"></div>
+            </div>
+            <div>
+              <button
+                data-selection="instrumentalness"
+                title="Click to view instrumentalness data"
+              >
+                Instrumentalness
+              </button>
+              <div class="border-cover"></div>
+            </div>
+            <div>
+              <button data-selection="energy" title="Click to view energy data">
+                Energy
+              </button>
+              <div class="border-cover"></div>
+            </div>
+            <div>
+              <button
+                class="right"
+                data-selection="acousticness"
+                title="Click to view acousticness data"
+              >
+                Acousticness
+              </button>
+              <div class="border-cover"></div>
+            </div>
           </div>
           <section id="tracks-data" class="border-container">
             <div class="chart-container">
@@ -148,7 +179,7 @@
           </section>
         </div>
         <section class="vibe">
-          <h2>Your Vibe in 5 Emojis</h2>
+          <h2>Your Vibe Expressed in Emojis</h2>
           <div id="emojis"></div>
         </section>
       </section>
@@ -163,12 +194,6 @@
           <div class="icon8">
             <a target="_blank" href="https://icons8.com/icon/52991/open-book"
               >Open Book</a
-            >
-            icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-          </div>
-          <div class="icon8">
-            <a target="_blank" href="https://icons8.com/icon/60592/drop-down"
-              >Drop Down</a
             >
             icon by <a target="_blank" href="https://icons8.com">Icons8</a>
           </div>
@@ -187,8 +212,8 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
-    <script type="module" src="components/track.js"></script>
+    <script type="module" src="components/artist.js"></script>
     <script type="module" src="config.js"></script>
-    <script type="module" src="pages/top-tracks-page/top-tracks.js"></script>
+    <script type="module" src="pages/top-artists-page/top-artists.js"></script>
   </body>
 </html>

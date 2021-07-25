@@ -8,16 +8,17 @@ import {
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 import { CardActionsHandler } from "../../card-actions.js";
+import Album from "../../components/album.js";
 
 const DEFAULT_VIEWABLE_CARDS = 5;
 const MAX_VIEWABLE_CARDS = 50;
 
 const trackActions = (function () {
   const selectionVerif = new AsyncSelectionVerif();
-  const cardActionsHandler = new CardActionsHandler(50);
+  const cardActionsHandler = new CardActionsHandler(MAX_VIEWABLE_CARDS);
   const selections = {
     numViewableCards: DEFAULT_VIEWABLE_CARDS,
-    trackTerm: "short_term",
+    term: "short_term",
   };
   function addTrackCardListeners(trackObjs) {
     cardActionsHandler.clearSelectedEls();
@@ -39,14 +40,14 @@ const trackActions = (function () {
   }
 
   function getCurrSelTopTracks() {
-    if (selections.trackTerm == "short_term") {
+    if (selections.term == "short_term") {
       return trackArrs.topTrackObjsShortTerm;
-    } else if (selections.trackTerm == "medium_term") {
+    } else if (selections.term == "medium_term") {
       return trackArrs.topTrackObjsMidTerm;
-    } else if (selections.trackTerm == "long_term") {
+    } else if (selections.term == "long_term") {
       return trackArrs.topTrackObjsLongTerm;
     } else {
-      throw new Error("Selected track term is invalid " + selections.trackTerm);
+      throw new Error("Selected track term is invalid " + selections.term);
     }
   }
 
@@ -84,7 +85,7 @@ const trackActions = (function () {
         popularity: data.popularity,
         releaseDate: data.album.release_date,
         id: data.id,
-        album: { albumName: data.album.name },
+        album: new Album(data.album.name, data.album.external_urls.spotify),
         externalUrl: data.external_urls.spotify,
         artists: data.artists,
       };
@@ -94,7 +95,7 @@ const trackActions = (function () {
   }
   async function retrieveTracks(trackArr) {
     let { res, err } = await promiseHandler(
-      axios.get(config.URLs.getTopTracks + selections.trackTerm)
+      axios.get(config.URLs.getTopTracks + selections.term)
     );
     if (err) {
       throw new Error(err);
@@ -668,7 +669,7 @@ const addEventListeners = (function () {
 
   function addTrackTermButtonEvents() {
     function onClick(btn, borderCover) {
-      trackActions.selections.trackTerm = btn.getAttribute(
+      trackActions.selections.term = btn.getAttribute(
         config.CSS.ATTRIBUTES.dataSelection
       );
       selections.termEls.unselectEls();
@@ -768,7 +769,7 @@ const addEventListeners = (function () {
       infoContainer.style.display = "block";
 
       // when entering the page always show short term tracks first
-      trackActions.selections.trackTerm = "short_term";
+      trackActions.selections.term = "short_term";
       displayCardInfo.displayTrackCards(trackArrs.topTrackObjsShortTerm);
     } else {
       // if there is no token redirect to allow access page

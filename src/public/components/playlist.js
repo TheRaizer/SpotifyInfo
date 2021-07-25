@@ -1,15 +1,15 @@
-import { config, htmlToEl } from "../config.js";
+import { config, htmlToEl, getValidImage } from "../config.js";
 import Track from "./track.js";
 
 class Playlist {
   constructor(name, images, id) {
-    this.images = images;
     this.name = name;
     this.id = id;
     this.undoArr = [];
 
     // the id of the playlist card element
     this.cardId = "";
+    this.imageUrl = getValidImage(images);
   }
 
   addToUndoArr(tracks) {
@@ -22,25 +22,18 @@ class Playlist {
    * @returns {ChildNode} - The converted html string to an element
    */
   getPlaylistCardHtml(idx) {
-    let url = "";
     let id = `${config.CSS.IDs.playlistPrefix}${idx}`;
 
     this.cardId = id;
-
-    if (this.images.length > 0) {
-      let img = this.images[0];
-      url = img.url;
-
-      let html = `
-            <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.playlist} ${config.CSS.CLASSES.noSelect}" id="${id}" title="Click to View Tracks">
-              <img src="${url}" alt="Playlist Cover"></img>
-              <div>
-                <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
-              </div>
-            </button>
-        `;
-      return htmlToEl(html);
-    }
+    let html = `
+          <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.playlist} ${config.CSS.CLASSES.noSelect}" id="${id}" title="Click to View Tracks">
+            <img src="${this.imageUrl}" alt="Playlist Cover"></img>
+            <div>
+              <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
+            </div>
+          </button>
+      `;
+    return htmlToEl(html);
   }
 
   /** Produces list of Track class instances using track datas from spotify web api.
