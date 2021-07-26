@@ -1,0 +1,47 @@
+@import "card.less";
+
+.artist {
+  &.card {
+    top: 0;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    display: flex;
+
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    transition: height 500ms ease-in, width 500ms ease-in,
+      transform 250ms ease-in-out;
+
+    & > h4 {
+      margin-top: 10%;
+    }
+
+    &.selected {
+      align-items: flex-start;
+      background-color: @card-color;
+      width: 50vw;
+      height: 20vw;
+      & > * {
+        margin-left: 3%;
+      }
+    }
+  }
+  &:hover {
+    z-index: auto;
+    transform: none;
+    box-shadow: 0px 0px 15px 4px rgb(14, 14, 14);
+    &:not(.selected) {
+      z-index: 5;
+      transform: scale(1.15);
+      box-shadow: 0px 0px 15px 8px rgb(14, 14, 14);
+    }
+  }
+}
+
+#artist-cards-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

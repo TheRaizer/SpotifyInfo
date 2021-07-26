@@ -50,11 +50,14 @@ export const config = {
       rank: "rank",
       viewAllTopTracks: "view-all-top-tracks",
       emojis: "emojis",
+      artistCardsContainer: "artist-cards-container",
+      artistPrefix: "artist-",
     },
     CLASSES: {
       glow: "glow",
       playlist: "playlist",
       track: "track",
+      artist: "artist",
       rankCard: "rank-card",
       playlistTrack: "playlist-track",
       infoLoadingSpinners: "info-loading-spinner",
@@ -208,5 +211,11 @@ export function getValidImage(images) {
     return img.url;
   } else {
     return "";
+  }
+}
+
+export function removeAllChildNodes(parent) {
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
   }
 }

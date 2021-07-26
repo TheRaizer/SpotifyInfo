@@ -51,7 +51,7 @@
       />
       <section id="info-container">
         <header>
-          <h1 id="top-tracks-header">Your Top Tracks</h1>
+          <h1 id="top-tracks-header">Your Top Artists</h1>
         </header>
         <div
           class="border-connected-btn-container no-select"
@@ -89,99 +89,9 @@
         </div>
         <div class="border-container" id="term-border-container">
           <div class="expand-to-children">
-            <div class="card-grid" id="track-cards-container"></div>
+            <div id="artist-cards-container"></div>
           </div>
-          <button id="view-all-top-tracks" class="glow">See All 50</button>
-          <div
-            class="border-connected-btn-container no-select"
-            id="feature-selections"
-          >
-            <div>
-              <button
-                class="selected left"
-                data-selection="popularity"
-                title="Click to view popularity data"
-              >
-                Popularity
-              </button>
-              <div class="selected border-cover"></div>
-            </div>
-            <div>
-              <button
-                data-selection="valence"
-                title="Click to view valence data"
-              >
-                Valence
-              </button>
-              <div class="border-cover"></div>
-            </div>
-            <div>
-              <button
-                data-selection="danceability"
-                title="Click to view danceability data"
-              >
-                Danceability
-              </button>
-              <div class="border-cover"></div>
-            </div>
-            <div>
-              <button
-                data-selection="instrumentalness"
-                title="Click to view instrumentalness data"
-              >
-                Instrumentalness
-              </button>
-              <div class="border-cover"></div>
-            </div>
-            <div>
-              <button data-selection="energy" title="Click to view energy data">
-                Energy
-              </button>
-              <div class="border-cover"></div>
-            </div>
-            <div>
-              <button
-                class="right"
-                data-selection="acousticness"
-                title="Click to view acousticness data"
-              >
-                Acousticness
-              </button>
-              <div class="border-cover"></div>
-            </div>
-          </div>
-          <section id="tracks-data" class="border-container">
-            <div class="chart-container">
-              <canvas id="tracks-chart"></canvas>
-            </div>
-            <div class="chart-info">
-              <div>
-                <img
-                  class="no-select"
-                  src="/images/book-icon.png"
-                  alt="Definition"
-                />
-                <div class="expandable-text-container">
-                  <p class="ellipsis-wrap" id="feat-definition"></p>
-                </div>
-              </div>
-              <div>
-                <img
-                  class="no-select"
-                  src="/images/user-icon.png"
-                  alt="Tendency"
-                />
-                <div class="expandable-text-container">
-                  <p class="ellipsis-wrap" id="feat-average"></p>
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
-        <section class="vibe">
-          <h2>Your Vibe Expressed in Emojis</h2>
-          <div id="emojis"></div>
-        </section>
       </section>
       <footer>
         <section id="icon8-links">

@@ -1,6 +1,6 @@
 import { config, isEllipsisActive, getTextWidth } from "./config.js";
 
-export class CardActionsHandler {
+export default class CardActionsHandler {
   constructor(maxLength) {
     this.storedSelEls = new Array(maxLength);
     this.currScrollingAnim = null;

@@ -2,7 +2,7 @@ import Playlist from "../../components/playlist.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 import { config, htmlToEl, promiseHandler, searchUl } from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
-import { CardActionsHandler } from "../../card-actions.js";
+import CardActionsHandler from "../../card-actions.js";
 
 const expandedPlaylistMods = document.getElementById(
   config.CSS.IDs.expandedPlaylistMods

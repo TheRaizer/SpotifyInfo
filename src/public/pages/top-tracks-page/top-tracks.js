@@ -4,10 +4,11 @@ import {
   promiseHandler,
   htmlToEl,
   capitalizeFirstLetter,
+  removeAllChildNodes,
 } from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
-import { CardActionsHandler } from "../../card-actions.js";
+import CardActionsHandler from "../../card-actions.js";
 import Album from "../../components/album.js";
 
 const DEFAULT_VIEWABLE_CARDS = 5;
@@ -20,7 +21,7 @@ const trackActions = (function () {
     numViewableCards: DEFAULT_VIEWABLE_CARDS,
     term: "short_term",
   };
-  function addTrackCardListeners(trackObjs) {
+  function addTrackCardListeners(trackArr) {
     cardActionsHandler.clearSelectedEls();
     let trackCards = Array.from(
       document.getElementsByClassName(config.CSS.CLASSES.track)
@@ -28,7 +29,7 @@ const trackActions = (function () {
 
     trackCards.forEach((trackCard) => {
       trackCard.addEventListener("click", () =>
-        cardActionsHandler.onCardClick(trackCard, trackObjs, null, true, false)
+        cardActionsHandler.onCardClick(trackCard, trackArr, null, true, false)
       );
       trackCard.addEventListener("mouseenter", () => {
         cardActionsHandler.scrollTextOnCardEnter(trackCard);
@@ -105,7 +106,7 @@ const trackActions = (function () {
     await promiseHandler(loadFeatures(trackArr));
   }
   return {
-    addTrackCardListeners: addTrackCardListeners,
+    addTrackCardListeners,
     getCurrSelTopTracks,
     retrieveTracks,
     selections,
@@ -156,18 +157,18 @@ const displayCardInfo = (function () {
   }
   /** Generates the cards to the DOM then makes them visible
    *
-   * @param {Array<Track>} trackObjs array of track objects whose cards should be generated.
+   * @param {Array<Track>} trackArr array of track objects whose cards should be generated.
    * @param {Boolean} autoAppear whether to show the card without animation or with animation.
    * @returns {Array<HTML>} array of the card elements.
    */
-  function generateCards(trackObjs, autoAppear) {
+  function generateCards(trackArr, autoAppear) {
     removeAllChildNodes(tracksContainer);
     let cardHtmls = [];
 
     // fill arr of card elements and append them to DOM
     let tracksDisplayed = [];
-    for (let i = 0; i < trackObjs.length; i++) {
-      let trackObj = trackObjs[i];
+    for (let i = 0; i < trackArr.length; i++) {
+      let trackObj = trackArr[i];
       if (i < trackActions.selections.numViewableCards) {
         let cardHtml = trackObj.getTrackCardHtml(i, autoAppear);
         tracksDisplayed.push(trackObj);
@@ -178,7 +179,7 @@ const displayCardInfo = (function () {
       }
     }
 
-    trackActions.addTrackCardListeners(trackObjs);
+    trackActions.addTrackCardListeners(trackArr);
     featureManager.changeTracksChart(tracksDisplayed);
     if (!autoAppear) {
       makeCardsVisible(config.CSS.CLASSES.rankCard);
@@ -187,9 +188,9 @@ const displayCardInfo = (function () {
   }
   /** Begins retrieving tracks then verifies it is the correct selected tracks.
    *
-   * @param {Array<Track>} trackObjs array to load tracks into.
+   * @param {Array<Track>} trackArr array to load tracks into.
    */
-  function startLoadingTracks(trackObjs) {
+  function startLoadingTracks(trackArr) {
     // initially show the loading spinner
     const htmlString = `
             <div>
@@ -200,28 +201,28 @@ const displayCardInfo = (function () {
     removeAllChildNodes(tracksContainer);
     tracksContainer.appendChild(spinnerEl);
 
-    trackActions.retrieveTracks(trackObjs).then(() => {
+    trackActions.retrieveTracks(trackArr).then(() => {
       // after retrieving async verify if it is the same arr of trackObjs as what was selected
-      if (!trackActions.selectionVerif.isValid(trackObjs)) {
+      if (!trackActions.selectionVerif.isValid(trackArr)) {
         return;
       }
-      return generateCards(trackObjs);
+      return generateCards(trackArr);
     });
   }
 
   /** Load track objects if not loaded, then generate cards with the objects.
    *
-   * @param {Array<Track>} trackObjs - List of track objects whose cards should be generated or
+   * @param {Array<Track>} trackArr - List of track objects whose cards should be generated or
    * empty list that should be filled when loading tracks.
    * @param {Boolean} autoAppear whether to show the cards without animation.
    * @returns {Array<HTML>} list of Card HTML's.
    */
-  function displayTrackCards(trackObjs, autoAppear = false) {
-    trackActions.selectionVerif.selectionChanged(trackObjs);
-    if (trackObjs.length > 0) {
-      return generateCards(trackObjs, autoAppear);
+  function displayTrackCards(trackArr, autoAppear = false) {
+    trackActions.selectionVerif.selectionChanged(trackArr);
+    if (trackArr.length > 0) {
+      return generateCards(trackArr, autoAppear);
     } else {
-      return startLoadingTracks(trackObjs);
+      return startLoadingTracks(trackArr);
     }
   }
 
@@ -576,12 +577,6 @@ const featureManager = (function () {
     selections,
   };
 })();
-
-function removeAllChildNodes(parent) {
-  while (parent.firstChild) {
-    parent.removeChild(parent.firstChild);
-  }
-}
 
 const addEventListeners = (function () {
   class SelectableEls {
