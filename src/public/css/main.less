@@ -1,3 +1,10 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
+
 body {
   background-color: @primary-bg-color;
   color: @primary-green;
@@ -21,7 +28,10 @@ footer {
 }
 .container {
   text-align: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -ms-flex-line-pack: center;
   align-content: center;
 
   & > h1 {
@@ -42,16 +52,25 @@ footer {
   font-weight: bold;
   background-color: @primary-green;
   text-decoration: none;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
   width: fit-content;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
   height: fit-content;
   padding: 3px 6px;
   border-color: @primary-green;
   border-width: 2px;
 
+  -webkit-transition: all 0.1s linear;
+
+  -o-transition: all 0.1s linear;
+
   transition: all 0.1s linear;
 
   &:hover {
     /* Box shadow adds Glow */
+    -webkit-box-shadow: 0px 0px 10px 5px @primary-green;
     box-shadow: 0px 0px 10px 5px @primary-green;
   }
 }
@@ -80,6 +99,7 @@ footer {
 .ellipsis-wrap {
   overflow: hidden;
   white-space: nowrap;
+  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
 }
 
@@ -105,6 +125,8 @@ footer {
 }
 
 #icon8-links {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
   display: inline-flex;
 }
 

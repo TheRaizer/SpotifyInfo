@@ -1,3 +1,10 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
+
 @import "main-colors.less";
 
 @max-z-index: 1000;
@@ -14,6 +21,7 @@ ul.topnav {
   font-family: arial;
   text-align: left;
   width: 100%;
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
 
@@ -30,6 +38,8 @@ ul.topnav {
       font-weight: 400;
 
       border-left: @border;
+      -webkit-transition: background-color 300ms ease-out;
+      -o-transition: background-color 300ms ease-out;
       transition: background-color 300ms ease-out;
 
       &.spotify-logo {

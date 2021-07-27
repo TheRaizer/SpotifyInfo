@@ -1,3 +1,9 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
 body {
   background-color: #191414;
   color: #1db954;
@@ -18,7 +24,10 @@ footer {
 }
 .container {
   text-align: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -ms-flex-line-pack: center;
   align-content: center;
 }
 .container > h1 {
@@ -36,15 +45,22 @@ footer {
   font-weight: bold;
   background-color: #1db954;
   text-decoration: none;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
   width: fit-content;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
   height: fit-content;
   padding: 3px 6px;
   border-color: #1db954;
   border-width: 2px;
+  -webkit-transition: all 0.1s linear;
+  -o-transition: all 0.1s linear;
   transition: all 0.1s linear;
 }
 .glow:hover {
   /* Box shadow adds Glow */
+  -webkit-box-shadow: 0px 0px 10px 5px #1db954;
   box-shadow: 0px 0px 10px 5px #1db954;
 }
 .loading-spinner {
@@ -65,6 +81,7 @@ footer {
 .ellipsis-wrap {
   overflow: hidden;
   white-space: nowrap;
+  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
 }
 #info-container {
@@ -85,18 +102,37 @@ footer {
   color: inherit;
 }
 #icon8-links {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
   display: inline-flex;
 }
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
 .chart-info {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 35%;
   flex: 0 0 35%;
   width: 35%;
   color: #d4d4d4;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-pack: space-evenly;
+  -ms-flex-pack: space-evenly;
   justify-content: space-evenly;
   margin-left: 4vw;
 }
 .chart-info > div {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   text-align: start;
   background-color: #202020;
@@ -105,28 +141,38 @@ footer {
   width: 100%;
   margin-top: 5%;
   margin-bottom: 5%;
+  -ms-flex-preferred-size: 60px;
   flex-basis: 60px;
   overflow-y: hidden;
+  -webkit-transition: all 700ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  -o-transition: all 700ms cubic-bezier(0.075, 0.82, 0.165, 1);
   transition: all 700ms cubic-bezier(0.075, 0.82, 0.165, 1);
-  -moz-box-shadow: inset 0 -5px 10px -5px #000000;
   -webkit-box-shadow: inset 0 -5px 10px -5px #000000;
   box-shadow: inset 0 -5px 10px -5px #000000;
 }
 .chart-info > div:hover {
-  -moz-box-shadow: none;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
 .chart-info > div > img {
   margin-left: 5%;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
   height: fit-content;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
   width: fit-content;
 }
 .chart-info > div .expandable-text-container {
   margin-top: 20px;
   margin-bottom: 25px;
+  -ms-flex-preferred-size: 70%;
   flex-basis: 70%;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
   height: fit-content;
   min-width: 0;
   line-height: 1.5;
@@ -136,19 +182,32 @@ footer {
   height: 30px;
 }
 .chart-container {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 55%;
   flex: 0 0 55%;
   width: 55%;
   min-width: 0;
   height: 60vh;
 }
 #tracks-data {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
 }
 .vibe {
   margin-top: 15vw;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
 }
 .vibe > h2 {
@@ -158,34 +217,65 @@ footer {
   margin-bottom: 2vw;
 }
 .vibe > div {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
   width: 50vw;
+  min-width: -webkit-fit-content;
+  min-width: -moz-fit-content;
   min-width: fit-content;
+  min-height: -webkit-fit-content;
+  min-height: -moz-fit-content;
   min-height: fit-content;
   height: 10vw;
   background-color: #202020;
 }
 .vibe > div > img {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
   width: fit-content;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
   height: fit-content;
 }
 @media only screen and (max-width: 1200px) {
   #tracks-data {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
     flex-direction: column;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
     align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
     justify-content: center;
   }
   .chart-container {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 0 100%;
     flex: 1 0 100%;
     width: 100%;
   }
   .chart-info {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 100%;
     flex: 0 0 100%;
     width: 100%;
   }
 }
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
 .expanded-playlist {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 1 auto;
   flex: 0 1 auto;
   position: relative;
   background-color: #202020;
@@ -194,15 +284,24 @@ footer {
   width: 100%;
   height: 88vh;
   opacity: 0;
+  -webkit-transition: opacity 250ms ease-in;
+  -o-transition: opacity 250ms ease-in;
   transition: opacity 250ms ease-in;
 }
 .expanded-playlist > .content {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
   height: calc(100% - 70px);
   width: 100%;
 }
 .expanded-playlist > .content > #tracks-section {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 1 100%;
   flex: 0 1 100%;
   min-height: 0;
 }
@@ -211,15 +310,22 @@ footer {
   list-style-type: none;
   width: 100%;
   height: 100%;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
 }
 .expanded-playlist > .content > * {
   min-width: 0;
 }
 .expanded-playlist > header {
+  -webkit-box-shadow: 0px 15px 10px -10px #111;
   box-shadow: 0px 15px 10px -10px #111;
   height: 70px;
+  min-height: -webkit-fit-content;
+  min-height: -moz-fit-content;
   min-height: fit-content;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   top: 0;
   margin: 0 0 0 0;
@@ -228,9 +334,13 @@ footer {
   font-weight: 700;
 }
 .expanded-playlist > header > section {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
 }
 .expanded-playlist > header > section > h2 {
+  -webkit-box-flex: 3;
+  -ms-flex-positive: 3;
   flex-grow: 3;
   font-size: 150%;
   margin-left: 5%;
@@ -241,9 +351,12 @@ footer {
 }
 .expanded-playlist.appear {
   opacity: 1;
+  -webkit-transition: opacity 250ms ease-in;
+  -o-transition: opacity 250ms ease-in;
   transition: opacity 250ms ease-in;
 }
 #playlist-descriptors {
+  -ms-flex-pack: distribute;
   justify-content: space-around;
   color: #9c9c9c;
 }
@@ -251,20 +364,30 @@ footer {
   background-color: #1b1b1b;
   color: #d8d8d8;
   margin-right: 5%;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
   height: fit-content;
 }
 .playlist-search {
   margin-right: 5%;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
   height: fit-content;
   background-color: #1b1b1b;
   color: #d8d8d8;
 }
 .playlist-track {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
   margin-top: 8px;
   margin-bottom: 8px;
   margin-left: 1%;
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
   justify-content: flex-start;
   text-align: left;
   border-width: 2px;
@@ -281,8 +404,15 @@ footer {
   border-radius: 5px;
 }
 .playlist-track > div {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 20%;
   flex: 0 0 20%;
   margin-left: 5%;
   width: 20%;
@@ -307,12 +437,18 @@ footer {
 .playlist-track > h5 {
   text-align: center;
   width: 40%;
+  min-width: -webkit-fit-content;
+  min-width: -moz-fit-content;
   min-width: fit-content;
   max-width: 40%;
   color: #9c9c9c;
 }
 #playlist-mods {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 auto;
   flex: 0 0 auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   background-color: #292929;
   width: 100%;
@@ -320,7 +456,10 @@ footer {
   overflow: hidden;
   min-width: 0;
   min-height: auto;
+  -webkit-box-shadow: 0px 15px 10px -10px #111;
   box-shadow: 0px 15px 10px -10px #111;
+  -webkit-transition: height 200ms ease-in-out;
+  -o-transition: height 200ms ease-in-out;
   transition: height 200ms ease-in-out;
 }
 #playlist-mods.appear {
@@ -329,7 +468,11 @@ footer {
 #playlist-mods button {
   margin: 5px 5px 5px 5px;
   padding: 4px 4px 4px 4px;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
   width: fit-content;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
   height: fit-content;
 }
 #playlist-mods img {
@@ -348,14 +491,22 @@ footer {
   width: 50%;
 }
 #playlists-section {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
 }
 #playlists-section > .resize-container {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 auto;
   flex: 0 0 auto;
   height: 88vh;
   max-width: 70vw;
+  min-width: -webkit-fit-content;
+  min-width: -moz-fit-content;
   min-width: fit-content;
+  -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  -ms-touch-action: none;
   touch-action: none;
   border-style: double;
   border-right-color: #5f5f5f;
@@ -365,9 +516,7 @@ footer {
   overflow-y: scroll;
   height: inherit;
   /* Firefox */
-  width: -moz-calc(92%);
   /* WebKit */
-  width: -webkit-calc(92%);
   /* Opera */
   width: -o-calc(92%);
   /* Standard */
@@ -384,12 +533,23 @@ footer {
 #info-container {
   margin-top: 2vw;
 }
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
 .card-grid {
+  -ms-flex-pack: distribute;
   justify-content: space-around;
+  display: -ms-grid;
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, -webkit-max-content));
   grid-template-columns: repeat(auto-fit, minmax(170px, max-content));
   /* size of rows that are created due to a wrap/implicitly */
+  grid-auto-rows: minmax(200px, -webkit-max-content);
   grid-auto-rows: minmax(200px, max-content);
+  -ms-grid-row-align: center;
   align-self: center;
 }
 .card {
@@ -403,6 +563,7 @@ footer {
   border-radius: 5px;
   margin: 5px 5px 5px 5px;
   padding-top: 5px;
+  -webkit-box-shadow: 0px 0px 15px 4px #0e0e0e;
   box-shadow: 0px 0px 15px 4px #0e0e0e;
   top: -500px;
   left: 0;
@@ -411,6 +572,7 @@ footer {
 .card img {
   width: 110px;
   height: 110px;
+  -webkit-box-shadow: 0px 0px 10px 6px #131313;
   box-shadow: 0px 0px 10px 6px #131313;
 }
 .card h4 {
@@ -422,13 +584,17 @@ footer {
 }
 .card:hover {
   z-index: 5;
+  -webkit-transform: scale(1.15);
+  -ms-transform: scale(1.15);
   transform: scale(1.15);
+  -webkit-box-shadow: 0px 0px 15px 8px #0e0e0e;
   box-shadow: 0px 0px 15px 8px #0e0e0e;
 }
 .card.selected {
   background-color: #1db954;
 }
 .flip-card {
+  -webkit-perspective: 1000px;
   perspective: 1000px;
 }
 .flip-card > .selected {
@@ -439,10 +605,16 @@ footer {
 }
 .flip-card-inner {
   position: relative;
+  -webkit-transition: -webkit-transform 300ms;
+  transition: -webkit-transform 300ms;
+  -o-transition: transform 300ms;
   transition: transform 300ms;
+  transition: transform 300ms, -webkit-transform 300ms;
+  -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
 .flip-card-inner.selected {
+  -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
 .flip-card-front,
@@ -462,6 +634,7 @@ footer {
   bottom: 0%;
   background-color: #2980b9;
   color: #d4d4d4;
+  -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
 .flip-card-back > h3 {
@@ -474,7 +647,11 @@ footer {
   visibility: hidden;
   top: -500px;
   opacity: 0;
+  -webkit-transition: -webkit-transform 250ms ease-in-out;
+  transition: -webkit-transform 250ms ease-in-out;
+  -o-transition: transform 250ms ease-in-out;
   transition: transform 250ms ease-in-out;
+  transition: transform 250ms ease-in-out, -webkit-transform 250ms ease-in-out;
 }
 .rank-card > h4 {
   position: absolute;
@@ -495,20 +672,41 @@ footer {
   margin: 20px 0px;
   margin-bottom: 100px;
 }
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
 .artist.card {
   top: 0;
   margin-top: 5%;
   margin-bottom: 5%;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
+  -webkit-transition: height 500ms ease-in, width 500ms ease-in, -webkit-transform 250ms ease-in-out;
+  transition: height 500ms ease-in, width 500ms ease-in, -webkit-transform 250ms ease-in-out;
+  -o-transition: height 500ms ease-in, width 500ms ease-in, transform 250ms ease-in-out;
   transition: height 500ms ease-in, width 500ms ease-in, transform 250ms ease-in-out;
+  transition: height 500ms ease-in, width 500ms ease-in, transform 250ms ease-in-out, -webkit-transform 250ms ease-in-out;
 }
 .artist.card > h4 {
   margin-top: 10%;
 }
 .artist.card.selected {
+  -webkit-box-align: start;
+  -ms-flex-align: start;
   align-items: flex-start;
   background-color: #303030;
   width: 50vw;
@@ -519,33 +717,66 @@ footer {
 }
 .artist:hover {
   z-index: auto;
+  -webkit-transform: none;
+  -ms-transform: none;
   transform: none;
+  -webkit-box-shadow: 0px 0px 15px 4px #0e0e0e;
   box-shadow: 0px 0px 15px 4px #0e0e0e;
 }
 .artist:hover:not(.selected) {
   z-index: 5;
+  -webkit-transform: scale(1.15);
+  -ms-transform: scale(1.15);
   transform: scale(1.15);
+  -webkit-box-shadow: 0px 0px 15px 8px #0e0e0e;
   box-shadow: 0px 0px 15px 8px #0e0e0e;
 }
 #artist-cards-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
 }
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
 .border-connected-btn-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
   flex-direction: row;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
 }
 .border-connected-btn-container > div {
   position: relative;
   width: 13%;
+  min-width: -webkit-max-content;
+  min-width: -moz-max-content;
   min-width: max-content;
 }
 .border-connected-btn-container > div > button {
   width: 100%;
+  min-width: -webkit-max-content;
+  min-width: -moz-max-content;
   min-width: max-content;
   height: 40px;
   pointer-events: all;
@@ -584,6 +815,7 @@ footer {
 }
 @media only screen and (max-width: 1200px) {
   .border-connected-btn-container {
+    -ms-flex-wrap: wrap;
     flex-wrap: wrap;
   }
   .border-connected-btn-container > div > button.selected {
@@ -594,6 +826,12 @@ footer {
     border: 1px solid rgba(110, 110, 110, 0.342);
   }
 }
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
 ul.topnav {
   z-index: 1000;
   list-style-type: none;
@@ -604,6 +842,7 @@ ul.topnav {
   font-family: arial;
   text-align: left;
   width: 100%;
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
 }
@@ -620,6 +859,8 @@ ul.topnav li a {
   font-size: 17px;
   font-weight: 400;
   border-left: 1px solid rgba(221, 221, 221, 0.815);
+  -webkit-transition: background-color 300ms ease-out;
+  -o-transition: background-color 300ms ease-out;
   transition: background-color 300ms ease-out;
 }
 ul.topnav li a.spotify-logo {
@@ -647,6 +888,12 @@ ul.topnav li.last {
     width: 100%;
   }
 }
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
 #circle {
   margin-top: 20vh;
   margin-bottom: auto;
@@ -661,8 +908,14 @@ ul.topnav li.last {
   height: 100%;
   left: 0;
   top: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
   flex-direction: row;
+  -ms-flex-pack: distribute;
   justify-content: space-around;
 }
 #spotify-container {
@@ -675,12 +928,22 @@ ul.topnav li.last {
 .scroll-left > h4 {
   white-space: nowrap;
 }
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
 .appear {
   visibility: visible;
   opacity: 1;
   top: 0;
   /* overwrites previouse classes transitions */
+  -webkit-transition: opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1), -webkit-transform 250ms ease-in-out, -webkit-box-shadow 250ms ease-in-out;
+  transition: opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1), -webkit-transform 250ms ease-in-out, -webkit-box-shadow 250ms ease-in-out;
+  -o-transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out, opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
   transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out, opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  transition: transform 250ms ease-in-out, box-shadow 250ms ease-in-out, opacity 250ms ease-in, top 250ms cubic-bezier(0.075, 0.82, 0.165, 1), -webkit-transform 250ms ease-in-out, -webkit-box-shadow 250ms ease-in-out;
 }
 .hidden {
   opacity: 0;

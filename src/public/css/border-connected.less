@@ -1,3 +1,10 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
+
 @import "main-colors.less";
 
 @connected-border: 1px solid rgb(110, 110, 110);
@@ -5,17 +12,29 @@
 @connected-border-hover: 1px solid rgba(110, 110, 110, 0.342);
 
 .border-connected-btn-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
   flex-direction: row;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
 
   & > div {
     position: relative;
     width: 13%;
+    min-width: -webkit-max-content;
+    min-width: -moz-max-content;
     min-width: max-content;
     & > button {
       width: 100%;
+      min-width: -webkit-max-content;
+      min-width: -moz-max-content;
       min-width: max-content;
       height: 40px;
       pointer-events: all;
@@ -61,6 +80,7 @@
 
 @media only screen and (max-width: 1200px) {
   .border-connected-btn-container {
+    -ms-flex-wrap: wrap;
     flex-wrap: wrap;
 
     & > div {

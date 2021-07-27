@@ -1,23 +1,51 @@
 @import "card.less";
 
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
+
 .artist {
   &.card {
     top: 0;
     margin-top: 5%;
     margin-bottom: 5%;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
 
+    -webkit-box-pack: center;
+
+    -ms-flex-pack: center;
+
     justify-content: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
     flex-direction: column;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
     align-items: center;
+    -webkit-transition: height 500ms ease-in, width 500ms ease-in,
+      -webkit-transform 250ms ease-in-out;
+    transition: height 500ms ease-in, width 500ms ease-in,
+      -webkit-transform 250ms ease-in-out;
+    -o-transition: height 500ms ease-in, width 500ms ease-in,
+      transform 250ms ease-in-out;
     transition: height 500ms ease-in, width 500ms ease-in,
       transform 250ms ease-in-out;
+    transition: height 500ms ease-in, width 500ms ease-in,
+      transform 250ms ease-in-out, -webkit-transform 250ms ease-in-out;
 
     & > h4 {
       margin-top: 10%;
     }
 
     &.selected {
+      -webkit-box-align: start;
+      -ms-flex-align: start;
       align-items: flex-start;
       background-color: @card-color;
       width: 50vw;
@@ -29,19 +57,34 @@
   }
   &:hover {
     z-index: auto;
+    -webkit-transform: none;
+    -ms-transform: none;
     transform: none;
+    -webkit-box-shadow: 0px 0px 15px 4px rgb(14, 14, 14);
     box-shadow: 0px 0px 15px 4px rgb(14, 14, 14);
     &:not(.selected) {
       z-index: 5;
+      -webkit-transform: scale(1.15);
+      -ms-transform: scale(1.15);
       transform: scale(1.15);
+      -webkit-box-shadow: 0px 0px 15px 8px rgb(14, 14, 14);
       box-shadow: 0px 0px 15px 8px rgb(14, 14, 14);
     }
   }
 }
 
 #artist-cards-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
 }
