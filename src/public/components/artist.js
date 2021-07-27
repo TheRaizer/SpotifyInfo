@@ -20,8 +20,20 @@ class Artist {
     this.cardId = id;
     let html = `
           <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.noSelect} ${config.CSS.CLASSES.artist}" id="${id}" title="Click to View Tracks">
-            <img src="${this.imageUrl}" alt="Artist Cover"></img>
-            <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
+            <div title="Click to View Tracks">
+              <img src="${this.imageUrl}" alt="Artist Cover"></img>
+              <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
+            </div>
+            <div class="${config.CSS.CLASSES.firstExpansion}" style="display:none">
+              <h4>Genres</h4>
+              <ul></ul>
+            </div>
+            <div class="${config.CSS.CLASSES.secondExpansion}" style="display:none">
+              <h4>Most Popular</h4>
+              <ul></ul>
+              <h4>Recommended For You</h4>
+              <ul></ul>
+            </div>
           </button>
       `;
     return htmlToEl(html);

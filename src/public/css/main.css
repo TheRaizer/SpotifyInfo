@@ -685,13 +685,13 @@ footer {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  flex-direction: row;
+  -ms-flex-direction: row;
   -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
@@ -709,11 +709,15 @@ footer {
   -ms-flex-align: start;
   align-items: flex-start;
   background-color: #303030;
-  width: 50vw;
-  height: 20vw;
+  width: 25vw;
+  height: 15vw;
 }
 .artist.card.selected > * {
   margin-left: 3%;
+}
+.artist.card > div {
+  display: flex;
+  flex-direction: column;
 }
 .artist:hover {
   z-index: auto;

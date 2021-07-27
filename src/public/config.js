@@ -82,6 +82,9 @@ export const config = {
       expandableTxtContainer: "expandable-text-container",
       rankCard: "rank-card",
       borderCover: "border-cover",
+      firstExpansion: "first-expansion",
+      secondExpansion: "second-expansion",
+      invisible: "invisible",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",

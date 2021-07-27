@@ -26,9 +26,22 @@ const artistActions = (function () {
     );
 
     artistCards.forEach((artistCard) => {
-      artistCard.addEventListener("click", () =>
-        cardActionsHandler.onCardClick(artistCard, artistArr, null, true, false)
-      );
+      artistCard.addEventListener("click", () => {
+        cardActionsHandler.onCardClick(
+          artistCard,
+          artistArr,
+          null,
+          true,
+          false
+        );
+
+        let firstExpansion = artistCard.getElementsByClassName(
+          config.CSS.CLASSES.firstExpansion
+        )[0];
+
+        firstExpansion.style.display =
+          firstExpansion.style.display == "none" ? "flex" : "none";
+      });
       artistCard.addEventListener("mouseenter", () => {
         cardActionsHandler.scrollTextOnCardEnter(artistCard);
       });
