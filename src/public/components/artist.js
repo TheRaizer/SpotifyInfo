@@ -18,15 +18,22 @@ class Artist {
     let id = `${config.CSS.IDs.artistPrefix}${idx}`;
 
     this.cardId = id;
+    let genreList = "";
+    this.genres.forEach((genre) => {
+      genreList += "<li>" + genre + "</li>";
+    });
+
     let html = `
           <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.noSelect} ${config.CSS.CLASSES.artist}" id="${id}" title="Click to View Tracks">
-            <div title="Click to View Tracks">
+            <div id="${config.CSS.IDs.initialCard}" title="Click to View Tracks">
               <img src="${this.imageUrl}" alt="Artist Cover"></img>
               <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
             </div>
             <div class="${config.CSS.CLASSES.firstExpansion}" style="display:none">
               <h4>Genres</h4>
-              <ul></ul>
+              <ul>${genreList}</ul>
+              <h4>Followers</h4>
+              <h4>Popularity</h4>
             </div>
             <div class="${config.CSS.CLASSES.secondExpansion}" style="display:none">
               <h4>Most Popular</h4>

@@ -52,6 +52,7 @@ export const config = {
       emojis: "emojis",
       artistCardsContainer: "artist-cards-container",
       artistPrefix: "artist-",
+      initialCard: "initial-card",
     },
     CLASSES: {
       glow: "glow",

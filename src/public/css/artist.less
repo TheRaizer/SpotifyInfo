@@ -1,4 +1,5 @@
 @import "card.less";
+@import "main-colors.less";
 
 /*
 * Prefixed by https://autoprefixer.github.io
@@ -6,8 +7,11 @@
 * Autoprefixer: v9.7.6
 * Browsers: last 4 version
 */
-
 .artist {
+  & ul {
+    list-style-type: disc;
+    color: @reading-color;
+  }
   &.card {
     top: 0;
     margin-top: 5%;
@@ -17,16 +21,7 @@
     display: flex;
     flex-direction: row;
     -ms-flex-direction: row;
-
-    -webkit-box-pack: center;
-
-    -ms-flex-pack: center;
-
     justify-content: center;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
     align-items: center;
     -webkit-transition: height 500ms ease-in, width 500ms ease-in,
       -webkit-transform 250ms ease-in-out;
@@ -39,25 +34,28 @@
     transition: height 500ms ease-in, width 500ms ease-in,
       transform 250ms ease-in-out, -webkit-transform 250ms ease-in-out;
 
-    & > h4 {
-      margin-top: 10%;
-    }
-
-    &.selected {
-      -webkit-box-align: start;
-      -ms-flex-align: start;
-      align-items: flex-start;
-      background-color: @card-color;
-      width: 25vw;
-      height: 15vw;
-      & > * {
-        margin-left: 3%;
-      }
-    }
-
     & > div {
       display: flex;
       flex-direction: column;
+
+      & > h4 {
+        margin-top: 15%;
+      }
+    }
+    & .first-expansion {
+      margin-left: 7%;
+    }
+
+    &.selected {
+      justify-content: flex-start;
+      align-items: center;
+      background-color: @card-color;
+      width: 20vw;
+      height: 15vw;
+
+      & > #initial-card {
+        margin-left: 3%;
+      }
     }
   }
   &:hover {
@@ -76,6 +74,10 @@
       box-shadow: 0px 0px 15px 8px rgb(14, 14, 14);
     }
   }
+}
+
+#initial-card > h4 {
+  margin-top: 10%;
 }
 
 #artist-cards-container {

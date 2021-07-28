@@ -678,6 +678,10 @@ footer {
 * Autoprefixer: v9.7.6
 * Browsers: last 4 version
 */
+.artist ul {
+  list-style-type: disc;
+  color: #d4d4d4;
+}
 .artist.card {
   top: 0;
   margin-top: 5%;
@@ -687,13 +691,7 @@ footer {
   display: flex;
   flex-direction: row;
   -ms-flex-direction: row;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
   justify-content: center;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
   align-items: center;
   -webkit-transition: height 500ms ease-in, width 500ms ease-in, -webkit-transform 250ms ease-in-out;
   transition: height 500ms ease-in, width 500ms ease-in, -webkit-transform 250ms ease-in-out;
@@ -701,23 +699,25 @@ footer {
   transition: height 500ms ease-in, width 500ms ease-in, transform 250ms ease-in-out;
   transition: height 500ms ease-in, width 500ms ease-in, transform 250ms ease-in-out, -webkit-transform 250ms ease-in-out;
 }
-.artist.card > h4 {
-  margin-top: 10%;
-}
-.artist.card.selected {
-  -webkit-box-align: start;
-  -ms-flex-align: start;
-  align-items: flex-start;
-  background-color: #303030;
-  width: 25vw;
-  height: 15vw;
-}
-.artist.card.selected > * {
-  margin-left: 3%;
-}
 .artist.card > div {
   display: flex;
   flex-direction: column;
+}
+.artist.card > div > h4 {
+  margin-top: 15%;
+}
+.artist.card .first-expansion {
+  margin-left: 7%;
+}
+.artist.card.selected {
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #303030;
+  width: 20vw;
+  height: 15vw;
+}
+.artist.card.selected > #initial-card {
+  margin-left: 3%;
 }
 .artist:hover {
   z-index: auto;
@@ -734,6 +734,9 @@ footer {
   transform: scale(1.15);
   -webkit-box-shadow: 0px 0px 15px 8px #0e0e0e;
   box-shadow: 0px 0px 15px 8px #0e0e0e;
+}
+#initial-card > h4 {
+  margin-top: 10%;
 }
 #artist-cards-container {
   display: -webkit-box;
