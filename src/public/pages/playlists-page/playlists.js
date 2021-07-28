@@ -265,7 +265,6 @@ const animationControl = (function () {
   }
   return {
     addAnimateOnScroll,
-    intervalElementsTransitions,
   };
 })();
 

@@ -24,7 +24,7 @@ class Artist {
     });
 
     let html = `
-          <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.noSelect} ${config.CSS.CLASSES.artist}" id="${id}" title="Click to View Tracks">
+          <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.noSelect} ${config.CSS.CLASSES.artist} ${config.CSS.CLASSES.fadeIn}" id="${id}" title="Click to View Tracks">
             <div id="${config.CSS.IDs.initialCard}" title="Click to View Tracks">
               <img src="${this.imageUrl}" alt="Artist Cover"></img>
               <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>

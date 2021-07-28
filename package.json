@@ -30,7 +30,7 @@
     "url": "git+https://github.com/TheRaizer/SpotifyInfo.git"
   },
   "author": "Aidan Fu aidan.fu000@gmail.com",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/TheRaizer/SpotifyInfo/issues"
   },

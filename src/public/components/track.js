@@ -68,7 +68,9 @@ class Track {
     this.cardId = id;
     let appearClass = autoAppear ? config.CSS.CLASSES.appear : "";
     let html = `
-            <div class="${config.CSS.CLASSES.rankCard}">
+            <div class="${config.CSS.CLASSES.rankCard} ${
+      config.CSS.CLASSES.fadeIn
+    }">
               <h4 id="${config.CSS.IDs.rank}">${idx + 1}.</h4>
               <div class="${config.CSS.CLASSES.flipCard} ${
       config.CSS.CLASSES.noSelect

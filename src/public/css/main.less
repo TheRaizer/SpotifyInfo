@@ -4,7 +4,9 @@
 * Autoprefixer: v9.7.6
 * Browsers: last 4 version
 */
-
+html {
+  scroll-behavior: smooth;
+}
 body {
   background-color: @primary-bg-color;
   color: @primary-green;
@@ -132,6 +134,7 @@ footer {
 
 @import "chart-info.less";
 @import "main-colors.less";
+@import "observer-transitions.less";
 @import "playlists.less";
 @import "card.less";
 @import "artist.less";
@@ -139,7 +142,10 @@ footer {
 @import "navbar.less";
 @import "home-page.less";
 @import "scrolling-text";
-@import "appear-hide.less";
+
+.hide {
+  visibility: hidden;
+}
 
 .border-selected {
   &:hover {

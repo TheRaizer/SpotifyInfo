@@ -86,6 +86,8 @@ export const config = {
       firstExpansion: "first-expansion",
       secondExpansion: "second-expansion",
       invisible: "invisible",
+      fadeIn: "fade-in",
+      fromTop: "from-top",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",
