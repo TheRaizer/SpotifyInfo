@@ -77,22 +77,28 @@ app.use(express.static(__dirname + "/public"));
 
 // '/' represents the home page which will render index.html from express server
 app.get("/", function (_req, res) {
-  res.sendFile(__dirname + "/public/index.html");
+  res.status(200).sendFile(__dirname + "/public/index.html");
 }); // '/' represents the home page which will render index.html from express server
 app.get("/playlists", function (_req, res) {
-  res.sendFile(__dirname + "/public/pages/playlists-page/playlists.html");
+  res
+    .status(200)
+    .sendFile(__dirname + "/public/pages/playlists-page/playlists.html");
 });
 app.get("/top-tracks", function (_req, res) {
-  res.sendFile(__dirname + "/public/pages/top-tracks-page/top-tracks.html");
+  res
+    .status(200)
+    .sendFile(__dirname + "/public/pages/top-tracks-page/top-tracks.html");
 });
 
 app.get("/top-artists", function (_req, res) {
-  res.sendFile(__dirname + "/public/pages/top-artists-page/top-artists.html");
+  res
+    .status(200)
+    .sendFile(__dirname + "/public/pages/top-artists-page/top-artists.html");
 });
 
 app.use("/tokens", tokens);
 app.use("/spotify", spotifyActions);
 
 app.listen(process.env.EXPRESS_PORT, function () {
-  console.log("listening at localhost:3000");
+  console.log("listening at localhost:" + process.env.EXPRESS_PORT);
 });

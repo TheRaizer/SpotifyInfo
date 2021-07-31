@@ -723,16 +723,12 @@ footer {
   -webkit-transform: none;
   -ms-transform: none;
   transform: none;
-  -webkit-box-shadow: 0px 0px 15px 4px #0e0e0e;
-  box-shadow: 0px 0px 15px 4px #0e0e0e;
 }
 .artist:hover:not(.selected) {
   z-index: 5;
   -webkit-transform: scale(1.15);
   -ms-transform: scale(1.15);
   transform: scale(1.15);
-  -webkit-box-shadow: 0px 0px 15px 8px #0e0e0e;
-  box-shadow: 0px 0px 15px 8px #0e0e0e;
 }
 #initial-card > h4 {
   margin-top: 10%;
@@ -864,7 +860,6 @@ ul.topnav li a {
   float: left;
   font-size: 17px;
   font-weight: 400;
-  border-left: 1px solid rgba(221, 221, 221, 0.815);
   -webkit-transition: background-color 300ms ease-out;
   -o-transition: background-color 300ms ease-out;
   transition: background-color 300ms ease-out;
@@ -881,10 +876,6 @@ ul.topnav li a.active:hover {
 }
 ul.topnav li.right {
   float: right;
-  border-left: 1px solid rgba(221, 221, 221, 0.815);
-}
-ul.topnav li.last {
-  border-right: 1px solid rgba(221, 221, 221, 0.815);
 }
 @media only screen and (max-width: 600px) {
   ul.topnav li {
