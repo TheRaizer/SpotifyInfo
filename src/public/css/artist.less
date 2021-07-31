@@ -8,68 +8,54 @@
 * Browsers: last 4 version
 */
 .artist {
-  & ul {
-    list-style-type: disc;
-    color: @reading-color;
-  }
-  &.card {
-    top: 0;
-    margin-top: 5%;
-    margin-bottom: 5%;
-    display: -webkit-box;
-    display: -ms-flexbox;
+  top: 0;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  width: 30vw;
+  height: 15vw;
+
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+
+  flex-direction: row;
+  -ms-flex-direction: row;
+
+  justify-content: space-around;
+  align-items: center;
+
+  -webkit-transition: height 500ms ease-in, width 500ms ease-in,
+    -webkit-transform 250ms ease-in-out;
+  transition: height 500ms ease-in, width 500ms ease-in,
+    -webkit-transform 250ms ease-in-out;
+  -o-transition: height 500ms ease-in, width 500ms ease-in,
+    transform 250ms ease-in-out;
+  transition: height 500ms ease-in, width 500ms ease-in,
+    transform 250ms ease-in-out;
+  transition: height 500ms ease-in, width 500ms ease-in,
+    transform 250ms ease-in-out, -webkit-transform 250ms ease-in-out;
+
+  & > div {
     display: flex;
-    flex-direction: row;
-    -ms-flex-direction: row;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
 
-    -webkit-transition: height 500ms ease-in, width 500ms ease-in,
-      -webkit-transform 250ms ease-in-out;
-    transition: height 500ms ease-in, width 500ms ease-in,
-      -webkit-transform 250ms ease-in-out;
-    -o-transition: height 500ms ease-in, width 500ms ease-in,
-      transform 250ms ease-in-out;
-    transition: height 500ms ease-in, width 500ms ease-in,
-      transform 250ms ease-in-out;
-    transition: height 500ms ease-in, width 500ms ease-in,
-      transform 250ms ease-in-out, -webkit-transform 250ms ease-in-out;
-
-    & > div {
-      display: flex;
-      flex-direction: column;
-
-      & > h4 {
-        margin-top: 15%;
-      }
-    }
-    & .first-expansion {
-      margin-left: 7%;
-    }
-
-    &.selected {
-      justify-content: flex-start;
-      align-items: center;
-      background-color: @card-color;
-      width: 20vw;
-      height: 15vw;
-
-      & > #initial-card {
-        margin-left: 3%;
-      }
+    & > h4 {
+      margin-top: 15%;
     }
   }
+
   &:hover {
     z-index: auto;
     -webkit-transform: none;
     -ms-transform: none;
     transform: none;
-    &:not(.selected) {
-      z-index: 5;
-      -webkit-transform: scale(1.15);
-      -ms-transform: scale(1.15);
-      transform: scale(1.15);
-    }
+    -webkit-transform: scale(1.03);
+    -ms-transform: scale(1.03);
+    transform: scale(1.03);
+  }
+  & ul {
+    list-style-type: disc;
+    color: @reading-color;
   }
 }
 

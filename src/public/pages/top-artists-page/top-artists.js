@@ -19,29 +19,13 @@ const artistActions = (function () {
     term: "short_term",
   };
 
-  function addArtistCardListeners(artistArr) {
+  function addArtistCardListeners() {
     cardActionsHandler.clearSelectedEls();
     let artistCards = Array.from(
       document.getElementsByClassName(config.CSS.CLASSES.artist)
     );
 
     artistCards.forEach((artistCard) => {
-      artistCard.addEventListener("click", () => {
-        cardActionsHandler.onCardClick(
-          artistCard,
-          artistArr,
-          null,
-          true,
-          false
-        );
-
-        let firstExpansion = artistCard.getElementsByClassName(
-          config.CSS.CLASSES.firstExpansion
-        )[0];
-
-        firstExpansion.style.display =
-          firstExpansion.style.display == "none" ? "flex" : "none";
-      });
       artistCard.addEventListener("mouseenter", () => {
         cardActionsHandler.scrollTextOnCardEnter(artistCard);
       });

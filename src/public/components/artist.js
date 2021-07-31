@@ -31,13 +31,13 @@ class Artist {
                 <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
               </div>
             </div>
-            <div class="${config.CSS.CLASSES.firstExpansion}" style="display:none">
+            <div>
               <h4>Genres</h4>
               <ul>${genreList}</ul>
               <h4>Followers</h4>
               <h4>Popularity</h4>
             </div>
-            <div class="${config.CSS.CLASSES.secondExpansion}" style="display:none">
+            <div>
               <h4>Most Popular</h4>
               <ul></ul>
               <h4>Recommended For You</h4>
