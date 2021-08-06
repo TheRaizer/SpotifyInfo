@@ -14,7 +14,7 @@ class Artist {
    * @param {Number} idx - The card index to use for the elements id suffix
    * @returns {ChildNode} - The converted html string to an element
    */
-  getArtistCardHtml(idx) {
+  getArtistHtml(idx) {
     let id = `${config.CSS.IDs.artistPrefix}${idx}`;
 
     this.cardId = id;
@@ -24,26 +24,26 @@ class Artist {
     });
 
     let html = `
-          <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.noSelect} ${config.CSS.CLASSES.artist} ${config.CSS.CLASSES.fadeIn}" id="${id}" title="Click to View Tracks">
-            <div id="${config.CSS.IDs.initialCard}" title="Click to Expand">
-              <img src="${this.imageUrl}" alt="Artist Cover"></img>
-              <div>
-                <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
-              </div>
-            </div>
-            <div>
-              <h4>Genres</h4>
-              <ul>${genreList}</ul>
-              <h4>Followers</h4>
-              <h4>Popularity</h4>
-            </div>
-            <div>
-              <h4>Most Popular</h4>
-              <ul></ul>
-              <h4>Recommended For You</h4>
-              <ul></ul>
-            </div>
-          </button>
+      <button class="${config.CSS.CLASSES.artist}">
+        <div class="artist-base">
+          <img src=${this.imageUrl} alt="Artist"/>
+          <h4>${this.name}</h4>
+          <ul class="genres">
+            ${genreList}
+          </ul>
+        </div>
+        <div>
+          <h4>Top Tracks</h4>
+          <ul class="scroll-bar track-list">
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          </ul>
+        </div>
+      </button>
       `;
     return htmlToEl(html);
   }

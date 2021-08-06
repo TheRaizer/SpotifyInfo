@@ -5,15 +5,15 @@ class Playlist {
   constructor(name, images, id) {
     this.name = name;
     this.id = id;
-    this.undoArr = [];
+    this.undoStack = [];
 
     // the id of the playlist card element
     this.cardId = "";
     this.imageUrl = getValidImage(images);
   }
 
-  addToUndoArr(tracks) {
-    this.undoArr.push(tracks);
+  addToUndoStack(tracks) {
+    this.undoStack.push(tracks);
   }
 
   /** Produces the card element of this playlist.
@@ -26,7 +26,7 @@ class Playlist {
 
     this.cardId = id;
     let html = `
-          <button class="${config.CSS.CLASSES.fadeIn} ${config.CSS.CLASSES.card} ${config.CSS.CLASSES.playlist} ${config.CSS.CLASSES.noSelect}" id="${id}" title="Click to View Tracks">
+          <button class="${config.CSS.CLASSES.fadeIn} ${config.CSS.CLASSES.card} ${config.CSS.CLASSES.playlist} ${config.CSS.CLASSES.noSelect}  ${config.CSS.CLASSES.expandOnHover}" id="${id}" title="Click to View Tracks">
             <img src="${this.imageUrl}" alt="Playlist Cover"></img>
             <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
           </button>

@@ -370,7 +370,7 @@ const addEventListeners = (function () {
 
       let currPlaylist = playlistActions.selectionVerif.currSelectedVal;
 
-      currPlaylist.addToUndoArr(tracksToRemove);
+      currPlaylist.addToUndoStack(tracksToRemove);
 
       manageTracks.sortExpandedTracksToOrder(expandablePlaylistTracks);
 
@@ -393,11 +393,11 @@ const addEventListeners = (function () {
   function addUndoPlaylistTrackDeleteEvent() {
     function onClick() {
       const currPlaylist = playlistActions.selectionVerif.currSelectedVal;
-      if (!currPlaylist || currPlaylist.undoArr.length == 0) {
+      if (!currPlaylist || currPlaylist.undoStack.length == 0) {
         return;
       }
       const undonePlaylistId = currPlaylist.id;
-      let tracksRemoved = currPlaylist.undoArr.pop();
+      let tracksRemoved = currPlaylist.undoStack.pop();
       promiseHandler(
         axios.post(config.URLs.postPlaylistTracks + currPlaylist.id, {
           data: { tracks: tracksRemoved },

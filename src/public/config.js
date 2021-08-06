@@ -88,6 +88,7 @@ export const config = {
       invisible: "invisible",
       fadeIn: "fade-in",
       fromTop: "from-top",
+      expandOnHover: "expand-on-hover",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",
@@ -210,10 +211,10 @@ export function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export function getValidImage(images) {
+export function getValidImage(images, idx = 0) {
   // obtain the correct image
-  if (images.length > 0) {
-    let img = images[0];
+  if (images.length > idx) {
+    let img = images[idx];
     return img.url;
   } else {
     return "";

@@ -158,3 +158,14 @@ footer {
     border-color: @primary-green;
   }
 }
+
+.expand-on-hover {
+  transition: transform 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
+
+  &:hover {
+    z-index: 5;
+    -webkit-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    transform: scale(1.1);
+  }
+}

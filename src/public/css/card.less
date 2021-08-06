@@ -42,7 +42,8 @@
   -webkit-box-shadow: 0px 0px 15px 4px rgb(14, 14, 14);
   box-shadow: 0px 0px 15px 4px rgb(14, 14, 14);
   left: 0;
-  transition: opacity 200ms ease-in, transform 300ms;
+  transition: opacity 200ms ease-in,
+    transform 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
 
   & img {
     width: 110px;
@@ -57,14 +58,6 @@
     margin-top: 5%;
     margin-left: 5%;
     margin-right: 5%;
-  }
-  &:hover {
-    z-index: 5;
-    -webkit-transform: scale(1.15);
-    -ms-transform: scale(1.15);
-    transform: scale(1.15);
-    -webkit-box-shadow: 0px 0px 15px 8px rgb(14, 14, 14);
-    box-shadow: 0px 0px 15px 8px rgb(14, 14, 14);
   }
   &.selected {
     background-color: @primary-green;
@@ -84,11 +77,7 @@
 
 .flip-card-inner {
   position: relative;
-  -webkit-transition: -webkit-transform 300ms;
-  transition: -webkit-transform 300ms;
-  -o-transition: transform 300ms;
   transition: transform 300ms;
-  transition: transform 300ms, -webkit-transform 300ms;
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 

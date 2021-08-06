@@ -13,27 +13,10 @@ const MAX_VIEWABLE_CARDS = 5;
 
 const artistActions = (function () {
   const selectionVerif = new AsyncSelectionVerif();
-  const cardActionsHandler = new CardActionsHandler(MAX_VIEWABLE_CARDS);
   const selections = {
     numViewableCards: MAX_VIEWABLE_CARDS,
     term: "short_term",
   };
-
-  function addArtistCardListeners() {
-    cardActionsHandler.clearSelectedEls();
-    let artistCards = Array.from(
-      document.getElementsByClassName(config.CSS.CLASSES.artist)
-    );
-
-    artistCards.forEach((artistCard) => {
-      artistCard.addEventListener("mouseenter", () => {
-        cardActionsHandler.scrollTextOnCardEnter(artistCard);
-      });
-      artistCard.addEventListener("mouseleave", () => {
-        cardActionsHandler.scrollTextOnCardLeave(artistCard);
-      });
-    });
-  }
   function loadDatasToArtistArr(datas, artistArr) {
     datas.forEach((data) => {
       artistArr.push(
@@ -59,7 +42,6 @@ const artistActions = (function () {
   }
   return {
     retrieveArtists,
-    addArtistCardListeners,
     selections,
     selectionVerif,
   };
@@ -107,14 +89,16 @@ const displayArtistCards = (function () {
     for (let i = 0; i < artistArr.length; i++) {
       if (i < artistActions.selections.numViewableCards) {
         let artistObj = artistArr[i];
-        let cardHtml = artistObj.getArtistCardHtml(i, autoAppear);
+        let cardHtml = artistObj.getArtistHtml(i, autoAppear);
         cardHtmls.push(cardHtml);
+        cardHtml.addEventListener("click", () => {
+          cardHtml.classList.toggle("selected");
+        });
         artistContainer.appendChild(cardHtml);
       } else {
         break;
       }
     }
-    artistActions.addArtistCardListeners(artistArr);
     if (!autoAppear) {
       makeCardsVisible(config.CSS.CLASSES.card);
     }
