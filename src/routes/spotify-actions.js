@@ -11,3 +11,4 @@ router.delete("/delete-playlist-items", spotifyCtrl.deletePlaylistItems);
 router.post("/post-playlist-items", spotifyCtrl.postPlaylistItems);
 router.post("/post-session-data", spotifyCtrl.postSessionData);
 router.get("/get-session-data", spotifyCtrl.getSessionData);
+router.get("/get-artist-top-tracks", spotifyCtrl.getArtistTopTracks);

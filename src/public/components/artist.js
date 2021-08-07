@@ -1,12 +1,14 @@
 import { config, htmlToEl, getValidImage } from "../config.js";
 
 class Artist {
-  constructor(name, genres, followerCount, externalUrl, images) {
+  constructor(id, name, genres, followerCount, externalUrl, images) {
+    this.artistId = id;
     this.name = name;
     this.genres = genres;
     this.followerCount = followerCount;
     this.externalUrl = externalUrl;
     this.imageUrl = getValidImage(images);
+    this.topTracks = undefined;
   }
 
   /** Produces the card element of this artist.
@@ -32,20 +34,43 @@ class Artist {
             ${genreList}
           </ul>
         </div>
-        <div>
-          <h4>Top Tracks</h4>
-          <ul class="scroll-bar track-list">
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          </ul>
+        <div class="tracks-area">
+          <div>
+            <h4>Top Tracks</h4>
+            <ul class="scroll-bar track-list">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Recommended Tracks</h4>
+            <ul class="scroll-bar track-list">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            </ul>
+          </div>
         </div>
       </button>
       `;
     return htmlToEl(html);
+  }
+
+  async loadTopTracks() {
+    let res = await axios.get(config.URLs.getArtistTopTracks + this.artistId);
+    console.log(res);
+    return;
+  }
+
+  hasLoadedTopTracks() {
+    return this.topTracks === undefined ? false : true;
   }
 }
 

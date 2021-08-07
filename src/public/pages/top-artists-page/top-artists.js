@@ -21,6 +21,7 @@ const artistActions = (function () {
     datas.forEach((data) => {
       artistArr.push(
         new Artist(
+          data.id,
           data.name,
           data.genres,
           data.followers.total,
@@ -31,6 +32,9 @@ const artistActions = (function () {
     });
     return artistArr;
   }
+
+  function loadArtistTopTracks(artist) {}
+
   async function retrieveArtists(artistArr) {
     let { res, err } = await promiseHandler(
       axios.get(config.URLs.getTopArtists + selections.term)
@@ -48,6 +52,7 @@ const artistActions = (function () {
 })();
 
 const displayArtistCards = (function () {
+  const selectionVerif = new AsyncSelectionVerif();
   const cardsVisibleInterval = { interval: null };
   const artistContainer = document.getElementById(
     config.CSS.IDs.artistCardsContainer
@@ -105,9 +110,9 @@ const displayArtistCards = (function () {
     return cardHtmls;
   }
 
-  /** Begins retrieving tracks then verifies it is the correct selected tracks.
+  /** Begins retrieving artists then when done verifies it is the correct selected artist.
    *
-   * @param {Array<Track>} artistArr array to load tracks into.
+   * @param {Array<Track>} artistArr array to load artists into.
    */
   function startLoadingArtists(artistArr) {
     // initially show the loading spinner
@@ -121,8 +126,8 @@ const displayArtistCards = (function () {
     artistContainer.appendChild(spinnerEl);
 
     artistActions.retrieveArtists(artistArr).then(() => {
-      // after retrieving async verify if it is the same arr of trackObjs as what was selected
-      if (!artistActions.selectionVerif.isValid(artistArr)) {
+      // after retrieving async verify if it is the same arr of Artist's as what was selected
+      if (!selectionVerif.isValid(artistArr)) {
         return;
       }
       return generateCards(artistArr);
@@ -137,7 +142,7 @@ const displayArtistCards = (function () {
    * @returns {Array<HTML>} list of Card HTML's.
    */
   function displayTrackCards(artistArr, autoAppear = false) {
-    artistActions.selectionVerif.selectionChanged(artistArr);
+    selectionVerif.selectionChanged(artistArr);
     if (artistArr.length > 0) {
       return generateCards(artistArr, autoAppear);
     } else {

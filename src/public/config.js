@@ -112,6 +112,7 @@ export const config = {
     postRefreshAccessToken: "/tokens/refresh-token",
     postSessionData: "/spotify/post-session-data?attr=",
     getSessionData: "/spotify/get-session-data?attr=",
+    getArtistTopTracks: "/spotify/get-artist-top-tracks?id=",
   },
   PATHS: {
     spinner: "/images/200pxLoadingSpinner.svg",

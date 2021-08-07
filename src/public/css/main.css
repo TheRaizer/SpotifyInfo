@@ -682,7 +682,7 @@ footer {
 }
 .artist.selected {
   transform: scale(1);
-  width: 550px;
+  width: 570px;
 }
 .artist * {
   flex: 0 0 auto;
@@ -722,14 +722,21 @@ ul.genres > li {
   background-color: #8a8a8a;
   border-radius: 10px;
 }
+.tracks-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 ul.track-list {
+  margin-left: 10px;
+  margin-right: 10px;
   height: 100px;
   width: 300px;
   overflow-y: scroll;
 }
 ul.track-list > li {
   height: 40px;
-  background-color: red;
+  background-color: #1f1f1f;
 }
 #artist-cards-container {
   display: -webkit-box;

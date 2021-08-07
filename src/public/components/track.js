@@ -34,6 +34,7 @@ class Track {
     this.dateAddedToPlaylist = new Date(dateAddedToPlaylist);
     this.releaseDate = new Date(releaseDate);
     this.album = album;
+    this.features = undefined;
 
     this.imageUrl = getValidImage(images);
   }
@@ -134,6 +135,25 @@ class Track {
             `;
 
     return htmlToEl(html);
+  }
+
+  /** Load the features of this track from the spotify web api.*/
+  async loadFeatures() {
+    let res = await axios
+      .get(config.URLs.getTrackFeatures + this.id)
+      .catch((err) => {
+        throw err;
+      });
+    let feats = res.data.audio_features;
+    this.features = {
+      danceability: feats.danceability,
+      acousticness: feats.acousticness,
+      instrumentalness: feats.instrumentalness,
+      valence: feats.valence,
+      energy: feats.energy,
+    };
+
+    return this.features;
   }
 }
 

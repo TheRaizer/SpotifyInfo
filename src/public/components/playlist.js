@@ -39,15 +39,15 @@ class Playlist {
    * @returns {List} - List of track classes created using the obtained track datas.
    */
   async loadTracks() {
-    let response = await axios
+    let res = await axios
       .get(config.URLs.getPlaylistTracks + this.id)
       .catch((err) => {
         throw new Error(err);
       });
-    if (!response) {
+    if (!res) {
       return [];
     }
-    let tracksData = response.data;
+    let tracksData = res.data;
     var trackObjs = [];
 
     tracksData.forEach((data) => {
@@ -73,8 +73,13 @@ class Playlist {
       }
     });
 
+    // define track objects
     this.trackObjs = trackObjs;
     return trackObjs;
+  }
+
+  hasLoadedTracks() {
+    return this.trackObjs === undefined ? false : true;
   }
 }
 

@@ -2,7 +2,7 @@
 @import "main-colors.less";
 
 @base-width: 250px;
-@expanded-width: 550px;
+@expanded-width: 570px;
 
 /*
 * Prefixed by https://autoprefixer.github.io
@@ -83,14 +83,22 @@ ul.genres {
   }
 }
 
+.tracks-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 ul.track-list {
+  margin-left: 10px;
+  margin-right: 10px;
   height: 100px;
   width: 300px;
   overflow-y: scroll;
 
   & > li {
     height: 40px;
-    background-color: red;
+    background-color: rgb(31, 31, 31);
   }
 }
 

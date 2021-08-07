@@ -83,19 +83,19 @@ const playlistActions = (function () {
 
     selectionVerif.selectionChanged(playlistObj);
 
-    if (!playlistObj.trackObjs) {
+    if (playlistObj.hasLoadedTracks()) {
+      // tracks are already loaded so show them
+      whenTracksLoading();
+      onTracksLoadingDone();
+      expandablePlaylistTracks = playlistObj.trackObjs;
+      manageTracks.sortExpandedTracksToOrder();
+    } else {
       // lazy load tracks then show them
       whenTracksLoading();
       loadPlaylistTracksToHtmlString(playlistObj, () => {
         manageTracks.sortExpandedTracksToOrder();
         onTracksLoadingDone();
       });
-    } else {
-      // tracks are already loaded so show them
-      whenTracksLoading();
-      onTracksLoadingDone();
-      expandablePlaylistTracks = playlistObj.trackObjs;
-      manageTracks.sortExpandedTracksToOrder();
     }
   }
   /** Add an on click listener to each Playlist instance in the given arr.

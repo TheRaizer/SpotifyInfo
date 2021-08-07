@@ -52,7 +52,7 @@ const trackActions = (function () {
     }
   }
 
-  /** Load the features of each track in the given arr from the
+  /** Load the features of multiple tracks at once into the given arr from the
    * spotify web api and store them.
    *
    * @param {Array<Track>} trackArr - Array containing instances of Track whose features will be loaded.
