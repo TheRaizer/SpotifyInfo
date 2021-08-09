@@ -4,6 +4,7 @@ import {
   promiseHandler,
   htmlToEl,
   removeAllChildNodes,
+  findChildNodeOfClass,
 } from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
@@ -50,16 +51,36 @@ const artistActions = (function () {
     return artistArr;
   }
 
-  function showTopTracks(artistObj) {
+  function showTopTracks(artistObj, cardHtml) {
     selectionVerif.selectionChanged(artistObj);
     if (artistObj.hasLoadedTopTracks()) {
       // display the artistObj.topTracks
     } else {
       // load them
       loadArtistTopTracks(artistObj, () => {
-        console.log(artistObj.topTracks);
+        let trackList = getTopTracksUlFromCardHtml(cardHtml);
+        artistObj.topTracks.forEach((track) => {
+          trackList.appendChild(track.getPlaylistTrackHtml());
+        });
       });
     }
+  }
+
+  function getTopTracksUlFromCardHtml(cardHtml) {
+    let tracksArea = findChildNodeOfClass(
+      cardHtml,
+      config.CSS.CLASSES.tracksArea
+    );
+
+    let topTracksDiv = findChildNodeOfClass(
+      tracksArea,
+      config.CSS.CLASSES.artistTopTracks
+    );
+
+    const TRACK_LIST_IDX = 3;
+    let trackList = topTracksDiv.childNodes[TRACK_LIST_IDX];
+
+    return trackList;
   }
 
   async function retrieveArtists(artistArr) {
@@ -128,7 +149,7 @@ const displayArtistCards = (function () {
         cardHtml.addEventListener("click", () => {
           cardHtml.classList.toggle(config.CSS.CLASSES.selected);
           if (cardHtml.classList.contains(config.CSS.CLASSES.selected)) {
-            artistActions.showTopTracks(artistObj);
+            artistActions.showTopTracks(artistObj, cardHtml);
           }
         });
         artistContainer.appendChild(cardHtml);

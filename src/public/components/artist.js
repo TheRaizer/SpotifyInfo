@@ -36,15 +36,9 @@ class Artist {
           </ul>
         </div>
         <div class="${config.CSS.CLASSES.tracksArea}">
-          <div>
+          <div class="${config.CSS.CLASSES.artistTopTracks}">
             <h4>Top Tracks</h4>
-            <ul class="${config.CSS.CLASSES.scrollBar} ${config.CSS.CLASSES.trackList}" id="artist-top-tracks">
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
+            <ul class="${config.CSS.CLASSES.scrollBar} ${config.CSS.CLASSES.trackList}">
             </ul>
           </div>
           <div>

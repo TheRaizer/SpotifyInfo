@@ -31,7 +31,7 @@ class Playlist {
               <img src="${this.imageUrl}" alt="Playlist Cover"></img>
               <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
           </button>
-        </div>  
+        </div>
       `;
     return htmlToEl(html);
   }

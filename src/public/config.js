@@ -92,6 +92,7 @@ export const config = {
       tracksArea: "tracks-area",
       scrollBar: "scroll-bar",
       trackList: "track-list",
+      artistTopTracks: "artist-top-tracks",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",
@@ -229,4 +230,15 @@ export function removeAllChildNodes(parent) {
   while (parent.firstChild) {
     parent.removeChild(parent.firstChild);
   }
+}
+
+export function findChildNodeOfClass(node, className) {
+  let childNodeOfClass;
+  for (var i = 0; i < node.childNodes.length; i++) {
+    if (node.childNodes[i].className == className) {
+      childNodeOfClass = node.childNodes[i];
+      break;
+    }
+  }
+  return childNodeOfClass;
 }
