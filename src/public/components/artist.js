@@ -1,4 +1,5 @@
 import { config, htmlToEl, getValidImage } from "../config.js";
+import Track from "../components/track.js";
 
 class Artist {
   constructor(id, name, genres, followerCount, externalUrl, images) {
@@ -34,27 +35,27 @@ class Artist {
             ${genreList}
           </ul>
         </div>
-        <div class="tracks-area">
+        <div class="${config.CSS.CLASSES.tracksArea}">
           <div>
             <h4>Top Tracks</h4>
-            <ul class="scroll-bar track-list">
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
+            <ul class="${config.CSS.CLASSES.scrollBar} ${config.CSS.CLASSES.trackList}" id="artist-top-tracks">
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
             </ul>
           </div>
           <div>
             <h4>Recommended Tracks</h4>
-            <ul class="scroll-bar track-list">
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
+            <ul class="${config.CSS.CLASSES.scrollBar} ${config.CSS.CLASSES.trackList}">
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
             </ul>
           </div>
         </div>
@@ -65,8 +66,30 @@ class Artist {
 
   async loadTopTracks() {
     let res = await axios.get(config.URLs.getArtistTopTracks + this.artistId);
-    console.log(res);
-    return;
+    let tracksData = res.data.tracks;
+    let trackObjs = [];
+
+    tracksData.forEach((track) => {
+      let props = {
+        name: track.name,
+        images: track.album.images,
+        duration: track.duration_ms,
+        uri:
+          track.linked_from !== undefined ? track.linked_from.uri : track.uri,
+        popularity: track.popularity,
+        dateAddedToPlaylist: "",
+        releaseDate: track.album.release_date,
+        id: track.id,
+        externalUrl: track.external_urls.spotify,
+        artists: track.artists,
+      };
+
+      // push an instance of a Track class to the list
+      trackObjs.push(new Track(props));
+    });
+
+    this.topTracks = trackObjs;
+    return trackObjs;
   }
 
   hasLoadedTopTracks() {

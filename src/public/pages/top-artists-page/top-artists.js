@@ -6,7 +6,6 @@ import {
   removeAllChildNodes,
 } from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
-import CardActionsHandler from "../../card-actions.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 
 const MAX_VIEWABLE_CARDS = 5;
@@ -17,6 +16,24 @@ const artistActions = (function () {
     numViewableCards: MAX_VIEWABLE_CARDS,
     term: "short_term",
   };
+  function loadArtistTopTracks(artistObj, callback) {
+    artistObj
+      .loadTopTracks()
+      .then(() => {
+        // because .then() can run when the currently selected playlist has already changed we need to verify
+        if (!selectionVerif.isValid(artistObj)) {
+          return;
+        }
+        callback();
+
+        selectionVerif.hasLoadedCurrSelected = true;
+      })
+      .catch((err) => {
+        console.log("Error when getting tracks");
+        console.error(err);
+      });
+  }
+
   function loadDatasToArtistArr(datas, artistArr) {
     datas.forEach((data) => {
       artistArr.push(
@@ -33,7 +50,17 @@ const artistActions = (function () {
     return artistArr;
   }
 
-  function loadArtistTopTracks(artist) {}
+  function showTopTracks(artistObj) {
+    selectionVerif.selectionChanged(artistObj);
+    if (artistObj.hasLoadedTopTracks()) {
+      // display the artistObj.topTracks
+    } else {
+      // load them
+      loadArtistTopTracks(artistObj, () => {
+        console.log(artistObj.topTracks);
+      });
+    }
+  }
 
   async function retrieveArtists(artistArr) {
     let { res, err } = await promiseHandler(
@@ -45,6 +72,7 @@ const artistActions = (function () {
     loadDatasToArtistArr(res.data, artistArr);
   }
   return {
+    showTopTracks,
     retrieveArtists,
     selections,
     selectionVerif,
@@ -95,9 +123,13 @@ const displayArtistCards = (function () {
       if (i < artistActions.selections.numViewableCards) {
         let artistObj = artistArr[i];
         let cardHtml = artistObj.getArtistHtml(i, autoAppear);
+
         cardHtmls.push(cardHtml);
         cardHtml.addEventListener("click", () => {
-          cardHtml.classList.toggle("selected");
+          cardHtml.classList.toggle(config.CSS.CLASSES.selected);
+          if (cardHtml.classList.contains(config.CSS.CLASSES.selected)) {
+            artistActions.showTopTracks(artistObj);
+          }
         });
         artistContainer.appendChild(cardHtml);
       } else {

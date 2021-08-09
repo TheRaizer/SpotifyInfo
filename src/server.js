@@ -51,27 +51,32 @@ if (process.env.NODE_ENV === "production") {
 
 // middleware error handling functions need all 4 parameters to notify express that it is error handling
 function logErrors(err, _req, _res, next) {
-  console.error(err.stack);
+  console.log(err.response.data);
   next(err);
 }
-function clientErrorHandler(err, req, res, next) {
-  if (req.xhr) {
-    res.status(500).send({ error: "Something failed!" });
-  } else {
-    next(err);
-  }
-}
-function errorHandler(err, _req, res, next) {
-  res.status(500);
-  res.render("error", { error: err });
-}
+// function clientErrorHandler(err, req, res, next) {
+//   if (req.xhr) {
+//     res.status(500).send({ error: "Something failed!" });
+//   } else {
+//     next(err);
+//   }
+// }
+// function errorHandler(err, _req, res, next) {
+//   res.status(500);
+//   res.render("error", { error: err });
+// }
 
+// the use middleware run top down so we log errors at the end
 app.use(session(sesh));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use("/tokens", tokens);
+app.use("/spotify", spotifyActions);
+
 app.use(logErrors);
-app.use(clientErrorHandler);
-app.use(errorHandler);
+// app.use(clientErrorHandler);
+// app.use(errorHandler);
 
 app.use(express.static(__dirname + "/public"));
 
@@ -95,9 +100,6 @@ app.get("/top-artists", function (_req, res) {
     .status(200)
     .sendFile(__dirname + "/public/pages/top-artists-page/top-artists.html");
 });
-
-app.use("/tokens", tokens);
-app.use("/spotify", spotifyActions);
 
 app.listen(process.env.EXPRESS_PORT, function () {
   console.log("listening at localhost:" + process.env.EXPRESS_PORT);

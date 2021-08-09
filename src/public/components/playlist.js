@@ -26,10 +26,12 @@ class Playlist {
 
     this.cardId = id;
     let html = `
-          <button class="${config.CSS.CLASSES.fadeIn} ${config.CSS.CLASSES.card} ${config.CSS.CLASSES.playlist} ${config.CSS.CLASSES.noSelect}  ${config.CSS.CLASSES.expandOnHover}" id="${id}" title="Click to View Tracks">
-            <img src="${this.imageUrl}" alt="Playlist Cover"></img>
-            <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
+        <div class="${config.CSS.CLASSES.expandOnHover}">
+          <button class="${config.CSS.CLASSES.fadeIn} ${config.CSS.CLASSES.card} ${config.CSS.CLASSES.playlist} ${config.CSS.CLASSES.noSelect}" id="${id}" title="Click to View Tracks">
+              <img src="${this.imageUrl}" alt="Playlist Cover"></img>
+              <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>
           </button>
+        </div>  
       `;
     return htmlToEl(html);
   }

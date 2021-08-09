@@ -56,7 +56,6 @@ async function hasTokens(req, res, next) {
     if (hasBeenMoreOneHour(new Date(req.session.updateDate))) {
       // refresh tokens
       await retrieveTokensPromise(req, true).catch((err) => {
-        console.log(err);
         next(err);
       });
     }
@@ -68,7 +67,6 @@ async function hasTokens(req, res, next) {
 
 async function refreshTokens(req, _res, next) {
   await retrieveTokensPromise(req, true).catch((err) => {
-    console.log(err);
     next(err);
   });
 }
@@ -84,7 +82,6 @@ function clearTokens(req, res) {
 // expecting /retrieve_tokens?code=XXXX
 async function retrieveTokens(req, res, next) {
   await retrieveTokensPromise(req, false).catch((err) => {
-    console.error(err);
     next(err);
   });
   res.send("Post handler for token route");

@@ -34,7 +34,6 @@ async function getTopArtists(req, res, next) {
     })
     .catch((err) => {
       console.log("ERROR IN GET TOP ARTISTS");
-      console.error(err);
       // run next to pass this error down to a middleware that will handle it
       next(err);
     });
@@ -45,7 +44,6 @@ async function getTopTracks(req, res, next) {
       res.send(response);
     })
     .catch((err) => {
-      console.error(err);
       // run next to pass this error down to a middleware that will handle it
       next(err);
     });
@@ -61,7 +59,6 @@ async function getPlaylists(req, res, next) {
       res.send(response.data.items);
     })
     .catch((err) => {
-      console.error(err);
       // run next to pass this error down to a middleware that will handle it
       next(err);
     });
@@ -80,7 +77,6 @@ async function getPlaylistTracks(req, res, next) {
       res.send(items);
     })
     .catch((err) => {
-      console.error(err);
       // run next to pass this error down to a middleware that will handle it
       next(err);
     });
@@ -97,7 +93,6 @@ async function getTrackFeatures(req, res, next) {
       res.send(response.data);
     })
     .catch((err) => {
-      console.error(err);
       // run next to pass this error down to a middleware that will handle it
       next(err);
     });
@@ -122,7 +117,6 @@ async function deletePlaylistItems(req, res, next) {
       res.send("Success");
     })
     .catch((err) => {
-      console.error(err);
       // run next to pass this error down to a middleware that will handle it
       next(err);
     });
@@ -145,7 +139,6 @@ async function postPlaylistItems(req, res, next) {
       res.send("Success");
     })
     .catch((err) => {
-      console.error(err);
       // run next to pass this error down to a middleware that will handle it
       next(err);
     });
@@ -176,14 +169,13 @@ async function getArtistTopTracks(req, res, next) {
   let id = req.query.id;
   await axios({
     method: "get",
-    url: `https://api.spotify.com/v1/artists/${id}/top-tracks`,
+    url: `	https://api.spotify.com/v1/artists/${id}/top-tracks?market=CA`, // market is hard coded as Canada
     headers: spotifyGetHeaders(req),
   })
     .then(function (response) {
       res.send(response.data);
     })
     .catch((err) => {
-      console.error(err);
       // run next to pass this error down to a middleware that will handle it
       next(err);
     });

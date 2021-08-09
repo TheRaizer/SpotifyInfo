@@ -89,6 +89,9 @@ export const config = {
       fadeIn: "fade-in",
       fromTop: "from-top",
       expandOnHover: "expand-on-hover",
+      tracksArea: "tracks-area",
+      scrollBar: "scroll-bar",
+      trackList: "track-list",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",

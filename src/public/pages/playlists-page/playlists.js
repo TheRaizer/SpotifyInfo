@@ -33,7 +33,7 @@ const playlistActions = (function () {
    * @param {Playlist} playlistObj - a Playlist instance whose tracks will be loaded
    * @param {Function} callback - callback function to run when loading was succesful
    */
-  function loadPlaylistTracksToHtmlString(playlistObj, callback) {
+  function loadPlaylistTracks(playlistObj, callback) {
     playlistObj
       .loadTracks()
       .then((tracks) => {
@@ -92,7 +92,7 @@ const playlistActions = (function () {
     } else {
       // lazy load tracks then show them
       whenTracksLoading();
-      loadPlaylistTracksToHtmlString(playlistObj, () => {
+      loadPlaylistTracks(playlistObj, () => {
         manageTracks.sortExpandedTracksToOrder();
         onTracksLoadingDone();
       });
