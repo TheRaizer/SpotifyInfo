@@ -14,6 +14,7 @@
 */
 
 .artist {
+  position: relative;
   color: white;
   display: flex;
   width: @base-width;
@@ -37,15 +38,33 @@
   }
   &.selected {
     transform: scale(1);
+
+    justify-content: center;
+    align-items: center;
+
     width: @expanded-width;
     height: @expanded-height;
   }
-  & * {
+  & > * {
     flex: 0 0 auto;
   }
   & h4 {
     font-weight: bold;
     font-size: 1.2em;
+  }
+
+  & .playlist-track {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    & > div {
+      flex: 0 0 40%;
+      margin-left: 5%;
+      width: 40%;
+      max-width: 40%;
+    }
+    & > h5 {
+      flex: 0 0 40%;
+    }
   }
 }
 
@@ -62,6 +81,7 @@
     background-color: #d6e6e9;
     width: 100%;
     height: 200px;
+    border-radius: 5px;
   }
 }
 
@@ -90,22 +110,28 @@ ul.genres {
 
 .tracks-area {
   display: flex;
-  flex-direction: column;
   align-items: center;
 
   align-self: center;
+
+  & > div {
+    & > h4 {
+      margin-bottom: 10px;
+    }
+  }
 }
 
 ul.track-list {
-  margin-left: 10px;
+  margin-left: 20px;
   margin-right: 10px;
-  height: 150px;
+  height: 350px;
   width: 500px;
   overflow-y: scroll;
   background-color: rgb(31, 31, 31);
 
   & > li {
-    height: 40px;
+    margin-left: 2%;
+    height: 50px;
   }
 }
 

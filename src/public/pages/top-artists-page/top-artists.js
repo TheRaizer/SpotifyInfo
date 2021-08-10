@@ -137,6 +137,13 @@ const displayArtistCards = (function () {
    * @returns {Array<HTML>} array of the card elements.
    */
   function generateCards(artistArr, autoAppear) {
+    function onCardClick(cardHtml, artistObj) {
+      if (!cardHtml.classList.contains(config.CSS.CLASSES.selected)) {
+        cardHtml.classList.add(config.CSS.CLASSES.selected);
+        artistActions.showTopTracks(artistObj, cardHtml);
+      }
+    }
+
     removeAllChildNodes(artistContainer);
     let cardHtmls = [];
     // fill arr of card elements and append them to DOM
@@ -146,12 +153,11 @@ const displayArtistCards = (function () {
         let cardHtml = artistObj.getArtistHtml(i, autoAppear);
 
         cardHtmls.push(cardHtml);
-        cardHtml.addEventListener("click", () => {
-          cardHtml.classList.toggle(config.CSS.CLASSES.selected);
-          if (cardHtml.classList.contains(config.CSS.CLASSES.selected)) {
-            artistActions.showTopTracks(artistObj, cardHtml);
-          }
-        });
+
+        // when card is clicked and not already selected show top tracks and expand
+        cardHtml.addEventListener("click", () =>
+          onCardClick(cardHtml, artistObj)
+        );
         artistContainer.appendChild(cardHtml);
       } else {
         break;

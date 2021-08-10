@@ -93,6 +93,7 @@ export const config = {
       scrollBar: "scroll-bar",
       trackList: "track-list",
       artistTopTracks: "artist-top-tracks",
+      x: "x",
     },
     ATTRIBUTES: {
       elementsToAnimate: "data-elements-to-animate",
@@ -130,6 +131,7 @@ export const config = {
     dancingEmoji: "/images/Emojis/DancingEmoji.svg",
     sheepEmoji: "/images/Emojis/SheepEmoji.svg",
     wolfEmoji: "/images/Emojis/WolfEmoji.svg",
+    xIcon: "/images/close-icon.png",
   },
 };
 

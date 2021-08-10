@@ -41,17 +41,6 @@ class Artist {
             <ul class="${config.CSS.CLASSES.scrollBar} ${config.CSS.CLASSES.trackList}">
             </ul>
           </div>
-          <div>
-            <h4>Recommended Tracks</h4>
-            <ul class="${config.CSS.CLASSES.scrollBar} ${config.CSS.CLASSES.trackList}">
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-            </ul>
-          </div>
         </div>
       </button>
       `;
@@ -62,7 +51,7 @@ class Artist {
     let res = await axios.get(config.URLs.getArtistTopTracks + this.artistId);
     let tracksData = res.data.tracks;
     let trackObjs = [];
-
+    console.log(tracksData);
     tracksData.forEach((track) => {
       let props = {
         name: track.name,
@@ -77,7 +66,6 @@ class Artist {
         externalUrl: track.external_urls.spotify,
         artists: track.artists,
       };
-
       // push an instance of a Track class to the list
       trackObjs.push(new Track(props));
     });
