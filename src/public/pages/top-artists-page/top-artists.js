@@ -12,7 +12,6 @@ import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 const MAX_VIEWABLE_CARDS = 5;
 
 const artistActions = (function () {
-  const selectionVerif = new AsyncSelectionVerif();
   const selections = {
     numViewableCards: MAX_VIEWABLE_CARDS,
     term: "short_term",
@@ -21,18 +20,20 @@ const artistActions = (function () {
     artistObj
       .loadTopTracks()
       .then(() => {
-        // because .then() can run when the currently selected playlist has already changed we need to verify
-        if (!selectionVerif.isValid(artistObj)) {
-          return;
-        }
         callback();
-
-        selectionVerif.hasLoadedCurrSelected = true;
       })
       .catch((err) => {
         console.log("Error when getting tracks");
         console.error(err);
       });
+  }
+  function showTopTracks(artistObj, cardHtml) {
+    loadArtistTopTracks(artistObj, () => {
+      let trackList = getTopTracksUlFromCardHtml(cardHtml);
+      artistObj.topTracks.forEach((track) => {
+        trackList.appendChild(track.getPlaylistTrackHtml(false));
+      });
+    });
   }
 
   function loadDatasToArtistArr(datas, artistArr) {
@@ -49,21 +50,6 @@ const artistActions = (function () {
       );
     });
     return artistArr;
-  }
-
-  function showTopTracks(artistObj, cardHtml) {
-    selectionVerif.selectionChanged(artistObj);
-    if (artistObj.hasLoadedTopTracks()) {
-      // display the artistObj.topTracks
-    } else {
-      // load them
-      loadArtistTopTracks(artistObj, () => {
-        let trackList = getTopTracksUlFromCardHtml(cardHtml);
-        artistObj.topTracks.forEach((track) => {
-          trackList.appendChild(track.getPlaylistTrackHtml(false));
-        });
-      });
-    }
   }
 
   function getTopTracksUlFromCardHtml(cardHtml) {
@@ -96,7 +82,6 @@ const artistActions = (function () {
     showTopTracks,
     retrieveArtists,
     selections,
-    selectionVerif,
   };
 })();
 
@@ -137,13 +122,6 @@ const displayArtistCards = (function () {
    * @returns {Array<HTML>} array of the card elements.
    */
   function generateCards(artistArr, autoAppear) {
-    function onCardClick(cardHtml, artistObj) {
-      if (!cardHtml.classList.contains(config.CSS.CLASSES.selected)) {
-        cardHtml.classList.add(config.CSS.CLASSES.selected);
-        artistActions.showTopTracks(artistObj, cardHtml);
-      }
-    }
-
     removeAllChildNodes(artistContainer);
     let cardHtmls = [];
     // fill arr of card elements and append them to DOM
@@ -153,12 +131,9 @@ const displayArtistCards = (function () {
         let cardHtml = artistObj.getArtistHtml(i, autoAppear);
 
         cardHtmls.push(cardHtml);
-
-        // when card is clicked and not already selected show top tracks and expand
-        cardHtml.addEventListener("click", () =>
-          onCardClick(cardHtml, artistObj)
-        );
         artistContainer.appendChild(cardHtml);
+
+        artistActions.showTopTracks(artistObj, cardHtml);
       } else {
         break;
       }

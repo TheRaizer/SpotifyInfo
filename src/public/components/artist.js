@@ -27,10 +27,10 @@ class Artist {
     });
 
     let html = `
-      <button class="${config.CSS.CLASSES.artist}">
+      <div class="${config.CSS.CLASSES.artist}">
         <div class="artist-base">
           <img src=${this.imageUrl} alt="Artist"/>
-          <h4>${this.name}</h4>
+          <h3>${this.name}</h3>
           <ul class="genres">
             ${genreList}
           </ul>
@@ -42,7 +42,7 @@ class Artist {
             </ul>
           </div>
         </div>
-      </button>
+      </div>
       `;
     return htmlToEl(html);
   }
@@ -51,7 +51,7 @@ class Artist {
     let res = await axios.get(config.URLs.getArtistTopTracks + this.artistId);
     let tracksData = res.data.tracks;
     let trackObjs = [];
-    console.log(tracksData);
+
     tracksData.forEach((track) => {
       let props = {
         name: track.name,

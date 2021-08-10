@@ -14,11 +14,16 @@
 */
 
 .artist {
-  position: relative;
   color: white;
   display: flex;
   width: @base-width;
   height: @base-height;
+
+  justify-content: center;
+  align-items: center;
+
+  width: @expanded-width;
+  height: @expanded-height;
 
   margin-top: 3vh;
   margin-bottom: 3vh;
@@ -33,24 +38,19 @@
     height 500ms cubic-bezier(0.075, 0.82, 0.165, 1),
     transform 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
 
-  &:hover:not(.selected) {
-    transform: scale(1.1);
-  }
-  &.selected {
-    transform: scale(1);
-
-    justify-content: center;
-    align-items: center;
-
-    width: @expanded-width;
-    height: @expanded-height;
-  }
   & > * {
     flex: 0 0 auto;
   }
   & h4 {
     font-weight: bold;
     font-size: 1.2em;
+  }
+
+  & h3 {
+    font-weight: bold;
+    font-size: 1.6em;
+    margin-top: 20px;
+    margin-bottom: 10px;
   }
 
   & .playlist-track {
@@ -80,7 +80,7 @@
   & > img {
     background-color: #d6e6e9;
     width: 100%;
-    height: 200px;
+    height: 220px;
     border-radius: 5px;
   }
 }
@@ -89,6 +89,7 @@ ul.genres {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 5px;
+  margin-top: 20px;
   justify-content: center;
 
   & > li {
@@ -149,4 +150,26 @@ ul.track-list {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
+}
+
+@media only screen and (max-width: 820px) {
+  .artist {
+    flex-direction: column;
+    height: 800px;
+    width: 300px;
+
+    & .playlist-track {
+      & > div {
+        flex: 0 0 60%;
+        width: 60%;
+        max-width: 60%;
+      }
+      & > h5 {
+        display: none;
+      }
+    }
+  }
+  ul.track-list {
+    width: 280px;
+  }
 }
