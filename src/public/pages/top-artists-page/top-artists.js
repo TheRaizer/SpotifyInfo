@@ -60,7 +60,7 @@ const artistActions = (function () {
       loadArtistTopTracks(artistObj, () => {
         let trackList = getTopTracksUlFromCardHtml(cardHtml);
         artistObj.topTracks.forEach((track) => {
-          trackList.appendChild(track.getPlaylistTrackHtml());
+          trackList.appendChild(track.getPlaylistTrackHtml(false));
         });
       });
     }

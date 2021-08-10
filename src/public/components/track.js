@@ -112,7 +112,7 @@ class Track {
    *
    * @returns {ChildNode} - The converted html string to an element
    */
-  getPlaylistTrackHtml() {
+  getPlaylistTrackHtml(displayDate = true) {
     let html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
               <img class="${config.CSS.CLASSES.noSelect}" src="${
@@ -130,7 +130,11 @@ class Track {
                 </div>
               </div>
               <h5>${this.duration}</h5>
-              <h5>${this.dateAddedToPlaylist.toLocaleDateString()}</h5>
+              ${
+                displayDate
+                  ? `<h5>${this.dateAddedToPlaylist.toLocaleDateString()}</h5>`
+                  : ""
+              }
             </li>
             `;
 
