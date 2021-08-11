@@ -88,11 +88,6 @@
     transition: opacity 250ms ease-in;
   }
 }
-#playlist-descriptors {
-  -ms-flex-pack: distribute;
-  justify-content: space-around;
-  color: @grayed-color;
-}
 .playlist-order {
   background-color: #1b1b1b;
   color: #d8d8d8;
@@ -180,6 +175,65 @@
     color: @grayed-color;
   }
 }
+
+.playlist-config {
+  & img {
+    margin-top: 20%;
+    margin-left: 20%;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 4px solid black;
+  }
+}
+
+#playlist-descriptors {
+  -ms-flex-pack: distribute;
+  justify-content: space-around;
+  color: @grayed-color;
+}
+#playlist-cards-container {
+  overflow-x: hidden;
+}
+#playlist-cards-container.text-form {
+  display: flex;
+  flex-direction: column;
+  & * {
+    text-align: start;
+  }
+  & > div {
+    & > .card {
+      margin: 0 0 0 0;
+      padding: 10px 10px;
+      height: auto;
+      width: 100%;
+      background-color: transparent;
+      box-shadow: none;
+      & img {
+        display: none;
+      }
+      & h4 {
+        color: @grayed-color;
+        font-weight: bold;
+        font-size: 0.9em;
+        margin: 0 0;
+      }
+      &:hover {
+        & h4 {
+          color: white;
+        }
+      }
+      &.selected {
+        & h4 {
+          color: white;
+        }
+      }
+    }
+  }
+}
+#info-container {
+  margin-top: 2vw;
+}
 #playlist-mods {
   -webkit-box-flex: 0;
   -ms-flex: 0 0 auto;
@@ -259,9 +313,7 @@
     flex: 0 0 auto;
     height: 88vh;
     max-width: 70vw;
-    min-width: -webkit-fit-content;
-    min-width: -moz-fit-content;
-    min-width: fit-content;
+    min-width: 0;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     -ms-touch-action: none;
@@ -282,17 +334,41 @@
   width: calc(100% - 8px);
 }
 
-.playlist-config {
-  & img {
-    margin-top: 20%;
-    margin-left: 20%;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 4px solid black;
+@media only screen and (max-width: 600px) {
+  #playlist-cards-container {
+    display: flex;
+    flex-direction: column;
+    & * {
+      text-align: start;
+    }
+    & > div {
+      & > .card {
+        margin: 0 0 0 0;
+        padding: 10px 10px;
+        height: auto;
+        width: 100%;
+        background-color: transparent;
+        box-shadow: none;
+        & img {
+          display: none;
+        }
+        & h4 {
+          color: @grayed-color;
+          font-weight: bold;
+          font-size: 0.9em;
+          margin: 0 0;
+        }
+        &:hover {
+          & h4 {
+            color: white;
+          }
+        }
+        &.selected {
+          & h4 {
+            color: white;
+          }
+        }
+      }
+    }
   }
-}
-
-#info-container {
-  margin-top: 2vw;
 }

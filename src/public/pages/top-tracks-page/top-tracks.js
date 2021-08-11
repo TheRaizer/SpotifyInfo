@@ -776,8 +776,7 @@ const addEventListeners = (function () {
     onSuccessfulTokenCall(hasToken)
   );
 
-  addEventListeners.addTrackFeatureButtonEvents();
-  addEventListeners.addTrackTermButtonEvents();
-  addEventListeners.addExpandDescOnHoverEvents();
-  addEventListeners.addViewAllTracksEvent();
+  Object.entries(addEventListeners).forEach(([, addEventListener]) => {
+    addEventListener();
+  });
 })();

@@ -21,12 +21,14 @@ class Playlist {
    * @param {Number} idx - The card index to use for the elements id suffix
    * @returns {ChildNode} - The converted html string to an element
    */
-  getPlaylistCardHtml(idx) {
+  getPlaylistCardHtml(idx, inTextForm) {
     let id = `${config.CSS.IDs.playlistPrefix}${idx}`;
+
+    const expandOnHover = inTextForm ? "" : config.CSS.CLASSES.expandOnHover;
 
     this.cardId = id;
     let html = `
-        <div class="${config.CSS.CLASSES.expandOnHover}">
+        <div class="${expandOnHover}">
           <button class="${config.CSS.CLASSES.fadeIn} ${config.CSS.CLASSES.card} ${config.CSS.CLASSES.playlist} ${config.CSS.CLASSES.noSelect}" id="${id}" title="Click to View Tracks">
               <img src="${this.imageUrl}" alt="Playlist Cover"></img>
               <h4 class="${config.CSS.CLASSES.scrollingText} ${config.CSS.CLASSES.ellipsisWrap}">${this.name}</h4>

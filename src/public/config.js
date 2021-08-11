@@ -53,6 +53,7 @@ export const config = {
       artistCardsContainer: "artist-cards-container",
       artistPrefix: "artist-",
       initialCard: "initial-card",
+      convertCard: "convert-card",
     },
     CLASSES: {
       glow: "glow",
@@ -93,10 +94,9 @@ export const config = {
       scrollBar: "scroll-bar",
       trackList: "track-list",
       artistTopTracks: "artist-top-tracks",
-      x: "x",
+      textForm: "text-form",
     },
     ATTRIBUTES: {
-      elementsToAnimate: "data-elements-to-animate",
       dataSelection: "data-selection",
     },
   },
@@ -131,7 +131,6 @@ export const config = {
     dancingEmoji: "/images/Emojis/DancingEmoji.svg",
     sheepEmoji: "/images/Emojis/SheepEmoji.svg",
     wolfEmoji: "/images/Emojis/WolfEmoji.svg",
-    xIcon: "/images/close-icon.png",
   },
 };
 

@@ -15,10 +15,16 @@ const trackArrUl = expandedPlaylistMods.getElementsByTagName("ul")[0];
 const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
   config.CSS.CLASSES.playlistSearch
 )[0];
+const playlistsCardContainer = document.getElementById(
+  config.CSS.IDs.playlistCardsContainer
+);
 
 const cardResizeContainer = document
   .getElementById(config.CSS.IDs.playlistsSection)
   .getElementsByClassName(config.CSS.CLASSES.resizeContainer)[0];
+
+// min viewport before playlist cards convert to text form automatically (equivalent to the media query in playlists.less that changes .card)
+const VIEWPORT_MIN = 600;
 
 // order of items should never change
 var expandablePlaylistTracks = [];
@@ -156,23 +162,28 @@ const infoRetrieval = (function () {
   }
   return {
     getInitialInfo,
+    playlistObjs,
   };
 })();
 
 const displayCardInfo = (function () {
-  const playlistsContainer = document.getElementById(
-    config.CSS.IDs.playlistCardsContainer
-  );
-
   function displayPlaylistCards(playlistObjs) {
-    removeAllChildNodes(playlistsContainer);
+    removeAllChildNodes(playlistsCardContainer);
+    let isInTextForm =
+      playlistsCardContainer.classList.contains(config.CSS.CLASSES.textForm) ||
+      window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches;
 
     // add card html to container element
     playlistObjs.map((playlistObj, idx) => {
-      playlistsContainer.appendChild(playlistObj.getPlaylistCardHtml(idx));
+      playlistsCardContainer.appendChild(
+        playlistObj.getPlaylistCardHtml(idx, isInTextForm)
+      );
     });
     // add event listener to cards
     playlistActions.addOnPlaylistCardListeners(playlistObjs);
+
+    // animate the cards(show the cards)
+    animationControl.animateAttributes(".playlist", config.CSS.CLASSES.appear);
   }
 
   return {
@@ -181,53 +192,11 @@ const displayCardInfo = (function () {
 })();
 
 const animationControl = (function () {
-  const animateOptions = {
-    // the entire element should be visible before the observer counts it as intersecting
-    threshold: 1,
-    // how far down the screen the element needs to be before the observer counts it as intersecting
-    rootMargin: "0px 0px -150px 0px",
-  };
-  const appearOnScrollObserver = new IntersectionObserver(function (
-    entries,
-    appearOnScroll
-  ) {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) {
-        return;
-      }
-
-      // if there is no elements to animate attribute throw error
-      if (
-        entry.target.getAttribute(config.CSS.ATTRIBUTES.elementsToAnimate) ==
-        null
-      ) {
-        throw new Error(
-          "Element to observe " +
-            entry +
-            " does not contain attribute: " +
-            config.CSS.ATTRIBUTES.elementsToAnimate
-        );
-      }
-
-      const animationInterval = 25;
-
-      // observable element that causes animation on scroll should contain a 'data-class-to-animate' attribute
-      intervalElementsTransitions(
-        entry.target.getAttribute(config.CSS.ATTRIBUTES.elementsToAnimate),
-        config.CSS.CLASSES.appear,
-        animationInterval
-      );
-      appearOnScroll.unobserve(entry.target);
-    });
-  },
-  animateOptions);
-
-  /** Adds a class to each element causing a transition to the changed css attributes
-   * of the added class while still retaining unchanged attributes from original class.
+  /** Adds a class to each element causing a transition to the changed css values.
    * This is done on set intervals.
    *
    *
-   * @param {String} className - The class that all the transitioning elements contain
+   * @param {String} elementsToAnimate - comma separated string containing the classes or ids of elements to animate including prefix char.
    * @param {String} classToTransitionToo - The class that all the transitioning elements will add
    * @param {Number} animationInterval - The interval to wait between animation of elements
    */
@@ -255,16 +224,22 @@ const animationControl = (function () {
       }, animationInterval);
     });
   }
-  /** Use IntersectionObserver to observe some elements that will run some
-   * animations when seen on the viewport.
+  /** Animates all elements that contain a certain class or id
    *
+   * @param {string} elementsToAnimate - comma separated string containing the classes or ids of elements to animate including prefix char.
    */
-  function addAnimateOnScroll() {
-    const playlistsArea = document.getElementById("playlists-header");
-    appearOnScrollObserver.observe(playlistsArea);
+  function animateAttributes(elementsToAnimate, classToAdd) {
+    const animationInterval = 25;
+
+    // observable element that causes animation on scroll should contain a 'data-class-to-animate' attribute
+    intervalElementsTransitions(
+      elementsToAnimate,
+      classToAdd,
+      animationInterval
+    );
   }
   return {
-    addAnimateOnScroll,
+    animateAttributes,
   };
 })();
 
@@ -432,12 +407,22 @@ const addEventListeners = (function () {
         .classList.toggle(config.CSS.CLASSES.selected);
     });
   }
+  function AddConvertCards() {
+    const convertBtn = document.getElementById(config.CSS.IDs.convertCard);
+    function onClick() {
+      playlistsCardContainer.classList.toggle(config.CSS.CLASSES.textForm);
+      displayCardInfo.displayPlaylistCards(infoRetrieval.playlistObjs);
+    }
+
+    convertBtn.addEventListener("click", () => onClick());
+  }
   return {
     addExpandedPlaylistModsSearchbarEvent,
     addExpandedPlaylistModsOrderEvent,
     addDeleteRecentlyAddedTrackEvent,
     addUndoPlaylistTrackDeleteEvent,
     addModsOpenerEvent,
+    AddConvertCards,
   };
 })();
 
@@ -462,6 +447,25 @@ function loadResizeWidth() {
   );
 }
 
+function checkIfCardFormChangeOnResize() {
+  const prev = {
+    widthMatched: window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches,
+  };
+  window.addEventListener("resize", function () {
+    if (
+      window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches ||
+      (prev.widthMatched &&
+        window.matchMedia(`(min-width: ${VIEWPORT_MIN}px)`).matches)
+    ) {
+      // card form has changed by resize
+      displayCardInfo.displayPlaylistCards(infoRetrieval.playlistObjs);
+      prev.widthMatched = window.matchMedia(
+        `(max-width: ${VIEWPORT_MIN}px)`
+      ).matches;
+    }
+  });
+}
+
 (function () {
   function onSuccesfulTokenCall(hasToken) {
     let getTokensSpinner = document.getElementById(
@@ -478,7 +482,11 @@ function loadResizeWidth() {
       // render and get information
       promiseHandler(
         infoRetrieval.getInitialInfo(),
-        () => animationControl.addAnimateOnScroll(),
+        () =>
+          animationControl.animateAttributes(
+            ".playlist,#expanded-playlist-mods",
+            config.CSS.CLASSES.appear
+          ),
         () => console.log("Problem when getting information")
       );
     } else {
@@ -491,11 +499,10 @@ function loadResizeWidth() {
     onSuccesfulTokenCall(hasToken);
   });
 
-  addEventListeners.addExpandedPlaylistModsSearchbarEvent();
-  addEventListeners.addExpandedPlaylistModsOrderEvent();
-  addEventListeners.addDeleteRecentlyAddedTrackEvent();
-  addEventListeners.addUndoPlaylistTrackDeleteEvent();
-  addEventListeners.addModsOpenerEvent();
+  Object.entries(addEventListeners).forEach(([, addEventListener]) => {
+    addEventListener();
+  });
+  checkIfCardFormChangeOnResize();
 
   loadResizeWidth();
   interact(
