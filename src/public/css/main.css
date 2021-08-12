@@ -678,7 +678,7 @@ footer {
   touch-action: none;
   border-style: double;
   border-right-color: #5f5f5f;
-  border-right-width: 7px;
+  border-right-width: 9px;
 }
 #playlist-card-scroll-area {
   overflow-y: scroll;
@@ -690,7 +690,29 @@ footer {
   /* Standard */
   width: calc(100% - 8px);
 }
+#hide-show-cards {
+  display: none;
+}
+#convert-card {
+  display: block;
+}
 @media only screen and (max-width: 600px) {
+  #hide-show-cards {
+    display: block;
+  }
+  #convert-card {
+    display: none;
+  }
+  #playlists-section {
+    position: relative;
+  }
+  #playlists-section > .resize-container {
+    z-index: 5;
+    position: absolute;
+    border: none;
+    background-color: #191414;
+    transition: width 250ms ease-in;
+  }
   #playlist-cards-container {
     display: flex;
     flex-direction: column;

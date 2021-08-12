@@ -26,6 +26,54 @@ const cardResizeContainer = document
 // min viewport before playlist cards convert to text form automatically (equivalent to the media query in playlists.less that changes .card)
 const VIEWPORT_MIN = 600;
 
+const restrictResizeWidth = () =>
+  (cardResizeContainer.style.width = VIEWPORT_MIN / 2.5 + "px");
+
+const resizeActions = (function () {
+  const resizeId =
+    "#" +
+    config.CSS.IDs.playlistsSection +
+    ">." +
+    config.CSS.CLASSES.resizeContainer;
+  function enableResize() {
+    interact(resizeId)
+      .resizable({
+        edges: { top: false, left: false, bottom: false, right: true },
+        listeners: {
+          move: function (event) {
+            let { x, y } = event.target.dataset;
+
+            x = (parseFloat(x) || 0) + event.deltaRect.left;
+            y = (parseFloat(y) || 0) + event.deltaRect.top;
+
+            Object.assign(event.target.style, {
+              width: `${event.rect.width}px`,
+              height: `${event.rect.height}px`,
+              transform: `translate(${x}px, ${y}px)`,
+            });
+
+            Object.assign(event.target.dataset, { x, y });
+          },
+        },
+      })
+      .on("resizeend", saveResizeWidth);
+
+    // once we renable the resize we must set its width to be what the user last set it too.
+    loadResizeWidth();
+  }
+  function disableResize() {
+    if (interact.isSet(resizeId)) {
+      interact(resizeId).unset();
+    }
+    // once we disable the resize we must restrict the width so itll fit to a 600px vw
+    restrictResizeWidth();
+  }
+
+  return {
+    enableResize,
+    disableResize,
+  };
+})();
 // order of items should never change
 var expandablePlaylistTracks = [];
 
@@ -172,6 +220,13 @@ const displayCardInfo = (function () {
     let isInTextForm =
       playlistsCardContainer.classList.contains(config.CSS.CLASSES.textForm) ||
       window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches;
+
+    // allow resizing only when viewport is large enough to allow cards.
+    if (window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches) {
+      resizeActions.disableResize();
+    } else {
+      resizeActions.enableResize();
+    }
 
     // add card html to container element
     playlistObjs.map((playlistObj, idx) => {
@@ -407,7 +462,7 @@ const addEventListeners = (function () {
         .classList.toggle(config.CSS.CLASSES.selected);
     });
   }
-  function AddConvertCards() {
+  function addConvertCards() {
     const convertBtn = document.getElementById(config.CSS.IDs.convertCard);
     function onClick() {
       playlistsCardContainer.classList.toggle(config.CSS.CLASSES.textForm);
@@ -416,13 +471,28 @@ const addEventListeners = (function () {
 
     convertBtn.addEventListener("click", () => onClick());
   }
+  function addHideShowCards() {
+    const hideShowCards = document.getElementById("hide-show-cards");
+
+    function onClick() {
+      hideShowCards.classList.toggle(config.CSS.CLASSES.selected);
+      // if its selected we hide the cards otherwise we show them.
+      if (hideShowCards.classList.contains(config.CSS.CLASSES.selected)) {
+        cardResizeContainer.style.width = 0;
+      } else {
+        restrictResizeWidth();
+      }
+    }
+    hideShowCards.addEventListener("click", () => onClick());
+  }
   return {
     addExpandedPlaylistModsSearchbarEvent,
     addExpandedPlaylistModsOrderEvent,
     addDeleteRecentlyAddedTrackEvent,
     addUndoPlaylistTrackDeleteEvent,
     addModsOpenerEvent,
-    AddConvertCards,
+    addConvertCards,
+    addHideShowCards,
   };
 })();
 
@@ -449,17 +519,21 @@ function loadResizeWidth() {
 
 function checkIfCardFormChangeOnResize() {
   const prev = {
-    widthMatched: window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches,
+    vwIsSmall: window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches,
   };
   window.addEventListener("resize", function () {
-    if (
-      window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches ||
-      (prev.widthMatched &&
-        window.matchMedia(`(min-width: ${VIEWPORT_MIN}px)`).matches)
-    ) {
-      // card form has changed by resize
+    const wasBigNowSmall =
+      window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches &&
+      !prev.vwIsSmall;
+
+    const wasSmallNowBig =
+      prev.vwIsSmall &&
+      window.matchMedia(`(min-width: ${VIEWPORT_MIN}px)`).matches;
+
+    if (wasBigNowSmall || wasSmallNowBig) {
+      // card form has changed on window resize
       displayCardInfo.displayPlaylistCards(infoRetrieval.playlistObjs);
-      prev.widthMatched = window.matchMedia(
+      prev.vwIsSmall = window.matchMedia(
         `(max-width: ${VIEWPORT_MIN}px)`
       ).matches;
     }
@@ -505,30 +579,4 @@ function checkIfCardFormChangeOnResize() {
   checkIfCardFormChangeOnResize();
 
   loadResizeWidth();
-  interact(
-    "#" +
-      config.CSS.IDs.playlistsSection +
-      ">." +
-      config.CSS.CLASSES.resizeContainer
-  )
-    .resizable({
-      edges: { top: false, left: false, bottom: false, right: true },
-      listeners: {
-        move: function (event) {
-          let { x, y } = event.target.dataset;
-
-          x = (parseFloat(x) || 0) + event.deltaRect.left;
-          y = (parseFloat(y) || 0) + event.deltaRect.top;
-
-          Object.assign(event.target.style, {
-            width: `${event.rect.width}px`,
-            height: `${event.rect.height}px`,
-            transform: `translate(${x}px, ${y}px)`,
-          });
-
-          Object.assign(event.target.dataset, { x, y });
-        },
-      },
-    })
-    .on("resizeend", saveResizeWidth);
 })();
