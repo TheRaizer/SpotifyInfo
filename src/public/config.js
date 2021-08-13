@@ -132,6 +132,10 @@ export const config = {
     dancingEmoji: "/images/Emojis/DancingEmoji.svg",
     sheepEmoji: "/images/Emojis/SheepEmoji.svg",
     wolfEmoji: "/images/Emojis/WolfEmoji.svg",
+    gridView: "/images/grid-view-icon.png",
+    listView: "/images/list-view-icon.png",
+    chevronLeft: "/images/chevron-left.png",
+    chevronRight: "/images/chevron-right.png",
   },
 };
 

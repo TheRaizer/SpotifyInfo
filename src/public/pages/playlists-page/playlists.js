@@ -24,7 +24,6 @@ const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
 const playlistsCardContainer = document.getElementById(
   config.CSS.IDs.playlistCardsContainer
 );
-
 const cardResizeContainer = document
   .getElementById(config.CSS.IDs.playlistsSection)
   .getElementsByClassName(config.CSS.CLASSES.resizeContainer)[0];
@@ -409,16 +408,24 @@ const addEventListeners = (function () {
   }
   function addConvertCards() {
     const convertBtn = document.getElementById(config.CSS.IDs.convertCard);
+    const convertImg = convertBtn.getElementsByTagName("img")[0];
+
     function onClick() {
       playlistsCardContainer.classList.toggle(config.CSS.CLASSES.textForm);
       displayCardInfo.displayPlaylistCards(infoRetrieval.playlistObjs);
+      if (
+        playlistsCardContainer.classList.contains(config.CSS.CLASSES.textForm)
+      ) {
+        convertImg.src = config.PATHS.gridView;
+      } else {
+        convertImg.src = config.PATHS.listView;
+      }
     }
 
     convertBtn.addEventListener("click", () => onClick());
   }
   function addHideShowCards() {
     const hideShowCards = document.getElementById("hide-show-cards");
-
     function onClick() {
       hideShowCards.classList.toggle(config.CSS.CLASSES.selected);
       // if its selected we hide the cards otherwise we show them.
@@ -427,6 +434,7 @@ const addEventListeners = (function () {
       } else {
         restrictResizeWidth();
       }
+      updateHideShowCardsImg();
     }
     hideShowCards.addEventListener("click", () => onClick());
   }
@@ -462,6 +470,17 @@ function loadResizeWidth() {
   );
 }
 
+function updateHideShowCardsImg() {
+  const hideShowCards = document.getElementById("hide-show-cards");
+  const hideShowImg = hideShowCards.getElementsByTagName("img")[0];
+  // if its selected we hide the cards otherwise we show them.
+  if (hideShowCards.classList.contains(config.CSS.CLASSES.selected)) {
+    hideShowImg.src = config.PATHS.chevronRight;
+  } else {
+    hideShowImg.src = config.PATHS.chevronLeft;
+  }
+}
+
 function checkIfCardFormChangeOnResize() {
   const prev = {
     vwIsSmall: window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches,
@@ -476,6 +495,10 @@ function checkIfCardFormChangeOnResize() {
       window.matchMedia(`(min-width: ${VIEWPORT_MIN}px)`).matches;
 
     if (wasBigNowSmall || wasSmallNowBig) {
+      if (wasSmallNowBig) {
+        hideShowCards.classList.remove(config.CSS.CLASSES.selected);
+        updateHideShowCardsImg();
+      }
       // card form has changed on window resize
       displayCardInfo.displayPlaylistCards(infoRetrieval.playlistObjs);
       prev.vwIsSmall = window.matchMedia(
