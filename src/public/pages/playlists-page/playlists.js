@@ -1,6 +1,12 @@
 import Playlist from "../../components/playlist.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
-import { config, htmlToEl, promiseHandler, searchUl } from "../../config.js";
+import {
+  config,
+  htmlToEl,
+  promiseHandler,
+  searchUl,
+  animationControl,
+} from "../../config.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 import CardActionsHandler from "../../card-actions.js";
 
@@ -243,58 +249,6 @@ const displayCardInfo = (function () {
 
   return {
     displayPlaylistCards,
-  };
-})();
-
-const animationControl = (function () {
-  /** Adds a class to each element causing a transition to the changed css values.
-   * This is done on set intervals.
-   *
-   *
-   * @param {String} elementsToAnimate - comma separated string containing the classes or ids of elements to animate including prefix char.
-   * @param {String} classToTransitionToo - The class that all the transitioning elements will add
-   * @param {Number} animationInterval - The interval to wait between animation of elements
-   */
-  function intervalElementsTransitions(
-    elementsToAnimate,
-    classToTransitionToo,
-    animationInterval
-  ) {
-    // arr of html selectors that point to elements to animate
-    let attributes = elementsToAnimate.split(",");
-
-    attributes.forEach((attr) => {
-      let elements = document.querySelectorAll(attr);
-      let idx = 0;
-      // in intervals play their initial animations
-      let interval = setInterval(() => {
-        if (idx === elements.length) {
-          clearInterval(interval);
-          return;
-        }
-        let element = elements[idx];
-        // add the class to the elements classes in order to run the transition
-        element.classList.add(classToTransitionToo);
-        idx += 1;
-      }, animationInterval);
-    });
-  }
-  /** Animates all elements that contain a certain class or id
-   *
-   * @param {string} elementsToAnimate - comma separated string containing the classes or ids of elements to animate including prefix char.
-   */
-  function animateAttributes(elementsToAnimate, classToAdd) {
-    const animationInterval = 25;
-
-    // observable element that causes animation on scroll should contain a 'data-class-to-animate' attribute
-    intervalElementsTransitions(
-      elementsToAnimate,
-      classToAdd,
-      animationInterval
-    );
-  }
-  return {
-    animateAttributes,
   };
 })();
 
@@ -559,7 +513,8 @@ function checkIfCardFormChangeOnResize() {
         () =>
           animationControl.animateAttributes(
             ".playlist,#expanded-playlist-mods",
-            config.CSS.CLASSES.appear
+            config.CSS.CLASSES.appear,
+            25
           ),
         () => console.log("Problem when getting information")
       );

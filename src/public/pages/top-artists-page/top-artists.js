@@ -4,8 +4,9 @@ import {
   promiseHandler,
   htmlToEl,
   removeAllChildNodes,
-  findChildNodeOfClass,
+  animationControl,
 } from "../../config.js";
+import SelectableTabEls from "../../components/selectableTabEls.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 
@@ -23,13 +24,13 @@ const artistActions = (function () {
         callback();
       })
       .catch((err) => {
-        console.log("Error when getting tracks");
+        console.log("Error when loading artists");
         console.error(err);
       });
   }
-  function showTopTracks(artistObj, cardHtml) {
+  function showTopTracks(artistObj) {
     loadArtistTopTracks(artistObj, () => {
-      let trackList = getTopTracksUlFromCardHtml(cardHtml);
+      let trackList = getTopTracksUlFromArtist(artistObj);
       artistObj.topTracks.forEach((track) => {
         trackList.appendChild(track.getPlaylistTrackHtml(false));
       });
@@ -52,19 +53,10 @@ const artistActions = (function () {
     return artistArr;
   }
 
-  function getTopTracksUlFromCardHtml(cardHtml) {
-    let tracksArea = findChildNodeOfClass(
-      cardHtml,
-      config.CSS.CLASSES.tracksArea
-    );
-
-    let topTracksDiv = findChildNodeOfClass(
-      tracksArea,
-      config.CSS.CLASSES.artistTopTracks
-    );
-
-    const TRACK_LIST_IDX = 3;
-    let trackList = topTracksDiv.childNodes[TRACK_LIST_IDX];
+  function getTopTracksUlFromArtist(artistObj) {
+    let trackList = document
+      .getElementById(artistObj.cardId)
+      .getElementsByClassName(config.CSS.CLASSES.trackList)[0];
 
     return trackList;
   }
@@ -78,42 +70,30 @@ const artistActions = (function () {
     }
     loadDatasToArtistArr(res.data, artistArr);
   }
+  function getCurrSelTopArtists() {
+    if (selections.term == "short_term") {
+      return artistArrs.topArtistObjsShortTerm;
+    } else if (selections.term == "medium_term") {
+      return artistArrs.topArtistObjsMidTerm;
+    } else if (selections.term == "long_term") {
+      return artistArrs.topArtistObjsLongTerm;
+    } else {
+      throw new Error("Selected track term is invalid " + selections.term);
+    }
+  }
   return {
     showTopTracks,
     retrieveArtists,
     selections,
+    getCurrSelTopArtists,
   };
 })();
 
 const displayArtistCards = (function () {
   const selectionVerif = new AsyncSelectionVerif();
-  const cardsVisibleInterval = { interval: null };
   const artistContainer = document.getElementById(
     config.CSS.IDs.artistCardsContainer
   );
-  /** Show each element of a given className by adding the appear class.
-   *
-   * @param {String} className the class that each track card contains.
-   */
-  function makeCardsVisible(className) {
-    let artistCards = artistContainer.getElementsByClassName(className);
-    let idx = 0;
-
-    if (cardsVisibleInterval.interval) {
-      clearInterval(cardsVisibleInterval.interval);
-    }
-
-    cardsVisibleInterval.interval = setInterval(() => {
-      if (idx == artistCards.length) {
-        clearInterval(cardsVisibleInterval.interval);
-        return;
-      }
-
-      let card = artistCards[idx];
-      card.classList.add(config.CSS.CLASSES.appear);
-      idx += 1;
-    }, 30);
-  }
 
   /** Generates the cards to the DOM then makes them visible
    *
@@ -133,13 +113,17 @@ const displayArtistCards = (function () {
         cardHtmls.push(cardHtml);
         artistContainer.appendChild(cardHtml);
 
-        artistActions.showTopTracks(artistObj, cardHtml);
+        artistActions.showTopTracks(artistObj);
       } else {
         break;
       }
     }
     if (!autoAppear) {
-      makeCardsVisible(config.CSS.CLASSES.card);
+      animationControl.animateAttributes(
+        "." + config.CSS.CLASSES.artist,
+        config.CSS.CLASSES.appear,
+        25
+      );
     }
     return cardHtmls;
   }
@@ -164,7 +148,7 @@ const displayArtistCards = (function () {
       if (!selectionVerif.isValid(artistArr)) {
         return;
       }
-      return generateCards(artistArr);
+      return generateCards(artistArr, false);
     });
   }
 
@@ -175,7 +159,7 @@ const displayArtistCards = (function () {
    * @param {Boolean} autoAppear whether to show the cards without animation.
    * @returns {Array<HTML>} list of Card HTML's.
    */
-  function displayTrackCards(artistArr, autoAppear = false) {
+  function displayArtistCards(artistArr, autoAppear = false) {
     selectionVerif.selectionChanged(artistArr);
     if (artistArr.length > 0) {
       return generateCards(artistArr, autoAppear);
@@ -185,7 +169,7 @@ const displayArtistCards = (function () {
   }
 
   return {
-    displayTrackCards,
+    displayArtistCards,
   };
 })();
 
@@ -198,6 +182,75 @@ const artistArrs = (function () {
     topArtistObjsShortTerm,
     topArtistObjsMidTerm,
     topArtistObjsLongTerm,
+  };
+})();
+
+const addEventListeners = (function () {
+  const selections = {
+    termTabManager: new SelectableTabEls(
+      document
+        .getElementById(config.CSS.IDs.artistTermSelections)
+        .getElementsByTagName("button")[0], // first tab is selected first by default
+      document
+        .getElementById(config.CSS.IDs.artistTermSelections)
+        .getElementsByClassName(config.CSS.CLASSES.borderCover)[0] // first tab is selected first by default
+    ),
+  };
+
+  function addTrackTermButtonEvents() {
+    function onClick(btn, borderCover) {
+      artistActions.selections.term = btn.getAttribute(
+        config.CSS.ATTRIBUTES.dataSelection
+      );
+      selections.termTabManager.selectNewTab(btn, borderCover);
+
+      let currArtists = artistActions.getCurrSelTopArtists();
+      displayArtistCards.displayArtistCards(currArtists);
+    }
+
+    const artistTermBtns = document
+      .getElementById(config.CSS.IDs.artistTermSelections)
+      .getElementsByTagName("button");
+    const trackTermBorderCovers = document
+      .getElementById(config.CSS.IDs.artistTermSelections)
+      .getElementsByClassName(config.CSS.CLASSES.borderCover);
+
+    if (trackTermBorderCovers.length != artistTermBtns.length) {
+      console.error("Not all track term buttons contain a border cover");
+      return;
+    }
+    for (let i = 0; i < artistTermBtns.length; i++) {
+      let btn = artistTermBtns[i];
+      let borderCover = trackTermBorderCovers[i];
+      btn.addEventListener("click", () => onClick(btn, borderCover));
+    }
+  }
+
+  function resetViewableCards() {
+    let viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks);
+    trackActions.selections.numViewableCards = DEFAULT_VIEWABLE_CARDS;
+    viewAllEl.textContent = "See All 50";
+  }
+
+  function addViewAllTracksEvent() {
+    let viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks);
+    function onClick() {
+      if (trackActions.selections.numViewableCards == DEFAULT_VIEWABLE_CARDS) {
+        trackActions.selections.numViewableCards = MAX_VIEWABLE_CARDS;
+        viewAllEl.textContent = "See Less";
+      } else {
+        resetViewableCards();
+      }
+      let currTracks = trackActions.getCurrSelTopTracks();
+      displayCardInfo.displayTrackCards(currTracks);
+    }
+
+    viewAllEl.addEventListener("click", () => onClick());
+  }
+
+  return {
+    addTrackTermButtonEvents,
+    // addViewAllTracksEvent,
   };
 })();
 
@@ -217,7 +270,7 @@ const artistArrs = (function () {
 
       // when entering the page always show short term tracks first
       artistActions.selections.term = "short_term";
-      displayArtistCards.displayTrackCards(artistArrs.topArtistObjsShortTerm);
+      displayArtistCards.displayArtistCards(artistArrs.topArtistObjsShortTerm);
     } else {
       // if there is no token redirect to allow access page
       window.location.href = "http://localhost:3000/";
@@ -227,4 +280,7 @@ const artistArrs = (function () {
   promiseHandler(checkIfHasTokens(), (hasToken) =>
     onSuccessfulTokenCall(hasToken)
   );
+  Object.entries(addEventListeners).forEach(([, addEventListener]) => {
+    addEventListener();
+  });
 })();

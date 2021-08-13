@@ -750,7 +750,7 @@ footer {
 * Autoprefixer: v9.7.6
 * Browsers: last 4 version
 */
-.artist {
+.artist > div {
   color: white;
   display: flex;
   width: 250px;
@@ -767,30 +767,30 @@ footer {
   overflow: hidden;
   transition: width 500ms cubic-bezier(0.075, 0.82, 0.165, 1), height 500ms cubic-bezier(0.075, 0.82, 0.165, 1), transform 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
 }
-.artist > * {
+.artist > div > * {
   flex: 0 0 auto;
 }
-.artist h4 {
+.artist > div h4 {
   font-weight: bold;
   font-size: 1.2em;
 }
-.artist h3 {
+.artist > div h3 {
   font-weight: bold;
   font-size: 1.6em;
   margin-top: 20px;
   margin-bottom: 10px;
 }
-.artist .playlist-track {
+.artist > div .playlist-track {
   margin-top: 15px;
   margin-bottom: 15px;
 }
-.artist .playlist-track > div {
+.artist > div .playlist-track > div {
   flex: 0 0 40%;
   margin-left: 5%;
   width: 40%;
   max-width: 40%;
 }
-.artist .playlist-track > h5 {
+.artist > div .playlist-track > h5 {
   flex: 0 0 40%;
 }
 .artist-base {
@@ -862,20 +862,20 @@ ul.track-list > li {
   align-items: center;
 }
 @media only screen and (max-width: 820px) {
-  .artist {
+  .artist > div {
     flex-direction: column;
     height: 800px;
     width: 300px;
   }
-  .artist .playlist-track > div {
+  .artist > div .playlist-track > div {
     flex: 0 0 60%;
     width: 60%;
     max-width: 60%;
   }
-  .artist .playlist-track > h5 {
+  .artist > div .playlist-track > h5 {
     display: none;
   }
-  ul.track-list {
+  .artist ul.track-list {
     width: 280px;
   }
 }
@@ -1010,6 +1010,7 @@ ul.topnav li.right {
 }
 @media only screen and (max-width: 600px) {
   ul.topnav li {
+    display: none;
     width: 100%;
   }
   ul.topnav a {

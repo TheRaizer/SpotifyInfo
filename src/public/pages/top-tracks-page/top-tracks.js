@@ -5,7 +5,9 @@ import {
   htmlToEl,
   capitalizeFirstLetter,
   removeAllChildNodes,
+  animationControl,
 } from "../../config.js";
+import SelectableTabEls from "../../components/SelectableTabEls.js";
 import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 import CardActionsHandler from "../../card-actions.js";
@@ -127,41 +129,17 @@ const trackArrs = (function () {
 })();
 
 const displayCardInfo = (function () {
-  const cardsVisibleInterval = { interval: null };
   const tracksContainer = document.getElementById(
     config.CSS.IDs.trackCardsContainer
   );
 
-  /** Show each element of a given className by adding the appear class.
-   *
-   * @param {String} className the class that each track card contains.
-   */
-  function makeCardsVisible(className) {
-    let trackCards = tracksContainer.getElementsByClassName(className);
-    let idx = 0;
-
-    if (cardsVisibleInterval.interval) {
-      clearInterval(cardsVisibleInterval.interval);
-    }
-
-    cardsVisibleInterval.interval = setInterval(() => {
-      if (idx == trackCards.length) {
-        clearInterval(cardsVisibleInterval.interval);
-        return;
-      }
-
-      let card = trackCards[idx];
-      card.classList.add(config.CSS.CLASSES.appear);
-      idx += 1;
-    }, 30);
-  }
   /** Generates the cards to the DOM then makes them visible
    *
    * @param {Array<Track>} trackArr array of track objects whose cards should be generated.
-   * @param {Boolean} autoAppear whether to show the card without animation or with animation.
+   * @param {Boolean} unanimatedAppear whether to show the card without animation or with animation.
    * @returns {Array<HTML>} array of the card elements.
    */
-  function generateCards(trackArr, autoAppear) {
+  function generateCards(trackArr, unanimatedAppear) {
     removeAllChildNodes(tracksContainer);
     let cardHtmls = [];
 
@@ -170,7 +148,7 @@ const displayCardInfo = (function () {
     for (let i = 0; i < trackArr.length; i++) {
       let trackObj = trackArr[i];
       if (i < trackActions.selections.numViewableCards) {
-        let cardHtml = trackObj.getTrackCardHtml(i, autoAppear);
+        let cardHtml = trackObj.getTrackCardHtml(i, unanimatedAppear);
         tracksDisplayed.push(trackObj);
         cardHtmls.push(cardHtml);
         tracksContainer.appendChild(cardHtml);
@@ -181,8 +159,13 @@ const displayCardInfo = (function () {
 
     trackActions.addTrackCardListeners(trackArr);
     featureManager.changeTracksChart(tracksDisplayed);
-    if (!autoAppear) {
-      makeCardsVisible(config.CSS.CLASSES.rankCard);
+
+    if (!unanimatedAppear) {
+      animationControl.animateAttributes(
+        "." + config.CSS.CLASSES.rankCard,
+        config.CSS.CLASSES.appear,
+        25
+      );
     }
     return cardHtmls;
   }
@@ -206,7 +189,7 @@ const displayCardInfo = (function () {
       if (!trackActions.selectionVerif.isValid(trackArr)) {
         return;
       }
-      return generateCards(trackArr);
+      return generateCards(trackArr, false);
     });
   }
 
@@ -579,36 +562,22 @@ const featureManager = (function () {
 })();
 
 const addEventListeners = (function () {
-  class SelectableEls {
-    constructor(btn, borderCover) {
-      this.btn = btn;
-      this.borderCover = borderCover;
-    }
-    unselectEls() {
-      this.btn.classList.remove(config.CSS.CLASSES.selected);
-      this.borderCover.classList.remove(config.CSS.CLASSES.selected);
-    }
-    selectEls() {
-      this.btn.classList.add(config.CSS.CLASSES.selected);
-      this.borderCover.classList.add(config.CSS.CLASSES.selected);
-    }
-  }
   const selections = {
-    featureEls: new SelectableEls(
+    featureTabManager: new SelectableTabEls(
       document
         .getElementById(config.CSS.IDs.featureSelections)
-        .getElementsByTagName("button")[0],
+        .getElementsByTagName("button")[0], // first tab is selected first by default
       document
         .getElementById(config.CSS.IDs.featureSelections)
-        .getElementsByClassName(config.CSS.CLASSES.borderCover)[0]
+        .getElementsByClassName(config.CSS.CLASSES.borderCover)[0] // first tab is selected first by default
     ),
-    termEls: new SelectableEls(
+    termTabManager: new SelectableTabEls(
       document
         .getElementById(config.CSS.IDs.tracksTermSelections)
-        .getElementsByTagName("button")[0],
+        .getElementsByTagName("button")[0], // first tab is selected first by default
       document
         .getElementById(config.CSS.IDs.tracksTermSelections)
-        .getElementsByClassName(config.CSS.CLASSES.borderCover)[0]
+        .getElementsByClassName(config.CSS.CLASSES.borderCover)[0] // first tab is selected first by default
     ),
   };
   function addTrackFeatureButtonEvents() {
@@ -626,10 +595,7 @@ const addEventListeners = (function () {
         console.error(btn);
         return;
       }
-      selections.featureEls.unselectEls();
-      selections.featureEls.btn = btn;
-      selections.featureEls.borderCover = borderCover;
-      selections.featureEls.selectEls();
+      selections.featureTabManager.selectNewTab(btn, borderCover);
 
       let currTracks = trackActions.getCurrSelTopTracks();
       featureManager.selections.feature = selectedFeat;
@@ -638,10 +604,10 @@ const addEventListeners = (function () {
       );
     }
 
-    let featBtns = document
+    const featBtns = document
       .getElementById(config.CSS.IDs.featureSelections)
       .getElementsByTagName("button");
-    let featBorderCovers = document
+    const featBorderCovers = document
       .getElementById(config.CSS.IDs.featureSelections)
       .getElementsByClassName(config.CSS.CLASSES.borderCover);
     if (featBtns.length != featBorderCovers.length) {
@@ -656,30 +622,21 @@ const addEventListeners = (function () {
     }
   }
 
-  function resetViewableCards() {
-    let viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks);
-    trackActions.selections.numViewableCards = DEFAULT_VIEWABLE_CARDS;
-    viewAllEl.textContent = "See All 50";
-  }
-
   function addTrackTermButtonEvents() {
     function onClick(btn, borderCover) {
       trackActions.selections.term = btn.getAttribute(
         config.CSS.ATTRIBUTES.dataSelection
       );
-      selections.termEls.unselectEls();
-      selections.termEls.btn = btn;
-      selections.termEls.borderCover = borderCover;
-      selections.termEls.selectEls();
+      selections.termTabManager.selectNewTab(btn, borderCover);
 
       let currTracks = trackActions.getCurrSelTopTracks();
       displayCardInfo.displayTrackCards(currTracks);
     }
 
-    let trackTermBtns = document
+    const trackTermBtns = document
       .getElementById(config.CSS.IDs.tracksTermSelections)
       .getElementsByTagName("button");
-    let trackTermBorderCovers = document
+    const trackTermBorderCovers = document
       .getElementById(config.CSS.IDs.tracksTermSelections)
       .getElementsByClassName(config.CSS.CLASSES.borderCover);
 
@@ -723,6 +680,12 @@ const addEventListeners = (function () {
         desc.style.flexBasis = DEFAULT_FLEX_BASIS + "px";
       });
     }
+  }
+
+  function resetViewableCards() {
+    let viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks);
+    trackActions.selections.numViewableCards = DEFAULT_VIEWABLE_CARDS;
+    viewAllEl.textContent = "See All 50";
   }
 
   function addViewAllTracksEvent() {

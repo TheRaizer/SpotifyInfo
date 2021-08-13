@@ -27,22 +27,24 @@ class Artist {
     });
 
     let html = `
-      <div class="${config.CSS.CLASSES.artist}">
-        <div class="artist-base">
-          <img src=${this.imageUrl} alt="Artist"/>
-          <h3>${this.name}</h3>
-          <ul class="genres">
-            ${genreList}
-          </ul>
-        </div>
-        <div class="${config.CSS.CLASSES.tracksArea}">
-          <div class="${config.CSS.CLASSES.artistTopTracks}">
-            <h4>Top Tracks</h4>
-            <ul class="${config.CSS.CLASSES.scrollBar} ${config.CSS.CLASSES.trackList}">
+      <section class="${config.CSS.CLASSES.artist} ${config.CSS.CLASSES.fadeIn}" id="${this.cardId}">
+        <div>
+          <div class="artist-base">
+            <img src=${this.imageUrl} alt="Artist"/>
+            <h3>${this.name}</h3>
+            <ul class="genres">
+              ${genreList}
             </ul>
           </div>
+          <div class="${config.CSS.CLASSES.tracksArea}">
+            <div class="${config.CSS.CLASSES.artistTopTracks}">
+              <h4>Top Tracks</h4>
+              <ul class="${config.CSS.CLASSES.scrollBar} ${config.CSS.CLASSES.trackList}">
+              </ul>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
       `;
     return htmlToEl(html);
   }

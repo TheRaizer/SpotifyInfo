@@ -54,6 +54,7 @@ export const config = {
       artistPrefix: "artist-",
       initialCard: "initial-card",
       convertCard: "convert-card",
+      artistTermSelections: "artists-term-selections",
     },
     CLASSES: {
       glow: "glow",
@@ -233,13 +234,53 @@ export function removeAllChildNodes(parent) {
   }
 }
 
-export function findChildNodeOfClass(node, className) {
-  let childNodeOfClass;
-  for (var i = 0; i < node.childNodes.length; i++) {
-    if (node.childNodes[i].className == className) {
-      childNodeOfClass = node.childNodes[i];
-      break;
-    }
+export const animationControl = (function () {
+  /** Adds a class to each element causing a transition to the changed css values.
+   * This is done on set intervals.
+   *
+   *
+   * @param {String} elementsToAnimate - comma separated string containing the classes or ids of elements to animate including prefix char.
+   * @param {String} classToTransitionToo - The class that all the transitioning elements will add
+   * @param {Number} animationInterval - The interval to wait between animation of elements
+   */
+  function intervalElementsTransitions(
+    elementsToAnimate,
+    classToTransitionToo,
+    animationInterval
+  ) {
+    // arr of html selectors that point to elements to animate
+    let attributes = elementsToAnimate.split(",");
+
+    attributes.forEach((attr) => {
+      let elements = document.querySelectorAll(attr);
+      let idx = 0;
+      // in intervals play their initial animations
+      let interval = setInterval(() => {
+        if (idx === elements.length) {
+          clearInterval(interval);
+          return;
+        }
+        let element = elements[idx];
+        // add the class to the elements classes in order to run the transition
+        element.classList.add(classToTransitionToo);
+        idx += 1;
+      }, animationInterval);
+    });
   }
-  return childNodeOfClass;
-}
+  /** Animates all elements that contain a certain class or id
+   *
+   * @param {string} elementsToAnimate - comma separated string containing the classes or ids of elements to animate INCLUDING prefix char.
+   * @param {string} classToAdd - class to add EXCLUDING the prefix char.
+   * @param {string} animationInterval - the interval to animate the given elements in milliseconds.
+   */
+  function animateAttributes(elementsToAnimate, classToAdd, animationInterval) {
+    intervalElementsTransitions(
+      elementsToAnimate,
+      classToAdd,
+      animationInterval
+    );
+  }
+  return {
+    animateAttributes,
+  };
+})();
