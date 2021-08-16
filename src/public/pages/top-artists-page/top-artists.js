@@ -31,8 +31,10 @@ const artistActions = (function () {
   function showTopTracks(artistObj) {
     loadArtistTopTracks(artistObj, () => {
       let trackList = getTopTracksUlFromArtist(artistObj);
+      let rank = 1;
       artistObj.topTracks.forEach((track) => {
-        trackList.appendChild(track.getPlaylistTrackHtml(false));
+        trackList.appendChild(track.getArtistTrackHtml(rank));
+        rank++;
       });
     });
   }

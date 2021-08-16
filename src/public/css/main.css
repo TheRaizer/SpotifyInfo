@@ -784,6 +784,10 @@ footer {
   margin-top: 15px;
   margin-bottom: 15px;
 }
+.artist > div .playlist-track > p {
+  font-weight: bold;
+  flex: 0 0 5%;
+}
 .artist > div .playlist-track > div {
   flex: 0 0 40%;
   margin-left: 5%;
@@ -791,7 +795,7 @@ footer {
   max-width: 40%;
 }
 .artist > div .playlist-track > h5 {
-  flex: 0 0 40%;
+  flex: 0 0 20%;
 }
 .artist-base {
   position: relative;

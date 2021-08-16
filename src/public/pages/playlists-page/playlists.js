@@ -148,6 +148,13 @@ const playlistActions = (function () {
       });
     }
   }
+
+  function clickCard(playlistObjs, playlistCard) {
+    cardActionsHandler.onCardClick(playlistCard, playlistObjs, (selObj) =>
+      showExpandedPlaylist(selObj)
+    );
+  }
+
   /** Add an on click listener to each Playlist instance in the given arr.
    *
    * @param {Arr<Playlist>} playlistObjs - arr of Playlist instances whose on click event listeners are being initialized
@@ -159,9 +166,7 @@ const playlistActions = (function () {
 
     playlistCards.forEach((playlistCard) => {
       playlistCard.addEventListener("click", () => {
-        cardActionsHandler.onCardClick(playlistCard, playlistObjs, (selObj) =>
-          showExpandedPlaylist(selObj)
-        );
+        clickCard(playlistObjs, playlistCard);
       });
 
       playlistCard.addEventListener("mouseenter", () => {
@@ -174,6 +179,7 @@ const playlistActions = (function () {
   }
 
   return {
+    clickCard,
     addOnPlaylistCardListeners,
     showExpandedPlaylist,
     selectionVerif,
@@ -229,6 +235,14 @@ const displayCardInfo = (function () {
       playlistsCardContainer.appendChild(
         playlistObj.getPlaylistCardHtml(idx, isInTextForm)
       );
+
+      if (playlistObj === playlistActions.selectionVerif.currSelectedVal) {
+        // if before the form change this playlist was selected, simulate a click on it in order to select it in the new form
+        playlistActions.clickCard(
+          playlistObjs,
+          document.getElementById(playlistObj.cardId)
+        );
+      }
     });
     // add event listener to cards
     playlistActions.addOnPlaylistCardListeners(playlistObjs);

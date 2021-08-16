@@ -141,6 +141,35 @@ class Track {
     return htmlToEl(html);
   }
 
+  /** Get a track html to be placed as a list element on the artist top tracks list.
+   *
+   * @returns {ChildNode} - The converted html string to an element
+   */
+  getArtistTrackHtml(rank) {
+    let html = `
+            <li class="${config.CSS.CLASSES.playlistTrack}">
+              <p>${rank}.</p>
+              <img class="${config.CSS.CLASSES.noSelect}" src="${
+      this.imageUrl
+    }"></img>
+              <div>
+                <a href="${this.externalUrl}" target="_blank">
+                  <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
+      config.CSS.CLASSES.name
+    }">${this.name}
+                  </h4>
+                <a/>
+                <div class="${config.CSS.CLASSES.ellipsisWrap}">
+                  ${this.generateHTMLArtistNames()}
+                </div>
+              </div>
+              <h5>${this.duration}</h5>
+            </li>
+            `;
+
+    return htmlToEl(html);
+  }
+
   /** Load the features of this track from the spotify web api.*/
   async loadFeatures() {
     let res = await axios
