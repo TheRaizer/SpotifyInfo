@@ -30,20 +30,22 @@
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body>
-    <div class="container">
-      <ul class="topnav">
-        <li><a class="active" href="/">Home</a></li>
-        <li><a href="/top-tracks">Top Tracks</a></li>
-        <li><a href="/top-artists">Top Artists</a></li>
-        <li><a href="/playlists">Playlists</a></li>
-        <li class="last">
-          <a href="https://www.spotify.com" class="spotify-logo">
-            <img src="/images/Spotify_Logo_RGB_White.png" alt="Spotify"
-            width="73" height"22" />
-          </a>
-        </li>
-        <li class="right"></li>
-      </ul>
+    <main class="container">
+      <nav class="topnav">
+        <ul>
+          <li><a class="active" href="/">Home</a></li>
+          <li><a href="/top-tracks">Top Tracks</a></li>
+          <li><a href="/top-artists">Top Artists</a></li>
+          <li><a href="/playlists">Playlists</a></li>
+          <li class="last">
+            <a href="https://www.spotify.com" class="spotify-logo">
+              <img src="/images/Spotify_Logo_RGB_White.png" alt="Spotify"
+              width="73" height"22" />
+            </a>
+          </li>
+          <li class="right"></li>
+        </ul>
+      </nav>
       <img
         id="get-token-loading-spinner"
         src="/images/200pxLoadingSpinner.svg"
@@ -62,7 +64,7 @@
         <button id="hide-show-cards">
           <img src="images/chevron-left.png" alt="Hide" />
         </button>
-        <section id="playlists-section">
+        <div id="playlists-section">
           <div class="resize-container">
             <div class="scroll-bar" id="playlist-card-scroll-area">
               <section
@@ -71,9 +73,12 @@
               ></section>
             </div>
           </div>
-          <div class="expanded-playlist fade-in" id="expanded-playlist-mods">
+          <section
+            class="expanded-playlist fade-in"
+            id="expanded-playlist-mods"
+          >
             <header>
-              <section>
+              <span>
                 <a
                   class="playlist-config"
                   id="mods-opener"
@@ -103,12 +108,12 @@
                   class="playlist-search"
                   placeholder="Search in playlist"
                 />
-              </section>
-              <section id="playlist-descriptors">
+              </span>
+              <span id="playlist-descriptors">
                 <p>Title</p>
                 <p>Duration</p>
                 <p>Date Added</p>
-              </section>
+              </span>
             </header>
             <div class="content">
               <section id="playlist-mods">
@@ -135,8 +140,8 @@
                 </ul>
               </section>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
         <section id="icon8-links">
           <div class="icon8">
             <a
@@ -175,9 +180,15 @@
             >
             icon by <a target="_blank" href="https://icons8.com">Icons8</a>
           </div>
+          <div class="icon8">
+            <a target="_blank" href="https://icons8.com/icon/84898/male-user"
+              >Male User</a
+            >
+            icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+          </div>
         </section>
       </section>
-    </div>
+    </main>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
       integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="

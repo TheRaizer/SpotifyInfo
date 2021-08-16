@@ -96,6 +96,8 @@ export const config = {
       trackList: "track-list",
       artistTopTracks: "artist-top-tracks",
       textForm: "text-form",
+      content: "content",
+      links: "links",
     },
     ATTRIBUTES: {
       dataSelection: "data-selection",

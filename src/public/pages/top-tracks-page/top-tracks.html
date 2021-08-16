@@ -30,26 +30,28 @@
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body>
-    <div class="container">
-      <ul class="topnav">
-        <li><a class="active" href="/">Home</a></li>
-        <li><a href="/top-tracks">Top Tracks</a></li>
-        <li><a href="/top-artists">Top Artists</a></li>
-        <li><a href="/playlists">Playlists</a></li>
-        <li class="last">
-          <a href="https://www.spotify.com" class="spotify-logo">
-            <img src="/images/Spotify_Logo_RGB_White.png" alt="Spotify"
-            width="73" height"22" />
-          </a>
-        </li>
-        <li class="right"></li>
-      </ul>
+    <section class="container">
+      <nav class="topnav">
+        <ul>
+          <li><a class="active" href="/">Home</a></li>
+          <li><a href="/top-tracks">Top Tracks</a></li>
+          <li><a href="/top-artists">Top Artists</a></li>
+          <li><a href="/playlists">Playlists</a></li>
+          <li class="last">
+            <a href="https://www.spotify.com" class="spotify-logo">
+              <img src="/images/Spotify_Logo_RGB_White.png" alt="Spotify"
+              width="73" height"22" />
+            </a>
+          </li>
+          <li class="right"></li>
+        </ul>
+      </nav>
       <img
         id="get-token-loading-spinner"
         src="/images/200pxLoadingSpinner.svg"
         alt="Loading..."
       />
-      <section id="info-container">
+      <main id="info-container">
         <header>
           <h1 id="top-tracks-header">Your Top Tracks</h1>
         </header>
@@ -87,12 +89,12 @@
             <div class="border-cover"></div>
           </div>
         </div>
-        <div class="border-container" id="term-border-container">
+        <section class="border-container" id="term-border-container">
           <div class="expand-to-children">
             <div class="card-grid" id="track-cards-container"></div>
           </div>
           <button id="view-all-top-tracks" class="glow">See All 50</button>
-          <div
+          <header
             class="border-connected-btn-container no-select"
             id="feature-selections"
           >
@@ -149,11 +151,11 @@
               </button>
               <div class="border-cover"></div>
             </div>
-          </div>
-          <section id="tracks-data" class="border-container">
-            <div class="chart-container">
+          </header>
+          <div id="tracks-data" class="border-container">
+            <figure class="chart-container">
               <canvas id="tracks-chart"></canvas>
-            </div>
+            </figure>
             <div class="chart-info">
               <div>
                 <img
@@ -176,13 +178,13 @@
                 </div>
               </div>
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
         <section class="vibe">
           <h2>Your Vibe Expressed in Emojis</h2>
           <div id="emojis"></div>
         </section>
-      </section>
+      </main>
       <footer>
         <section id="icon8-links">
           <div class="icon8">
@@ -199,7 +201,7 @@
           </div>
         </section>
       </footer>
-    </div>
+    </section>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
       integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="

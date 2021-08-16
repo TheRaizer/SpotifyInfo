@@ -14,7 +14,7 @@
 */
 
 .artist {
-  & > div {
+  & > .content {
     color: white;
     display: flex;
     width: @base-width;
@@ -59,9 +59,9 @@
       margin-bottom: 15px;
       & > p {
         font-weight: bold;
-        flex: 0 0 5%;
+        flex: 0 0 10%;
       }
-      & > div {
+      & > .links {
         flex: 0 0 40%;
         margin-left: 5%;
         width: 40%;
@@ -121,7 +121,7 @@ ul.genres {
 
   align-self: center;
 
-  & > div {
+  & > section {
     & > h4 {
       margin-bottom: 10px;
     }
@@ -160,13 +160,13 @@ ul.track-list {
 
 @media only screen and (max-width: 820px) {
   .artist {
-    & > div {
+    & > .content {
       flex-direction: column;
       height: 800px;
       width: 300px;
 
       & .playlist-track {
-        & > div {
+        & > .links {
           flex: 0 0 60%;
           width: 60%;
           max-width: 60%;
