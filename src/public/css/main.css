@@ -980,7 +980,7 @@ ul.track-list > li {
   font-family: arial;
   text-align: left;
   width: 100%;
-  position: fixed;
+  position: sticky;
   top: 0;
 }
 .topnav li {
@@ -1049,28 +1049,27 @@ ul.track-list > li {
 .dropbtn {
   background-color: #04aa6d;
   color: white;
-  padding: 16px;
   font-size: 16px;
+  width: 100px;
+  height: 43px;
   border: none;
 }
 /* The container <div> - needed to position the dropdown content */
 .dropdown {
   position: relative;
-  display: inline-block;
 }
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
   display: none;
   position: fixed;
-  background-color: #f1f1f1;
+  right: 0;
+  background-color: #919191;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 }
 /* Links inside the dropdown */
 .dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
+  width: 100%;
   display: block;
 }
 /* Change color of dropdown links on hover */
