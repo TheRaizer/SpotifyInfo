@@ -7,12 +7,11 @@
 
 @import "main-colors.less";
 
-@max-z-index: 1000;
 @hover-color: rgba(221, 221, 221, 0.815);
 @border: 1px solid @hover-color;
 
 .topnav {
-  z-index: @max-z-index;
+  z-index: 1000;
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -21,8 +20,7 @@
   font-family: arial;
   text-align: left;
   width: 100%;
-  position: -webkit-sticky;
-  position: sticky;
+  position: fixed;
   top: 0;
 
   & li {

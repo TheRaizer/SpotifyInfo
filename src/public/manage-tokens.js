@@ -67,8 +67,8 @@ export function generateNavLogin(changeAccount = true) {
   });
 
   // Append the anchor element to the body.
-  document
-    .getElementsByClassName("topnav")[0]
-    .getElementsByClassName("right")[0]
-    .appendChild(a);
+  // document
+  //   .getElementsByClassName("topnav")[0]
+  //   .getElementsByClassName("right")[0]
+  //   .appendChild(a);
 }
