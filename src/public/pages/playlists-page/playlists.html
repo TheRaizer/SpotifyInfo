@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body>
-    <main class="container">
+    <div class="container">
       <nav class="topnav">
         <ul>
           <li><a class="active" href="/">Home</a></li>
@@ -47,7 +47,7 @@
             <div class="dropdown">
               <button class="dropbtn">Person Name</button>
               <div class="dropdown-content">
-                <a href="#">Profile</a>
+                <a href="/profile">Profile</a>
                 <a href="#">Settings</a>
               </div>
             </div>
@@ -59,7 +59,7 @@
         src="/images/200pxLoadingSpinner.svg"
         alt="Loading..."
       />
-      <section id="info-container">
+      <main id="info-container">
         <img
           class="info-loading-spinner"
           id="playlists-loading"
@@ -195,8 +195,8 @@
             icon by <a target="_blank" href="https://icons8.com">Icons8</a>
           </div>
         </section>
-      </section>
-    </main>
+      </main>
+    </div>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
       integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="

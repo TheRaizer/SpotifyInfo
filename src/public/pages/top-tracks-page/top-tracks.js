@@ -137,7 +137,7 @@ const displayCardInfo = (function () {
    *
    * @param {Array<Track>} trackArr array of track objects whose cards should be generated.
    * @param {Boolean} unanimatedAppear whether to show the card without animation or with animation.
-   * @returns {Array<HTML>} array of the card elements.
+   * @returns {Array<HTMLElement>} array of the card elements.
    */
   function generateCards(trackArr, unanimatedAppear) {
     removeAllChildNodes(tracksContainer);
@@ -198,7 +198,7 @@ const displayCardInfo = (function () {
    * @param {Array<Track>} trackArr - List of track objects whose cards should be generated or
    * empty list that should be filled when loading tracks.
    * @param {Boolean} autoAppear whether to show the cards without animation.
-   * @returns {Array<HTML>} list of Card HTML's.
+   * @returns {Array<HTMLElement>} list of Card HTMLElement's.
    */
   function displayTrackCards(trackArr, autoAppear = false) {
     trackActions.selectionVerif.selectionChanged(trackArr);

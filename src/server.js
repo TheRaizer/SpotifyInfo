@@ -101,6 +101,12 @@ app.get("/top-artists", function (_req, res) {
     .sendFile(__dirname + "/public/pages/top-artists-page/top-artists.html");
 });
 
+app.get("/profile", function (_req, res) {
+  res
+    .status(200)
+    .sendFile(__dirname + "/public/pages/profile-page/profile.html");
+});
+
 app.listen(process.env.EXPRESS_PORT, function () {
   console.log("listening at localhost:" + process.env.EXPRESS_PORT);
 });

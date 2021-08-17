@@ -101,7 +101,7 @@ const displayArtistCards = (function () {
    *
    * @param {Array<Track>} artistArr array of track objects whose cards should be generated.
    * @param {Boolean} autoAppear whether to show the card without animation or with animation.
-   * @returns {Array<HTML>} array of the card elements.
+   * @returns {Array<HTMLElement>} array of the card elements.
    */
   function generateCards(artistArr, autoAppear) {
     removeAllChildNodes(artistContainer);
@@ -159,7 +159,7 @@ const displayArtistCards = (function () {
    * @param {Array<Track>} artistArr - List of track objects whose cards should be generated or
    * empty list that should be filled when loading tracks.
    * @param {Boolean} autoAppear whether to show the cards without animation.
-   * @returns {Array<HTML>} list of Card HTML's.
+   * @returns {Array<HTMLElement>} list of Card HTMLElement's.
    */
   function displayArtistCards(artistArr, autoAppear = false) {
     selectionVerif.selectionChanged(artistArr);

@@ -17,7 +17,7 @@ const expandedPlaylistMods = document.getElementById(
 const playlistOrder = expandedPlaylistMods.getElementsByClassName(
   config.CSS.CLASSES.playlistOrder
 )[0];
-const trackArrUl = expandedPlaylistMods.getElementsByTagName("ul")[0];
+const trackUl = expandedPlaylistMods.getElementsByTagName("ul")[0];
 const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(
   config.CSS.CLASSES.playlistSearch
 )[0];
@@ -31,18 +31,22 @@ const cardResizeContainer = document
 // min viewport before playlist cards convert to text form automatically (equivalent to the media query in playlists.less that changes .card)
 const VIEWPORT_MIN = 600;
 
+// will resize the playlist card container to the size wanted when screen is <= VIEWPORT_MIN
 const restrictResizeWidth = () =>
   (cardResizeContainer.style.width = VIEWPORT_MIN / 2.5 + "px");
 
 const resizeActions = (function () {
+  // id of resize container used to set interaction through interactjs
   const resizeId =
     "#" +
     config.CSS.IDs.playlistsSection +
     ">." +
     config.CSS.CLASSES.resizeContainer;
+
   function enableResize() {
     interact(resizeId)
       .resizable({
+        // only resize from the right
         edges: { top: false, left: false, bottom: false, right: true },
         listeners: {
           move: function (event) {
@@ -61,7 +65,7 @@ const resizeActions = (function () {
     if (interact.isSet(resizeId)) {
       interact(resizeId).unset();
     }
-    // once we disable the resize we must restrict the width so itll fit to a 600px vw
+    // once we disable the resize we must restrict the width to fit within VIEWPORT_MIN pixels.
     restrictResizeWidth();
   }
 
@@ -71,10 +75,10 @@ const resizeActions = (function () {
   };
 })();
 // order of items should never change
-var expandablePlaylistTracks = [];
+var selPlaylistTracks = [];
 
 const playlistActions = (function () {
-  const selectionVerif = new AsyncSelectionVerif();
+  const playlistSelVerif = new AsyncSelectionVerif();
   const cardActionsHandler = new CardActionsHandler(1);
   const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
 
@@ -88,13 +92,13 @@ const playlistActions = (function () {
       .loadTracks()
       .then((tracks) => {
         // because .then() can run when the currently selected playlist has already changed we need to verify
-        if (!selectionVerif.isValid(playlistObj)) {
+        if (!playlistSelVerif.isValid(playlistObj)) {
           return;
         }
-        expandablePlaylistTracks = tracks;
+        selPlaylistTracks = tracks;
         callback();
 
-        selectionVerif.hasLoadedCurrSelected = true;
+        playlistSelVerif.hasLoadedCurrSelected = true;
       })
       .catch((err) => {
         console.log("Error when getting tracks");
@@ -106,22 +110,22 @@ const playlistActions = (function () {
     playlistSearchInput.value = "";
     playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
     playlistOrder.classList.add(config.CSS.CLASSES.hide);
-    trackArrUl.scrollTop = 0;
+    trackUl.scrollTop = 0;
   }
   function onTracksLoadingDone() {
     // show them once tracks have loaded
     playlistSearchInput.classList.remove(config.CSS.CLASSES.hide);
     playlistOrder.classList.remove(config.CSS.CLASSES.hide);
   }
-  /** Empty the track arr and replace it with newly loaded html track arr.
+  /** Empty the track li and replace it with newly loaded track li.
    *
    * @param {Playlist} playlistObj - a Playlist instance whose tracks will be loaded
    */
-  function showExpandedPlaylist(playlistObj) {
+  function showPlaylistTracks(playlistObj) {
     playlistTitleh2.textContent = playlistObj.name;
 
-    // empty the track arr html
-    removeAllChildNodes(trackArrUl);
+    // empty the track li
+    removeAllChildNodes(trackUl);
 
     // initially show the playlist with the loading spinner
     const htmlString = `
@@ -129,18 +133,19 @@ const playlistActions = (function () {
               <img src="${config.PATHS.spinner}" />
             </li>`;
     let spinnerEl = htmlToEl(htmlString);
-    trackArrUl.appendChild(spinnerEl);
+    trackUl.appendChild(spinnerEl);
 
-    selectionVerif.selectionChanged(playlistObj);
+    playlistSelVerif.selectionChanged(playlistObj);
 
+    // tracks are already loaded so show them
     if (playlistObj.hasLoadedTracks()) {
-      // tracks are already loaded so show them
       whenTracksLoading();
       onTracksLoadingDone();
-      expandablePlaylistTracks = playlistObj.trackObjs;
+      selPlaylistTracks = playlistObj.trackObjs;
       manageTracks.sortExpandedTracksToOrder();
-    } else {
-      // lazy load tracks then show them
+    }
+    // tracks aren't loaded so lazy load them then show them
+    else {
       whenTracksLoading();
       loadPlaylistTracks(playlistObj, () => {
         manageTracks.sortExpandedTracksToOrder();
@@ -149,15 +154,20 @@ const playlistActions = (function () {
     }
   }
 
+  /** When a card is clicked run the standard CardActionsHandler onClick then show its tracks on callback.
+   *
+   * @param {Array<Playlist>} playlistObjs
+   * @param {HTMLElement} playlistCard
+   */
   function clickCard(playlistObjs, playlistCard) {
     cardActionsHandler.onCardClick(playlistCard, playlistObjs, (selObj) =>
-      showExpandedPlaylist(selObj)
+      showPlaylistTracks(selObj)
     );
   }
 
-  /** Add an on click listener to each Playlist instance in the given arr.
+  /** Add event listeners to each playlist card.
    *
-   * @param {Arr<Playlist>} playlistObjs - arr of Playlist instances whose on click event listeners are being initialized
+   * @param {Arr<Playlist>} playlistObjs - playlists that will be used for the events.
    */
   function addOnPlaylistCardListeners(playlistObjs) {
     let playlistCards = Array.from(
@@ -181,15 +191,17 @@ const playlistActions = (function () {
   return {
     clickCard,
     addOnPlaylistCardListeners,
-    showExpandedPlaylist,
-    selectionVerif,
+    showPlaylistTracks,
+    playlistSelVerif,
   };
 })();
 
 const infoRetrieval = (function () {
   const playlistObjs = [];
 
-  /* Obtains playlist info from web api and displays their cards.*/
+  /** Obtains playlist info from web api and displays their cards.
+   *
+   */
   async function getInitialInfo() {
     // axios get request return a promise
     let response = await promiseHandler(axios.get(config.URLs.getPlaylists));
@@ -204,6 +216,7 @@ const infoRetrieval = (function () {
 
     const playlistDatas = response.res.data;
 
+    // generate Playlist instances from the data
     playlistDatas.forEach((data) => {
       playlistObjs.push(new Playlist(data.name, data.images, data.id));
     });
@@ -217,6 +230,10 @@ const infoRetrieval = (function () {
 })();
 
 const displayCardInfo = (function () {
+  /** Displays the playlist cards from a given array of playlists.
+   *
+   * @param {Array<Playlist>} playlistObjs
+   */
   function displayPlaylistCards(playlistObjs) {
     removeAllChildNodes(playlistsCardContainer);
     let isInTextForm =
@@ -236,7 +253,7 @@ const displayCardInfo = (function () {
         playlistObj.getPlaylistCardHtml(idx, isInTextForm)
       );
 
-      if (playlistObj === playlistActions.selectionVerif.currSelectedVal) {
+      if (playlistObj === playlistActions.playlistSelVerif.currSelectedVal) {
         // if before the form change this playlist was selected, simulate a click on it in order to select it in the new form
         playlistActions.clickCard(
           playlistObjs,
@@ -265,13 +282,13 @@ function removeAllChildNodes(parent) {
 const manageTracks = (function () {
   function sortExpandedTracksToOrder() {
     if (playlistOrder.value == "custom-order") {
-      rerenderPlaylistTracks(expandablePlaylistTracks, trackArrUl);
+      rerenderPlaylistTracks(selPlaylistTracks, trackUl);
     } else if (playlistOrder.value == "name") {
-      let tracks = orderTracksByName(expandablePlaylistTracks);
-      rerenderPlaylistTracks(tracks, trackArrUl);
+      let tracks = orderTracksByName(selPlaylistTracks);
+      rerenderPlaylistTracks(tracks, trackUl);
     } else if (playlistOrder.value == "date-added") {
-      let tracks = orderTracksByDateAdded(expandablePlaylistTracks);
-      rerenderPlaylistTracks(tracks, trackArrUl);
+      let tracks = orderTracksByDateAdded(selPlaylistTracks);
+      rerenderPlaylistTracks(tracks, trackUl);
     }
   }
   function orderTracksByName(tracks) {
@@ -327,7 +344,7 @@ const addEventListeners = (function () {
     expandedPlaylistMods
       .getElementsByClassName(config.CSS.CLASSES.playlistSearch)[0]
       .addEventListener("keyup", () => {
-        searchUl(trackArrUl, playlistSearchInput);
+        searchUl(trackUl, playlistSearchInput);
       });
   }
   function addExpandedPlaylistModsOrderEvent() {
@@ -339,28 +356,27 @@ const addEventListeners = (function () {
   function addDeleteRecentlyAddedTrackEvent() {
     function onClick() {
       if (
-        numToRemoveInput.value > expandablePlaylistTracks.length ||
+        numToRemoveInput.value > selPlaylistTracks.length ||
         numToRemoveInput.value == 0
       ) {
         console.log("cant remove this many");
         // the user is trying to delete more songs then there are available, you may want to allow this
         return;
       }
-      let orderedTracks = manageTracks.orderTracksByDateAdded(
-        expandablePlaylistTracks
-      );
+      let orderedTracks =
+        manageTracks.orderTracksByDateAdded(selPlaylistTracks);
       let tracksToRemove = orderedTracks.slice(0, numToRemoveInput.value);
 
       // remove songs contained in tracksToRemove from expandablePlaylistTracks
-      expandablePlaylistTracks = expandablePlaylistTracks.filter(
+      selPlaylistTracks = selPlaylistTracks.filter(
         (track) => !tracksToRemove.includes(track)
       );
 
-      let currPlaylist = playlistActions.selectionVerif.currSelectedVal;
+      let currPlaylist = playlistActions.playlistSelVerif.currSelectedVal;
 
       currPlaylist.addToUndoStack(tracksToRemove);
 
-      manageTracks.sortExpandedTracksToOrder(expandablePlaylistTracks);
+      manageTracks.sortExpandedTracksToOrder(selPlaylistTracks);
 
       promiseHandler(
         axios.delete(config.URLs.deletePlaylistTracks + currPlaylist.id, {
@@ -380,7 +396,7 @@ const addEventListeners = (function () {
   }
   function addUndoPlaylistTrackDeleteEvent() {
     function onClick() {
-      const currPlaylist = playlistActions.selectionVerif.currSelectedVal;
+      const currPlaylist = playlistActions.playlistSelVerif.currSelectedVal;
       if (!currPlaylist || currPlaylist.undoStack.length == 0) {
         return;
       }
@@ -395,11 +411,11 @@ const addEventListeners = (function () {
           // still looking at the playlist that was undone back, reload it.
           if (
             undonePlaylistId ==
-            playlistActions.selectionVerif.currSelectedVal.id
+            playlistActions.playlistSelVerif.currSelectedVal.id
           ) {
             // reload the playlist after adding tracks in order to show the tracks added back
-            playlistActions.showExpandedPlaylist(
-              playlistActions.selectionVerif.currSelectedVal
+            playlistActions.showPlaylistTracks(
+              playlistActions.playlistSelVerif.currSelectedVal
             );
           }
         }
