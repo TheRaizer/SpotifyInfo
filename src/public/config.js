@@ -55,6 +55,7 @@ export const config = {
       initialCard: "initial-card",
       convertCard: "convert-card",
       artistTermSelections: "artists-term-selections",
+      profileHeader: "profile-header",
     },
     CLASSES: {
       glow: "glow",
@@ -159,7 +160,7 @@ export function htmlToEl(html) {
 export async function promiseHandler(
   promise,
   onSuccesful = (res) => {},
-  onFailure = (res) => {}
+  onFailure = (err) => {}
 ) {
   try {
     const res = await promise;

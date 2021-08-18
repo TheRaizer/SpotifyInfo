@@ -206,25 +206,34 @@ const infoRetrieval = (function () {
    *
    */
   async function getInitialInfo() {
-    // axios get request return a promise
-    let response = await promiseHandler(axios.get(config.URLs.getPlaylists));
+    function onSuccesful(res) {
+      // remove the info loading spinners as info has been loaded
+      let infoSpinners = Array.from(
+        document.getElementsByClassName(config.CSS.CLASSES.infoLoadingSpinners)
+      );
+      infoSpinners.forEach((spinner) => {
+        spinner.parentNode.removeChild(spinner);
+      });
 
-    // remove the info loading spinners as info has been loaded
-    let infoSpinners = Array.from(
-      document.getElementsByClassName(config.CSS.CLASSES.infoLoadingSpinners)
+      const playlistDatas = res.data;
+
+      // generate Playlist instances from the data
+      playlistDatas.forEach((data) => {
+        playlistObjs.push(new Playlist(data.name, data.images, data.id));
+      });
+
+      displayCardInfo.displayPlaylistCards(playlistObjs);
+    }
+
+    // get playlists data and execute call back on succesful
+    await promiseHandler(
+      axios.get(config.URLs.getPlaylists),
+      onSuccesful,
+      (err) => {
+        // throw an error that will be sent down to the promise handler that initially executed getInitialInfo()
+        throw new Error(err);
+      }
     );
-    infoSpinners.forEach((spinner) => {
-      spinner.parentNode.removeChild(spinner);
-    });
-
-    const playlistDatas = response.res.data;
-
-    // generate Playlist instances from the data
-    playlistDatas.forEach((data) => {
-      playlistObjs.push(new Playlist(data.name, data.images, data.id));
-    });
-
-    displayCardInfo.displayPlaylistCards(playlistObjs);
   }
   return {
     getInitialInfo,
@@ -544,7 +553,7 @@ function checkIfCardFormChangeOnResize() {
 (function () {
   promiseHandler(checkIfHasTokens(), (hasToken) => {
     onSuccessfulTokenCall(hasToken, () => {
-      // render and get information
+      // get information and onSuccess animate the elements
       promiseHandler(
         infoRetrieval.getInitialInfo(),
         () =>
