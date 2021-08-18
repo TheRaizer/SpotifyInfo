@@ -48,7 +48,6 @@ export async function getTokens(onNoToken) {
   window.history.pushState(null, null, "/");
   return hasToken;
 }
-
 export function generateNavLogin(changeAccount = true) {
   // Create anchor element.
   let a = document.createElement("a");
@@ -72,4 +71,27 @@ export function generateNavLogin(changeAccount = true) {
     .getElementsByClassName("right")[0]
     .getElementsByClassName("dropdown-content")[0]
     .appendChild(a);
+}
+export function onSuccessfulTokenCall(
+  hasToken,
+  hasTokenCallback = () => {},
+  noTokenCallBack = () => {}
+) {
+  let getTokensSpinner = document.getElementById(
+    config.CSS.IDs.getTokenLoadingSpinner
+  );
+
+  // remove token spinner because by this line we have obtained the token
+  getTokensSpinner.parentNode.removeChild(getTokensSpinner);
+
+  const infoContainer = document.getElementById(config.CSS.IDs.infoContainer);
+  if (hasToken) {
+    generateNavLogin();
+    infoContainer.style.display = "block";
+    hasTokenCallback();
+  } else {
+    // if there is no token redirect to allow access page
+    window.location.href = "http://localhost:3000/";
+    noTokenCallBack();
+  }
 }

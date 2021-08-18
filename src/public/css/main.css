@@ -1035,9 +1035,6 @@ ul.track-list > li {
   border: 1px solid rgba(221, 221, 221, 0.815);
   border-radius: 50%;
 }
-#spotify-container {
-  margin-top: 30px;
-}
 .scroll-left {
   overflow: hidden;
   position: relative;
@@ -1097,4 +1094,12 @@ ul.track-list > li {
   -webkit-transform: scale(1.1);
   -ms-transform: scale(1.1);
   transform: scale(1.1);
+}
+#profile-header {
+  margin-left: 10vmin;
+  margin-top: 7vh;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }

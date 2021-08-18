@@ -169,7 +169,21 @@ async function getArtistTopTracks(req, res, next) {
   let id = req.query.id;
   await axios({
     method: "get",
-    url: `	https://api.spotify.com/v1/artists/${id}/top-tracks?market=CA`, // market is hard coded as Canada
+    url: `https://api.spotify.com/v1/artists/${id}/top-tracks?market=CA`, // market is hard coded as Canada
+    headers: spotifyGetHeaders(req),
+  })
+    .then(function (response) {
+      res.send(response.data);
+    })
+    .catch((err) => {
+      // run next to pass this error down to a middleware that will handle it
+      next(err);
+    });
+}
+async function getCurrentUserProfile(req, res, next) {
+  await axios({
+    method: "get",
+    url: "https://api.spotify.com/v1/me",
     headers: spotifyGetHeaders(req),
   })
     .then(function (response) {
@@ -192,4 +206,5 @@ export default {
   postSessionData,
   getSessionData,
   getArtistTopTracks,
+  getCurrentUserProfile,
 };

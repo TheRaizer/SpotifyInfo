@@ -121,6 +121,7 @@ export const config = {
     postSessionData: "/spotify/post-session-data?attr=",
     getSessionData: "/spotify/get-session-data?attr=",
     getArtistTopTracks: "/spotify/get-artist-top-tracks?id=",
+    getCurrentUserProfile: "/spotify/get-current-user-profile",
   },
   PATHS: {
     spinner: "/images/200pxLoadingSpinner.svg",

@@ -7,7 +7,10 @@ import {
   searchUl,
   animationControl,
 } from "../../config.js";
-import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
+import {
+  checkIfHasTokens,
+  onSuccessfulTokenCall,
+} from "../../manage-tokens.js";
 import CardActionsHandler from "../../card-actions.js";
 
 const expandedPlaylistMods = document.getElementById(
@@ -539,18 +542,8 @@ function checkIfCardFormChangeOnResize() {
 }
 
 (function () {
-  function onSuccesfulTokenCall(hasToken) {
-    let getTokensSpinner = document.getElementById(
-      config.CSS.IDs.getTokenLoadingSpinner
-    );
-
-    // remove token spinner because by this line we have obtained the token
-    getTokensSpinner.parentNode.removeChild(getTokensSpinner);
-
-    const infoContainer = document.getElementById(config.CSS.IDs.infoContainer);
-    if (hasToken) {
-      generateNavLogin();
-      infoContainer.style.display = "block";
+  promiseHandler(checkIfHasTokens(), (hasToken) => {
+    onSuccessfulTokenCall(hasToken, () => {
       // render and get information
       promiseHandler(
         infoRetrieval.getInitialInfo(),
@@ -562,14 +555,7 @@ function checkIfCardFormChangeOnResize() {
           ),
         () => console.log("Problem when getting information")
       );
-    } else {
-      // if there is no token redirect to allow access page
-      window.location.href = "http://localhost:3000/";
-    }
-  }
-
-  promiseHandler(checkIfHasTokens(), (hasToken) => {
-    onSuccesfulTokenCall(hasToken);
+    });
   });
 
   Object.entries(addEventListeners).forEach(([, addEventListener]) => {

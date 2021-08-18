@@ -7,7 +7,10 @@ import {
   animationControl,
 } from "../../config.js";
 import SelectableTabEls from "../../components/selectableTabEls.js";
-import { checkIfHasTokens, generateNavLogin } from "../../manage-tokens.js";
+import {
+  checkIfHasTokens,
+  onSuccessfulTokenCall,
+} from "../../manage-tokens.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 
 const MAX_VIEWABLE_CARDS = 5;
@@ -257,30 +260,12 @@ const addEventListeners = (function () {
 })();
 
 (function () {
-  function onSuccessfulTokenCall(hasToken) {
-    let getTokensSpinner = document.getElementById(
-      config.CSS.IDs.getTokenLoadingSpinner
-    );
-
-    // remove token spinner because by this line we have obtained the token
-    getTokensSpinner.parentNode.removeChild(getTokensSpinner);
-
-    const infoContainer = document.getElementById(config.CSS.IDs.infoContainer);
-    if (hasToken) {
-      generateNavLogin();
-      infoContainer.style.display = "block";
-
+  promiseHandler(checkIfHasTokens(), (hasToken) =>
+    onSuccessfulTokenCall(hasToken, () => {
       // when entering the page always show short term tracks first
       artistActions.selections.term = "short_term";
       displayArtistCards.displayArtistCards(artistArrs.topArtistObjsShortTerm);
-    } else {
-      // if there is no token redirect to allow access page
-      window.location.href = "http://localhost:3000/";
-    }
-  }
-
-  promiseHandler(checkIfHasTokens(), (hasToken) =>
-    onSuccessfulTokenCall(hasToken)
+    })
   );
   Object.entries(addEventListeners).forEach(([, addEventListener]) => {
     addEventListener();
