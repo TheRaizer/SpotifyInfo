@@ -242,6 +242,14 @@ const infoRetrieval = (function () {
 })();
 
 const displayCardInfo = (function () {
+  function determineResizeActiveness() {
+    // allow resizing only when viewport is large enough to allow cards.
+    if (window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches) {
+      resizeActions.disableResize();
+    } else {
+      resizeActions.enableResize();
+    }
+  }
   /** Displays the playlist cards from a given array of playlists.
    *
    * @param {Array<Playlist>} playlistObjs
@@ -252,30 +260,31 @@ const displayCardInfo = (function () {
       playlistsCardContainer.classList.contains(config.CSS.CLASSES.textForm) ||
       window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches;
 
-    // allow resizing only when viewport is large enough to allow cards.
-    if (window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches) {
-      resizeActions.disableResize();
-    } else {
-      resizeActions.enableResize();
-    }
+    determineResizeActiveness();
+    const selectedCard = playlistActions.playlistSelVerif.currSelectedVal;
 
-    // add card html to container element
+    // add card htmls to container element
     playlistObjs.map((playlistObj, idx) => {
       playlistsCardContainer.appendChild(
         playlistObj.getPlaylistCardHtml(idx, isInTextForm)
       );
 
-      if (playlistObj === playlistActions.playlistSelVerif.currSelectedVal) {
-        // if before the form change this playlist was selected, simulate a click on it in order to select it in the new form
+      // if before the form change this playlist was selected, simulate a click on it in order to select it in the new form
+      if (playlistObj === selectedCard) {
         playlistActions.clickCard(
           playlistObjs,
-          document.getElementById(playlistObj.cardId)
+          document.getElementById(selectedCard.cardId)
         );
       }
     });
+
+    // if there is a selected card scroll down to it.
+    if (selectedCard) {
+      document.getElementById(selectedCard.cardId).scrollIntoView();
+    }
+
     // add event listener to cards
     playlistActions.addOnPlaylistCardListeners(playlistObjs);
-
     // animate the cards(show the cards)
     animationControl.animateAttributes(".playlist", config.CSS.CLASSES.appear);
   }
