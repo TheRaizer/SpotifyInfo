@@ -1096,10 +1096,13 @@ ul.track-list > li {
   transform: scale(1.1);
 }
 #profile-header {
-  margin-left: 10vmin;
-  margin-top: 7vh;
+  background: linear-gradient(to right, #5f5f5f, #3d3d3d);
+  padding-left: 10vmin;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
   color: white;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  box-shadow: inset 0px -20px 12px -15px black;
 }

@@ -20,7 +20,7 @@ function displayProfile(profile) {
   followerCount.textContent = profile.followers + " followers";
   profileImage.src =
     profile.profileImgUrl == ""
-      ? "/images/user-icon-96px.png"
+      ? "/images/profile-user.png"
       : profile.profileImgUrl;
 }
 

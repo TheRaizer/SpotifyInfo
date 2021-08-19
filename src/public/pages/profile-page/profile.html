@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body>
-    <main class="container">
+    <section class="container">
       <nav class="topnav">
         <ul>
           <li><a class="active" href="/">Home</a></li>
@@ -53,20 +53,29 @@
           </li>
         </ul>
       </nav>
+      <header id="profile-header">
+        <img src="" alt="User Icon" />
+        <h1>User Name</h1>
+        <h4>000 Followers</h4>
+      </header>
       <img
         id="get-token-loading-spinner"
         src="/images/200pxLoadingSpinner.svg"
         alt="Loading..."
       />
-      <main id="info-container">
-        <header id="profile-header">
-          <img src="" alt="User Icon" />
-          <h1>User Name</h1>
-          <h4>000 Followers</h4>
-        </header>
-      </main>
-      <footer></footer>
-    </main>
+      <main id="info-container"></main>
+      <footer>
+        <section id="icon8-links">
+          <div class="icon8">
+            Icons made by
+            <a href="https://www.freepik.com" title="Freepik">Freepik</a> from
+            <a href="https://www.flaticon.com/" title="Flaticon"
+              >www.flaticon.com</a
+            >
+          </div>
+        </section>
+      </footer>
+    </section>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
       integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
