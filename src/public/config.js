@@ -105,6 +105,7 @@ export const config = {
     },
   },
   URLs: {
+    siteUrl: "http://localhost:3000",
     auth: `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
       "%20"
     )}&response_type=code&show_dialog=true`,

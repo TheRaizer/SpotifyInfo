@@ -3,6 +3,7 @@ import Profile from "../../components/profile.js";
 import {
   checkIfHasTokens,
   onSuccessfulTokenCall,
+  generateLogin,
 } from "../../manage-tokens.js";
 
 function displayProfile(profile) {
@@ -58,7 +59,10 @@ async function retrieveProfile() {
       promiseHandler(
         retrieveProfile(),
         () => {
-          // render info here
+          generateLogin({
+            classesToAdd: ["glow"],
+            parentEl: document.getElementById("account-btns"),
+          });
         },
         () => console.log("Problem when getting information")
       );

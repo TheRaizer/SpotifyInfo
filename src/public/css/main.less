@@ -51,37 +51,6 @@ footer {
   user-select: none;
 }
 
-.glow {
-  color: white;
-  font-weight: bold;
-  background-color: @primary-green;
-  text-decoration: none;
-
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-
-  height: -webkit-fit-content;
-  height: -moz-fit-content;
-  height: fit-content;
-
-  padding: 3px 6px;
-  border-color: @primary-green;
-  border-width: 2px;
-
-  -webkit-transition: all 0.1s linear;
-
-  -o-transition: all 0.1s linear;
-
-  transition: all 0.1s linear;
-
-  &:hover {
-    /* Box shadow adds Glow */
-    -webkit-box-shadow: 0px 0px 10px 5px @primary-green;
-    box-shadow: 0px 0px 10px 5px @primary-green;
-  }
-}
-
 .loading-spinner {
   width: 150px;
   height: 150px;
@@ -138,7 +107,7 @@ footer {
 }
 
 @import "chart-info.less";
-@import "main-colors.less";
+@import "main-vars.less";
 @import "observer-transitions.less";
 @import "card.less";
 @import "playlists.less";
@@ -148,6 +117,37 @@ footer {
 @import "home-page.less";
 @import "scrolling-text";
 @import "drop-down.less";
+
+.glow {
+  color: white;
+  font-weight: bold;
+  background-color: @primary-green;
+  text-decoration: none;
+
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+
+  padding: 3px 6px;
+  border-color: @primary-green;
+  border-width: 2px;
+
+  -webkit-transition: all 0.1s @quick-bezier;
+
+  -o-transition: all 0.1s @quick-bezier;
+
+  transition: all 0.1s @quick-bezier;
+
+  &:hover {
+    /* Box shadow adds Glow */
+    -webkit-box-shadow: 0px 0px 10px 5px @primary-green;
+    box-shadow: 0px 0px 10px 5px @primary-green;
+  }
+}
 
 .hide {
   visibility: hidden;
@@ -184,4 +184,15 @@ footer {
   align-items: flex-start;
 
   box-shadow: inset 0px -20px 12px -15px black;
+}
+
+#account-btns {
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-end;
+  justify-content: space-evenly;
+
+  height: 10vh;
+  margin-right: 10vw;
 }

@@ -5,7 +5,7 @@
 * Browsers: last 4 version
 */
 
-@import "main-colors.less";
+@import "main-vars.less";
 
 @card-width: 150px;
 @card-height: 170px;
@@ -44,8 +44,7 @@
   -webkit-box-shadow: 0px 0px 15px 4px rgb(14, 14, 14);
   box-shadow: 0px 0px 15px 4px rgb(14, 14, 14);
   left: 0;
-  transition: opacity 200ms ease-in,
-    transform 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  transition: opacity 200ms ease-in, transform 300ms @quick-bezier;
 
   & img {
     width: 110px;

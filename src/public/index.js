@@ -1,9 +1,5 @@
 import { config } from "./config.js";
-import {
-  checkIfHasTokens,
-  getTokens,
-  generateNavLogin,
-} from "./manage-tokens.js";
+import { checkIfHasTokens, getTokens, generateLogin } from "./manage-tokens.js";
 
 function createSpotifyLoginButton(changeAccount = false) {
   // Create anchor element.
@@ -26,19 +22,19 @@ function createSpotifyLoginButton(changeAccount = false) {
   });
 
   // Append the anchor element to the body.
-  document.getElementById(config.CSS.IDs.spotifyContainer).appendChild(btn);
+  document.getElementById(config.CSS.IDs.infoContainer).appendChild(btn);
 }
 
 async function obtainTokens() {
   let hasToken = await checkIfHasTokens();
   if (hasToken) {
-    generateNavLogin(true);
+    generateLogin();
     return;
   }
 
   hasToken = await getTokens(() => {
     // create spotify button if no auth code was found in the url
-    generateNavLogin(false);
+    generateLogin({ changeAccount: false });
     createSpotifyLoginButton();
   });
   console.log("get tokens");
@@ -55,7 +51,7 @@ async function obtainTokens() {
       // remove token spinner because by this line we have obtained the token
       getTokensSpinner.parentNode.removeChild(getTokensSpinner);
       if (hasToken) {
-        generateNavLogin(true);
+        generateLogin();
       }
     })
     .catch((err) => console.error(err));

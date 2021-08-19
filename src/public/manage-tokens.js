@@ -1,6 +1,6 @@
 import { config, promiseHandler } from "./config.js";
 
-const HALF_HOUR = 1.8e6; /* ms */
+const HALF_HOUR = 1.8e6; /* 30 min in ms */
 
 export async function checkIfHasTokens() {
   // if the user stays on the same page for 30 sec refresh the token.
@@ -48,29 +48,44 @@ export async function getTokens(onNoToken) {
   window.history.pushState(null, null, "/");
   return hasToken;
 }
-export function generateNavLogin(changeAccount = true) {
+
+/** Generate a login/change account link. Defaults to appending it onto the nav bar.
+ *
+ * @param {Array<String>} classesToAdd - the classes to add onto the link.
+ * @param {Boolean} changeAccount - Whether the link should be for changing account, or for logging in. (defaults to true)
+ * @param {HTMLElement} parentEl - the parent element to append the link onto. (defaults to navbar)
+ */
+export function generateLogin({
+  classesToAdd = ["right"],
+  changeAccount = true,
+  parentEl = document
+    .getElementsByClassName("topnav")[0]
+    .getElementsByClassName("right")[0]
+    .getElementsByClassName("dropdown-content")[0],
+} = {}) {
   // Create anchor element.
   let a = document.createElement("a");
   a.href = config.URLs.auth;
+
   // Create the text node for anchor element.
   let link = document.createTextNode(
     changeAccount ? "Change Account" : "Login To Spotify"
   );
+
   // Append the text node to anchor element.
   a.appendChild(link);
-  a.classList.add("right");
+  for (let i = 0; i < classesToAdd.length; i++) {
+    let classToAdd = classesToAdd[i];
+    a.classList.add(classToAdd);
+  }
 
   // clear current tokens when clicked
   a.addEventListener("click", () => {
     axios.post(config.URLs.postClearTokens).catch((err) => console.error(err));
   });
 
-  // Append the anchor element to the body.
-  document
-    .getElementsByClassName("topnav")[0]
-    .getElementsByClassName("right")[0]
-    .getElementsByClassName("dropdown-content")[0]
-    .appendChild(a);
+  // Append the anchor element to the parent.
+  parentEl.appendChild(a);
 }
 export function onSuccessfulTokenCall(
   hasToken,
@@ -86,12 +101,13 @@ export function onSuccessfulTokenCall(
 
   const infoContainer = document.getElementById(config.CSS.IDs.infoContainer);
   if (hasToken) {
-    generateNavLogin();
+    // generate the nav login
+    generateLogin();
     infoContainer.style.display = "block";
     hasTokenCallback();
   } else {
     // if there is no token redirect to allow access page
-    window.location.href = "http://localhost:3000/";
+    window.location.href = config.URLs.siteUrl;
     noTokenCallBack();
   }
 }
