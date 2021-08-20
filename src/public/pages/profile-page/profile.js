@@ -52,6 +52,23 @@ async function retrieveProfile() {
   );
 }
 
+const addEventListeners = (function () {
+  /** Adds the click event listener that clears session data and returns user back to home page.
+   *
+   */
+  function addClearDataListener() {
+    const clearDataEl = document.getElementById(config.CSS.IDs.clearData);
+    clearDataEl.href = config.URLs.siteUrl;
+
+    function onClick() {
+      axios.put(config.URLs.putClearSession);
+    }
+
+    clearDataEl.addEventListener("click", onClick);
+  }
+  return { addClearDataListener };
+})();
+
 (function () {
   promiseHandler(checkIfHasTokens(), (hasToken) =>
     onSuccessfulTokenCall(hasToken, () => {
@@ -68,7 +85,8 @@ async function retrieveProfile() {
       );
     })
   );
-  // Object.entries(addEventListeners).forEach(([, addEventListener]) => {
-  //   addEventListener();
-  // });
+
+  Object.entries(addEventListeners).forEach(([, addEventListener]) => {
+    addEventListener();
+  });
 })();

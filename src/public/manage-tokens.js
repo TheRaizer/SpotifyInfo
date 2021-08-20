@@ -7,7 +7,7 @@ export async function checkIfHasTokens() {
   function startRefreshInterval() {
     console.log("start interval refresh");
     setInterval(() => {
-      promiseHandler(axios.post(config.URLs.postRefreshAccessToken));
+      promiseHandler(axios.put(config.URLs.putRefreshAccessToken));
       console.log("refresh async");
     }, HALF_HOUR);
   }
@@ -81,7 +81,7 @@ export function generateLogin({
 
   // clear current tokens when clicked
   a.addEventListener("click", () => {
-    axios.post(config.URLs.postClearTokens).catch((err) => console.error(err));
+    axios.put(config.URLs.putClearTokens).catch((err) => console.error(err));
   });
 
   // Append the anchor element to the parent.

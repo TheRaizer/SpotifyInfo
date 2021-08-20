@@ -84,6 +84,7 @@ app.use(express.static(__dirname + "/public"));
 app.get("/", function (_req, res) {
   res.status(200).sendFile(__dirname + "/public/index.html");
 }); // '/' represents the home page which will render index.html from express server
+
 app.get("/playlists", function (_req, res) {
   res
     .status(200)
@@ -105,6 +106,12 @@ app.get("/profile", function (_req, res) {
   res
     .status(200)
     .sendFile(__dirname + "/public/pages/profile-page/profile.html");
+});
+
+// clear session data
+app.put("/clear-session", function (req, res) {
+  req.session.destroy();
+  res.sendStatus(200);
 });
 
 app.listen(process.env.EXPRESS_PORT, function () {

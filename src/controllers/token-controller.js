@@ -59,9 +59,9 @@ async function hasTokens(req, res, next) {
         next(err);
       });
     }
-    res.send(true);
+    res.status(200).send(true);
   } else {
-    res.send(false);
+    res.status(200).send(false);
   }
 }
 
@@ -76,15 +76,14 @@ function clearTokens(req, res) {
   req.session.access_token = "";
   req.session.refresh_token = "";
 
-  res.send("recieved post request to clear tokens");
+  res.sendStatus(200);
 }
 
-// expecting /retrieve_tokens?code=XXXX
 async function retrieveTokens(req, res, next) {
   await retrieveTokensPromise(req, false).catch((err) => {
     next(err);
   });
-  res.send("Post handler for token route");
+  res.sendStatus(200);
 }
 
 export default { hasTokens, refreshTokens, clearTokens, retrieveTokens };

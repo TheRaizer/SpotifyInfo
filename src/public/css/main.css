@@ -39,6 +39,7 @@ footer {
   margin-bottom: 15vh;
 }
 .no-select {
+  -webkit-user-drag: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;

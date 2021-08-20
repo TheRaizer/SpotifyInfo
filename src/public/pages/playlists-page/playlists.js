@@ -502,8 +502,8 @@ const addEventListeners = (function () {
 
 function saveResizeWidth() {
   promiseHandler(
-    axios.post(
-      config.URLs.postSessionData +
+    axios.put(
+      config.URLs.putSessionData +
         `playlist-resize-width&val=${
           cardResizeContainer.getBoundingClientRect().width
         }`

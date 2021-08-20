@@ -30,7 +30,7 @@ const getTopPromise = (req, url) => {
 async function getTopArtists(req, res, next) {
   await getTopPromise(req, "https://api.spotify.com/v1/me/top/artists")
     .then((response) => {
-      res.send(response);
+      res.status(200).send(response);
     })
     .catch((err) => {
       console.log("ERROR IN GET TOP ARTISTS");
@@ -41,7 +41,7 @@ async function getTopArtists(req, res, next) {
 async function getTopTracks(req, res, next) {
   await getTopPromise(req, "https://api.spotify.com/v1/me/top/tracks")
     .then((response) => {
-      res.send(response);
+      res.status(200).send(response);
     })
     .catch((err) => {
       // run next to pass this error down to a middleware that will handle it
@@ -56,7 +56,7 @@ async function getPlaylists(req, res, next) {
   })
     .then(function (response) {
       // the json is nested in a way that the below will retrieve playlists
-      res.send(response.data.items);
+      res.status(200).send(response.data.items);
     })
     .catch((err) => {
       // run next to pass this error down to a middleware that will handle it
@@ -74,7 +74,7 @@ async function getPlaylistTracks(req, res, next) {
     .then(function (response) {
       // get the list of items
       let items = response.data.items;
-      res.send(items);
+      res.status(200).send(items);
     })
     .catch((err) => {
       // run next to pass this error down to a middleware that will handle it
@@ -90,7 +90,7 @@ async function getTrackFeatures(req, res, next) {
     headers: spotifyGetHeaders(req),
   })
     .then(function (response) {
-      res.send(response.data);
+      res.status(200).send(response.data);
     })
     .catch((err) => {
       // run next to pass this error down to a middleware that will handle it
@@ -114,7 +114,7 @@ async function deletePlaylistItems(req, res, next) {
     data: { tracks: uriData },
   })
     .then(function () {
-      res.send("Success");
+      res.status(200).send("Success");
     })
     .catch((err) => {
       // run next to pass this error down to a middleware that will handle it
@@ -125,10 +125,14 @@ async function postPlaylistItems(req, res, next) {
   var playlistId = req.query.playlist_id;
   let trackObjs = req.body.data.tracks;
   const uriData = [];
+
+  // obtain track uris from request body
   for (let i = 0; i < trackObjs.length; i++) {
     let track = trackObjs[i];
     uriData.push(track.uri);
   }
+
+  // use track uris to post items to the given playlist
   await axios({
     method: "post",
     url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
@@ -136,14 +140,14 @@ async function postPlaylistItems(req, res, next) {
     data: { uris: uriData },
   })
     .then(function () {
-      res.send("Success");
+      res.status(200).send("Success");
     })
     .catch((err) => {
       // run next to pass this error down to a middleware that will handle it
       next(err);
     });
 }
-async function postSessionData(req, res, next) {
+async function putSessionData(req, res, next) {
   let attr = req.query.attr;
   let val = req.query.val;
 
@@ -153,7 +157,7 @@ async function postSessionData(req, res, next) {
     req.session[attr] = val;
     console.log(req.session);
 
-    res.send("recieved post request to clear tokens");
+    res.status(200).send("recieved post request to clear tokens");
   }
 }
 async function getSessionData(req, res, next) {
@@ -162,7 +166,7 @@ async function getSessionData(req, res, next) {
   if (attr == "refresh_token" || attr == "access_token") {
     next(new Error("Invalid Attribute"));
   } else {
-    res.send(req.session[attr]);
+    res.status(200).send(req.session[attr]);
   }
 }
 async function getArtistTopTracks(req, res, next) {
@@ -173,7 +177,7 @@ async function getArtistTopTracks(req, res, next) {
     headers: spotifyGetHeaders(req),
   })
     .then(function (response) {
-      res.send(response.data);
+      res.status(200).send(response.data);
     })
     .catch((err) => {
       // run next to pass this error down to a middleware that will handle it
@@ -187,7 +191,7 @@ async function getCurrentUserProfile(req, res, next) {
     headers: spotifyGetHeaders(req),
   })
     .then(function (response) {
-      res.send(response.data);
+      res.status(200).send(response.data);
     })
     .catch((err) => {
       // run next to pass this error down to a middleware that will handle it
@@ -203,7 +207,7 @@ export default {
   getTrackFeatures,
   deletePlaylistItems,
   postPlaylistItems,
-  postSessionData,
+  putSessionData,
   getSessionData,
   getArtistTopTracks,
   getCurrentUserProfile,
