@@ -1,4 +1,4 @@
-import Track from "../../components/track.js";
+import Track, { generateTracksFromData } from "../../components/track.js";
 import {
   config,
   promiseHandler,
@@ -14,7 +14,6 @@ import {
 } from "../../manage-tokens.js";
 import AsyncSelectionVerif from "../../components/asyncSelectionVerif.js";
 import CardActionsHandler from "../../card-actions.js";
-import Album from "../../components/album.js";
 
 const DEFAULT_VIEWABLE_CARDS = 5;
 const MAX_VIEWABLE_CARDS = 50;
@@ -81,24 +80,6 @@ const trackActions = (function () {
       };
     }
   }
-  function loadDatasToTrackArr(datas, trackArr) {
-    datas.forEach((data) => {
-      let props = {
-        name: data.name,
-        images: data.album.images,
-        duration: data.duration_ms,
-        uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
-        popularity: data.popularity,
-        releaseDate: data.album.release_date,
-        id: data.id,
-        album: new Album(data.album.name, data.album.external_urls.spotify),
-        externalUrl: data.external_urls.spotify,
-        artists: data.artists,
-      };
-      trackArr.push(new Track(props));
-    });
-    return trackArr;
-  }
   async function retrieveTracks(trackArr) {
     let { res, err } = await promiseHandler(
       axios.get(config.URLs.getTopTracks + selections.term)
@@ -106,7 +87,7 @@ const trackActions = (function () {
     if (err) {
       throw new Error(err);
     }
-    loadDatasToTrackArr(res.data, trackArr);
+    generateTracksFromData(res.data, trackArr);
 
     await promiseHandler(loadFeatures(trackArr));
   }

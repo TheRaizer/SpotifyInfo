@@ -1,5 +1,5 @@
 import { config, htmlToEl, getValidImage } from "../config.js";
-import Track from "../components/track.js";
+import { generateTracksFromData } from "../components/track.js";
 
 class Artist {
   constructor(id, name, genres, followerCount, externalUrl, images) {
@@ -56,23 +56,7 @@ class Artist {
     let tracksData = res.data.tracks;
     let trackObjs = [];
 
-    tracksData.forEach((track) => {
-      let props = {
-        name: track.name,
-        images: track.album.images,
-        duration: track.duration_ms,
-        uri:
-          track.linked_from !== undefined ? track.linked_from.uri : track.uri,
-        popularity: track.popularity,
-        dateAddedToPlaylist: "",
-        releaseDate: track.album.release_date,
-        id: track.id,
-        externalUrl: track.external_urls.spotify,
-        artists: track.artists,
-      };
-      // push an instance of a Track class to the list
-      trackObjs.push(new Track(props));
-    });
+    generateTracksFromData(tracksData, trackObjs);
 
     this.topTracks = trackObjs;
     return trackObjs;

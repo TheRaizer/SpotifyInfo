@@ -1,5 +1,5 @@
 import { config, htmlToEl, getValidImage } from "../config.js";
-import Track from "./track.js";
+import { generateTracksFromData } from "./track.js";
 
 class Playlist {
   constructor(name, images, id) {
@@ -54,34 +54,14 @@ class Playlist {
       .catch((err) => {
         throw new Error(err);
       });
+
     if (!res) {
       return [];
     }
-    let tracksData = res.data;
     var trackObjs = [];
 
-    tracksData.forEach((data) => {
-      // if the data exists
-      let track = data.track;
-      if (data && data.track) {
-        let props = {
-          name: track.name,
-          images: track.album.images,
-          duration: track.duration_ms,
-          uri:
-            track.linked_from !== undefined ? track.linked_from.uri : track.uri,
-          popularity: track.popularity,
-          dateAddedToPlaylist: data.added_at,
-          releaseDate: track.album.release_date,
-          id: track.id,
-          externalUrl: track.external_urls.spotify,
-          artists: track.artists,
-        };
-
-        // push an instance of a Track class to the list
-        trackObjs.push(new Track(props));
-      }
-    });
+    let tracksData = res.data.map((data) => data.track);
+    getPlaylistTracksFromDatas(tracksData, res.data, trackObjs);
 
     // define track objects
     this.trackObjs = trackObjs;
@@ -90,6 +70,28 @@ class Playlist {
 
   hasLoadedTracks() {
     return this.trackObjs === undefined ? false : true;
+  }
+}
+
+/** Gets playlist tracks from data. This also initializes the date added.
+ *
+ * @param {*} tracksData
+ * @param {*} dateAddedObjects - The object that contains the added_at variable.
+ * @param {*} tracksArr
+ */
+export function getPlaylistTracksFromDatas(
+  tracksData,
+  dateAddedObjects,
+  tracksArr
+) {
+  generateTracksFromData(tracksData, tracksArr);
+
+  // set the dates added
+  for (let i = 0; i < tracksArr.length; i++) {
+    let dateAddedObj = dateAddedObjects[i];
+    let track = tracksArr[i];
+
+    track.setDateAdded(dateAddedObj.added_at);
   }
 }
 

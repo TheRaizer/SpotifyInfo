@@ -126,6 +126,7 @@ export const config = {
     getArtistTopTracks: "/spotify/get-artist-top-tracks?id=",
     getCurrentUserProfile: "/spotify/get-current-user-profile",
     putClearSession: "/clear-session",
+    getCurrentUserSavedTracks: "/spotify/get-current-user-saved-tracks",
   },
   PATHS: {
     spinner: "/images/200pxLoadingSpinner.svg",

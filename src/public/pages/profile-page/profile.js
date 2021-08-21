@@ -1,5 +1,6 @@
 import { promiseHandler, config } from "../../config.js";
 import Profile from "../../components/profile.js";
+import { getPlaylistTracksFromDatas } from "../../components/playlist.js";
 import {
   checkIfHasTokens,
   onSuccessfulTokenCall,
@@ -69,6 +70,22 @@ const addEventListeners = (function () {
   return { addClearDataListener };
 })();
 
+const savedTracksActions = (function () {
+  function getSavedTracks() {
+    promiseHandler(axios.get(config.URLs.getCurrentUserSavedTracks), (res) => {
+      let tracksArr = [];
+      let tracksData = res.data.items.map((item) => item.track);
+
+      getPlaylistTracksFromDatas(tracksData, res.data.items, tracksArr);
+      displaySavedTracks(tracksArr);
+    });
+  }
+  function displaySavedTracks(tracksArr) {
+    console.log(tracksArr);
+  }
+  return { getSavedTracks };
+})();
+
 (function () {
   promiseHandler(checkIfHasTokens(), (hasToken) =>
     onSuccessfulTokenCall(hasToken, () => {
@@ -83,6 +100,8 @@ const addEventListeners = (function () {
         },
         () => console.log("Problem when getting information")
       );
+
+      savedTracksActions.getSavedTracks();
     })
   );
 

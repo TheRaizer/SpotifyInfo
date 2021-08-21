@@ -13,3 +13,7 @@ router.put("/put-session-data", spotifyCtrl.putSessionData);
 router.get("/get-session-data", spotifyCtrl.getSessionData);
 router.get("/get-artist-top-tracks", spotifyCtrl.getArtistTopTracks);
 router.get("/get-current-user-profile", spotifyCtrl.getCurrentUserProfile);
+router.get(
+  "/get-current-user-saved-tracks",
+  spotifyCtrl.getCurrentUserSavedTracks
+);

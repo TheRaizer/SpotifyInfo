@@ -5,6 +5,8 @@ import {
   getValidImage,
 } from "../config.js";
 
+import Album from "./album.js";
+
 class Track {
   constructor(props) {
     let {
@@ -13,7 +15,6 @@ class Track {
       duration,
       uri,
       popularity,
-      dateAddedToPlaylist = "",
       releaseDate,
       id,
       album,
@@ -31,12 +32,16 @@ class Track {
     this.uri = uri;
     this.popularity = popularity;
     this.cardId = "";
-    this.dateAddedToPlaylist = new Date(dateAddedToPlaylist);
+    this.dateAddedToPlaylist;
     this.releaseDate = new Date(releaseDate);
     this.album = album;
     this.features = undefined;
 
     this.imageUrl = getValidImage(images);
+  }
+
+  setDateAdded(dateAddedToPlaylist) {
+    this.dateAddedToPlaylist = new Date(dateAddedToPlaylist);
   }
 
   filterDataFromArtists(artists) {
@@ -188,6 +193,35 @@ class Track {
 
     return this.features;
   }
+}
+
+/** Generate a standard track from data excluding date added.
+ *
+ * @param {*} datas
+ * @param {*} trackArr
+ * @returns
+ */
+export function generateTracksFromData(datas, trackArr) {
+  datas.forEach((data) => {
+    if (data) {
+      let props = {
+        name: data.name,
+        images: data.album.images,
+        duration: data.duration_ms,
+        uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
+        popularity: data.popularity,
+        releaseDate: data.album.release_date,
+        id: data.id,
+        album: new Album(data.album.name, data.album.external_urls.spotify),
+        externalUrl: data.external_urls.spotify,
+        artists: data.artists,
+      };
+      if (trackArr) {
+        trackArr.push(new Track(props));
+      }
+    }
+  });
+  return trackArr;
 }
 
 export default Track;

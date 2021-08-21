@@ -198,7 +198,20 @@ async function getCurrentUserProfile(req, res, next) {
       next(err);
     });
 }
-
+async function getCurrentUserSavedTracks(req, res, next) {
+  await axios({
+    method: "get",
+    url: "https://api.spotify.com/v1/me/tracks",
+    headers: spotifyGetHeaders(req),
+  })
+    .then(function (response) {
+      res.status(200).send(response.data);
+    })
+    .catch((err) => {
+      // run next to pass this error down to a middleware that will handle it
+      next(err);
+    });
+}
 export default {
   getTopArtists,
   getTopTracks,
@@ -211,4 +224,5 @@ export default {
   getSessionData,
   getArtistTopTracks,
   getCurrentUserProfile,
+  getCurrentUserSavedTracks,
 };
