@@ -80,6 +80,10 @@ const savedTracksActions = (function () {
     });
   }
   function displaySavedTracks(tracksArr) {
+    let likedTracksUl = document.getElementById(config.CSS.IDs.likedTracks);
+    tracksArr.forEach((track) => {
+      likedTracksUl.append(track.getPlaylistTrackHtml());
+    });
     console.log(tracksArr);
   }
   return { getSavedTracks };

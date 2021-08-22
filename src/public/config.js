@@ -57,6 +57,7 @@ export const config = {
       artistTermSelections: "artists-term-selections",
       profileHeader: "profile-header",
       clearData: "clear-data",
+      likedTracks: "liked-tracks",
     },
     CLASSES: {
       glow: "glow",
