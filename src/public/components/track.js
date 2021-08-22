@@ -123,7 +123,7 @@ class Track {
               <img class="${config.CSS.CLASSES.noSelect}" src="${
       this.imageUrl
     }"></img>
-              <div>
+              <div class="${config.CSS.CLASSES.links}">
                 <a href="${this.externalUrl}" target="_blank">
                   <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.name

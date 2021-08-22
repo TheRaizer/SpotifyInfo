@@ -201,7 +201,7 @@ async function getCurrentUserProfile(req, res, next) {
 async function getCurrentUserSavedTracks(req, res, next) {
   await axios({
     method: "get",
-    url: "https://api.spotify.com/v1/me/tracks",
+    url: "https://api.spotify.com/v1/me/tracks?limit=50",
     headers: spotifyGetHeaders(req),
   })
     .then(function (response) {

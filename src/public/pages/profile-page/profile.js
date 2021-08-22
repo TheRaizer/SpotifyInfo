@@ -28,7 +28,6 @@ function displayProfile(profile) {
 
 async function retrieveProfile() {
   function onSuccesful(res) {
-    console.log(res);
     const data = res.data;
     let profile = new Profile(
       data.display_name,

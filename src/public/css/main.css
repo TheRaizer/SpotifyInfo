@@ -504,7 +504,7 @@ footer {
   border-width: 2px;
   border-radius: 5px;
 }
-.playlist-track > div {
+.playlist-track > .links {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -519,17 +519,17 @@ footer {
   width: 20%;
   max-width: 20%;
 }
-.playlist-track > div a {
+.playlist-track > .links a {
   font-size: 0.9em;
   margin-top: 5px;
   color: #9c9c9c;
   font-weight: normal;
 }
-.playlist-track > div a:hover {
+.playlist-track > .links a:hover {
   color: white;
   text-decoration: underline;
 }
-.playlist-track > div h4 {
+.playlist-track > .links h4 {
   margin-top: 0;
   color: white;
   font-weight: bold;
@@ -818,7 +818,7 @@ ul.genres > li {
 .tracks-area > section > h4 {
   margin-bottom: 10px;
 }
-ul.track-list {
+.artist ul.track-list {
   margin-left: 20px;
   margin-right: 10px;
   height: 350px;
@@ -826,7 +826,7 @@ ul.track-list {
   overflow-y: scroll;
   background-color: #1f1f1f;
 }
-ul.track-list > li {
+.artist ul.track-list > li {
   margin-left: 2%;
   height: 50px;
 }
@@ -862,6 +862,42 @@ ul.track-list > li {
   .artist ul.track-list {
     width: 280px;
   }
+}
+.profile-area ul.track-list {
+  margin-left: 20px;
+  margin-right: 10px;
+  height: 350px;
+  width: 790px;
+  overflow-y: scroll;
+  background-color: #1f1f1f;
+}
+.profile-area ul.track-list > li {
+  margin-left: 2%;
+  height: 50px;
+}
+.profile-area h2 {
+  font-size: 2em;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 2vh;
+}
+#profile-header {
+  background: linear-gradient(to right, #5f5f5f, #3d3d3d);
+  padding-left: 10vmin;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-shadow: inset 0px -20px 12px -15px black;
+}
+#account-btns {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-evenly;
+  height: 10vh;
 }
 /*
 * Prefixed by https://autoprefixer.github.io
@@ -1097,22 +1133,7 @@ ul.track-list > li {
   -ms-transform: scale(1.1);
   transform: scale(1.1);
 }
-#profile-header {
-  background: linear-gradient(to right, #5f5f5f, #3d3d3d);
-  padding-left: 10vmin;
-  padding-top: 5vh;
-  padding-bottom: 5vh;
-  color: white;
+.flex-row-around {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  box-shadow: inset 0px -20px 12px -15px black;
-}
-#account-btns {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-evenly;
-  height: 10vh;
-  margin-right: 10vw;
+  justify-content: space-around;
 }
