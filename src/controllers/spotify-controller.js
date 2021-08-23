@@ -226,6 +226,25 @@ async function getFollowedArtists(req, res, next) {
       next(err);
     });
 }
+async function putPlayTrack(req, res, next) {
+  let device_id = req.query.device_id;
+  let track_uri = req.query.track_uri;
+
+  await axios({
+    method: "put",
+    url: `https://api.spotify.com/v1/me/player/play?device_id=${device_id}`,
+    data: { uris: [track_uri] },
+    headers: spotifyGetHeaders(req),
+  })
+    .then(() => {
+      res.sendStatus(200);
+    })
+    .catch((err) => {
+      // run next to pass this error down to a middleware that will handle it
+      next(err);
+    });
+}
+
 export default {
   getTopArtists,
   getTopTracks,
@@ -240,4 +259,5 @@ export default {
   getCurrentUserProfile,
   getCurrentUserSavedTracks,
   getFollowedArtists,
+  putPlayTrack,
 };

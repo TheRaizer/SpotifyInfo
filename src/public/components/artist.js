@@ -94,7 +94,7 @@ class Artist extends Card {
   }
 
   async loadTopTracks() {
-    let res = await axios.get(config.URLs.getArtistTopTracks + this.artistId);
+    let res = await axios.get(config.URLs.getArtistTopTracks(this.artistId));
     let tracksData = res.data.tracks;
     let trackObjs = [];
 

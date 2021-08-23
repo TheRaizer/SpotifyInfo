@@ -126,11 +126,13 @@ export const config = {
     putRefreshAccessToken: "/tokens/refresh-token",
     putSessionData: "/spotify/put-session-data?attr=",
     getSessionData: "/spotify/get-session-data?attr=",
-    getArtistTopTracks: "/spotify/get-artist-top-tracks?id=",
+    getArtistTopTracks: (id) => `/spotify/get-artist-top-tracks?id=${id}`,
     getCurrentUserProfile: "/spotify/get-current-user-profile",
     putClearSession: "/clear-session",
     getCurrentUserSavedTracks: "/spotify/get-current-user-saved-tracks",
     getFollowedArtists: "/spotify/get-followed-artists",
+    putPlayTrack: (device_id, track_uri) =>
+      `/spotify/play-track?device_id=${device_id}&track_uri=${track_uri}`,
   },
   PATHS: {
     spinner: "/images/200pxLoadingSpinner.svg",

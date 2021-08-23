@@ -18,3 +18,4 @@ router.get(
   spotifyCtrl.getCurrentUserSavedTracks
 );
 router.get("/get-followed-artists", spotifyCtrl.getFollowedArtists);
+router.put("/play-track", spotifyCtrl.putPlayTrack);

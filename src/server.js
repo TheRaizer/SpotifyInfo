@@ -59,7 +59,26 @@ function logErrors(err, _req, _res, next) {
 
 // the app.use middleware run top down so we log errors at the end
 
-app.use(helmet());
+app.use(
+  helmet({
+    // don't set CSP (content security policy middle ware) as this will be set manually
+    contentSecurityPolicy: false,
+  })
+);
+app.use(
+  helmet.contentSecurityPolicy({
+    useDefaults: true,
+    directives: {
+      // allow these src's to be used in scripts.
+      "script-src": [
+        "'self'",
+        "https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js",
+      ],
+    },
+  })
+);
 app.use(session(sesh));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -68,8 +87,6 @@ app.use("/tokens", tokens);
 app.use("/spotify", spotifyActions);
 
 app.use(logErrors);
-// app.use(clientErrorHandler);
-// app.use(errorHandler);
 
 app.use(express.static(__dirname + "/public"));
 
