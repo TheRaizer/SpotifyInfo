@@ -1,4 +1,4 @@
-import Artist from "../../components/artist.js";
+import { generateArtistsFromData } from "../../components/artist.js";
 import {
   config,
   promiseHandler,
@@ -42,22 +42,6 @@ const artistActions = (function () {
     });
   }
 
-  function loadDatasToArtistArr(datas, artistArr) {
-    datas.forEach((data) => {
-      artistArr.push(
-        new Artist(
-          data.id,
-          data.name,
-          data.genres,
-          data.followers.total,
-          data.external_urls.spotify,
-          data.images
-        )
-      );
-    });
-    return artistArr;
-  }
-
   function getTopTracksUlFromArtist(artistObj) {
     let trackList = document
       .getElementById(artistObj.cardId)
@@ -73,7 +57,7 @@ const artistActions = (function () {
     if (err) {
       return;
     }
-    loadDatasToArtistArr(res.data, artistArr);
+    generateArtistsFromData(res.data, artistArr);
   }
   function getCurrSelTopArtists() {
     if (selections.term == "short_term") {

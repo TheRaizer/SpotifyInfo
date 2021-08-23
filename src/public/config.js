@@ -58,6 +58,7 @@ export const config = {
       profileHeader: "profile-header",
       clearData: "clear-data",
       likedTracks: "liked-tracks",
+      followedArtists: "followed-artists",
     },
     CLASSES: {
       glow: "glow",
@@ -128,6 +129,7 @@ export const config = {
     getCurrentUserProfile: "/spotify/get-current-user-profile",
     putClearSession: "/clear-session",
     getCurrentUserSavedTracks: "/spotify/get-current-user-saved-tracks",
+    getFollowedArtists: "/spotify/get-followed-artists",
   },
   PATHS: {
     spinner: "/images/200pxLoadingSpinner.svg",

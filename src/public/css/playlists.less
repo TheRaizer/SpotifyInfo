@@ -193,6 +193,7 @@
   color: @grayed-color;
 }
 #playlist-cards-container {
+  height: inherit;
   overflow-x: hidden;
 }
 #playlist-cards-container.text-form {
@@ -324,16 +325,6 @@
     border-right-color: #5f5f5f;
     border-right-width: 9px;
   }
-}
-#playlist-card-scroll-area {
-  overflow-y: scroll;
-  height: inherit;
-  /* Firefox */
-  /* WebKit */
-  /* Opera */
-  width: -o-calc(92%);
-  /* Standard */
-  width: calc(100% - 8px);
 }
 
 #hide-show-cards {

@@ -26,22 +26,16 @@ const trackActions = (function () {
     term: "short_term",
   };
   function addTrackCardListeners(trackArr) {
-    cardActionsHandler.clearSelectedEls();
     let trackCards = Array.from(
       document.getElementsByClassName(config.CSS.CLASSES.track)
     );
-
-    trackCards.forEach((trackCard) => {
-      trackCard.addEventListener("click", () =>
-        cardActionsHandler.onCardClick(trackCard, trackArr, null, true, false)
-      );
-      trackCard.addEventListener("mouseenter", () => {
-        cardActionsHandler.scrollTextOnCardEnter(trackCard);
-      });
-      trackCard.addEventListener("mouseleave", () => {
-        cardActionsHandler.scrollTextOnCardLeave(trackCard);
-      });
-    });
+    cardActionsHandler.addAllEventListeners(
+      trackCards,
+      trackArr,
+      null,
+      true,
+      false
+    );
   }
 
   function getCurrSelTopTracks() {
@@ -123,7 +117,7 @@ const displayCardInfo = (function () {
    * @param {Boolean} unanimatedAppear whether to show the card without animation or with animation.
    * @returns {Array<HTMLElement>} array of the card elements.
    */
-  function generateCards(trackArr, unanimatedAppear) {
+  function generateCards(trackArr) {
     removeAllChildNodes(tracksContainer);
     let cardHtmls = [];
 
@@ -132,7 +126,7 @@ const displayCardInfo = (function () {
     for (let i = 0; i < trackArr.length; i++) {
       let trackObj = trackArr[i];
       if (i < trackActions.selections.numViewableCards) {
-        let cardHtml = trackObj.getTrackCardHtml(i, unanimatedAppear);
+        let cardHtml = trackObj.getTrackCardHtml(i);
         tracksDisplayed.push(trackObj);
         cardHtmls.push(cardHtml);
         tracksContainer.appendChild(cardHtml);
@@ -144,13 +138,12 @@ const displayCardInfo = (function () {
     trackActions.addTrackCardListeners(trackArr);
     featureManager.changeTracksChart(tracksDisplayed);
 
-    if (!unanimatedAppear) {
-      animationControl.animateAttributes(
-        "." + config.CSS.CLASSES.rankCard,
-        config.CSS.CLASSES.appear,
-        25
-      );
-    }
+    // animate the cards into view
+    animationControl.animateAttributes(
+      "." + config.CSS.CLASSES.rankCard,
+      config.CSS.CLASSES.appear,
+      25
+    );
     return cardHtmls;
   }
   /** Begins retrieving tracks then verifies it is the correct selected tracks.
@@ -184,10 +177,10 @@ const displayCardInfo = (function () {
    * @param {Boolean} autoAppear whether to show the cards without animation.
    * @returns {Array<HTMLElement>} list of Card HTMLElement's.
    */
-  function displayTrackCards(trackArr, autoAppear = false) {
+  function displayTrackCards(trackArr) {
     trackActions.selectionVerif.selectionChanged(trackArr);
     if (trackArr.length > 0) {
-      return generateCards(trackArr, autoAppear);
+      return generateCards(trackArr);
     } else {
       return startLoadingTracks(trackArr);
     }

@@ -6,9 +6,11 @@ import {
 } from "../config.js";
 
 import Album from "./album.js";
+import Card from "./card.js";
 
-class Track {
+class Track extends Card {
   constructor(props) {
+    super();
     let {
       name,
       images,
@@ -31,7 +33,6 @@ class Track {
     // either the normal uri, or the linked_from.uri
     this.uri = uri;
     this.popularity = popularity;
-    this.cardId = "";
     this.dateAddedToPlaylist;
     this.releaseDate = new Date(releaseDate);
     this.album = album;
@@ -76,14 +77,14 @@ class Track {
     let html = `
             <div class="${config.CSS.CLASSES.rankCard} ${
       config.CSS.CLASSES.fadeIn
-    }">
+    } ${appearClass}">
               <h4 id="${config.CSS.IDs.rank}">${idx + 1}.</h4>
               <div class="${config.CSS.CLASSES.flipCard} ${
       config.CSS.CLASSES.noSelect
     }  ${config.CSS.CLASSES.expandOnHover}">
                 <button class="${config.CSS.CLASSES.card} ${
       config.CSS.CLASSES.flipCardInner
-    } ${config.CSS.CLASSES.track} ${appearClass}" id="${id}">
+    } ${config.CSS.CLASSES.track}" id="${this.getCardId()}">
                   <div class="${
                     config.CSS.CLASSES.flipCardFront
                   }"  title="Click to view more Info">
@@ -95,16 +96,16 @@ class Track {
                     </div>
                   </div>
                   <div class=${config.CSS.CLASSES.flipCardBack}>
-                  <h3>Duration:</h3>
-                  <p>${this.duration}</p>
-                  <h3>Release Date:</h3>
-                  <p>${this.releaseDate.toDateString()}</p>
-                  <h3>Album Name:</h3>
-                  <a href="${this.album.externalUrl}">
-                  <p class="${config.CSS.CLASSES.ellipsisWrap}">${
+                    <h3>Duration:</h3>
+                    <p>${this.duration}</p>
+                    <h3>Release Date:</h3>
+                    <p>${this.releaseDate.toDateString()}</p>
+                    <h3>Album Name:</h3>
+                    <a href="${this.album.externalUrl}">
+                      <p class="${config.CSS.CLASSES.ellipsisWrap}">${
       this.album.name
     }</p>
-                  </a>
+                    </a>
                   </div>
                 </button>
               </div>

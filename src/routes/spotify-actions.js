@@ -17,3 +17,4 @@ router.get(
   "/get-current-user-saved-tracks",
   spotifyCtrl.getCurrentUserSavedTracks
 );
+router.get("/get-followed-artists", spotifyCtrl.getFollowedArtists);

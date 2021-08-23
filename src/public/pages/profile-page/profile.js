@@ -6,6 +6,8 @@ import {
   onSuccessfulTokenCall,
   generateLogin,
 } from "../../manage-tokens.js";
+import { generateArtistsFromData } from "../../components/artist.js";
+import CardActionsHandler from "../../card-actions.js";
 
 function displayProfile(profile) {
   const displayName = document
@@ -72,6 +74,7 @@ const addEventListeners = (function () {
 const savedTracksActions = (function () {
   function getSavedTracks() {
     promiseHandler(axios.get(config.URLs.getCurrentUserSavedTracks), (res) => {
+      // if we retrieved the tracks succesfully, then display them
       let tracksArr = [];
       let tracksData = res.data.items.map((item) => item.track);
 
@@ -80,13 +83,51 @@ const savedTracksActions = (function () {
     });
   }
   function displaySavedTracks(tracksArr) {
-    let likedTracksUl = document.getElementById(config.CSS.IDs.likedTracks);
+    const likedTracksUl = document.getElementById(config.CSS.IDs.likedTracks);
     tracksArr.forEach((track) => {
       likedTracksUl.append(track.getPlaylistTrackHtml());
     });
-    console.log(tracksArr);
   }
   return { getSavedTracks };
+})();
+
+const followedArtistActions = (function () {
+  const cardActionsHandler = new CardActionsHandler(50);
+
+  function getFollowedArtists() {
+    promiseHandler(axios.get(config.URLs.getFollowedArtists), (res) => {
+      // if we retrieved the artists succesfully, then display them
+      var artistArr = [];
+      generateArtistsFromData(res.data.artists.items, artistArr);
+      displayFollowedArtists(artistArr);
+      console.log(artistArr);
+    });
+  }
+  function displayFollowedArtists(followedArtists) {
+    const cardGrid = document.getElementById(config.CSS.IDs.followedArtists);
+
+    // display the cards
+    let i = 0;
+    followedArtists.forEach((artist) => {
+      cardGrid.append(artist.getArtistCardHtml(i, true));
+      i++;
+    });
+
+    let artistCards = Array.from(
+      document.getElementsByClassName(config.CSS.CLASSES.artist)
+    );
+
+    // add event listeners to the cards
+    cardActionsHandler.addAllEventListeners(
+      artistCards,
+      followedArtists,
+      null,
+      true,
+      false
+    );
+  }
+
+  return { getFollowedArtists };
 })();
 
 (function () {
@@ -105,6 +146,7 @@ const savedTracksActions = (function () {
       );
 
       savedTracksActions.getSavedTracks();
+      followedArtistActions.getFollowedArtists();
     })
   );
 

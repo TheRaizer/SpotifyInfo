@@ -49,6 +49,9 @@ footer {
   width: 150px;
   height: 150px;
 }
+.scroll-bar {
+  overflow-y: scroll;
+}
 .scroll-bar::-webkit-scrollbar {
   width: 12px;
   /* width of the entire scrollbar */
@@ -277,7 +280,6 @@ footer {
   grid-auto-rows: minmax(200px, max-content);
   -ms-grid-row-align: center;
   align-self: center;
-  overflow-y: hidden;
 }
 .card {
   /* Make relative to allow movement from normal position during animations */
@@ -558,6 +560,7 @@ footer {
   color: #9c9c9c;
 }
 #playlist-cards-container {
+  height: inherit;
   overflow-x: hidden;
 }
 #playlist-cards-container.text-form {
@@ -660,16 +663,6 @@ footer {
   border-right-color: #5f5f5f;
   border-right-width: 9px;
 }
-#playlist-card-scroll-area {
-  overflow-y: scroll;
-  height: inherit;
-  /* Firefox */
-  /* WebKit */
-  /* Opera */
-  width: -o-calc(92%);
-  /* Standard */
-  width: calc(100% - 8px);
-}
 #hide-show-cards {
   display: none;
 }
@@ -730,7 +723,7 @@ footer {
 * Autoprefixer: v9.7.6
 * Browsers: last 4 version
 */
-.artist > .content {
+#artist-cards-container > .artist > .content {
   color: white;
   display: flex;
   width: 250px;
@@ -747,34 +740,34 @@ footer {
   overflow: hidden;
   transition: width 500ms cubic-bezier(0.075, 0.82, 0.165, 1), height 500ms cubic-bezier(0.075, 0.82, 0.165, 1), transform 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
 }
-.artist > .content > * {
+#artist-cards-container > .artist > .content > * {
   flex: 0 0 auto;
 }
-.artist > .content h4 {
+#artist-cards-container > .artist > .content h4 {
   font-weight: bold;
   font-size: 1.2em;
 }
-.artist > .content h3 {
+#artist-cards-container > .artist > .content h3 {
   font-weight: bold;
   font-size: 1.6em;
   margin-top: 20px;
   margin-bottom: 10px;
 }
-.artist > .content .playlist-track {
+#artist-cards-container > .artist > .content .playlist-track {
   margin-top: 15px;
   margin-bottom: 15px;
 }
-.artist > .content .playlist-track > p {
+#artist-cards-container > .artist > .content .playlist-track > p {
   font-weight: bold;
   flex: 0 0 10%;
 }
-.artist > .content .playlist-track > .links {
+#artist-cards-container > .artist > .content .playlist-track > .links {
   flex: 0 0 40%;
   margin-left: 5%;
   width: 40%;
   max-width: 40%;
 }
-.artist > .content .playlist-track > h5 {
+#artist-cards-container > .artist > .content .playlist-track > h5 {
   flex: 0 0 20%;
 }
 .artist-base {
@@ -818,7 +811,7 @@ ul.genres > li {
 .tracks-area > section > h4 {
   margin-bottom: 10px;
 }
-.artist ul.track-list {
+#artist-cards-container > .artist ul.track-list {
   margin-left: 20px;
   margin-right: 10px;
   height: 350px;
@@ -826,7 +819,7 @@ ul.genres > li {
   overflow-y: scroll;
   background-color: #1f1f1f;
 }
-.artist ul.track-list > li {
+#artist-cards-container > .artist ul.track-list > li {
   margin-left: 2%;
   height: 50px;
 }
@@ -846,28 +839,26 @@ ul.genres > li {
   align-items: center;
 }
 @media only screen and (max-width: 820px) {
-  .artist > .content {
+  #artist-cards-container > .artist > .content {
     flex-direction: column;
     height: 800px;
     width: 300px;
   }
-  .artist > .content .playlist-track > .links {
+  #artist-cards-container > .artist > .content .playlist-track > .links {
     flex: 0 0 60%;
     width: 60%;
     max-width: 60%;
   }
-  .artist > .content .playlist-track > h5 {
+  #artist-cards-container > .artist > .content .playlist-track > h5 {
     display: none;
   }
-  .artist ul.track-list {
+  #artist-cards-container > .artist ul.track-list {
     width: 280px;
   }
 }
 .profile-area ul.track-list {
-  margin-left: 20px;
-  margin-right: 10px;
   height: 430px;
-  width: 790px;
+  width: 980px;
   overflow-y: scroll;
   background-color: #1f1f1f;
 }
@@ -898,6 +889,10 @@ ul.genres > li {
   align-items: flex-end;
   justify-content: space-evenly;
   height: 10vh;
+}
+#followed-artists {
+  width: 80vw;
+  height: 40vh;
 }
 /*
 * Prefixed by https://autoprefixer.github.io
@@ -1136,4 +1131,7 @@ ul.genres > li {
 .flex-row-around {
   display: flex;
   justify-content: space-around;
+}
+.track-list {
+  box-shadow: inset 0px -14px 20px -15px black, inset 0px 14px 20px -15px black;
 }

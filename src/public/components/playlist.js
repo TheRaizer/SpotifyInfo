@@ -1,14 +1,15 @@
 import { config, htmlToEl, getValidImage } from "../config.js";
 import { generateTracksFromData } from "./track.js";
+import Card from "./card.js";
 
-class Playlist {
+class Playlist extends Card {
   constructor(name, images, id) {
+    super();
     this.name = name;
     this.id = id;
     this.undoStack = [];
 
     // the id of the playlist card element
-    this.cardId = "";
     this.imageUrl = getValidImage(images);
   }
 
@@ -33,7 +34,7 @@ class Playlist {
       config.CSS.CLASSES.card
     } ${config.CSS.CLASSES.playlist} ${config.CSS.CLASSES.noSelect} ${
       isSelected ? config.CSS.CLASSES.selected : ""
-    }" id="${id}" title="Click to View Tracks">
+    }" id="${this.getCardId()}" title="Click to View Tracks">
               <img src="${this.imageUrl}" alt="Playlist Cover"></img>
               <h4 class="${config.CSS.CLASSES.scrollingText} ${
       config.CSS.CLASSES.ellipsisWrap

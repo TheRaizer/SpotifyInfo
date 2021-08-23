@@ -11,7 +11,7 @@ export default class CardActionsHandler {
    *
    * @param {HTML} selCardEl - the card that executed this function when clicked
    * @param {List} corrObjList - the list of objects that contains one that corrosponds to the selected card,
-   * each object should have the cardId attribute.
+   * each ***object must have the cardId attribute.
    * @param {Function} callback - function to run when selected object has changed
    * @param {Boolean} allowUnselSelected - whether to allow unselecting of the selected card by clicking on it again
    * @param {Boolean} unselectPrevious - whether to unselect the previously selected card
@@ -32,14 +32,7 @@ export default class CardActionsHandler {
       return;
     }
     // get corrosponding object using the cardEl id
-    let selObj = corrObjList.find((x) => {
-      if (x.cardId == undefined) {
-        throw new Error(
-          "corrosponding card object does not contain the 'cardId' attribute"
-        );
-      }
-      return x.cardId == selCardEl.id;
-    });
+    let selObj = corrObjList.find((x) => x.getCardId() == selCardEl.id);
 
     // error if there is no corrosponding object
     if (!selObj) {
@@ -130,5 +123,33 @@ export default class CardActionsHandler {
 
   clearSelectedEls() {
     this.storedSelEls.splice(0, this.storedSelEls.length);
+  }
+
+  addAllEventListeners(
+    cards,
+    objArr,
+    clickCallBack,
+    allowUnselected,
+    unselectPrevious
+  ) {
+    this.clearSelectedEls();
+
+    cards.forEach((trackCard) => {
+      trackCard.addEventListener("click", () =>
+        this.onCardClick(
+          trackCard,
+          objArr,
+          clickCallBack,
+          allowUnselected,
+          unselectPrevious
+        )
+      );
+      trackCard.addEventListener("mouseenter", () => {
+        this.scrollTextOnCardEnter(trackCard);
+      });
+      trackCard.addEventListener("mouseleave", () => {
+        this.scrollTextOnCardLeave(trackCard);
+      });
+    });
   }
 }
