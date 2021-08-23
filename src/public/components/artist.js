@@ -66,7 +66,6 @@ class Artist extends Card {
             <div class="${config.CSS.CLASSES.rankCard} ${
       config.CSS.CLASSES.fadeIn
     } ${appearClass}">
-              <h4 id="${config.CSS.IDs.rank}">${idx + 1}.</h4>
               <div class="${config.CSS.CLASSES.flipCard} ${
       config.CSS.CLASSES.noSelect
     }  ${config.CSS.CLASSES.expandOnHover}">

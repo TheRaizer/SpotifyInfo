@@ -35,7 +35,7 @@ export async function getTokens(onNoToken) {
 
   if (authCode) {
     await promiseHandler(
-      axios.get(`${config.URLs.getTokensPrefix}${authCode}`),
+      axios.get(`${config.URLs.getObtainTokensPrefix}${authCode}`),
 
       // if the request was succesful we have recieved a token
       () => (hasToken = true)

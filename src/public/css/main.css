@@ -866,6 +866,9 @@ ul.genres > li {
   margin-left: 2%;
   height: 50px;
 }
+.profile-area {
+  margin-top: 10vh;
+}
 .profile-area h2 {
   font-size: 2em;
   font-weight: bold;
@@ -891,6 +894,7 @@ ul.genres > li {
   height: 10vh;
 }
 #followed-artists {
+  margin-top: 8vh;
   width: 80vw;
   height: 40vh;
 }

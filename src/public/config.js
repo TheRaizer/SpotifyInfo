@@ -113,7 +113,8 @@ export const config = {
       "%20"
     )}&response_type=code&show_dialog=true`,
     getHasTokens: "/tokens/has-tokens",
-    getTokensPrefix: "/tokens/retrieve-tokens?code=",
+    getAccessToken: "/tokens/get-access-token",
+    getObtainTokensPrefix: "/tokens/obtain-tokens?code=",
     getTopArtists: "/spotify/get-top-artists?time_range=",
     getTopTracks: "/spotify/get-top-tracks?time_range=",
     getPlaylists: "/spotify/get-playlists",

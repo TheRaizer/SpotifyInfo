@@ -3,6 +3,8 @@ dotenv.config();
 
 import express from "express";
 import { createClient } from "redis";
+
+import helmet from "helmet";
 import session from "express-session";
 
 import { router as tokens } from "./routes/tokens.js";
@@ -54,19 +56,10 @@ function logErrors(err, _req, _res, next) {
   console.log(err.response.data);
   next(err);
 }
-// function clientErrorHandler(err, req, res, next) {
-//   if (req.xhr) {
-//     res.status(500).send({ error: "Something failed!" });
-//   } else {
-//     next(err);
-//   }
-// }
-// function errorHandler(err, _req, res, next) {
-//   res.status(500);
-//   res.render("error", { error: err });
-// }
 
-// the use middleware run top down so we log errors at the end
+// the app.use middleware run top down so we log errors at the end
+
+app.use(helmet());
 app.use(session(sesh));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

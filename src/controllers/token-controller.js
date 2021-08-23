@@ -9,7 +9,7 @@ function hasBeenMoreOneHour(date) {
   return false;
 }
 
-const retrieveTokensPromise = async (req, isRefresh) => {
+const obtainTokensPromise = async (req, isRefresh) => {
   const tokenURL = "https://accounts.spotify.com/api/token";
   const headers = {
     headers: {
@@ -55,7 +55,7 @@ async function hasTokens(req, res, next) {
     // if its been more then 1 hour since this session's tokens were obtained
     if (hasBeenMoreOneHour(new Date(req.session.updateDate))) {
       // refresh tokens
-      await retrieveTokensPromise(req, true).catch((err) => {
+      await obtainTokensPromise(req, true).catch((err) => {
         next(err);
       });
     }
@@ -66,7 +66,7 @@ async function hasTokens(req, res, next) {
 }
 
 async function refreshTokens(req, _res, next) {
-  await retrieveTokensPromise(req, true).catch((err) => {
+  await obtainTokensPromise(req, true).catch((err) => {
     next(err);
   });
 }
@@ -79,11 +79,25 @@ function clearTokens(req, res) {
   res.sendStatus(200);
 }
 
-async function retrieveTokens(req, res, next) {
-  await retrieveTokensPromise(req, false).catch((err) => {
+async function obtainTokens(req, res, next) {
+  await obtainTokensPromise(req, false).catch((err) => {
     next(err);
   });
   res.sendStatus(200);
 }
 
-export default { hasTokens, refreshTokens, clearTokens, retrieveTokens };
+function getAccessToken(req, res, next) {
+  if (req.session.access_token) {
+    res.status(200).send(req.session.access_token);
+  } else {
+    next(new Error("No access token available"));
+  }
+}
+
+export default {
+  hasTokens,
+  refreshTokens,
+  clearTokens,
+  obtainTokens,
+  getAccessToken,
+};
