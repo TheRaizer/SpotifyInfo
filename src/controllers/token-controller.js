@@ -86,11 +86,11 @@ async function obtainTokens(req, res, next) {
   res.sendStatus(200);
 }
 
-function getAccessToken(req, res, next) {
+function getAccessToken(req, res) {
   if (req.session.access_token) {
     res.status(200).send(req.session.access_token);
   } else {
-    next(new Error("No access token available"));
+    res.status(204).send(null);
   }
 }
 

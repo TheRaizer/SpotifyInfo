@@ -4,7 +4,7 @@ import {
   htmlToEl,
   getValidImage,
 } from "../config.js";
-
+import { spotifyPlayback } from "./playback-sdk.js";
 import Album from "./album.js";
 import Card from "./card.js";
 

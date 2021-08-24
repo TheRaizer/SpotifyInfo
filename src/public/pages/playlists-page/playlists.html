@@ -205,8 +205,9 @@
       referrerpolicy="no-referrer"
     ></script>
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
-    <script type="module" src="components/track.js"></script>
-    <script type="module" src="config.js"></script>
+
+    <!-- place play back sdk script before playlist as it needs to load first unlike other scripts that are added through ES6 import -->
+    <script type="module" src="components/playback-sdk.js"></script>
     <script type="module" src="pages/playlists-page/playlists.js"></script>
   </body>
 </html>
