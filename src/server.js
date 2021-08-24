@@ -72,7 +72,7 @@ app.use(
       "img-src": [
         "'self'",
         "data:",
-        // trust these src's to obtain images
+        // trust these src's to obtain images, as they are spotify owned
         "https://i.scdn.co/",
         "https://mosaic.scdn.co/",
         "https://lineup-images.scdn.co/",
@@ -80,10 +80,10 @@ app.use(
       // allow these src's to be used in scripts.
       "script-src": [
         "'self'",
-        "https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js",
+        "https://cdnjs.cloudflare.com",
+        "https://sdk.scdn.co",
       ],
+      "frame-src": ["'self'", "https://sdk.scdn.co"],
     },
   })
 );

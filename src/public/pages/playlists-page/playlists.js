@@ -12,6 +12,7 @@ import {
   onSuccessfulTokenCall,
 } from "../../manage-tokens.js";
 import CardActionsHandler from "../../card-actions.js";
+import SpotifyPlayBack from "../../components/playback-sdk.js";
 
 const expandedPlaylistMods = document.getElementById(
   config.CSS.IDs.expandedPlaylistMods
@@ -554,6 +555,7 @@ function checkIfCardFormChangeOnResize() {
 
     if (wasBigNowSmall || wasSmallNowBig) {
       if (wasSmallNowBig) {
+        const hideShowCards = document.getElementById("hide-show-cards");
         hideShowCards.classList.remove(config.CSS.CLASSES.selected);
         updateHideShowCardsImg();
       }
@@ -589,4 +591,6 @@ function checkIfCardFormChangeOnResize() {
   checkIfCardFormChangeOnResize();
 
   loadResizeWidth();
+
+  let playback = new SpotifyPlayBack();
 })();

@@ -2,19 +2,20 @@ import { config, promiseHandler } from "../config.js";
 
 class SpotifyPlayBack {
   constructor() {
-    this.play = null;
     this.player = null;
+    this.device_id = "";
 
     window.onSpotifyWebPlaybackSDKReady = () => {
       promiseHandler(axios.get(config.URLs.getAccessToken), (res) => {
         // if getting token was succesful create spotify player
 
         this.player = new Spotify.Player({
-          name: "Web Playback SDK Quick Start Player",
+          name: "Spotify Info Web Player",
           getOAuthToken: (cb) => {
             // give the token to callback
             cb(res.data);
           },
+          volume: 0.3,
         });
 
         // Error handling
@@ -23,6 +24,7 @@ class SpotifyPlayBack {
         });
         this.player.addListener("authentication_error", ({ message }) => {
           console.error(message);
+          console.log("playback couldnt start");
         });
         this.player.addListener("account_error", ({ message }) => {
           console.error(message);
@@ -39,6 +41,10 @@ class SpotifyPlayBack {
         // Ready
         this.player.addListener("ready", ({ device_id }) => {
           console.log("Ready with Device ID", device_id);
+          this.device_id = device_id;
+
+          // TEST WHICH PLAYS A SONG
+          // this.play("spotify:track:7FL5iSLdKcersBgDiwijis", this.device_id);
         });
 
         // Not Ready
@@ -51,4 +57,10 @@ class SpotifyPlayBack {
       });
     };
   }
+
+  play(track_uri, device_id) {
+    promiseHandler(axios.put(config.URLs.putPlayTrack(device_id, track_uri)));
+  }
 }
+
+export default SpotifyPlayBack;

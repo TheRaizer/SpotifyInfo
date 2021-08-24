@@ -100,7 +100,6 @@ const followedArtistActions = (function () {
       var artistArr = [];
       generateArtistsFromData(res.data.artists.items, artistArr);
       displayFollowedArtists(artistArr);
-      console.log(artistArr);
     });
   }
   function displayFollowedArtists(followedArtists) {
