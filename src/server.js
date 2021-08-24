@@ -69,6 +69,14 @@ app.use(
   helmet.contentSecurityPolicy({
     useDefaults: true,
     directives: {
+      "img-src": [
+        "'self'",
+        "data:",
+        // trust these src's to obtain images
+        "https://i.scdn.co/",
+        "https://mosaic.scdn.co/",
+        "https://lineup-images.scdn.co/",
+      ],
       // allow these src's to be used in scripts.
       "script-src": [
         "'self'",

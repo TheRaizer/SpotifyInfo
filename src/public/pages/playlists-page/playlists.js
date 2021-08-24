@@ -449,12 +449,19 @@ const addEventListeners = (function () {
   function addModsOpenerEvent() {
     const modsSection = document.getElementById(config.CSS.IDs.playlistMods);
     const openModsSection = document.getElementById(config.CSS.IDs.modsOpener);
-
+    const wrenchIcon = openModsSection.getElementsByTagName("img")[0];
     openModsSection.addEventListener("click", () => {
+      // expand mods section
       modsSection.classList.toggle(config.CSS.CLASSES.appear);
-      openModsSection
-        .getElementsByTagName("img")[0]
-        .classList.toggle(config.CSS.CLASSES.selected);
+      // select the wrench image
+      wrenchIcon.classList.toggle(config.CSS.CLASSES.selected);
+    });
+
+    wrenchIcon.addEventListener("mouseenter", () => {
+      wrenchIcon.src = "/images/wrench-anim.gif";
+    });
+    wrenchIcon.addEventListener("mouseleave", () => {
+      wrenchIcon.src = "/images/wrench-static.png";
     });
   }
   function addConvertCards() {

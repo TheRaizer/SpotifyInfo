@@ -153,8 +153,4 @@ const followedArtistActions = (function () {
   Object.entries(addEventListeners).forEach(([, addEventListener]) => {
     addEventListener();
   });
-
-  promiseHandler(axios.get(config.URLs.getAccessToken), (res) => {
-    console.log(res.data);
-  });
 })();
