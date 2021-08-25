@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+import { StatusCodes } from "http-status-codes";
+
 dotenv.config();
 
 import express from "express";
@@ -108,36 +110,36 @@ app.use(express.static(__dirname + "/public"));
 
 // '/' represents the home page which will render index.html from express server
 app.get("/", function (_req, res) {
-  res.status(200).sendFile(__dirname + "/public/index.html");
+  res.status(StatusCodes.OK).sendFile(__dirname + "/public/index.html");
 }); // '/' represents the home page which will render index.html from express server
 
 app.get("/playlists", function (_req, res) {
   res
-    .status(200)
+    .status(StatusCodes.OK)
     .sendFile(__dirname + "/public/pages/playlists-page/playlists.html");
 });
 app.get("/top-tracks", function (_req, res) {
   res
-    .status(200)
+    .status(StatusCodes.OK)
     .sendFile(__dirname + "/public/pages/top-tracks-page/top-tracks.html");
 });
 
 app.get("/top-artists", function (_req, res) {
   res
-    .status(200)
+    .status(StatusCodes.OK)
     .sendFile(__dirname + "/public/pages/top-artists-page/top-artists.html");
 });
 
 app.get("/profile", function (_req, res) {
   res
-    .status(200)
+    .status(StatusCodes.OK)
     .sendFile(__dirname + "/public/pages/profile-page/profile.html");
 });
 
 // clear session data
 app.put("/clear-session", function (req, res) {
   req.session.destroy();
-  res.sendStatus(200);
+  res.sendStatus(StatusCodes.OK);
 });
 
 app.listen(process.env.EXPRESS_PORT, function () {
