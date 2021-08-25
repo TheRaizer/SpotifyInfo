@@ -10,12 +10,15 @@ import session from "express-session";
 import { router as tokens } from "./routes/tokens.js";
 import { router as spotifyActions } from "./routes/spotify-actions.js";
 import RedisStore from "connect-redis";
-
+import crypto from "crypto";
 import path from "path";
+import { v4 as uuidv4 } from "uuid";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// express and helmet protects api from being called on other sites, also known as CORS
+// more info: https://stackoverflow.com/questions/31378997/express-js-limit-api-access-to-only-pages-from-the-same-website
 const app = express();
 
 const redisStore = RedisStore(session);
@@ -35,9 +38,13 @@ redisClient.on("connect", function () {
 
 var sesh = {
   store: new redisStore({ client: redisClient }),
-  secret: process.env.SESH_SECRET,
+  secret: [process.env.SESH_SECRET],
+  genid: function () {
+    return uuidv4() + crypto.randomBytes(48); // use UUIDs for session IDs
+  },
   resave: false,
   saveUninitialized: false,
+  name: "IloveCooking",
   cookie: {
     signed: true,
     maxAge: 8.64e7, // 1 day to ms
@@ -48,7 +55,8 @@ var sesh = {
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1); // trust first proxy
   sesh.cookie.secure = true; // serve secure cookies
-  sesh.cookie.httpOnly = false;
+  sesh.cookie.httpOnly = true;
+  sesh.cookie.sameSite = true;
 }
 
 // middleware error handling functions need all 4 parameters to notify express that it is error handling
@@ -134,4 +142,12 @@ app.put("/clear-session", function (req, res) {
 
 app.listen(process.env.EXPRESS_PORT, function () {
   console.log("listening at localhost:" + process.env.EXPRESS_PORT);
+
+  // set interval to update secret every minute
+  setInterval(function () {
+    crypto.randomBytes(66, function (_err, buffer) {
+      var secret = buffer.toString("hex");
+      sesh.secret.unshift(secret);
+    });
+  }, 60000);
 });

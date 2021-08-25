@@ -9,7 +9,30 @@ function hasBeenMoreOneHour(date) {
   return false;
 }
 
-const obtainTokensPromise = async (req, isRefresh) => {
+const regenerateSessionWithTokens = (req, res, isRefresh, expressRes) => {
+  req.session.updateDate = new Date();
+
+  // store the tokens in session store
+  req.session.access_token = res.data.access_token;
+
+  if (!isRefresh) {
+    req.session.refresh_token = res.data.refresh_token;
+  }
+
+  var sessionData = req.session;
+  // regenerate session which changes id
+  req.session.regenerate((err) => {
+    if (err) {
+      throw new Error(err);
+    }
+    // once session regenerated, reassign the data
+    Object.assign(req.session, sessionData);
+
+    // send the status
+    expressRes.status(200).send(true);
+  });
+};
+const obtainTokensPromise = async (req, isRefresh, expressRes) => {
   const tokenURL = "https://accounts.spotify.com/api/token";
   const headers = {
     headers: {
@@ -35,38 +58,28 @@ const obtainTokensPromise = async (req, isRefresh) => {
       client_id: process.env.CLIENT_ID,
     };
   }
-  return axios.post(tokenURL, stringify(data), headers).then((response) => {
-    req.session.updateDate = new Date();
-    // store the tokens in session store
-    req.session.access_token = response.data.access_token;
-
-    if (!isRefresh) {
-      req.session.refresh_token = response.data.refresh_token;
-    }
-
-    // log the session when tokens are obtained
-    console.log(req.session);
-  });
+  const res = await axios.post(tokenURL, stringify(data), headers);
+  regenerateSessionWithTokens(req, res, isRefresh, expressRes);
 };
-
 // whether the session has tokens
 async function hasTokens(req, res, next) {
   if (req.session.access_token && req.session.refresh_token) {
     // if its been more then 1 hour since this session's tokens were obtained
     if (hasBeenMoreOneHour(new Date(req.session.updateDate))) {
       // refresh tokens
-      await obtainTokensPromise(req, true).catch((err) => {
+      await obtainTokensPromise(req, true, res).catch((err) => {
         next(err);
       });
+    } else {
+      res.status(200).send(true);
     }
-    res.status(200).send(true);
   } else {
     res.status(200).send(false);
   }
 }
 
-async function refreshTokens(req, _res, next) {
-  await obtainTokensPromise(req, true).catch((err) => {
+async function refreshTokens(req, res, next) {
+  await obtainTokensPromise(req, true, res).catch((err) => {
     next(err);
   });
 }
@@ -80,10 +93,9 @@ function clearTokens(req, res) {
 }
 
 async function obtainTokens(req, res, next) {
-  await obtainTokensPromise(req, false).catch((err) => {
+  await obtainTokensPromise(req, false, res).catch((err) => {
     next(err);
   });
-  res.sendStatus(200);
 }
 
 function getAccessToken(req, res) {
