@@ -5,6 +5,7 @@ class SpotifyPlayBack {
     this.player = null;
     this.device_id = "";
     this.selPlaying = { element: null, track_uri: "" };
+    this.getStateInterval = null;
 
     promiseHandler(axios.get(config.URLs.getAccessToken), (res) => {
       const NO_CONTENT = 204;
@@ -39,10 +40,7 @@ class SpotifyPlayBack {
           });
 
           // Playback status updates
-          this.player.addListener("player_state_changed", (state) => {
-            console.log(state);
-            // if the track finished unselect the playing element here...
-          });
+          this.player.addListener("player_state_changed", (state) => {});
 
           // Ready
           this.player.addListener("ready", ({ device_id }) => {
@@ -65,6 +63,30 @@ class SpotifyPlayBack {
     });
   }
 
+  setGetStateInterval() {
+    if (this.getStateInterval) {
+      clearInterval(this.getStateInterval);
+    }
+    this.getStateInterval = setInterval(() => {
+      this.player.getCurrentState().then((state) => {
+        if (!state) {
+          console.error(
+            "User is not playing music through the Web Playback SDK"
+          );
+          return;
+        }
+        let { position, duration } = state;
+        console.log(position);
+        // the position gets set to 0 when the song is finished
+        if (position == 0) {
+          this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected);
+          this.selPlaying = { element: null, track_uri: "" };
+          clearInterval(this.getStateInterval);
+        }
+      });
+    }, 1000);
+  }
+
   /** Select a certain play/pause element and play the given track uri
    * and unselect the previous one then pause the previous track_uri.
    *
@@ -78,7 +100,7 @@ class SpotifyPlayBack {
       this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected);
 
       await this.pause();
-
+      clearInterval(this.getStateInterval);
       // if the selected el is the same as the prev then null it and return so we do not end up reselecting it right after deselecting.
       if (this.selPlaying.element == selEl) {
         this.selPlaying.element = null;
@@ -88,15 +110,20 @@ class SpotifyPlayBack {
 
     // prev track uri is the same then resume the song instead of replaying it.
     if (this.selPlaying.track_uri == track_uri) {
-      this.select(selEl, track_uri);
-      await this.resume();
+      await this.startTrack(selEl, track_uri, () => this.resume());
       return;
     }
 
-    this.select(selEl, track_uri);
-    await this.play(this.selPlaying.track_uri);
+    await this.startTrack(selEl, track_uri, async () =>
+      this.play(this.selPlaying.track_uri)
+    );
   }
 
+  async startTrack(selEl, track_uri, playingAsyncFunc) {
+    this.select(selEl, track_uri);
+    await playingAsyncFunc();
+    this.setGetStateInterval();
+  }
   select(selEl, track_uri) {
     this.selPlaying.element = selEl;
     this.selPlaying.element.classList.add(config.CSS.CLASSES.selected);

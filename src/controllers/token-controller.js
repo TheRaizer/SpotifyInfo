@@ -17,15 +17,6 @@ const regenerateSessionWithTokens = (
   expressRes,
   dataToSend = null
 ) => {
-  req.session.updateDate = new Date();
-
-  // store the tokens in session store
-  req.session.access_token = res.data.access_token;
-
-  if (!isRefresh) {
-    req.session.refresh_token = res.data.refresh_token;
-  }
-
   var sessionData = req.session;
   // regenerate session which changes id
   req.session.regenerate((err) => {
@@ -34,8 +25,16 @@ const regenerateSessionWithTokens = (
     }
     // once session regenerated, reassign the data
     Object.assign(req.session, sessionData);
+    req.session.updateDate = new Date();
 
-    // if the request that calls the session refresh has data to send, send it.
+    // store the tokens in refreshed session store
+    req.session.access_token = res.data.access_token;
+
+    if (!isRefresh) {
+      req.session.refresh_token = res.data.refresh_token;
+    }
+
+    // if the request has data to send, send it.
     if (dataToSend) {
       expressRes.status(StatusCodes.OK).send(dataToSend);
     } else {

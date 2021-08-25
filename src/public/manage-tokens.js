@@ -3,7 +3,7 @@ import { config, promiseHandler } from "./config.js";
 const HALF_HOUR = 1.8e6; /* 30 min in ms */
 
 export async function checkIfHasTokens() {
-  // if the user stays on the same page for 30 sec refresh the token.
+  // if the user stays on the same page for 30 min refresh the token.
   function startRefreshInterval() {
     console.log("start interval refresh");
     setInterval(() => {
