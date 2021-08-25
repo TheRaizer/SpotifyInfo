@@ -12,6 +12,7 @@ import {
   onSuccessfulTokenCall,
 } from "../../manage-tokens.js";
 import CardActionsHandler from "../../card-actions.js";
+import { spotifyPlayback } from "../../components/playback-sdk.js";
 
 const expandedPlaylistMods = document.getElementById(
   config.CSS.IDs.expandedPlaylistMods
@@ -316,8 +317,16 @@ const manageTracks = (function () {
     // shallow copy just so we dont modify the original order
     let tracksCopy = [...tracks];
     tracksCopy.sort(function (a, b) {
-      a = a.getPlaylistTrackHtml();
-      b = b.getPlaylistTrackHtml();
+      // use uri to evaluate whether the track was selected before rerendering in order to select it after rerendering
+      a = a.getPlaylistTrackHtml(
+        true,
+        a.uri == spotifyPlayback.selPlaying.track_uri
+      );
+
+      b = b.getPlaylistTrackHtml(
+        true,
+        b.uri == spotifyPlayback.selPlaying.track_uri
+      );
       let nameA = a.getElementsByClassName(config.CSS.CLASSES.name)[0];
       let nameATxt = nameA.textContent || nameA.innerText;
 
@@ -349,7 +358,12 @@ const manageTracks = (function () {
   function rerenderPlaylistTracks(tracks, trackArrUl) {
     removeAllChildNodes(trackArrUl);
     tracks.map((track) => {
-      trackArrUl.appendChild(track.getPlaylistTrackHtml());
+      trackArrUl.appendChild(
+        track.getPlaylistTrackHtml(
+          true,
+          track.uri == spotifyPlayback.selPlaying.track_uri
+        )
+      );
     });
   }
 
@@ -455,13 +469,6 @@ const addEventListeners = (function () {
       modsSection.classList.toggle(config.CSS.CLASSES.appear);
       // select the wrench image
       wrenchIcon.classList.toggle(config.CSS.CLASSES.selected);
-    });
-
-    wrenchIcon.addEventListener("mouseenter", () => {
-      wrenchIcon.src = "/images/wrench-anim.gif";
-    });
-    wrenchIcon.addEventListener("mouseleave", () => {
-      wrenchIcon.src = "/images/wrench-static.png";
     });
   }
   function addConvertCards() {

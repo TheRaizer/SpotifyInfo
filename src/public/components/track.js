@@ -116,17 +116,23 @@ class Track extends Card {
 
   /** Get a track html to be placed as a list element.
    *
+   * @param {Boolean} displayDate - whether to display the date.
+   * @param {Boolean} isPlaying - whether this track was playing music. Use uri's to match because the same track can be in the same playlist but have different uri's
    * @returns {ChildNode} - The converted html string to an element
    */
-  getPlaylistTrackHtml(displayDate = true) {
+  getPlaylistTrackHtml(displayDate = true, isPlaying = false) {
     const track_uri = this.uri;
-    function playPauseClick(evt) {
+    function playPauseClick(btn) {
       // select this track to play or pause
-      spotifyPlayback.setSelPlayingEl(evt.target, track_uri);
+      spotifyPlayback.setSelPlayingEl(btn, track_uri);
     }
+
     let html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
-              <button class="play-pause"><img src="" alt="play/pause"/></button>
+              <button class="play-pause ${
+                isPlaying ? config.CSS.CLASSES.selected : ""
+              }"><img src="" alt="play/pause" 
+              }"/></button>
               <img class="${config.CSS.CLASSES.noSelect}" src="${
       this.imageUrl
     }"></img>
@@ -151,8 +157,16 @@ class Track extends Card {
             `;
 
     let el = htmlToEl(html);
+
     // get play pause button
-    el.childNodes[1].addEventListener("click", (evt) => playPauseClick(evt));
+    let playPauseBtn = el.childNodes[1];
+    playPauseBtn.addEventListener("click", () => playPauseClick(playPauseBtn));
+
+    if (isPlaying) {
+      // This element was playing before rerendering so set it to be the currently playing one again
+      spotifyPlayback.selPlaying.element = playPauseBtn;
+    }
+
     return el;
   }
 

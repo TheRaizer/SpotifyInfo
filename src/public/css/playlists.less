@@ -118,9 +118,9 @@
   -ms-flex-pack: start;
   justify-content: flex-start;
   text-align: left;
-  border-width: 2px;
-  border-radius: 5px;
   color: @reading-color;
+
+  transition: background-color 400ms @quick-bezier;
 
   &:hover {
     background-color: #5f5f5fd0;
@@ -132,16 +132,24 @@
   }
   & > .play-pause {
     // don't grow or shrink
-    flex: 0 0 30px;
+    flex: 0 0 50px;
+    height: 50px;
+
     margin-right: 2%;
+    padding: 8px 8px;
+    border-radius: 30px;
+    background-color: transparent;
+
+    transition: background-color 400ms @quick-bezier;
     & > img {
-      border-radius: 30px;
-      &:hover {
-        background-color: #a5a5a5;
-      }
       content: url("../images/play-30px.png");
-      &.selected {
-        background-color: #a5a5a5;
+    }
+    &:hover {
+      background-color: rgb(150, 150, 150);
+    }
+    &.selected {
+      background-color: rgb(150, 150, 150);
+      & > img {
         content: url("../images/pause-30px.png");
       }
     }
@@ -161,6 +169,8 @@
     width: 20%;
     max-width: 20%;
     & a {
+      max-width: 100%;
+      width: fit-content;
       font-size: 0.9em;
       margin-top: 5px;
       color: @grayed-color;
@@ -192,7 +202,6 @@
 
 .playlist-config {
   & img {
-    margin-top: 20%;
     margin-left: 20%;
     width: 30px;
     height: 30px;
@@ -202,6 +211,7 @@
 }
 
 #playlist-descriptors {
+  margin-left: 7vw;
   -ms-flex-pack: distribute;
   justify-content: space-around;
   color: @grayed-color;
@@ -350,6 +360,11 @@
   display: block;
 }
 
+#playlist-main-header-area {
+  & > * {
+    margin-top: 10px;
+  }
+}
 @media only screen and (max-width: 600px) {
   #hide-show-cards {
     display: block;

@@ -20,7 +20,7 @@ class SpotifyPlayBack {
               // give the token to callback
               cb(res.data);
             },
-            volume: 0.3,
+            volume: 0.1,
           });
 
           // Error handling
@@ -41,6 +41,7 @@ class SpotifyPlayBack {
           // Playback status updates
           this.player.addListener("player_state_changed", (state) => {
             console.log(state);
+            // if the track finished unselect the playing element here...
           });
 
           // Ready
@@ -76,21 +77,30 @@ class SpotifyPlayBack {
       // if there already is a selected element unselect it
       this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected);
 
-      await this.pause(this.selPlaying.track_uri);
+      await this.pause();
 
-      // if the selected el is the same as the prev then return so we do not end up reselecting it.
+      // if the selected el is the same as the prev then null it and return so we do not end up reselecting it right after deselecting.
       if (this.selPlaying.element == selEl) {
         this.selPlaying.element = null;
-        this.selPlaying.track_uri = "";
         return;
       }
     }
 
+    // prev track uri is the same then resume the song instead of replaying it.
+    if (this.selPlaying.track_uri == track_uri) {
+      this.select(selEl, track_uri);
+      await this.resume();
+      return;
+    }
+
+    this.select(selEl, track_uri);
+    await this.play(this.selPlaying.track_uri);
+  }
+
+  select(selEl, track_uri) {
     this.selPlaying.element = selEl;
     this.selPlaying.element.classList.add(config.CSS.CLASSES.selected);
     this.selPlaying.track_uri = track_uri;
-
-    await this.play(this.selPlaying.track_uri);
   }
   /** Plays a track through this device.
    *
@@ -102,13 +112,19 @@ class SpotifyPlayBack {
       await promiseHandler(
         axios.put(config.URLs.putPlayTrack(this.device_id, track_uri))
       );
+      console.log("play");
       return true;
     } else {
       return false;
     }
   }
-  async pause(track_uri) {
-    console.log("pause");
+  async resume() {
+    await this.player.resume();
+    console.log("resume");
+  }
+  async pause() {
+    await this.player.pause();
+    console.log("paused");
   }
   hasLoadedPlayer() {
     return this.player != null && this.device_id != "";
