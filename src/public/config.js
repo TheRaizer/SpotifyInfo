@@ -150,6 +150,8 @@ export const config = {
     listView: "/images/list-view-icon.png",
     chevronLeft: "/images/chevron-left.png",
     chevronRight: "/images/chevron-right.png",
+    playIcon: "/images/play-30px.png",
+    pauseIcon: "/images/pause-30px.png",
   },
 };
 

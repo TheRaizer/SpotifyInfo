@@ -486,9 +486,9 @@ footer {
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  margin-left: 2%;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 2%;
   -webkit-box-pack: start;
   -ms-flex-pack: start;
   justify-content: flex-start;
@@ -503,8 +503,21 @@ footer {
 .playlist-track > img {
   width: 60px;
   height: 60px;
-  border-width: 2px;
-  border-radius: 5px;
+}
+.playlist-track > .play-pause {
+  flex: 0 0 30px;
+  margin-right: 2%;
+}
+.playlist-track > .play-pause > img {
+  border-radius: 30px;
+  content: url("../images/play-30px.png");
+}
+.playlist-track > .play-pause > img:hover {
+  background-color: #a5a5a5;
+}
+.playlist-track > .play-pause > img.selected {
+  background-color: #a5a5a5;
+  content: url("../images/pause-30px.png");
 }
 .playlist-track > .links {
   display: -webkit-box;
@@ -780,7 +793,6 @@ footer {
   background-color: #d6e6e9;
   width: 100%;
   height: 220px;
-  border-radius: 5px;
 }
 ul.genres {
   display: flex;

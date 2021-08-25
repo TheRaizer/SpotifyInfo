@@ -119,8 +119,14 @@ class Track extends Card {
    * @returns {ChildNode} - The converted html string to an element
    */
   getPlaylistTrackHtml(displayDate = true) {
+    const track_uri = this.uri;
+    function playPauseClick(evt) {
+      // select this track to play or pause
+      spotifyPlayback.setSelPlayingEl(evt.target, track_uri);
+    }
     let html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
+              <button class="play-pause"><img src="" alt="play/pause"/></button>
               <img class="${config.CSS.CLASSES.noSelect}" src="${
       this.imageUrl
     }"></img>
@@ -144,7 +150,10 @@ class Track extends Card {
             </li>
             `;
 
-    return htmlToEl(html);
+    let el = htmlToEl(html);
+    // get play pause button
+    el.childNodes[1].addEventListener("click", (evt) => playPauseClick(evt));
+    return el;
   }
 
   /** Get a track html to be placed as a list element on the artist top tracks list.

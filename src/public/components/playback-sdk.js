@@ -4,6 +4,8 @@ class SpotifyPlayBack {
   constructor() {
     this.player = null;
     this.device_id = "";
+    this.selPlaying = { element: null, track_uri: "" };
+
     promiseHandler(axios.get(config.URLs.getAccessToken), (res) => {
       const NO_CONTENT = 204;
       if (res.status == NO_CONTENT) {
@@ -62,8 +64,54 @@ class SpotifyPlayBack {
     });
   }
 
-  play(track_uri, device_id) {
-    promiseHandler(axios.put(config.URLs.putPlayTrack(device_id, track_uri)));
+  /** Select a certain play/pause element and play the given track uri
+   * and unselect the previous one then pause the previous track_uri.
+   *
+   * @param {HTMLElement} selEl - the element to select.
+   * @param {String} track_uri - track uri to play.
+   * @returns
+   */
+  async setSelPlayingEl(selEl, track_uri) {
+    if (this.selPlaying.element != null) {
+      // if there already is a selected element unselect it
+      this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected);
+
+      await this.pause(this.selPlaying.track_uri);
+
+      // if the selected el is the same as the prev then return so we do not end up reselecting it.
+      if (this.selPlaying.element == selEl) {
+        this.selPlaying.element = null;
+        this.selPlaying.track_uri = "";
+        return;
+      }
+    }
+
+    this.selPlaying.element = selEl;
+    this.selPlaying.element.classList.add(config.CSS.CLASSES.selected);
+    this.selPlaying.track_uri = track_uri;
+
+    await this.play(this.selPlaying.track_uri);
+  }
+  /** Plays a track through this device.
+   *
+   * @param {String} track_uri - the track uri to play
+   * @returns whether or not the track has been played succesfully.
+   */
+  async play(track_uri) {
+    if (this.hasLoadedPlayer()) {
+      await promiseHandler(
+        axios.put(config.URLs.putPlayTrack(this.device_id, track_uri))
+      );
+      return true;
+    } else {
+      return false;
+    }
+  }
+  async pause(track_uri) {
+    console.log("pause");
+  }
+  hasLoadedPlayer() {
+    return this.player != null && this.device_id != "";
   }
 }
 
