@@ -63,10 +63,14 @@ class SpotifyPlayBack {
     });
   }
 
+  /** Sets an interval that obtains the state of the player every second.
+   * Should only be called when a song is playing.
+   */
   setGetStateInterval() {
     if (this.getStateInterval) {
       clearInterval(this.getStateInterval);
     }
+    // set the interval to run every second and obtain the state
     this.getStateInterval = setInterval(() => {
       this.player.getCurrentState().then((state) => {
         if (!state) {
@@ -77,6 +81,7 @@ class SpotifyPlayBack {
         }
         let { position, duration } = state;
         console.log(position);
+
         // the position gets set to 0 when the song is finished
         if (position == 0) {
           this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected);

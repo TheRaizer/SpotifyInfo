@@ -686,9 +686,11 @@ footer {
   border-right-width: 9px;
 }
 #hide-show-cards {
+  margin-left: 10px;
   display: none;
 }
 #convert-card {
+  margin-left: 10px;
   display: block;
 }
 #playlist-main-header-area > * {

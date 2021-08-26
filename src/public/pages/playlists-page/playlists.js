@@ -63,7 +63,7 @@ const resizeActions = (function () {
       .on("resizeend", saveResizeWidth);
 
     // once we renable the resize we must set its width to be what the user last set it too.
-    loadResizeWidth();
+    initialLoads.loadResizeWidth();
   }
   function disableResize() {
     if (interact.isSet(resizeId)) {
@@ -471,6 +471,15 @@ const addEventListeners = (function () {
       wrenchIcon.classList.toggle(config.CSS.CLASSES.selected);
     });
   }
+  function savePlaylistForm(isInTextForm) {
+    // save whether the playlist is in text form or not.
+    promiseHandler(
+      axios.put(
+        config.URLs.putSessionData +
+          `playlist-is-in-text-form&val=${isInTextForm}`
+      )
+    );
+  }
   function addConvertCards() {
     const convertBtn = document.getElementById(config.CSS.IDs.convertCard);
     const convertImg = convertBtn.getElementsByTagName("img")[0];
@@ -481,8 +490,10 @@ const addEventListeners = (function () {
       if (
         playlistsCardContainer.classList.contains(config.CSS.CLASSES.textForm)
       ) {
+        savePlaylistForm(true);
         convertImg.src = config.PATHS.gridView;
       } else {
+        savePlaylistForm(false);
         convertImg.src = config.PATHS.listView;
       }
     }
@@ -525,15 +536,6 @@ function saveResizeWidth() {
   );
   console.log("end resize");
 }
-function loadResizeWidth() {
-  promiseHandler(
-    axios
-      .get(config.URLs.getSessionData + "playlist-resize-width")
-      .then((res) => {
-        cardResizeContainer.style.width = res.data + "px";
-      })
-  );
-}
 
 function updateHideShowCardsImg() {
   const hideShowCards = document.getElementById("hide-show-cards");
@@ -574,6 +576,41 @@ function checkIfCardFormChangeOnResize() {
   });
 }
 
+const initialLoads = (function () {
+  function loadPlaylistForm() {
+    promiseHandler(
+      axios
+        .get(config.URLs.getSessionData + "playlist-is-in-text-form")
+        .then((res) => {
+          if (res.data == true) {
+            // if its in text form change it to be so.
+            const convertBtn = document.getElementById(
+              config.CSS.IDs.convertCard
+            );
+            const convertImg = convertBtn.getElementsByTagName("img")[0];
+            playlistsCardContainer.classList.add(config.CSS.CLASSES.textForm);
+            displayCardInfo.displayPlaylistCards(infoRetrieval.playlistObjs);
+            convertImg.src = config.PATHS.gridView;
+          }
+          // else it is in card form which is the default.
+        })
+    );
+  }
+  function loadResizeWidth() {
+    promiseHandler(
+      axios
+        .get(config.URLs.getSessionData + "playlist-resize-width")
+        .then((res) => {
+          cardResizeContainer.style.width = res.data + "px";
+        })
+    );
+  }
+  return {
+    loadPlaylistForm,
+    loadResizeWidth,
+  };
+})();
+
 (function () {
   promiseHandler(checkIfHasTokens(), (hasToken) => {
     onSuccessfulTokenCall(hasToken, () => {
@@ -595,6 +632,7 @@ function checkIfCardFormChangeOnResize() {
     addEventListener();
   });
   checkIfCardFormChangeOnResize();
-
-  loadResizeWidth();
+  Object.entries(initialLoads).forEach(([, loader]) => {
+    loader();
+  });
 })();

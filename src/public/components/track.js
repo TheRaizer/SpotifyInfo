@@ -132,7 +132,7 @@ class Track extends Card {
               <button class="play-pause ${
                 isPlaying ? config.CSS.CLASSES.selected : ""
               }"><img src="" alt="play/pause" 
-              }"/></button>
+              class="${config.CSS.CLASSES.noSelect}"/></button>
               <img class="${config.CSS.CLASSES.noSelect}" src="${
       this.imageUrl
     }"></img>
@@ -170,11 +170,11 @@ class Track extends Card {
     return el;
   }
 
-  /** Get a track html to be placed as a list element on the artist top tracks list.
+  /** Get a track html to be placed as a list element on a ranked list.
    *
    * @returns {ChildNode} - The converted html string to an element
    */
-  getArtistTrackHtml(rank) {
+  getRankedTrackHtml(rank) {
     let html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
               <p>${rank}.</p>

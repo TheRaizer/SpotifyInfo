@@ -36,7 +36,7 @@ const artistActions = (function () {
       let trackList = getTopTracksUlFromArtist(artistObj);
       let rank = 1;
       artistObj.topTracks.forEach((track) => {
-        trackList.appendChild(track.getArtistTrackHtml(rank));
+        trackList.appendChild(track.getRankedTrackHtml(rank));
         rank++;
       });
     });
