@@ -7,6 +7,7 @@ import {
 import { spotifyPlayback } from "./playback-sdk.js";
 import Album from "./album.js";
 import Card from "./card.js";
+import TrackPlayEventArg from "./pubsub/event-args/track-play-args.js";
 
 class Track extends Card {
   constructor(props) {
@@ -122,9 +123,12 @@ class Track extends Card {
    */
   getPlaylistTrackHtml(displayDate = true, isPlaying = false) {
     const track_uri = this.uri;
+    const title = this.name;
     function playPauseClick(btn) {
-      // select this track to play or pause
-      spotifyPlayback.setSelPlayingEl(btn, track_uri);
+      // select this track to play or pause by publishing the track play event arg
+      window.eventAggregator.publish(
+        new TrackPlayEventArg(btn, track_uri, title)
+      );
     }
 
     let html = `

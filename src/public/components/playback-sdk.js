@@ -1,4 +1,12 @@
-import { config, promiseHandler } from "../config.js";
+import {
+  config,
+  promiseHandler,
+  htmlToEl,
+  addResizeDrag,
+  millisToMinutesAndSeconds,
+} from "../config.js";
+
+import TrackPlayEventArg from "./pubsub/event-args/track-play-args.js";
 
 class SpotifyPlayBack {
   constructor() {
@@ -6,6 +14,13 @@ class SpotifyPlayBack {
     this.device_id = "";
     this.selPlaying = { element: null, track_uri: "" };
     this.getStateInterval = null;
+    this.webPlayerEls = {
+      title: null,
+      progress: null,
+      currTime: null,
+      duration: null,
+    };
+    this.playerIsReady = false;
 
     promiseHandler(axios.get(config.URLs.getAccessToken), (res) => {
       const NO_CONTENT = 204;
@@ -46,9 +61,8 @@ class SpotifyPlayBack {
           this.player.addListener("ready", ({ device_id }) => {
             console.log("Ready with Device ID", device_id);
             this.device_id = device_id;
-
-            // TEST WHICH PLAYS A SONG
-            // this.play("spotify:track:7FL5iSLdKcersBgDiwijis", this.device_id);
+            this.appendWebPlayerHtml();
+            this.playerIsReady = true;
           });
 
           // Not Ready
@@ -63,10 +77,51 @@ class SpotifyPlayBack {
     });
   }
 
+  getWebPlayerEls() {
+    const webPlayerEl = document.getElementById(config.CSS.IDs.webPlayer);
+    this.webPlayerEls.progress = webPlayerEl.getElementsByClassName(
+      config.CSS.CLASSES.progress
+    )[0];
+    this.webPlayerEls.title = webPlayerEl.getElementsByTagName("h4")[0];
+
+    // get playtime bar elements
+    const playTimeBar = document.getElementById(config.CSS.IDs.playTimeBar);
+    this.webPlayerEls.currTime = playTimeBar.getElementsByTagName("p")[0];
+    this.webPlayerEls.duration = playTimeBar.getElementsByTagName("p")[1];
+  }
+
+  appendWebPlayerHtml() {
+    let html = `
+    <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
+      <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Title</h4>
+        <div id="${config.CSS.IDs.playTimeBar}">
+          <p>0:00</p>
+          <div class="${config.CSS.CLASSES.progressBar}">
+            <div class="${config.CSS.CLASSES.progress}"></div>
+          </div>
+          <p>0:00</p>
+        </div>
+    </article>
+    `;
+
+    const webPlayerEl = htmlToEl(html);
+    document.body.append(webPlayerEl);
+    this.getWebPlayerEls();
+  }
+
+  updateWebPlayer(percentDone, position) {
+    if (position != 0) {
+      this.webPlayerEls.progress.style.width = `${percentDone}%`;
+      this.webPlayerEls.currTime.textContent =
+        millisToMinutesAndSeconds(position);
+    }
+  }
+
   /** Sets an interval that obtains the state of the player every second.
    * Should only be called when a song is playing.
    */
   setGetStateInterval() {
+    var durationMinSec = null;
     if (this.getStateInterval) {
       clearInterval(this.getStateInterval);
     }
@@ -80,13 +135,25 @@ class SpotifyPlayBack {
           return;
         }
         let { position, duration } = state;
-        console.log(position);
+
+        // if there isnt a duration set for this song set it.
+        if (durationMinSec == null) {
+          durationMinSec = millisToMinutesAndSeconds(duration);
+          this.webPlayerEls.duration.textContent = durationMinSec;
+        }
+
+        const percentDone = (position / duration) * 100;
 
         // the position gets set to 0 when the song is finished
         if (position == 0) {
           this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected);
           this.selPlaying = { element: null, track_uri: "" };
+
+          this.webPlayerEls.progress.style.width = "100%";
           clearInterval(this.getStateInterval);
+        } else {
+          // if the position isnt 0 update the web player elements
+          this.updateWebPlayer(percentDone, position);
         }
       });
     }, 1000);
@@ -95,11 +162,15 @@ class SpotifyPlayBack {
   /** Select a certain play/pause element and play the given track uri
    * and unselect the previous one then pause the previous track_uri.
    *
-   * @param {HTMLElement} selEl - the element to select.
-   * @param {String} track_uri - track uri to play.
+   * @param {TrackPlayEventArg} eventArg - a class that contains the arguments for this event
    * @returns
    */
-  async setSelPlayingEl(selEl, track_uri) {
+  async setSelPlayingEl(eventArg) {
+    // if the player isn't ready we cannot continue.
+    if (!this.playerIsReady) {
+      return;
+    }
+
     if (this.selPlaying.element != null) {
       // if there already is a selected element unselect it
       this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected);
@@ -107,32 +178,40 @@ class SpotifyPlayBack {
       await this.pause();
       clearInterval(this.getStateInterval);
       // if the selected el is the same as the prev then null it and return so we do not end up reselecting it right after deselecting.
-      if (this.selPlaying.element == selEl) {
+      if (this.selPlaying.element == eventArg.selEl) {
         this.selPlaying.element = null;
         return;
       }
     }
 
     // prev track uri is the same then resume the song instead of replaying it.
-    if (this.selPlaying.track_uri == track_uri) {
-      await this.startTrack(selEl, track_uri, () => this.resume());
+    if (this.selPlaying.track_uri == eventArg.track_uri) {
+      await this.startTrack(
+        eventArg.selEl,
+        eventArg.track_uri,
+        () => this.resume(),
+        eventArg.trackTitle
+      );
       return;
     }
 
-    await this.startTrack(selEl, track_uri, async () =>
-      this.play(this.selPlaying.track_uri)
+    await this.startTrack(
+      eventArg.selEl,
+      eventArg.track_uri,
+      async () => this.play(this.selPlaying.track_uri),
+      eventArg.trackTitle
     );
   }
 
-  async startTrack(selEl, track_uri, playingAsyncFunc) {
-    this.select(selEl, track_uri);
-    await playingAsyncFunc();
-    this.setGetStateInterval();
-  }
-  select(selEl, track_uri) {
+  async startTrack(selEl, track_uri, playingAsyncFunc, title) {
     this.selPlaying.element = selEl;
     this.selPlaying.element.classList.add(config.CSS.CLASSES.selected);
     this.selPlaying.track_uri = track_uri;
+
+    this.webPlayerEls.title.textContent = title;
+
+    await playingAsyncFunc();
+    this.setGetStateInterval();
   }
   /** Plays a track through this device.
    *
@@ -140,15 +219,10 @@ class SpotifyPlayBack {
    * @returns whether or not the track has been played succesfully.
    */
   async play(track_uri) {
-    if (this.hasLoadedPlayer()) {
-      await promiseHandler(
-        axios.put(config.URLs.putPlayTrack(this.device_id, track_uri))
-      );
-      console.log("play");
-      return true;
-    } else {
-      return false;
-    }
+    await promiseHandler(
+      axios.put(config.URLs.putPlayTrack(this.device_id, track_uri))
+    );
+    console.log("play");
   }
   async resume() {
     await this.player.resume();
@@ -158,9 +232,11 @@ class SpotifyPlayBack {
     await this.player.pause();
     console.log("paused");
   }
-  hasLoadedPlayer() {
-    return this.player != null && this.device_id != "";
-  }
 }
 
 export const spotifyPlayback = new SpotifyPlayBack();
+// subscribe the setPlaying element event
+window.eventAggregator.subscribe(TrackPlayEventArg.name, (eventArg) =>
+  spotifyPlayback.setSelPlayingEl(eventArg)
+);
+addResizeDrag();

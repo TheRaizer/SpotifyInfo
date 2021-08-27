@@ -12,7 +12,7 @@ import Subscription from "./subscription.js";
  * class with the constructor.name of argType.
  *
  */
-export default class EventAggregator {
+class EventAggregator {
   constructor() {
     // key - type, value - [] of functions that take a certain value depending on the type
     this.subscribers = {};
@@ -68,3 +68,5 @@ export default class EventAggregator {
     this.subscribers = {};
   }
 }
+
+window.eventAggregator = new EventAggregator();

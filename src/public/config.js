@@ -59,6 +59,8 @@ export const config = {
       clearData: "clear-data",
       likedTracks: "liked-tracks",
       followedArtists: "followed-artists",
+      webPlayer: "web-player",
+      playTimeBar: "playtime-bar",
     },
     CLASSES: {
       glow: "glow",
@@ -102,6 +104,8 @@ export const config = {
       textForm: "text-form",
       content: "content",
       links: "links",
+      progress: "progress",
+      progressBar: "progress-bar",
     },
     ATTRIBUTES: {
       dataSelection: "data-selection",
@@ -304,3 +308,74 @@ export const animationControl = (function () {
     animateAttributes,
   };
 })();
+
+export function getPixelPosInElOnClick(mouseEvt) {
+  var rect = mouseEvt.target.getBoundingClientRect();
+  var x = mouseEvt.clientX - rect.left; // x position within the element.
+  var y = mouseEvt.clientY - rect.top; // y position within the element.
+  return { x, y };
+}
+function dragMoveListener(event) {
+  var target = event.target;
+  // keep the dragged position in the data-x/data-y attributes
+  var x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
+  var y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
+
+  // translate the element
+  target.style.transform = "translate(" + x + "px, " + y + "px)";
+
+  // update the posiion attributes
+  target.setAttribute("data-x", x);
+  target.setAttribute("data-y", y);
+}
+export function addResizeDrag() {
+  interact(".resize-drag")
+    .resizable({
+      // resize from all edges and corners
+      edges: { left: true, right: true, bottom: true, top: true },
+
+      listeners: {
+        move(event) {
+          var target = event.target;
+          var x = parseFloat(target.getAttribute("data-x")) || 0;
+          var y = parseFloat(target.getAttribute("data-y")) || 0;
+
+          // update the element's style
+          target.style.width = event.rect.width + "px";
+          target.style.height = event.rect.height + "px";
+
+          // translate when resizing from top or left edges
+          x += event.deltaRect.left;
+          y += event.deltaRect.top;
+
+          target.style.transform = "translate(" + x + "px," + y + "px)";
+
+          target.setAttribute("data-x", x);
+          target.setAttribute("data-y", y);
+        },
+      },
+      modifiers: [
+        // keep the edges inside the parent
+        interact.modifiers.restrictEdges({
+          outer: "parent",
+        }),
+
+        // minimum size
+        interact.modifiers.restrictSize({
+          min: { width: 100, height: 50 },
+        }),
+      ],
+
+      inertia: false,
+    })
+    .draggable({
+      listeners: { move: dragMoveListener },
+      inertia: true,
+      modifiers: [
+        interact.modifiers.restrictRect({
+          restriction: "parent",
+          endOnly: false,
+        }),
+      ],
+    });
+}

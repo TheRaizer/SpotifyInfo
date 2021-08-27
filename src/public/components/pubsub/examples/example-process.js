@@ -1,5 +1,5 @@
 import EventAggregator from "../aggregator.js";
-import ExampleEventArg from "./example-event-arg.js";
+import ExampleEventArg from "../event-args/example-event-arg.js";
 
 const eventAggregator = new EventAggregator();
 
