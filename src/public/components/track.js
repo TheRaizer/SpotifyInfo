@@ -40,6 +40,7 @@ class Track extends Card {
     this.features = undefined;
 
     this.imageUrl = getValidImage(images);
+    this.playBtn = null;
   }
 
   setDateAdded(dateAddedToPlaylist) {
@@ -127,7 +128,11 @@ class Track extends Card {
     function playPauseClick(btn) {
       // select this track to play or pause by publishing the track play event arg
       window.eventAggregator.publish(
-        new TrackPlayEventArg(btn, track_uri, title)
+        new TrackPlayEventArg(
+          { selEl: btn, track_uri: track_uri, trackTitle: title },
+          [],
+          []
+        )
       );
     }
 

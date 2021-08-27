@@ -69,4 +69,5 @@ class EventAggregator {
   }
 }
 
+// create a global variable to be used
 window.eventAggregator = new EventAggregator();

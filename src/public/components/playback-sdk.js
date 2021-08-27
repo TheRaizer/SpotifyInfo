@@ -162,10 +162,10 @@ class SpotifyPlayBack {
   /** Select a certain play/pause element and play the given track uri
    * and unselect the previous one then pause the previous track_uri.
    *
-   * @param {TrackPlayEventArg} eventArg - a class that contains the arguments for this event
-   * @returns
+   * @param {TrackPlayEventArg} eventArg - a class that contains the current, next and previous tracks to play
    */
   async setSelPlayingEl(eventArg) {
+    const { selEl, track_uri, trackTitle } = eventArg.currTrack;
     // if the player isn't ready we cannot continue.
     if (!this.playerIsReady) {
       return;
@@ -178,28 +178,23 @@ class SpotifyPlayBack {
       await this.pause();
       clearInterval(this.getStateInterval);
       // if the selected el is the same as the prev then null it and return so we do not end up reselecting it right after deselecting.
-      if (this.selPlaying.element == eventArg.selEl) {
+      if (this.selPlaying.element == selEl) {
         this.selPlaying.element = null;
         return;
       }
     }
 
     // prev track uri is the same then resume the song instead of replaying it.
-    if (this.selPlaying.track_uri == eventArg.track_uri) {
-      await this.startTrack(
-        eventArg.selEl,
-        eventArg.track_uri,
-        () => this.resume(),
-        eventArg.trackTitle
-      );
+    if (this.selPlaying.track_uri == track_uri) {
+      await this.startTrack(selEl, track_uri, () => this.resume(), trackTitle);
       return;
     }
 
     await this.startTrack(
-      eventArg.selEl,
-      eventArg.track_uri,
+      selEl,
+      track_uri,
       async () => this.play(this.selPlaying.track_uri),
-      eventArg.trackTitle
+      trackTitle
     );
   }
 
