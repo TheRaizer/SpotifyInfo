@@ -3,12 +3,10 @@ export default class TrackPlayEventArg {
    * Note that it does not take Track instances.
    *
    * @param {{selEl, track_uri, trackTitle}} currTrack - object containing element to select, track_uri, and track title.
-   * @param {Array<Object>} prevTracks - array of objects identical to the currTrack object that are songs previous.
-   * @param {Array<Object>} nextTracks - array of objects identical to the currTrack object that are songs to play next.
+   * @param {DoublyLinkedListNode} trackDataNode - node that allows us to traverse to next and previous track datas.
    */
-  constructor(currTrack, prevTracks, nextTracks) {
+  constructor(currTrack, trackDataNode) {
     this.currTrack = currTrack;
-    this.prevTracks = prevTracks;
-    this.nextTracks = nextTracks;
+    this.trackDataNode = trackDataNode;
   }
 }

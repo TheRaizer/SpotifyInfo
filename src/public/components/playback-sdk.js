@@ -12,7 +12,11 @@ class SpotifyPlayBack {
   constructor() {
     this.player = null;
     this.device_id = "";
-    this.selPlaying = { element: null, track_uri: "" };
+    this.selPlaying = {
+      element: null,
+      track_uri: "",
+      trackDataNode: null,
+    };
     this.getStateInterval = null;
     this.webPlayerEls = {
       title: null,
@@ -186,7 +190,13 @@ class SpotifyPlayBack {
 
     // prev track uri is the same then resume the song instead of replaying it.
     if (this.selPlaying.track_uri == track_uri) {
-      await this.startTrack(selEl, track_uri, () => this.resume(), trackTitle);
+      await this.startTrack(
+        selEl,
+        track_uri,
+        () => this.resume(),
+        trackTitle,
+        eventArg.trackDataNode
+      );
       return;
     }
 
@@ -194,11 +204,13 @@ class SpotifyPlayBack {
       selEl,
       track_uri,
       async () => this.play(this.selPlaying.track_uri),
-      trackTitle
+      trackTitle,
+      eventArg.trackDataNode
     );
   }
 
-  async startTrack(selEl, track_uri, playingAsyncFunc, title) {
+  async startTrack(selEl, track_uri, playingAsyncFunc, title, trackDataNode) {
+    this.selPlaying.trackDataNode = trackDataNode;
     this.selPlaying.element = selEl;
     this.selPlaying.element.classList.add(config.CSS.CLASSES.selected);
     this.selPlaying.track_uri = track_uri;
@@ -230,6 +242,21 @@ class SpotifyPlayBack {
 }
 
 export const spotifyPlayback = new SpotifyPlayBack();
+
+export function isSamePlayingURI(uri) {
+  return uri == spotifyPlayback.selPlaying.track_uri;
+}
+
+export function checkIfIsPlayingElAfterRerender(uri, selEl, trackDataNode) {
+  // Note: if its a rerender order may have changed and so have the next and previous tracks
+
+  if (isSamePlayingURI(uri)) {
+    // This element was playing before rerendering so set it to be the currently playing one again
+    spotifyPlayback.selPlaying.element = selEl;
+    spotifyPlayback.selPlaying.trackDataNode = trackDataNode;
+  }
+}
+
 // subscribe the setPlaying element event
 window.eventAggregator.subscribe(TrackPlayEventArg.name, (eventArg) =>
   spotifyPlayback.setSelPlayingEl(eventArg)

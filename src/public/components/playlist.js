@@ -1,6 +1,7 @@
 import { config, htmlToEl, getValidImage } from "../config.js";
 import { generateTracksFromData } from "./track.js";
 import Card from "./card.js";
+import DoublyLinkedList from "./doubly-linked-list.js";
 
 class Playlist extends Card {
   constructor(name, images, id) {
@@ -8,6 +9,8 @@ class Playlist extends Card {
     this.name = name;
     this.id = id;
     this.undoStack = [];
+    this.order = "custom-order"; // set it as the initial order
+    this.trackList = undefined;
 
     // the id of the playlist card element
     this.imageUrl = getValidImage(images);
@@ -59,18 +62,18 @@ class Playlist extends Card {
     if (!res) {
       return [];
     }
-    var trackObjs = [];
+    var trackList = new DoublyLinkedList();
 
     let tracksData = res.data.map((data) => data.track);
-    getPlaylistTracksFromDatas(tracksData, res.data, trackObjs);
+    getPlaylistTracksFromDatas(tracksData, res.data, trackList);
 
     // define track objects
-    this.trackObjs = trackObjs;
-    return trackObjs;
+    this.trackList = trackList;
+    return trackList;
   }
 
   hasLoadedTracks() {
-    return this.trackObjs === undefined ? false : true;
+    return this.trackList === undefined ? false : true;
   }
 }
 
@@ -78,21 +81,23 @@ class Playlist extends Card {
  *
  * @param {*} tracksData
  * @param {*} dateAddedObjects - The object that contains the added_at variable.
- * @param {*} tracksArr
+ * @param {DoublyLinkedList} tracksList
  */
 export function getPlaylistTracksFromDatas(
   tracksData,
   dateAddedObjects,
-  tracksArr
+  trackList
 ) {
-  generateTracksFromData(tracksData, tracksArr);
+  generateTracksFromData(tracksData, trackList);
 
+  var i = 0;
   // set the dates added
-  for (let i = 0; i < tracksArr.length; i++) {
+  for (const trackOut of trackList.values()) {
     let dateAddedObj = dateAddedObjects[i];
-    let track = tracksArr[i];
+    let track = trackOut;
 
     track.setDateAdded(dateAddedObj.added_at);
+    i++;
   }
 }
 

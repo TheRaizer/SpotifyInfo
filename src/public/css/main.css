@@ -441,12 +441,12 @@ footer {
   background: #303030;
   font-weight: 700;
 }
-.expanded-playlist > header > span {
+.expanded-playlist > header > div {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
-.expanded-playlist > header > span > h2 {
+.expanded-playlist > header > div > h2 {
   -webkit-box-flex: 3;
   -ms-flex-positive: 3;
   flex-grow: 3;
@@ -454,7 +454,7 @@ footer {
   margin-left: 5%;
   margin-right: 5%;
 }
-.expanded-playlist > header > span > * {
+.expanded-playlist > header > div > * {
   min-width: 0;
 }
 .expanded-playlist.appear {

@@ -12,10 +12,14 @@ import {
   onSuccessfulTokenCall,
 } from "../../manage-tokens.js";
 import CardActionsHandler from "../../card-actions.js";
-import { spotifyPlayback } from "../../components/playback-sdk.js";
+import DoublyLinkedList from "../../components/doubly-linked-list.js";
+import { generateTrackEventDataFromList } from "../../components/track.js";
 
 const expandedPlaylistMods = document.getElementById(
   config.CSS.IDs.expandedPlaylistMods
+);
+const playlistHeaderArea = document.getElementById(
+  config.CSS.IDs.playlistHeaderArea
 );
 // add on change event listener to the order selection element of the mods expanded playlist
 const playlistOrder = expandedPlaylistMods.getElementsByClassName(
@@ -78,8 +82,10 @@ const resizeActions = (function () {
     disableResize,
   };
 })();
-// order of items should never change
-var selPlaylistTracks = [];
+// order of items should never change as all other orderings are based off this one, and the only way to return back to this custom order is to retain it.
+// only access this when tracks have loaded.
+var selPlaylistTracks = () =>
+  playlistActions.playlistSelVerif.currSelectedVal.trackList;
 
 const playlistActions = (function () {
   const playlistSelVerif = new AsyncSelectionVerif();
@@ -94,12 +100,11 @@ const playlistActions = (function () {
   function loadPlaylistTracks(playlistObj, callback) {
     playlistObj
       .loadTracks()
-      .then((tracks) => {
+      .then(() => {
         // because .then() can run when the currently selected playlist has already changed we need to verify
         if (!playlistSelVerif.isValid(playlistObj)) {
           return;
         }
-        selPlaylistTracks = tracks;
         callback();
 
         playlistSelVerif.hasLoadedCurrSelected = true;
@@ -110,16 +115,14 @@ const playlistActions = (function () {
       });
   }
   function whenTracksLoading() {
-    // hide these while loading tracks
+    // hide header while loading tracks
+    playlistHeaderArea.classList.add(config.CSS.CLASSES.hide);
     playlistSearchInput.value = "";
-    playlistSearchInput.classList.add(config.CSS.CLASSES.hide);
-    playlistOrder.classList.add(config.CSS.CLASSES.hide);
     trackUl.scrollTop = 0;
   }
   function onTracksLoadingDone() {
     // show them once tracks have loaded
-    playlistSearchInput.classList.remove(config.CSS.CLASSES.hide);
-    playlistOrder.classList.remove(config.CSS.CLASSES.hide);
+    playlistHeaderArea.classList.remove(config.CSS.CLASSES.hide);
   }
   /** Empty the track li and replace it with newly loaded track li.
    *
@@ -145,14 +148,16 @@ const playlistActions = (function () {
     if (playlistObj.hasLoadedTracks()) {
       whenTracksLoading();
       onTracksLoadingDone();
-      selPlaylistTracks = playlistObj.trackObjs;
-      manageTracks.sortExpandedTracksToOrder();
+      manageTracks.sortExpandedTracksToOrder(
+        playlistObj.order == playlistOrder.value
+      );
     }
     // tracks aren't loaded so lazy load them then show them
     else {
       whenTracksLoading();
       loadPlaylistTracks(playlistObj, () => {
-        manageTracks.sortExpandedTracksToOrder();
+        // indexed when loaded so no need to re-index them
+        manageTracks.sortExpandedTracksToOrder(true);
         onTracksLoadingDone();
       });
     }
@@ -302,49 +307,51 @@ function removeAllChildNodes(parent) {
 }
 
 const manageTracks = (function () {
-  function sortExpandedTracksToOrder() {
+  function sortExpandedTracksToOrder(isSameOrder) {
+    var newOrderTracks = null;
     if (playlistOrder.value == "custom-order") {
-      rerenderPlaylistTracks(selPlaylistTracks, trackUl);
+      newOrderTracks = selPlaylistTracks();
     } else if (playlistOrder.value == "name") {
-      let tracks = orderTracksByName(selPlaylistTracks);
-      rerenderPlaylistTracks(tracks, trackUl);
+      newOrderTracks = orderTracksByName(selPlaylistTracks());
+      newOrderTracks = arrayToDoublyLinkedList(newOrderTracks);
     } else if (playlistOrder.value == "date-added") {
-      let tracks = orderTracksByDateAdded(selPlaylistTracks);
-      rerenderPlaylistTracks(tracks, trackUl);
+      newOrderTracks = orderTracksByDateAdded(selPlaylistTracks());
+      newOrderTracks = arrayToDoublyLinkedList(newOrderTracks);
+    }
+
+    if (isSameOrder == false) {
+      console.log("re-index");
+      reIndexReOrderedTracks(newOrderTracks);
+      // set the order of the playlist as the new order
+      playlistActions.playlistSelVerif.currSelectedVal.order =
+        playlistOrder.value;
+    }
+    rerenderPlaylistTracks(newOrderTracks, trackUl);
+  }
+
+  function reIndexReOrderedTracks(trackList) {
+    var i = 0;
+    for (const track of trackList.values()) {
+      track.idx = i;
+      i++;
     }
   }
-  function orderTracksByName(tracks) {
+  function orderTracksByName(trackList) {
     // shallow copy just so we dont modify the original order
-    let tracksCopy = [...tracks];
+    let tracksCopy = [...trackList];
     tracksCopy.sort(function (a, b) {
-      // use uri to evaluate whether the track was selected before rerendering in order to select it after rerendering
-      a = a.getPlaylistTrackHtml(
-        true,
-        a.uri == spotifyPlayback.selPlaying.track_uri
-      );
-
-      b = b.getPlaylistTrackHtml(
-        true,
-        b.uri == spotifyPlayback.selPlaying.track_uri
-      );
-      let nameA = a.getElementsByClassName(config.CSS.CLASSES.name)[0];
-      let nameATxt = nameA.textContent || nameA.innerText;
-
-      let nameB = b.getElementsByClassName(config.CSS.CLASSES.name)[0];
-      let nameBTxt = nameB.textContent || nameB.innerText;
-
       // -1 precedes, 1 suceeds, 0 is equal
-      return nameATxt.toUpperCase() === nameBTxt.toUpperCase()
+      return a.name.toUpperCase() === b.name.toUpperCase()
         ? 0
-        : nameATxt.toUpperCase() < nameBTxt.toUpperCase()
+        : a.name.toUpperCase() < b.name.toUpperCase()
         ? -1
         : 1;
     });
     return tracksCopy;
   }
-  function orderTracksByDateAdded(tracks) {
+  function orderTracksByDateAdded(trackList) {
     // shallow copy just so we dont modify the original order
-    let tracksCopy = [...tracks];
+    let tracksCopy = [...trackList];
     tracksCopy.sort(function (a, b) {
       // -1 'a' precedes 'b', 1 'a' suceeds 'b', 0 is 'a' equal 'b'
       return a.dateAddedToPlaylist === b.dateAddedToPlaylist
@@ -355,16 +362,25 @@ const manageTracks = (function () {
     });
     return tracksCopy;
   }
-  function rerenderPlaylistTracks(tracks, trackArrUl) {
+
+  function arrayToDoublyLinkedList(trackArr) {
+    var trackList = new DoublyLinkedList();
+    trackArr.forEach((track) => {
+      trackList.add(track);
+    });
+
+    return trackList;
+  }
+  function rerenderPlaylistTracks(trackList, trackArrUl) {
     removeAllChildNodes(trackArrUl);
-    tracks.map((track) => {
+    for (const track of trackList.values()) {
       trackArrUl.appendChild(
         track.getPlaylistTrackHtml(
-          true,
-          track.uri == spotifyPlayback.selPlaying.track_uri
+          generateTrackEventDataFromList(trackList),
+          true
         )
       );
-    });
+    }
   }
 
   return {
@@ -385,33 +401,38 @@ const addEventListeners = (function () {
   function addExpandedPlaylistModsOrderEvent() {
     // add on change event listener to the order selection element of the mods expanded playlist
     playlistOrder.addEventListener("change", () => {
-      manageTracks.sortExpandedTracksToOrder();
+      manageTracks.sortExpandedTracksToOrder(false);
     });
   }
   function addDeleteRecentlyAddedTrackEvent() {
     function onClick() {
       if (
-        numToRemoveInput.value > selPlaylistTracks.length ||
+        numToRemoveInput.value > selPlaylistTracks().size() ||
         numToRemoveInput.value == 0
       ) {
         console.log("cant remove this many");
         // the user is trying to delete more songs then there are available, you may want to allow this
         return;
       }
-      let orderedTracks =
-        manageTracks.orderTracksByDateAdded(selPlaylistTracks);
+      let orderedTracks = manageTracks.orderTracksByDateAdded(
+        selPlaylistTracks()
+      );
       let tracksToRemove = orderedTracks.slice(0, numToRemoveInput.value);
 
       // remove songs contained in tracksToRemove from expandablePlaylistTracks
-      selPlaylistTracks = selPlaylistTracks.filter(
-        (track) => !tracksToRemove.includes(track)
+      tracksToRemove.forEach((trackToRemove) => {
+        const idx = selPlaylistTracks().findIndex(
+          (track) => track.id == trackToRemove.id
+        );
+        selPlaylistTracks().remove(idx);
+      });
+
+      playlistActions.playlistSelVerif.currSelectedVal.addToUndoStack(
+        tracksToRemove
       );
 
-      let currPlaylist = playlistActions.playlistSelVerif.currSelectedVal;
-
-      currPlaylist.addToUndoStack(tracksToRemove);
-
-      manageTracks.sortExpandedTracksToOrder(selPlaylistTracks);
+      // not same order as some have been deleted
+      manageTracks.sortExpandedTracksToOrder(false);
 
       promiseHandler(
         axios.delete(config.URLs.deletePlaylistTracks + currPlaylist.id, {

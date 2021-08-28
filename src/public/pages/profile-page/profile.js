@@ -85,7 +85,7 @@ const savedTracksActions = (function () {
   function displaySavedTracks(tracksArr) {
     const likedTracksUl = document.getElementById(config.CSS.IDs.likedTracks);
     tracksArr.forEach((track) => {
-      likedTracksUl.append(track.getPlaylistTrackHtml());
+      likedTracksUl.append(track.getPlaylistTrackHtml(tracksArr));
     });
   }
   return { getSavedTracks };

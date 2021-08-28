@@ -61,6 +61,7 @@ export const config = {
       followedArtists: "followed-artists",
       webPlayer: "web-player",
       playTimeBar: "playtime-bar",
+      playlistHeaderArea: "playlist-main-header-area",
     },
     CLASSES: {
       glow: "glow",
@@ -71,7 +72,7 @@ export const config = {
       playlistTrack: "playlist-track",
       infoLoadingSpinners: "info-loading-spinner",
       appear: "appear",
-      hide: "hidden",
+      hide: "hide",
       selected: "selected",
       card: "card",
       playlistSearch: "playlist-search",

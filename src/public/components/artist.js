@@ -1,6 +1,7 @@
 import { config, htmlToEl, getValidImage } from "../config.js";
 import { generateTracksFromData } from "../components/track.js";
 import Card from "./card.js";
+import DoublyLinkedList from "./doubly-linked-list.js";
 
 class Artist extends Card {
   constructor(id, name, genres, followerCount, externalUrl, images) {
@@ -96,7 +97,7 @@ class Artist extends Card {
   async loadTopTracks() {
     let res = await axios.get(config.URLs.getArtistTopTracks(this.artistId));
     let tracksData = res.data.tracks;
-    let trackObjs = [];
+    let trackObjs = new DoublyLinkedList();
 
     generateTracksFromData(tracksData, trackObjs);
 

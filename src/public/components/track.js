@@ -4,10 +4,14 @@ import {
   htmlToEl,
   getValidImage,
 } from "../config.js";
-import { spotifyPlayback } from "./playback-sdk.js";
+import {
+  checkIfIsPlayingElAfterRerender,
+  isSamePlayingURI,
+} from "./playback-sdk.js";
 import Album from "./album.js";
 import Card from "./card.js";
 import TrackPlayEventArg from "./pubsub/event-args/track-play-args.js";
+import DoublyLinkedList from "./doubly-linked-list.js";
 
 class Track extends Card {
   constructor(props) {
@@ -23,8 +27,11 @@ class Track extends Card {
       album,
       externalUrl,
       artists,
+      idx = -1,
     } = props;
 
+    // This tracks index in an array if it is contained in one. (used to find previous and next tracks)
+    this.idx = idx;
     this.externalUrl = externalUrl;
     this.id = id;
     this.name = name;
@@ -119,19 +126,24 @@ class Track extends Card {
   /** Get a track html to be placed as a list element.
    *
    * @param {Boolean} displayDate - whether to display the date.
-   * @param {Boolean} isPlaying - whether this track was playing music. Use uri's to match because the same track can be in the same playlist but have different uri's
    * @returns {ChildNode} - The converted html string to an element
    */
-  getPlaylistTrackHtml(displayDate = true, isPlaying = false) {
+  getPlaylistTrackHtml(trackDataList, displayDate = true) {
     const track_uri = this.uri;
     const title = this.name;
+
+    var trackDataNode = trackDataList.get(this.idx, true);
+
     function playPauseClick(btn) {
       // select this track to play or pause by publishing the track play event arg
       window.eventAggregator.publish(
         new TrackPlayEventArg(
-          { selEl: btn, track_uri: track_uri, trackTitle: title },
-          [],
-          []
+          {
+            selEl: btn,
+            track_uri: track_uri,
+            trackTitle: title,
+          },
+          trackDataNode
         )
       );
     }
@@ -139,7 +151,7 @@ class Track extends Card {
     let html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
               <button class="play-pause ${
-                isPlaying ? config.CSS.CLASSES.selected : ""
+                isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ""
               }"><img src="" alt="play/pause" 
               class="${config.CSS.CLASSES.noSelect}"/></button>
               <img class="${config.CSS.CLASSES.noSelect}" src="${
@@ -171,10 +183,7 @@ class Track extends Card {
     let playPauseBtn = el.childNodes[1];
     playPauseBtn.addEventListener("click", () => playPauseClick(playPauseBtn));
 
-    if (isPlaying) {
-      // This element was playing before rerendering so set it to be the currently playing one again
-      spotifyPlayback.selPlaying.element = playPauseBtn;
-    }
+    checkIfIsPlayingElAfterRerender(this.uri, playPauseBtn, trackDataNode);
 
     return el;
   }
@@ -228,14 +237,15 @@ class Track extends Card {
   }
 }
 
-/** Generate a standard track from data excluding date added.
+/** Generate tracks from data excluding date added.
  *
  * @param {*} datas
- * @param {*} trackArr
+ * @param {DoublyLinkedList} trackList - double linked list
  * @returns
  */
-export function generateTracksFromData(datas, trackArr) {
-  datas.forEach((data) => {
+export function generateTracksFromData(datas, trackList) {
+  for (let i = 0; i < datas.length; i++) {
+    const data = datas[i];
     if (data) {
       let props = {
         name: data.name,
@@ -248,13 +258,31 @@ export function generateTracksFromData(datas, trackArr) {
         album: new Album(data.album.name, data.album.external_urls.spotify),
         externalUrl: data.external_urls.spotify,
         artists: data.artists,
+        idx: i,
       };
-      if (trackArr) {
-        trackArr.push(new Track(props));
+      if (trackList) {
+        trackList.add(new Track(props));
       }
     }
-  });
-  return trackArr;
+  }
+  return trackList;
+}
+
+/** Generate track datas doubly linked list to be passed whose node representing this track will be passed into the track event args.
+ *
+ * @param {DoublyLinkedList} trackList
+ */
+export function generateTrackEventDataFromList(trackList) {
+  var trackDataList = new DoublyLinkedList();
+  for (const track of trackList.values()) {
+    trackDataList.add({
+      selEl: track.playBtn,
+      track_uri: track.uri,
+      trackTitle: track.name,
+    });
+  }
+
+  return trackDataList;
 }
 
 export default Track;
