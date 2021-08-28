@@ -170,6 +170,7 @@ class SpotifyPlayBack {
    */
   async setSelPlayingEl(eventArg) {
     const { selEl, track_uri, trackTitle } = eventArg.currTrack;
+    console.log(eventArg.trackDataNode);
     // if the player isn't ready we cannot continue.
     if (!this.playerIsReady) {
       return;
@@ -210,6 +211,7 @@ class SpotifyPlayBack {
   }
 
   async startTrack(selEl, track_uri, playingAsyncFunc, title, trackDataNode) {
+    console.log("Start");
     this.selPlaying.trackDataNode = trackDataNode;
     this.selPlaying.element = selEl;
     this.selPlaying.element.classList.add(config.CSS.CLASSES.selected);
@@ -244,7 +246,10 @@ class SpotifyPlayBack {
 export const spotifyPlayback = new SpotifyPlayBack();
 
 export function isSamePlayingURI(uri) {
-  return uri == spotifyPlayback.selPlaying.track_uri;
+  return (
+    uri == spotifyPlayback.selPlaying.track_uri &&
+    spotifyPlayback.selPlaying.element != null
+  );
 }
 
 export function checkIfIsPlayingElAfterRerender(uri, selEl, trackDataNode) {
