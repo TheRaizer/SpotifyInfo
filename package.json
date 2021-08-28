@@ -1,5 +1,5 @@
 {
-  "type": "module",
+  "type": "commonjs",
   "name": "spotify-info-site",
   "version": "1.0.0",
   "description": "View spotify info and make streamlined modifications",
@@ -27,6 +27,9 @@
     "supertest": "^6.1.6"
   },
   "scripts": {
+    "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
+    "build": "tsc",
+    "start": "node src/server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

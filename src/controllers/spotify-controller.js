@@ -1,5 +1,5 @@
-import axios from "axios";
-import { StatusCodes } from "http-status-codes";
+const axios = require("axios");
+const { StatusCodes } = require("http-status-codes");
 
 const spotifyGetHeaders = (req) => {
   return {
@@ -246,7 +246,7 @@ async function putPlayTrack(req, res, next) {
     });
 }
 
-export default {
+const spotifyCtrl = {
   getTopArtists,
   getTopTracks,
   getPlaylists,
@@ -262,3 +262,5 @@ export default {
   getFollowedArtists,
   putPlayTrack,
 };
+
+exports.spotifyCtrl = spotifyCtrl;

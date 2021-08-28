@@ -1,6 +1,6 @@
-import { stringify } from "qs";
-import axios from "axios";
-import { StatusCodes } from "http-status-codes";
+const { stringify } = require("qs");
+const axios = require("axios");
+const { StatusCodes } = require("http-status-codes");
 
 function hasBeenMoreOneHour(date) {
   const HALF_HOUR = 1.8e6; // subtract for uncertainty
@@ -121,10 +121,12 @@ function getAccessToken(req, res) {
   }
 }
 
-export default {
+const tokenCtrl = {
   hasTokens,
   refreshTokens,
   clearTokens,
   obtainTokens,
   getAccessToken,
 };
+
+exports.tokenCtrl = tokenCtrl;

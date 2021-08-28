@@ -1,23 +1,19 @@
-import dotenv from "dotenv";
-import { StatusCodes } from "http-status-codes";
+const dotenv = require("dotenv");
+const { StatusCodes } = require("http-status-codes");
 
 dotenv.config();
 
-import express from "express";
-import { createClient } from "redis";
+const express = require("express");
+const { createClient } = require("redis");
 
-import helmet from "helmet";
-import session from "express-session";
+const helmet = require("helmet");
+const session = require("express-session");
 
-import { router as tokens } from "./routes/tokens.js";
-import { router as spotifyActions } from "./routes/spotify-actions.js";
-import RedisStore from "connect-redis";
-import crypto from "crypto";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { router: tokens } = require("./routes/tokens.js");
+const { router: spotifyActions } = require("./routes/spotify-actions.js");
+const RedisStore = require("connect-redis");
+const crypto = require("crypto");
+const { v4: uuidv4 } = require("uuid");
 
 // express and helmet protects api from being called on other sites, also known as CORS
 // more info: https://stackoverflow.com/questions/31378997/express-js-limit-api-access-to-only-pages-from-the-same-website
@@ -106,34 +102,34 @@ app.use("/spotify", spotifyActions);
 
 app.use(logErrors);
 
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + "public"));
 
 // '/' represents the home page which will render index.html from express server
 app.get("/", function (_req, res) {
-  res.status(StatusCodes.OK).sendFile(__dirname + "/public/index.html");
+  res.status(StatusCodes.OK).sendFile(__dirname + "public/index.html");
 }); // '/' represents the home page which will render index.html from express server
 
 app.get("/playlists", function (_req, res) {
   res
     .status(StatusCodes.OK)
-    .sendFile(__dirname + "/public/pages/playlists-page/playlists.html");
+    .sendFile(__dirname + "public/pages/playlists-page/playlists.html");
 });
 app.get("/top-tracks", function (_req, res) {
   res
     .status(StatusCodes.OK)
-    .sendFile(__dirname + "/public/pages/top-tracks-page/top-tracks.html");
+    .sendFile(__dirname + "public/pages/top-tracks-page/top-tracks.html");
 });
 
 app.get("/top-artists", function (_req, res) {
   res
     .status(StatusCodes.OK)
-    .sendFile(__dirname + "/public/pages/top-artists-page/top-artists.html");
+    .sendFile(__dirname + "public/pages/top-artists-page/top-artists.html");
 });
 
 app.get("/profile", function (_req, res) {
   res
     .status(StatusCodes.OK)
-    .sendFile(__dirname + "/public/pages/profile-page/profile.html");
+    .sendFile(__dirname + "public/pages/profile-page/profile.html");
 });
 
 // clear session data

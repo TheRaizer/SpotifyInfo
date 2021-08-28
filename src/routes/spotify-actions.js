@@ -1,6 +1,6 @@
-import { Router } from "express";
-export const router = Router();
-import spotifyCtrl from "../controllers/spotify-controller.js";
+const { Router } = require("express");
+const router = Router();
+const { spotifyCtrl } = require("../controllers/spotify-controller.js");
 
 router.get("/get-top-artists", spotifyCtrl.getTopArtists);
 router.get("/get-top-tracks", spotifyCtrl.getTopTracks);
@@ -19,3 +19,5 @@ router.get(
 );
 router.get("/get-followed-artists", spotifyCtrl.getFollowedArtists);
 router.put("/play-track", spotifyCtrl.putPlayTrack);
+
+exports.router = router;
