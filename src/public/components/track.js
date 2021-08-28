@@ -17,7 +17,7 @@ class Track extends Card {
   constructor(props) {
     super();
     let {
-      name,
+      title,
       images,
       duration,
       uri,
@@ -34,7 +34,7 @@ class Track extends Card {
     this.idx = idx;
     this.externalUrl = externalUrl;
     this.id = id;
-    this.name = name;
+    this.title = title;
     this.filterDataFromArtists(artists);
     this.duration = millisToMinutesAndSeconds(duration);
 
@@ -47,7 +47,7 @@ class Track extends Card {
     this.features = undefined;
 
     this.imageUrl = getValidImage(images);
-    this.playBtn = null;
+    this.selEl = null;
   }
 
   setDateAdded(dateAddedToPlaylist) {
@@ -101,7 +101,7 @@ class Track extends Card {
                     <div>
                       <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.scrollingText
-    }">${this.name}</h4>
+    }">${this.title}</h4>
                     </div>
                   </div>
                   <div class=${config.CSS.CLASSES.flipCardBack}>
@@ -128,24 +128,13 @@ class Track extends Card {
    * @param {Boolean} displayDate - whether to display the date.
    * @returns {ChildNode} - The converted html string to an element
    */
-  getPlaylistTrackHtml(trackDataList, displayDate = true) {
-    const track_uri = this.uri;
-    const title = this.name;
+  getPlaylistTrackHtml(trackList, displayDate = true) {
+    const track = this;
+    var trackNode = trackList.get(this.idx, true);
 
-    var trackDataNode = trackDataList.get(this.idx, true);
-
-    function playPauseClick(btn) {
+    function playPauseClick() {
       // select this track to play or pause by publishing the track play event arg
-      window.eventAggregator.publish(
-        new TrackPlayEventArg(
-          {
-            selEl: btn,
-            track_uri: track_uri,
-            trackTitle: title,
-          },
-          trackDataNode
-        )
-      );
+      window.eventAggregator.publish(new TrackPlayEventArg(track, trackNode));
     }
 
     let html = `
@@ -161,7 +150,7 @@ class Track extends Card {
                 <a href="${this.externalUrl}" target="_blank">
                   <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.name
-    }">${this.name}
+    }">${this.title}
                   </h4>
                 <a/>
                 <div class="${config.CSS.CLASSES.ellipsisWrap}">
@@ -181,9 +170,10 @@ class Track extends Card {
 
     // get play pause button
     let playPauseBtn = el.childNodes[1];
+    this.selEl = playPauseBtn;
     playPauseBtn.addEventListener("click", () => playPauseClick(playPauseBtn));
 
-    checkIfIsPlayingElAfterRerender(this.uri, playPauseBtn, trackDataNode);
+    checkIfIsPlayingElAfterRerender(this.uri, playPauseBtn, trackNode);
 
     return el;
   }
@@ -203,7 +193,7 @@ class Track extends Card {
                 <a href="${this.externalUrl}" target="_blank">
                   <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.name
-    }">${this.name}
+    }">${this.title}
                   </h4>
                 <a/>
                 <div class="${config.CSS.CLASSES.ellipsisWrap}">
@@ -248,7 +238,7 @@ export function generateTracksFromData(datas, trackList) {
     const data = datas[i];
     if (data) {
       let props = {
-        name: data.name,
+        title: data.name,
         images: data.album.images,
         duration: data.duration_ms,
         uri: data.linked_from !== undefined ? data.linked_from.uri : data.uri,
@@ -266,23 +256,6 @@ export function generateTracksFromData(datas, trackList) {
     }
   }
   return trackList;
-}
-
-/** Generate track datas doubly linked list to be passed whose node representing this track will be passed into the track event args.
- *
- * @param {DoublyLinkedList} trackList
- */
-export function generateTrackEventDataFromList(trackList) {
-  var trackDataList = new DoublyLinkedList();
-  for (const track of trackList.values()) {
-    trackDataList.add({
-      selEl: track.playBtn,
-      track_uri: track.uri,
-      trackTitle: track.name,
-    });
-  }
-
-  return trackDataList;
 }
 
 export default Track;

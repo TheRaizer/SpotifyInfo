@@ -8,6 +8,7 @@ import {
 } from "../../manage-tokens.js";
 import { generateArtistsFromData } from "../../components/artist.js";
 import CardActionsHandler from "../../card-actions.js";
+import DoublyLinkedList from "../../components/doubly-linked-list.js";
 
 function displayProfile(profile) {
   const displayName = document
@@ -75,18 +76,18 @@ const savedTracksActions = (function () {
   function getSavedTracks() {
     promiseHandler(axios.get(config.URLs.getCurrentUserSavedTracks), (res) => {
       // if we retrieved the tracks succesfully, then display them
-      let tracksArr = [];
+      let trackList = new DoublyLinkedList();
       let tracksData = res.data.items.map((item) => item.track);
 
-      getPlaylistTracksFromDatas(tracksData, res.data.items, tracksArr);
-      displaySavedTracks(tracksArr);
+      getPlaylistTracksFromDatas(tracksData, res.data.items, trackList);
+      displaySavedTracks(trackList);
     });
   }
-  function displaySavedTracks(tracksArr) {
+  function displaySavedTracks(trackList) {
     const likedTracksUl = document.getElementById(config.CSS.IDs.likedTracks);
-    tracksArr.forEach((track) => {
-      likedTracksUl.append(track.getPlaylistTrackHtml(tracksArr));
-    });
+    for (const track of trackList.values()) {
+      likedTracksUl.append(track.getPlaylistTrackHtml(trackList));
+    }
   }
   return { getSavedTracks };
 })();

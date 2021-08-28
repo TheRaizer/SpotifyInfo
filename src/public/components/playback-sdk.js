@@ -169,8 +169,7 @@ class SpotifyPlayBack {
    * @param {TrackPlayEventArg} eventArg - a class that contains the current, next and previous tracks to play
    */
   async setSelPlayingEl(eventArg) {
-    const { selEl, track_uri, trackTitle } = eventArg.currTrack;
-    console.log(eventArg.trackDataNode);
+    console.log(eventArg.trackNode);
     // if the player isn't ready we cannot continue.
     if (!this.playerIsReady) {
       return;
@@ -183,36 +182,36 @@ class SpotifyPlayBack {
       await this.pause();
       clearInterval(this.getStateInterval);
       // if the selected el is the same as the prev then null it and return so we do not end up reselecting it right after deselecting.
-      if (this.selPlaying.element == selEl) {
+      if (this.selPlaying.element == eventArg.currTrack.selEl) {
         this.selPlaying.element = null;
         return;
       }
     }
 
     // prev track uri is the same then resume the song instead of replaying it.
-    if (this.selPlaying.track_uri == track_uri) {
+    if (this.selPlaying.track_uri == eventArg.currTrack.uri) {
       await this.startTrack(
-        selEl,
-        track_uri,
+        eventArg.currTrack.selEl,
+        eventArg.currTrack.uri,
         () => this.resume(),
-        trackTitle,
-        eventArg.trackDataNode
+        eventArg.currTrack.title,
+        eventArg.trackNode
       );
       return;
     }
 
     await this.startTrack(
-      selEl,
-      track_uri,
+      eventArg.currTrack.selEl,
+      eventArg.currTrack.uri,
       async () => this.play(this.selPlaying.track_uri),
-      trackTitle,
-      eventArg.trackDataNode
+      eventArg.currTrack.title,
+      eventArg.trackNode
     );
   }
 
-  async startTrack(selEl, track_uri, playingAsyncFunc, title, trackDataNode) {
+  async startTrack(selEl, track_uri, playingAsyncFunc, title, trackNode) {
     console.log("Start");
-    this.selPlaying.trackDataNode = trackDataNode;
+    this.selPlaying.trackDataNode = trackNode;
     this.selPlaying.element = selEl;
     this.selPlaying.element.classList.add(config.CSS.CLASSES.selected);
     this.selPlaying.track_uri = track_uri;

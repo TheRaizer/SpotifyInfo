@@ -13,7 +13,6 @@ import {
 } from "../../manage-tokens.js";
 import CardActionsHandler from "../../card-actions.js";
 import DoublyLinkedList from "../../components/doubly-linked-list.js";
-import { generateTrackEventDataFromList } from "../../components/track.js";
 
 const expandedPlaylistMods = document.getElementById(
   config.CSS.IDs.expandedPlaylistMods
@@ -374,12 +373,7 @@ const manageTracks = (function () {
   function rerenderPlaylistTracks(trackList, trackArrUl) {
     removeAllChildNodes(trackArrUl);
     for (const track of trackList.values()) {
-      trackArrUl.appendChild(
-        track.getPlaylistTrackHtml(
-          generateTrackEventDataFromList(trackList),
-          true
-        )
-      );
+      trackArrUl.appendChild(track.getPlaylistTrackHtml(trackList, true));
     }
   }
 
