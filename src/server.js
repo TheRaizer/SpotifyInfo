@@ -102,34 +102,34 @@ app.use("/spotify", spotifyActions);
 
 app.use(logErrors);
 
-app.use(express.static(__dirname + "public"));
+app.use(express.static(__dirname + "/public"));
 
 // '/' represents the home page which will render index.html from express server
 app.get("/", function (_req, res) {
-  res.status(StatusCodes.OK).sendFile(__dirname + "public/index.html");
+  res.status(StatusCodes.OK).sendFile(__dirname + "/public/index.html");
 }); // '/' represents the home page which will render index.html from express server
 
 app.get("/playlists", function (_req, res) {
   res
     .status(StatusCodes.OK)
-    .sendFile(__dirname + "public/pages/playlists-page/playlists.html");
+    .sendFile(__dirname + "/public/pages/playlists-page/playlists.html");
 });
 app.get("/top-tracks", function (_req, res) {
   res
     .status(StatusCodes.OK)
-    .sendFile(__dirname + "public/pages/top-tracks-page/top-tracks.html");
+    .sendFile(__dirname + "/public/pages/top-tracks-page/top-tracks.html");
 });
 
 app.get("/top-artists", function (_req, res) {
   res
     .status(StatusCodes.OK)
-    .sendFile(__dirname + "public/pages/top-artists-page/top-artists.html");
+    .sendFile(__dirname + "/public/pages/top-artists-page/top-artists.html");
 });
 
 app.get("/profile", function (_req, res) {
   res
     .status(StatusCodes.OK)
-    .sendFile(__dirname + "public/pages/profile-page/profile.html");
+    .sendFile(__dirname + "/public/pages/profile-page/profile.html");
 });
 
 // clear session data
