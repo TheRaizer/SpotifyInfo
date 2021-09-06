@@ -1,0 +1,1 @@
+{"version":3,"file":"album.js","sourceRoot":"","sources":["../../../src/public/components/album.js"],"names":[],"mappings":";;AAAA,MAAM,KAAK;IACT,YAAY,IAAI,EAAE,WAAW;QAC3B,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,WAAW,GAAG,WAAW,CAAC;IACjC,CAAC;CACF;AAED,kBAAe,KAAK,CAAC"}

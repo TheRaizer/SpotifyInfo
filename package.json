@@ -1,9 +1,8 @@
 {
-  "type": "commonjs",
   "name": "spotify-info-site",
   "version": "1.0.0",
   "description": "View spotify info and make streamlined modifications",
-  "main": "index.js",
+  "private": true,
   "dependencies": {
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
@@ -15,21 +14,42 @@
     "express-session": "^1.17.2",
     "helmet": "^4.6.0",
     "http-status-codes": "^2.1.4",
+    "interactjs": "^1.10.11",
     "qs": "^6.10.1",
     "redis": "^3.1.2",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/connect-redis": "0.0.17",
+    "@types/express": "^4.17.13",
+    "@types/express-session": "^1.17.4",
+    "@types/node": "^16.7.6",
+    "@types/redis": "^2.8.31",
+    "@types/spotify-web-playback-sdk": "^0.1.11",
+    "@types/uuid": "^8.3.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "eslint": "^7.32.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "html-webpack-plugin": "^5.3.2",
     "jest": "^27.0.6",
     "superagent": "^6.1.0",
-    "supertest": "^6.1.6"
+    "supertest": "^6.1.6",
+    "ts-loader": "^9.2.5",
+    "webpack": "^5.51.1",
+    "webpack-cli": "^4.8.0"
   },
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
-    "start": "node src/server",
+    "tsc": "tsc -p tsconfig.json",
+    "start": "node dist/server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

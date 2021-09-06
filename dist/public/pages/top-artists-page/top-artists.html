@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body>
-    <section class="container">
+    <main class="container">
       <nav class="topnav">
         <ul>
           <li><a class="active" href="/">Home</a></li>
@@ -53,50 +53,83 @@
           </li>
         </ul>
       </nav>
-      <header id="profile-header">
-        <img src="" alt="User Icon" class="no-select" />
-        <h1>User Name</h1>
-        <h4>000 Followers</h4>
-      </header>
       <img
         id="get-token-loading-spinner"
         src="/images/200pxLoadingSpinner.svg"
         alt="Loading..."
       />
+      <header>
+        <h1 id="top-tracks-header">Your Top Artists</h1>
+      </header>
       <main id="info-container">
-        <div class="flex-row-around profile-area">
-          <section>
-            <header>
-              <h2>Liked Songs</h2>
-            </header>
-            <ul class="scroll-bar track-list" id="liked-tracks"></ul>
-          </section>
-          <article id="account-btns">
-            <a class="glow" href="" id="clear-data">Clear Data</a>
-          </article>
+        <div
+          class="border-connected-btn-container no-select"
+          id="artists-term-selections"
+        >
+          <div>
+            <button
+              class="selected left"
+              data-selection="short_term"
+              title="Click to view top tracks short term"
+            >
+              Short Term (last 4 weeks)
+            </button>
+            <div class="selected border-cover"></div>
+          </div>
+          <div>
+            <button
+              data-selection="medium_term"
+              title="Click to view top tracks mid term"
+            >
+              Mid Term (last 6 months)
+            </button>
+            <div class="border-cover"></div>
+          </div>
+          <div>
+            <button
+              class="right"
+              data-selection="long_term"
+              title="Click to view top tracks long term"
+            >
+              Long Term (of all time)
+            </button>
+            <div class="border-cover"></div>
+          </div>
         </div>
-        <div class="flex-row-around profile-area">
-          <section>
-            <header>
-              <h2>Followed Artists</h2>
-            </header>
-            <div class="scroll-bar card-grid" id="followed-artists"></div>
-          </section>
+        <div class="border-container" id="term-border-container">
+          <div class="expand-to-children">
+            <div id="artist-cards-container"></div>
+          </div>
         </div>
       </main>
       <footer>
         <section id="icon8-links">
           <div class="icon8">
-            Icons made by
-            <a href="https://www.freepik.com" title="Freepik">Freepik</a> from
-            <a href="https://www.flaticon.com/" title="Flaticon"
-              >www.flaticon.com</a
+            <a target="_blank" href="https://icons8.com/icon/84898/male-user"
+              >Male User</a
             >
+            icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+          </div>
+          <div class="icon8">
+            <a target="_blank" href="https://icons8.com/icon/52991/open-book"
+              >Open Book</a
+            >
+            icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+            <a target="_blank" href="https://icons8.com/icon/23537/close-window"
+              >Close Window</a
+            >
+            icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+          </div>
+          <div class="icon8">
+            <a target="_blank" href="https://icons8.com/icon/84898/male-user"
+              >Male User</a
+            >
+            icon by <a target="_blank" href="https://icons8.com">Icons8</a>
           </div>
         </section>
       </footer>
-    </section>
+    </main>
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
-    <script type="module" src="profile-bundle.js"></script>
+    <script type="module" src="top-artists-bundle.js"></script>
   </body>
 </html>
