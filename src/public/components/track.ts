@@ -23,7 +23,7 @@ class Track extends Card implements IPlayable {
   private externalUrls: ExternalUrls;
   private _id: string;
   private _title: string;
-  private duration: string;
+  private _duration: string;
   private _uri: string;
   popularity: string;
   private _dateAddedToPlaylist: Date;
@@ -76,7 +76,7 @@ class Track extends Card implements IPlayable {
     this._id = id
     this._title = title
     this.artistsDatas = this.filterDataFromArtists(artists)
-    this.duration = millisToMinutesAndSeconds(duration)
+    this._duration = millisToMinutesAndSeconds(duration)
     this._dateAddedToPlaylist = new Date()
 
     // either the normal uri, or the linked_from.uri
@@ -139,7 +139,7 @@ class Track extends Card implements IPlayable {
                   </div>
                   <div class=${config.CSS.CLASSES.flipCardBack}>
                     <h3>Duration:</h3>
-                    <p>${this.duration}</p>
+                    <p>${this._duration}</p>
                     <h3>Release Date:</h3>
                     <p>${this.releaseDate.toDateString()}</p>
                     <h3>Album Name:</h3>
@@ -191,7 +191,7 @@ class Track extends Card implements IPlayable {
                   ${this.generateHTMLArtistNames()}
                 </div>
               </div>
-              <h5>${this.duration}</h5>
+              <h5>${this._duration}</h5>
               ${
                 displayDate
                   ? `<h5>${this.dateAddedToPlaylist.toLocaleDateString()}</h5>`
@@ -237,7 +237,7 @@ class Track extends Card implements IPlayable {
                   ${this.generateHTMLArtistNames()}
                 </div>
               </div>
-              <h5>${this.duration}</h5>
+              <h5>${this._duration}</h5>
             </li>
             `
 

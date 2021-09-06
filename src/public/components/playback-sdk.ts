@@ -11,8 +11,10 @@ import PlayableEventArg from './pubsub/event-args/track-play-args'
 import axios, { AxiosResponse } from 'axios'
 import EventAggregator from './pubsub/aggregator'
 import { IPlayable } from '../types'
+
 class SpotifyPlayback {
   player: any;
+  isExecutingAction: boolean;
   device_id: string;
   selPlaying: {
       element: null | Element
@@ -32,6 +34,7 @@ class SpotifyPlayback {
   playerIsReady: boolean;
 
   constructor () {
+    this.isExecutingAction = false
     this.player = null
     this.device_id = ''
     this.selPlaying = {
@@ -227,7 +230,12 @@ class SpotifyPlayback {
       console.log('player is not ready')
       return
     }
-
+    if (this.isExecutingAction) {
+      console.log('is currently executing action')
+      return
+    }
+    this.isExecutingAction = true
+    console.log('Start Action')
     if (this.selPlaying.element != null) {
       // if there already is a selected element unselect it
       this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected)
@@ -237,6 +245,8 @@ class SpotifyPlayback {
       // if the selected el is the same as the prev then null it and return so we do not end up reselecting it right after deselecting.
       if (this.selPlaying.element === eventArg.currPlayable.selEl) {
         this.selPlaying.element = null
+        this.isExecutingAction = false
+        console.log('Action Ended')
         return
       }
     }
@@ -246,20 +256,24 @@ class SpotifyPlayback {
       await this.startTrack(
         eventArg.currPlayable.selEl,
         eventArg.currPlayable.uri,
-        () => this.resume(),
+        async () => this.resume(eventArg.currPlayable.uri),
         eventArg.currPlayable.title,
         eventArg.playableNode
       )
+      console.log('Action Ended')
+      this.isExecutingAction = false
       return
     }
 
     await this.startTrack(
       eventArg.currPlayable.selEl,
       eventArg.currPlayable.uri,
-      async () => this.play(this.selPlaying.track_uri),
+      async () => this.play(eventArg.currPlayable.uri),
       eventArg.currPlayable.title,
       eventArg.playableNode
     )
+    console.log('Action Ended')
+    this.isExecutingAction = false
   }
 
   async startTrack (selEl: Element, track_uri: string, playingAsyncFunc: Function, title: string, trackNode: DoublyLinkedListNode<IPlayable>) {
@@ -272,6 +286,8 @@ class SpotifyPlayback {
     this.webPlayerEls!.title!.textContent = title
 
     await playingAsyncFunc()
+
+    // set playing state once song starts playing
     this.setGetStateInterval()
   }
 
@@ -281,14 +297,13 @@ class SpotifyPlayback {
    * @returns whether or not the track has been played succesfully.
    */
   async play (track_uri: string) {
-    console.log('play')
     await promiseHandler(
       axios.put(config.URLs.putPlayTrack(this.device_id, track_uri))
     )
     console.log('play')
   }
 
-  async resume () {
+  async resume (track_uri: string) {
     await this.player.resume()
     console.log('resume')
   }

@@ -4,6 +4,8 @@ class AsyncSelectionVerif<T> {
 
   constructor () {
     this._currSelectedVal = null
+
+    // used to ensure that an object that has loaded will not be loaded again
     this.hasLoadedCurrSelected = false
   }
 
@@ -39,6 +41,8 @@ class AsyncSelectionVerif<T> {
     if (this._currSelectedVal !== postLoadVal || this.hasLoadedCurrSelected) {
       return false
     } else {
+      // if is valid then we assume that this value will be loaded
+      this.hasLoadedCurrSelected = true
       return true
     }
   }

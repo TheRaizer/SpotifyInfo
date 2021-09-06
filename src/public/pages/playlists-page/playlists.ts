@@ -120,8 +120,6 @@ const playlistActions = (function () {
           return
         }
         callback()
-
-        playlistSelVerif.hasLoadedCurrSelected = true
       })
       .catch((err) => {
         console.log('Error when getting tracks')
@@ -445,10 +443,11 @@ const addEventListeners = (function () {
 
       // not same order as some have been deleted
       manageTracks.sortExpandedTracksToOrder(false)
+      const trackUris = tracksToRemove.map((track) => { return { uri: track.uri } })
 
       promiseHandler(
-        axios.delete(config.URLs.deletePlaylistTracks + playlistActions.playlistSelVerif.currSelectedValNoNull.id, {
-          data: { tracks: tracksToRemove }
+        axios.delete(config.URLs.deletePlaylistTracks(playlistActions.playlistSelVerif.currSelectedValNoNull.id), {
+          data: { track_uris: trackUris }
         })
       )
     }
@@ -470,9 +469,11 @@ const addEventListeners = (function () {
       }
       const undonePlaylistId = currPlaylist.id
       const tracksRemoved = currPlaylist.undoStack.pop()
+
+      const trackUris = tracksRemoved.map((track) => track.uri)
       promiseHandler(
-        axios.post(config.URLs.postPlaylistTracks + currPlaylist.id, {
-          data: { tracks: tracksRemoved }
+        axios.post(config.URLs.postPlaylistTracks(currPlaylist.id), {
+          track_uris: trackUris
         }),
         () => {
           // if the request was succesful and the user is

@@ -101,19 +101,13 @@ async function getTrackFeatures (req: Request, res: Response, next: NextFunction
 }
 async function deletePlaylistItems (req: Request, res: Response, next: NextFunction) {
   const playlistId = req.query.playlist_id as string
-  const trackObjs: Array<{uri: string}> = req.body.tracks
-  const uriData = []
-
-  for (let i = 0; i < trackObjs.length; i++) {
-    const track = trackObjs[i]
-    uriData.push({ uri: track.uri })
-  }
+  const trackUris: Array<string> = req.body.track_uris
 
   await axios({
     method: 'delete',
     url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
     headers: spotifyGetHeaders(req),
-    data: { tracks: uriData }
+    data: { tracks: trackUris }
   })
     .then(function () {
       res.sendStatus(StatusCodes.OK)
@@ -125,21 +119,14 @@ async function deletePlaylistItems (req: Request, res: Response, next: NextFunct
 }
 async function postPlaylistItems (req: Request, res: Response, next: NextFunction) {
   const playlistId = req.query.playlist_id as string
-  const trackObjs = req.body.data.tracks as Array<{uri: string}>
-  const uriData = []
-
-  // obtain track uris from request body
-  for (let i = 0; i < trackObjs.length; i++) {
-    const track = trackObjs[i]
-    uriData.push(track.uri)
-  }
+  const trackUris: Array<string> = req.body.track_uris
 
   // use track uris to post items to the given playlist
   await axios({
     method: 'post',
     url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
     headers: spotifyGetHeaders(req),
-    data: { uris: uriData }
+    data: { uris: trackUris }
   })
     .then(function () {
       res.sendStatus(StatusCodes.CREATED)

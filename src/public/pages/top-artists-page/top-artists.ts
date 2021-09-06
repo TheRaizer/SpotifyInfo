@@ -87,7 +87,7 @@ const artistActions = (function () {
 })()
 
 const artistCardsHandler = (function () {
-  const selectionVerif = new AsyncSelectionVerif()
+  const selectionVerif = new AsyncSelectionVerif<Array<Artist>>()
   const artistContainer = document.getElementById(
     config.CSS.IDs.artistCardsContainer
   ) ?? throwExpression(`artist container of id ${config.CSS.IDs.artistCardsContainer} does not exist`)

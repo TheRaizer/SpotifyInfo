@@ -18,12 +18,13 @@ import CardActionsHandler from '../../card-actions'
 import axios from 'axios'
 import { Chart, LinearScale, CategoryScale, BarController, BarElement } from 'chart.js'
 import { FeaturesData } from '../../types'
+
 Chart.register(LinearScale, CategoryScale, BarController, BarElement)
 const DEFAULT_VIEWABLE_CARDS = 5
 const MAX_VIEWABLE_CARDS = 50
 
 const trackActions = (function () {
-  const selectionVerif = new AsyncSelectionVerif()
+  const selectionVerif = new AsyncSelectionVerif<Array<Track>>()
   const cardActionsHandler = new CardActionsHandler(MAX_VIEWABLE_CARDS)
   const selections = {
     numViewableCards: DEFAULT_VIEWABLE_CARDS,
