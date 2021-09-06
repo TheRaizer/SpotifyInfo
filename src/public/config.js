@@ -90,7 +90,6 @@ export const config = {
       noSelect: "no-select",
       dropDown: "drop-down",
       expandableTxtContainer: "expandable-text-container",
-      rankCard: "rank-card",
       borderCover: "border-cover",
       firstExpansion: "first-expansion",
       secondExpansion: "second-expansion",

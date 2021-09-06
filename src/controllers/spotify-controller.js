@@ -57,6 +57,7 @@ async function getPlaylists(req, res, next) {
   })
     .then(function (response) {
       // the json is nested in a way that the below will retrieve playlists
+      console.log(response.data.items);
       res.status(StatusCodes.OK).send(response.data.items);
     })
     .catch((err) => {

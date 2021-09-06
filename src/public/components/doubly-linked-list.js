@@ -417,6 +417,30 @@ class DoublyLinkedList {
     return undefined;
   }
 
+  slice(startIdx, numToSlice) {
+    const newList = new DoublyLinkedList();
+
+    // get the start of the new list
+    let newStart = this.get(startIdx, true);
+
+    // add the new start to the start
+    newList.add(newStart);
+
+    let current = newStart;
+
+    // add the remaining nodes
+    // do -1 to get numToSlice including start node
+    for (let j = 0; j < numToSlice - 1; j++) {
+      current = current.next;
+      newList.add(current);
+      if (current.next === null) {
+        throw new Error("Index out of bounds");
+      }
+    }
+
+    return newList;
+  }
+
   /**
    * Returns the index of the first item that matches a given function.
    * @param {Function} matcher A function returning true when an item matches

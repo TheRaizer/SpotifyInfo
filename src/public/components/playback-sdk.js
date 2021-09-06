@@ -25,7 +25,6 @@ class SpotifyPlayBack {
       duration: null,
     };
     this.playerIsReady = false;
-
     promiseHandler(axios.get(config.URLs.getAccessToken), (res) => {
       const NO_CONTENT = 204;
       if (res.status == NO_CONTENT) {
