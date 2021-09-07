@@ -19,7 +19,6 @@ import EventAggregator from './pubsub/aggregator'
 const eventAggregator = (window as any).eventAggregator as EventAggregator
 
 class Track extends Card implements IPlayable {
-  idx: number;
   private externalUrls: ExternalUrls;
   private _id: string;
   private _title: string;
@@ -66,12 +65,9 @@ class Track extends Card implements IPlayable {
       id,
       album,
       externalUrls,
-      artists,
-      idx = -1
+      artists
     } = props
 
-    // This tracks index in an array if it is contained in one. (used to find previous and next tracks)
-    this.idx = idx
     this.externalUrls = externalUrls
     this._id = id
     this._title = title
@@ -164,7 +160,7 @@ class Track extends Card implements IPlayable {
   public getPlaylistTrackHtml (trackList: DoublyLinkedList<IPlayable>, displayDate: boolean = true): Node {
     // cast tracks as an IPlayable in order to reduce errors due to exessive accessability if logging it will log all Track attributes. But in code we can only access IPlayable attributes.
     const track = this as IPlayable
-    const trackNode = trackList.get(this.idx, true) as DoublyLinkedListNode<IPlayable>
+    const trackNode = trackList.find((x) => x.uri === this.uri, true) as DoublyLinkedListNode<IPlayable>
 
     function playPauseClick () {
       // select this track to play or pause by publishing the track play event arg

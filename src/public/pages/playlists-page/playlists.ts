@@ -339,8 +339,6 @@ const manageTracks = (function () {
     }
 
     if (!isSameOrder) {
-      console.log('re-index')
-      reIndexReOrderedTracks(newOrderTracks)
       // set the order of the playlist as the new order
       playlistActions.playlistSelVerif.currSelectedValNoNull.order =
         playlistOrder.value
@@ -348,13 +346,6 @@ const manageTracks = (function () {
     rerenderPlaylistTracks(newOrderTracks, trackUl as HTMLUListElement)
   }
 
-  function reIndexReOrderedTracks (trackList: DoublyLinkedList<Track>) {
-    let i = 0
-    for (const track of trackList.values()) {
-      track.idx = i
-      i++
-    }
-  }
   function orderTracksByName (trackList: DoublyLinkedList<Track>): Array<Track> {
     // shallow copy just so we dont modify the original order
     const tracksCopy = [...trackList]

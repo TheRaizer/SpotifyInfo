@@ -279,7 +279,7 @@ class DoublyLinkedList<T> {
    * @returns {*} The data in the "data" portion of the given node
    *      or undefined if the node doesn't exist.
    */
-  get (index: number, asNode = false): DoublyLinkedListNode<T> | T {
+  get (index: number): T {
     // ensure `index` is a positive value
     if (index > -1) {
       /*
@@ -314,11 +314,7 @@ class DoublyLinkedList<T> {
        * `null`, then it's safe to return `current.data`.
        */
       if (current !== null) {
-        if (asNode) {
-          return current
-        } else {
-          return current.data
-        }
+        return current.data
       } else {
         throw new RangeError(`index ${index} out of range`)
       }
@@ -380,7 +376,7 @@ class DoublyLinkedList<T> {
    * @returns {*} The first item that returns true from the matcher, undefined
    *      if no items match.
    */
-  find (matcher: (arg0: T) => T) : T {
+  find (matcher: (arg0: T) => boolean, asNode = false) : DoublyLinkedListNode<T> | T {
     /*
      * The `current` variable is used to iterate over the list nodes.
      * It starts out pointing to the head and is overwritten inside
@@ -396,6 +392,9 @@ class DoublyLinkedList<T> {
      */
     while (current !== null) {
       if (matcher(current.data)) {
+        if (asNode) {
+          return current
+        }
         return current.data
       }
 
