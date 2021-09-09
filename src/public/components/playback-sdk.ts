@@ -29,6 +29,7 @@ class SpotifyPlayback {
     progress: Element | null
     currTime: Element | null
     duration: Element | null
+    playPause: Element | null
   };
 
   playerIsReady: boolean;
@@ -43,7 +44,8 @@ class SpotifyPlayback {
       title: null,
       progress: null,
       currTime: null,
-      duration: null
+      duration: null,
+      playPause: null
     }
     this.selPlaying = {
       element: null,
@@ -57,12 +59,10 @@ class SpotifyPlayback {
   private async _loadWebPlayer () {
     promiseHandler<AxiosResponse<string | null>>(axios.request<string | null>({ method: 'GET', url: config.URLs.getAccessToken }), (res) => {
       // this takes too long and spotify sdk needs window.onSpotifyWebPlaybackSDKReady to be defined quicker.
-      console.log('request player')
       const NO_CONTENT = 204
       if (res.status === NO_CONTENT || res.data === null) {
         throw new Error('access token has no content')
       } else if (window.Spotify) {
-        console.log('is defined so create')
         // if the spotify sdk is already defined set player without setting onSpotifyWebPlaybackSDKReady meaning the window: Window is in a different scope
         // use window.Spotify.Player as spotify namespace is declared in the Window interface as per DefinitelyTyped -> spotify-web-playback-sdk -> index.d.ts https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/spotify-web-playback-sdk
         this.player = new window.Spotify.Player({
@@ -79,7 +79,6 @@ class SpotifyPlayback {
       } else {
         // of spotify sdk is undefined
         window.onSpotifyWebPlaybackSDKReady = () => {
-          console.log('create when undefined')
           // if getting token was succesful create spotify player using the window in this scope
           this.player = new window.Spotify.Player({
             name: 'Spotify Info Web Player',
@@ -150,7 +149,7 @@ class SpotifyPlayback {
       <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Title</h4>
       <div>
         <button id="${config.CSS.IDs.playPrev}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
-        <button id="${config.CSS.CLASSES.playPause}"><img src="${config.PATHS.pauseIcon}" alt="play/pause"/></button>
+        <button id="${config.CSS.IDs.webPlayerPlayPause}"><img src="${config.PATHS.playBlackIcon}" alt="play/pause"/></button>
         <button id="${config.CSS.IDs.playNext}"><img src="${config.PATHS.playNext}" alt="next"/></button>
       </div>
       <div id="${config.CSS.IDs.playTimeBar}">
@@ -170,15 +169,14 @@ class SpotifyPlayback {
   }
 
   private assignEventListeners () {
-    const webPlayer = document.getElementById(config.CSS.IDs.webPlayer)
-    if (webPlayer === null) {
-      throw new Error('Web player element does not exist')
-    }
     const playPrev = document.getElementById(config.CSS.IDs.playPrev)
-    const playPause = webPlayer.getElementsByClassName(config.CSS.CLASSES.playPause)[0]
+    const playPause = document.getElementById(config.CSS.IDs.webPlayerPlayPause)
     const playNext = document.getElementById(config.CSS.IDs.playNext)
 
+    this.webPlayerEls.playPause = playPause
+
     playPrev?.addEventListener('click', () => this.tryPlayPrev(this.selPlaying.trackDataNode))
+    playPause?.addEventListener('click', () => this.tryWebPlayerPause(this.selPlaying.trackDataNode))
     playNext?.addEventListener('click', () => this.tryPlayNext(this.selPlaying.trackDataNode))
   }
 
@@ -193,6 +191,18 @@ class SpotifyPlayback {
     }
   }
 
+  /** Tries to pause the current playing IPlayable node from the web player.
+   *
+   * @param currNode - the current IPlayable node that was/is playing
+   */
+  tryWebPlayerPause (currNode: DoublyLinkedListNode<IPlayable> | null) {
+    // check to see if this is the first node or if an action is processing
+    if (!this.isExecutingAction && currNode !== null) {
+      const prevTrack = currNode.data
+      this.setSelPlayingEl(new PlayableEventArg(prevTrack, currNode))
+    }
+  }
+
   /** Tries to play the previous IPlayable given the current playing IPlayable node.
    *
    * @param currNode - the current IPlayable node that was/is playing
@@ -203,7 +213,6 @@ class SpotifyPlayback {
     }
     // check to see if this is the first node or if an action is processing
     if (!this.isExecutingAction && currNode.previous !== null) {
-      console.log('play prev')
       const prevTrack = currNode.previous.data
       this.setSelPlayingEl(new PlayableEventArg(prevTrack, currNode.previous))
     }
@@ -219,7 +228,6 @@ class SpotifyPlayback {
     }
     // check to see if this is the last node or if an action is processing
     if (!this.isExecutingAction && currNode.next !== null) {
-      console.log('play next')
       const nextTrack = currNode.next.data
       this.setSelPlayingEl(new PlayableEventArg(nextTrack, currNode.next))
     }
@@ -235,7 +243,6 @@ class SpotifyPlayback {
 
     (this.webPlayerEls.progress as HTMLElement).style.width = '100%'
     clearInterval(this.getStateInterval as NodeJS.Timeout)
-    console.log(this.selPlaying!.trackDataNode)
     this.tryPlayNext(this.selPlaying.trackDataNode)
   }
 
@@ -283,29 +290,27 @@ class SpotifyPlayback {
    * @param {PlayableEventArg} eventArg - a class that contains the current, next and previous tracks to play
    */
   async setSelPlayingEl (eventArg: PlayableEventArg) {
-    console.log(eventArg.playableNode)
     // if the player isn't ready we cannot continue.
     if (!this.playerIsReady) {
       console.log('player is not ready')
       return
     }
     if (this.isExecutingAction) {
-      console.log('is currently executing action')
       return
     }
     this.isExecutingAction = true
-    console.log('Start Action')
     if (this.selPlaying.element != null) {
       // if there already is a selected element unselect it
       this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected)
+      this.webPlayerEls.playPause?.classList.remove(config.CSS.CLASSES.selected)
+
+      clearInterval(this.getStateInterval as NodeJS.Timeout)
 
       await this.pause()
-      clearInterval(this.getStateInterval as NodeJS.Timeout)
       // if the selected el is the same as the prev then null it and return so we do not end up reselecting it right after deselecting.
       if (this.selPlaying.element === eventArg.currPlayable.selEl) {
         this.selPlaying.element = null
         this.isExecutingAction = false
-        console.log('Action Ended')
         return
       }
     }
@@ -319,7 +324,6 @@ class SpotifyPlayback {
         eventArg.currPlayable.title,
         eventArg.playableNode
       )
-      console.log('Action Ended')
       this.isExecutingAction = false
       return
     }
@@ -331,15 +335,14 @@ class SpotifyPlayback {
       eventArg.currPlayable.title,
       eventArg.playableNode
     )
-    console.log('Action Ended')
     this.isExecutingAction = false
   }
 
   async startTrack (selEl: Element, track_uri: string, playingAsyncFunc: Function, title: string, trackNode: DoublyLinkedListNode<IPlayable>) {
-    console.log('Start')
     this.selPlaying.trackDataNode = trackNode
     this.selPlaying.element = selEl
     this.selPlaying.element.classList.add(config.CSS.CLASSES.selected)
+    this.webPlayerEls.playPause?.classList.add(config.CSS.CLASSES.selected)
     this.selPlaying.track_uri = track_uri
 
     this.webPlayerEls!.title!.textContent = title
@@ -359,17 +362,14 @@ class SpotifyPlayback {
     await promiseHandler(
       axios.put(config.URLs.putPlayTrack(this.device_id, track_uri))
     )
-    console.log('play')
   }
 
   async resume () {
     await this.player.resume()
-    console.log('resume')
   }
 
   async pause () {
     await this.player.pause()
-    console.log('paused')
   }
 }
 

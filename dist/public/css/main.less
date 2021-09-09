@@ -236,3 +236,14 @@ footer {
     align-items: center;
   }
 }
+
+#play-pause-player {
+  & > img {
+    content: url("../images/play-black-30px.png");
+  }
+  &.selected {
+    & > img {
+      content: url("../images/pause-black-30px.png");
+    }
+  }
+}

@@ -119,7 +119,7 @@ class Track extends card_1.default {
         }
         const html = `
             <li class="${config_1.config.CSS.CLASSES.playlistTrack}">
-              <button class="play-pause ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}"><img src="" alt="play/pause" 
+              <button class="${config_1.config.CSS.CLASSES.playPause} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}"><img src="" alt="play/pause" 
               class="${config_1.config.CSS.CLASSES.noSelect}"/></button>
               <img class="${config_1.config.CSS.CLASSES.noSelect}" src="${this.imageUrl}"></img>
               <div class="${config_1.config.CSS.CLASSES.links}">

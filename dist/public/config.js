@@ -77,7 +77,10 @@ exports.config = {
             followedArtists: 'followed-artists',
             webPlayer: 'web-player',
             playTimeBar: 'playtime-bar',
-            playlistHeaderArea: 'playlist-main-header-area'
+            playlistHeaderArea: 'playlist-main-header-area',
+            playNext: 'play-next',
+            playPrev: 'play-prev',
+            webPlayerPlayPause: 'play-pause-player'
         },
         CLASSES: {
             glow: 'glow',
@@ -121,7 +124,8 @@ exports.config = {
             content: 'content',
             links: 'links',
             progress: 'progress',
-            progressBar: 'progress-bar'
+            progressBar: 'progress-bar',
+            playPause: 'play-pause'
         },
         ATTRIBUTES: {
             dataSelection: 'data-selection'
@@ -172,6 +176,8 @@ exports.config = {
         chevronRight: '/images/chevron-right.png',
         playIcon: '/images/play-30px.png',
         pauseIcon: '/images/pause-30px.png',
+        playBlackIcon: '/images/play-black-30px.png',
+        pauseBlackIcon: '/images/pause-black-30px.png',
         playNext: '/images/next-30px.png',
         playPrev: '/images/previous-30px.png'
     }

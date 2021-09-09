@@ -27,7 +27,8 @@ class SpotifyPlayback {
             title: null,
             progress: null,
             currTime: null,
-            duration: null
+            duration: null,
+            playPause: null
         };
         this.selPlaying = {
             element: null,
@@ -41,13 +42,11 @@ class SpotifyPlayback {
         return __awaiter(this, void 0, void 0, function* () {
             (0, config_1.promiseHandler)(axios_1.default.request({ method: 'GET', url: config_1.config.URLs.getAccessToken }), (res) => {
                 // this takes too long and spotify sdk needs window.onSpotifyWebPlaybackSDKReady to be defined quicker.
-                console.log('request player');
                 const NO_CONTENT = 204;
                 if (res.status === NO_CONTENT || res.data === null) {
                     throw new Error('access token has no content');
                 }
                 else if (window.Spotify) {
-                    console.log('is defined so create');
                     // if the spotify sdk is already defined set player without setting onSpotifyWebPlaybackSDKReady meaning the window: Window is in a different scope
                     // use window.Spotify.Player as spotify namespace is declared in the Window interface as per DefinitelyTyped -> spotify-web-playback-sdk -> index.d.ts https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/spotify-web-playback-sdk
                     this.player = new window.Spotify.Player({
@@ -65,7 +64,6 @@ class SpotifyPlayback {
                 else {
                     // of spotify sdk is undefined
                     window.onSpotifyWebPlaybackSDKReady = () => {
-                        console.log('create when undefined');
                         // if getting token was succesful create spotify player using the window in this scope
                         this.player = new window.Spotify.Player({
                             name: 'Spotify Info Web Player',
@@ -127,9 +125,9 @@ class SpotifyPlayback {
     <article id="${config_1.config.CSS.IDs.webPlayer}" class="resize-drag">
       <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap}">Title</h4>
       <div>
-        <button><img src="${config_1.config.PATHS.playPrev}" alt="previous"/></button>
-        <button><img src="${config_1.config.PATHS.pauseIcon}" alt="play/pause"/></button>
-        <button><img src="${config_1.config.PATHS.playNext}" alt="next"/></button>
+        <button id="${config_1.config.CSS.IDs.playPrev}"><img src="${config_1.config.PATHS.playPrev}" alt="previous"/></button>
+        <button id="${config_1.config.CSS.IDs.webPlayerPlayPause}"><img src="${config_1.config.PATHS.playBlackIcon}" alt="play/pause"/></button>
+        <button id="${config_1.config.CSS.IDs.playNext}"><img src="${config_1.config.PATHS.playNext}" alt="next"/></button>
       </div>
       <div id="${config_1.config.CSS.IDs.playTimeBar}">
         <p>0:00</p>
@@ -142,7 +140,17 @@ class SpotifyPlayback {
     `;
         const webPlayerEl = (0, config_1.htmlToEl)(html);
         document.body.append(webPlayerEl);
+        this.assignEventListeners();
         this.getWebPlayerEls();
+    }
+    assignEventListeners() {
+        const playPrev = document.getElementById(config_1.config.CSS.IDs.playPrev);
+        const playPause = document.getElementById(config_1.config.CSS.IDs.webPlayerPlayPause);
+        const playNext = document.getElementById(config_1.config.CSS.IDs.playNext);
+        this.webPlayerEls.playPause = playPause;
+        playPrev === null || playPrev === void 0 ? void 0 : playPrev.addEventListener('click', () => this.tryPlayPrev(this.selPlaying.trackDataNode));
+        playPause === null || playPause === void 0 ? void 0 : playPause.addEventListener('click', () => this.tryWebPlayerPause(this.selPlaying.trackDataNode));
+        playNext === null || playNext === void 0 ? void 0 : playNext.addEventListener('click', () => this.tryPlayNext(this.selPlaying.trackDataNode));
     }
     updateWebPlayer(percentDone, position) {
         if (position !== 0) {
@@ -154,14 +162,41 @@ class SpotifyPlayback {
                 (0, config_1.millisToMinutesAndSeconds)(position);
         }
     }
+    /** Tries to pause the current playing IPlayable node from the web player.
+     *
+     * @param currNode - the current IPlayable node that was/is playing
+     */
+    tryWebPlayerPause(currNode) {
+        // check to see if this is the first node or if an action is processing
+        if (!this.isExecutingAction && currNode !== null) {
+            const prevTrack = currNode.data;
+            this.setSelPlayingEl(new track_play_args_1.default(prevTrack, currNode));
+        }
+    }
+    /** Tries to play the previous IPlayable given the current playing IPlayable node.
+     *
+     * @param currNode - the current IPlayable node that was/is playing
+     */
+    tryPlayPrev(currNode) {
+        if (currNode === null) {
+            return;
+        }
+        // check to see if this is the first node or if an action is processing
+        if (!this.isExecutingAction && currNode.previous !== null) {
+            const prevTrack = currNode.previous.data;
+            this.setSelPlayingEl(new track_play_args_1.default(prevTrack, currNode.previous));
+        }
+    }
     /** Tries to play the next IPlayable given the current playing IPlayable node.
      *
-     * @param currNode - the current IPlayable node that was playing
+     * @param currNode - the current IPlayable node that was/is playing
      */
     tryPlayNext(currNode) {
+        if (currNode === null) {
+            return;
+        }
         // check to see if this is the last node or if an action is processing
         if (!this.isExecutingAction && currNode.next !== null) {
-            console.log('play next');
             const nextTrack = currNode.next.data;
             this.setSelPlayingEl(new track_play_args_1.default(nextTrack, currNode.next));
         }
@@ -175,7 +210,6 @@ class SpotifyPlayback {
         this.selPlaying.track_uri = '';
         this.webPlayerEls.progress.style.width = '100%';
         clearInterval(this.getStateInterval);
-        console.log(this.selPlaying.trackDataNode);
         this.tryPlayNext(this.selPlaying.trackDataNode);
     }
     /** Sets an interval that obtains the state of the player every second.
@@ -217,50 +251,47 @@ class SpotifyPlayback {
      * @param {PlayableEventArg} eventArg - a class that contains the current, next and previous tracks to play
      */
     setSelPlayingEl(eventArg) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(eventArg.playableNode);
             // if the player isn't ready we cannot continue.
             if (!this.playerIsReady) {
                 console.log('player is not ready');
                 return;
             }
             if (this.isExecutingAction) {
-                console.log('is currently executing action');
                 return;
             }
             this.isExecutingAction = true;
-            console.log('Start Action');
             if (this.selPlaying.element != null) {
                 // if there already is a selected element unselect it
                 this.selPlaying.element.classList.remove(config_1.config.CSS.CLASSES.selected);
-                yield this.pause();
+                (_a = this.webPlayerEls.playPause) === null || _a === void 0 ? void 0 : _a.classList.remove(config_1.config.CSS.CLASSES.selected);
                 clearInterval(this.getStateInterval);
+                yield this.pause();
                 // if the selected el is the same as the prev then null it and return so we do not end up reselecting it right after deselecting.
                 if (this.selPlaying.element === eventArg.currPlayable.selEl) {
                     this.selPlaying.element = null;
                     this.isExecutingAction = false;
-                    console.log('Action Ended');
                     return;
                 }
             }
             // prev track uri is the same then resume the song instead of replaying it.
             if (this.selPlaying.track_uri === eventArg.currPlayable.uri) {
                 yield this.startTrack(eventArg.currPlayable.selEl, eventArg.currPlayable.uri, () => __awaiter(this, void 0, void 0, function* () { return this.resume(); }), eventArg.currPlayable.title, eventArg.playableNode);
-                console.log('Action Ended');
                 this.isExecutingAction = false;
                 return;
             }
             yield this.startTrack(eventArg.currPlayable.selEl, eventArg.currPlayable.uri, () => __awaiter(this, void 0, void 0, function* () { return this.play(eventArg.currPlayable.uri); }), eventArg.currPlayable.title, eventArg.playableNode);
-            console.log('Action Ended');
             this.isExecutingAction = false;
         });
     }
     startTrack(selEl, track_uri, playingAsyncFunc, title, trackNode) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('Start');
             this.selPlaying.trackDataNode = trackNode;
             this.selPlaying.element = selEl;
             this.selPlaying.element.classList.add(config_1.config.CSS.CLASSES.selected);
+            (_a = this.webPlayerEls.playPause) === null || _a === void 0 ? void 0 : _a.classList.add(config_1.config.CSS.CLASSES.selected);
             this.selPlaying.track_uri = track_uri;
             this.webPlayerEls.title.textContent = title;
             yield playingAsyncFunc();
@@ -276,19 +307,16 @@ class SpotifyPlayback {
     play(track_uri) {
         return __awaiter(this, void 0, void 0, function* () {
             yield (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putPlayTrack(this.device_id, track_uri)));
-            console.log('play');
         });
     }
     resume() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.player.resume();
-            console.log('resume');
         });
     }
     pause() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.player.pause();
-            console.log('paused');
         });
     }
 }

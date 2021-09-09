@@ -1197,3 +1197,9 @@ ul.genres > li {
   display: flex;
   align-items: center;
 }
+#play-pause-player > img {
+  content: url("../images/play-black-30px.png");
+}
+#play-pause-player.selected > img {
+  content: url("../images/pause-black-30px.png");
+}

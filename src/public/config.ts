@@ -68,7 +68,8 @@ export const config = {
       playTimeBar: 'playtime-bar',
       playlistHeaderArea: 'playlist-main-header-area',
       playNext: 'play-next',
-      playPrev: 'play-prev'
+      playPrev: 'play-prev',
+      webPlayerPlayPause: 'play-pause-player'
     },
     CLASSES: {
       glow: 'glow',
@@ -167,6 +168,8 @@ export const config = {
     chevronRight: '/images/chevron-right.png',
     playIcon: '/images/play-30px.png',
     pauseIcon: '/images/pause-30px.png',
+    playBlackIcon: '/images/play-black-30px.png',
+    pauseBlackIcon: '/images/pause-black-30px.png',
     playNext: '/images/next-30px.png',
     playPrev: '/images/previous-30px.png'
   }
