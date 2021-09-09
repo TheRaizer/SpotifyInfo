@@ -8,3 +8,4 @@ class ExampleEventArg {
     }
 }
 exports.default = ExampleEventArg;
+//# sourceMappingURL=example-event-arg.js.map

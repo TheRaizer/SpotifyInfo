@@ -49,7 +49,7 @@ class Track extends Card implements IPlayable {
     return this._dateAddedToPlaylist
   }
 
-  public set dateAddedToPlaylist (val: string | number | Date) {
+  public setDateAddedToPlaylist (val: string | number | Date) {
     this._dateAddedToPlaylist = new Date(val)
   }
 
@@ -169,7 +169,7 @@ class Track extends Card implements IPlayable {
 
     const html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
-              <button class="play-pause ${
+              <button class="${config.CSS.CLASSES.playPause} ${
                 isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
               }"><img src="" alt="play/pause" 
               class="${config.CSS.CLASSES.noSelect}"/></button>

@@ -105,7 +105,7 @@ export function getPlaylistTracksFromDatas (
     const dateAddedObj = dateAddedObjects[i]
     const track: Track = trackOut
 
-    track.dateAddedToPlaylist = dateAddedObj.added_at
+    track.setDateAddedToPlaylist(dateAddedObj.added_at)
     i++
   }
 }

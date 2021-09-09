@@ -66,7 +66,9 @@ export const config = {
       followedArtists: 'followed-artists',
       webPlayer: 'web-player',
       playTimeBar: 'playtime-bar',
-      playlistHeaderArea: 'playlist-main-header-area'
+      playlistHeaderArea: 'playlist-main-header-area',
+      playNext: 'play-next',
+      playPrev: 'play-prev'
     },
     CLASSES: {
       glow: 'glow',
@@ -110,7 +112,8 @@ export const config = {
       content: 'content',
       links: 'links',
       progress: 'progress',
-      progressBar: 'progress-bar'
+      progressBar: 'progress-bar',
+      playPause: 'play-pause'
     },
     ATTRIBUTES: {
       dataSelection: 'data-selection'
@@ -163,7 +166,9 @@ export const config = {
     chevronLeft: '/images/chevron-left.png',
     chevronRight: '/images/chevron-right.png',
     playIcon: '/images/play-30px.png',
-    pauseIcon: '/images/pause-30px.png'
+    pauseIcon: '/images/pause-30px.png',
+    playNext: '/images/next-30px.png',
+    playPrev: '/images/previous-30px.png'
   }
 }
 

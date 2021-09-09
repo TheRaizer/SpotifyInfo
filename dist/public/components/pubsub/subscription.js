@@ -9,3 +9,4 @@ class Subscription {
     }
 }
 exports.default = Subscription;
+//# sourceMappingURL=subscription.js.map

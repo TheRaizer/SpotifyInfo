@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -11,69 +30,79 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-const playlist_js_1 = __importDefault(require("../../components/playlist.js"));
-const asyncSelectionVerif_js_1 = __importDefault(require("../../components/asyncSelectionVerif.js"));
-const config_js_1 = require("../../config.js");
-const manage_tokens_js_1 = require("../../manage-tokens.js");
-const card_actions_js_1 = __importDefault(require("../../card-actions.js"));
-const doubly_linked_list_js_1 = __importDefault(require("../../components/doubly-linked-list.js"));
-const expandedPlaylistMods = document.getElementById(config_js_1.config.CSS.IDs.expandedPlaylistMods);
-const playlistHeaderArea = document.getElementById(config_js_1.config.CSS.IDs.playlistHeaderArea);
+const playlist_1 = __importDefault(require("../../components/playlist"));
+const asyncSelectionVerif_1 = __importDefault(require("../../components/asyncSelectionVerif"));
+const config_1 = require("../../config");
+const manage_tokens_1 = require("../../manage-tokens");
+const card_actions_1 = __importDefault(require("../../card-actions"));
+const doubly_linked_list_1 = __importStar(require("../../components/doubly-linked-list"));
+const interactjs_1 = __importDefault(require("interactjs"));
+const axios_1 = __importDefault(require("axios"));
+const expandedPlaylistMods = document.getElementById(config_1.config.CSS.IDs.expandedPlaylistMods);
+const playlistHeaderArea = document.getElementById(config_1.config.CSS.IDs.playlistHeaderArea);
 // add on change event listener to the order selection element of the mods expanded playlist
-const playlistOrder = expandedPlaylistMods.getElementsByClassName(config_js_1.config.CSS.CLASSES.playlistOrder)[0];
-const trackUl = expandedPlaylistMods.getElementsByTagName("ul")[0];
-const playlistSearchInput = expandedPlaylistMods.getElementsByClassName(config_js_1.config.CSS.CLASSES.playlistSearch)[0];
-const playlistsCardContainer = document.getElementById(config_js_1.config.CSS.IDs.playlistCardsContainer);
-const cardResizeContainer = document
-    .getElementById(config_js_1.config.CSS.IDs.playlistsSection)
-    .getElementsByClassName(config_js_1.config.CSS.CLASSES.resizeContainer)[0];
+const playlistOrder = expandedPlaylistMods === null || expandedPlaylistMods === void 0 ? void 0 : expandedPlaylistMods.getElementsByClassName(config_1.config.CSS.CLASSES.playlistOrder)[0];
+// TEST
+const val = document.getElementById('ELEMENT DOES NOT EXIST');
+console.log(val === null || val === void 0 ? void 0 : val.getElementsByClassName(config_1.config.CSS.CLASSES.playlistOrder)[0]); // this will log as undefined because 'val' is undefined
+const trackUl = expandedPlaylistMods === null || expandedPlaylistMods === void 0 ? void 0 : expandedPlaylistMods.getElementsByTagName('ul')[0];
+const playlistSearchInput = expandedPlaylistMods === null || expandedPlaylistMods === void 0 ? void 0 : expandedPlaylistMods.getElementsByClassName(config_1.config.CSS.CLASSES.playlistSearch)[0];
+const playlistsCardContainer = document.getElementById(config_1.config.CSS.IDs.playlistCardsContainer);
+const cardResizeContainer = (_a = document
+    .getElementById(config_1.config.CSS.IDs.playlistsSection)) === null || _a === void 0 ? void 0 : _a.getElementsByClassName(config_1.config.CSS.CLASSES.resizeContainer)[0];
 // min viewport before playlist cards convert to text form automatically (equivalent to the media query in playlists.less that changes .card)
 const VIEWPORT_MIN = 600;
 // will resize the playlist card container to the size wanted when screen is <= VIEWPORT_MIN
-const restrictResizeWidth = () => (cardResizeContainer.style.width = VIEWPORT_MIN / 2.5 + "px");
+const restrictResizeWidth = () => (cardResizeContainer.style.width = VIEWPORT_MIN / 2.5 + 'px');
 const resizeActions = (function () {
     // id of resize container used to set interaction through interactjs
-    const resizeId = "#" +
-        config_js_1.config.CSS.IDs.playlistsSection +
-        ">." +
-        config_js_1.config.CSS.CLASSES.resizeContainer;
+    const resizeId = '#' +
+        config_1.config.CSS.IDs.playlistsSection +
+        '>.' +
+        config_1.config.CSS.CLASSES.resizeContainer;
     function enableResize() {
-        interact(resizeId)
+        (0, interactjs_1.default)(resizeId)
             .resizable({
             // only resize from the right
             edges: { top: false, left: false, bottom: false, right: true },
             listeners: {
                 move: function (event) {
                     Object.assign(event.target.style, {
-                        width: `${event.rect.width}px`,
+                        width: `${event.rect.width}px`
                     });
-                },
-            },
+                }
+            }
         })
-            .on("resizeend", saveResizeWidth);
+            .on('resizeend', saveResizeWidth);
         // once we renable the resize we must set its width to be what the user last set it too.
         initialLoads.loadResizeWidth();
     }
     function disableResize() {
-        if (interact.isSet(resizeId)) {
-            interact(resizeId).unset();
+        if (interactjs_1.default.isSet(cardResizeContainer)) {
+            (0, interactjs_1.default)(cardResizeContainer).unset();
         }
         // once we disable the resize we must restrict the width to fit within VIEWPORT_MIN pixels.
         restrictResizeWidth();
     }
     return {
         enableResize,
-        disableResize,
+        disableResize
     };
 })();
 // order of items should never change as all other orderings are based off this one, and the only way to return back to this custom order is to retain it.
 // only access this when tracks have loaded.
-var selPlaylistTracks = () => playlistActions.playlistSelVerif.currSelectedVal.trackList;
+const selPlaylistTracks = () => {
+    if (playlistActions.playlistSelVerif.currSelectedValNoNull === null || playlistActions.playlistSelVerif.currSelectedValNoNull.trackList === undefined) {
+        throw new Error('Attempted to access selection verif doubly linked tracks list before it was loaded');
+    }
+    return playlistActions.playlistSelVerif.currSelectedValNoNull.trackList;
+};
 const playlistActions = (function () {
-    const playlistSelVerif = new asyncSelectionVerif_js_1.default();
-    const cardActionsHandler = new card_actions_js_1.default(1);
-    const playlistTitleh2 = expandedPlaylistMods.getElementsByTagName("h2")[0];
+    const playlistSelVerif = new asyncSelectionVerif_1.default();
+    const cardActionsHandler = new card_actions_1.default(1);
+    const playlistTitleh2 = expandedPlaylistMods === null || expandedPlaylistMods === void 0 ? void 0 : expandedPlaylistMods.getElementsByTagName('h2')[0];
     /** Asynchronously load a playlists tracks and replace the track ul html once it loads
      *
      * @param {Playlist} playlistObj - a Playlist instance whose tracks will be loaded
@@ -88,47 +117,48 @@ const playlistActions = (function () {
                 return;
             }
             callback();
-            playlistSelVerif.hasLoadedCurrSelected = true;
         })
             .catch((err) => {
-            console.log("Error when getting tracks");
+            console.log('Error when getting tracks');
             console.error(err);
         });
     }
     function whenTracksLoading() {
         // hide header while loading tracks
-        playlistHeaderArea.classList.add(config_js_1.config.CSS.CLASSES.hide);
-        playlistSearchInput.value = "";
+        playlistHeaderArea === null || playlistHeaderArea === void 0 ? void 0 : playlistHeaderArea.classList.add(config_1.config.CSS.CLASSES.hide);
+        playlistSearchInput.value = '';
         trackUl.scrollTop = 0;
     }
     function onTracksLoadingDone() {
         // show them once tracks have loaded
-        playlistHeaderArea.classList.remove(config_js_1.config.CSS.CLASSES.hide);
+        playlistHeaderArea === null || playlistHeaderArea === void 0 ? void 0 : playlistHeaderArea.classList.remove(config_1.config.CSS.CLASSES.hide);
     }
     /** Empty the track li and replace it with newly loaded track li.
      *
      * @param {Playlist} playlistObj - a Playlist instance whose tracks will be loaded
      */
     function showPlaylistTracks(playlistObj) {
-        playlistTitleh2.textContent = playlistObj.name;
+        if (playlistTitleh2 !== undefined && playlistTitleh2.textContent !== null) {
+            playlistTitleh2.textContent = playlistObj.name;
+        }
         // empty the track li
         removeAllChildNodes(trackUl);
         // initially show the playlist with the loading spinner
         const htmlString = `
             <li>
-              <img src="${config_js_1.config.PATHS.spinner}" />
+              <img src="${config_1.config.PATHS.spinner}" />
             </li>`;
-        let spinnerEl = (0, config_js_1.htmlToEl)(htmlString);
+        const spinnerEl = (0, config_1.htmlToEl)(htmlString);
         trackUl.appendChild(spinnerEl);
         playlistSelVerif.selectionChanged(playlistObj);
         // tracks are already loaded so show them
         if (playlistObj.hasLoadedTracks()) {
             whenTracksLoading();
             onTracksLoadingDone();
-            manageTracks.sortExpandedTracksToOrder(playlistObj.order == playlistOrder.value);
+            manageTracks.sortExpandedTracksToOrder(playlistObj.order === playlistOrder.value);
         }
-        // tracks aren't loaded so lazy load them then show them
         else {
+            // tracks aren't loaded so lazy load them then show them
             whenTracksLoading();
             loadPlaylistTracks(playlistObj, () => {
                 // indexed when loaded so no need to re-index them
@@ -143,22 +173,24 @@ const playlistActions = (function () {
      * @param {HTMLElement} playlistCard
      */
     function clickCard(playlistObjs, playlistCard) {
-        cardActionsHandler.onCardClick(playlistCard, playlistObjs, (selObj) => showPlaylistTracks(selObj));
+        cardActionsHandler.onCardClick(playlistCard, playlistObjs, (selObj) => {
+            showPlaylistTracks(selObj);
+        });
     }
     /** Add event listeners to each playlist card.
      *
-     * @param {Arr<Playlist>} playlistObjs - playlists that will be used for the events.
+     * @param {Array<Playlist>} playlistObjs - playlists that will be used for the events.
      */
     function addOnPlaylistCardListeners(playlistObjs) {
-        let playlistCards = Array.from(document.getElementsByClassName(config_js_1.config.CSS.CLASSES.playlist));
+        const playlistCards = Array.from(document.getElementsByClassName(config_1.config.CSS.CLASSES.playlist));
         playlistCards.forEach((playlistCard) => {
-            playlistCard.addEventListener("click", () => {
+            playlistCard.addEventListener('click', () => {
                 clickCard(playlistObjs, playlistCard);
             });
-            playlistCard.addEventListener("mouseenter", () => {
+            playlistCard.addEventListener('mouseenter', () => {
                 cardActionsHandler.scrollTextOnCardEnter(playlistCard);
             });
-            playlistCard.addEventListener("mouseleave", () => {
+            playlistCard.addEventListener('mouseleave', () => {
                 cardActionsHandler.scrollTextOnCardLeave(playlistCard);
             });
         });
@@ -167,7 +199,7 @@ const playlistActions = (function () {
         clickCard,
         addOnPlaylistCardListeners,
         showPlaylistTracks,
-        playlistSelVerif,
+        playlistSelVerif
     };
 })();
 const infoRetrieval = (function () {
@@ -179,27 +211,25 @@ const infoRetrieval = (function () {
         return __awaiter(this, void 0, void 0, function* () {
             function onSuccesful(res) {
                 // remove the info loading spinners as info has been loaded
-                let infoSpinners = Array.from(document.getElementsByClassName(config_js_1.config.CSS.CLASSES.infoLoadingSpinners));
+                const infoSpinners = Array.from(document.getElementsByClassName(config_1.config.CSS.CLASSES.infoLoadingSpinners));
                 infoSpinners.forEach((spinner) => {
-                    spinner.parentNode.removeChild(spinner);
+                    var _a;
+                    (_a = spinner === null || spinner === void 0 ? void 0 : spinner.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(spinner);
                 });
                 const playlistDatas = res.data;
                 // generate Playlist instances from the data
                 playlistDatas.forEach((data) => {
-                    playlistObjs.push(new playlist_js_1.default(data.name, data.images, data.id));
+                    playlistObjs.push(new playlist_1.default(data.name, data.images, data.id));
                 });
                 displayCardInfo.displayPlaylistCards(playlistObjs);
             }
             // get playlists data and execute call back on succesful
-            yield (0, config_js_1.promiseHandler)(axios.get(config_js_1.config.URLs.getPlaylists), onSuccesful, (err) => {
-                // throw an error that will be sent down to the promise handler that initially executed getInitialInfo()
-                throw new Error(err);
-            });
+            yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getPlaylists), onSuccesful);
         });
     }
     return {
         getInitialInfo,
-        playlistObjs,
+        playlistObjs
     };
 })();
 const displayCardInfo = (function () {
@@ -217,14 +247,15 @@ const displayCardInfo = (function () {
      * @param {Array<Playlist>} playlistObjs
      */
     function displayPlaylistCards(playlistObjs) {
+        var _a;
         removeAllChildNodes(playlistsCardContainer);
-        let isInTextForm = playlistsCardContainer.classList.contains(config_js_1.config.CSS.CLASSES.textForm) ||
+        const isInTextForm = (playlistsCardContainer === null || playlistsCardContainer === void 0 ? void 0 : playlistsCardContainer.classList.contains(config_1.config.CSS.CLASSES.textForm)) ||
             window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches;
         determineResizeActiveness();
         const selectedCard = playlistActions.playlistSelVerif.currSelectedVal;
         // add card htmls to container element
-        playlistObjs.map((playlistObj, idx) => {
-            playlistsCardContainer.appendChild(playlistObj.getPlaylistCardHtml(idx, isInTextForm));
+        playlistObjs.forEach((playlistObj, idx) => {
+            playlistsCardContainer === null || playlistsCardContainer === void 0 ? void 0 : playlistsCardContainer.appendChild(playlistObj.getPlaylistCardHtml(idx, isInTextForm));
             // if before the form change this playlist was selected, simulate a click on it in order to select it in the new form
             if (playlistObj === selectedCard) {
                 playlistActions.clickCard(playlistObjs, document.getElementById(selectedCard.cardId));
@@ -232,60 +263,59 @@ const displayCardInfo = (function () {
         });
         // if there is a selected card scroll down to it.
         if (selectedCard) {
-            document.getElementById(selectedCard.cardId).scrollIntoView();
+            (_a = document.getElementById(selectedCard.cardId)) === null || _a === void 0 ? void 0 : _a.scrollIntoView();
         }
         // add event listener to cards
         playlistActions.addOnPlaylistCardListeners(playlistObjs);
         // animate the cards(show the cards)
-        config_js_1.animationControl.animateAttributes(".playlist", config_js_1.config.CSS.CLASSES.appear);
+        config_1.animationControl.animateAttributes('.playlist', config_1.config.CSS.CLASSES.appear, 0);
     }
     return {
-        displayPlaylistCards,
+        displayPlaylistCards
     };
 })();
 function removeAllChildNodes(parent) {
+    if (!parent) {
+        throw new Error('parent is undefined and has no child nodes to remove');
+    }
     while (parent.firstChild) {
         parent.removeChild(parent.firstChild);
     }
 }
 const manageTracks = (function () {
+    /** Sorts the tracks order depending on what the user sets it too and re-indexes the tracks order if order has changed.
+     *
+     * @param isSameOrder - whether the order is the same or not as before.
+     */
     function sortExpandedTracksToOrder(isSameOrder) {
-        var newOrderTracks = null;
-        if (playlistOrder.value == "custom-order") {
+        let newOrderTracks = new doubly_linked_list_1.default();
+        let newOrderTracksArr = [];
+        if (playlistOrder.value === 'custom-order') {
             newOrderTracks = selPlaylistTracks();
         }
-        else if (playlistOrder.value == "name") {
-            newOrderTracks = orderTracksByName(selPlaylistTracks());
-            newOrderTracks = arrayToDoublyLinkedList(newOrderTracks);
+        else if (playlistOrder.value === 'name') {
+            newOrderTracksArr = orderTracksByName(selPlaylistTracks());
+            newOrderTracks = (0, doubly_linked_list_1.arrayToDoublyLinkedList)(newOrderTracksArr);
         }
-        else if (playlistOrder.value == "date-added") {
-            newOrderTracks = orderTracksByDateAdded(selPlaylistTracks());
-            newOrderTracks = arrayToDoublyLinkedList(newOrderTracks);
+        else if (playlistOrder.value === 'date-added') {
+            newOrderTracksArr = orderTracksByDateAdded(selPlaylistTracks());
+            newOrderTracks = (0, doubly_linked_list_1.arrayToDoublyLinkedList)(newOrderTracksArr);
         }
-        if (isSameOrder == false) {
-            console.log("re-index");
-            reIndexReOrderedTracks(newOrderTracks);
+        if (!isSameOrder) {
             // set the order of the playlist as the new order
-            playlistActions.playlistSelVerif.currSelectedVal.order =
+            playlistActions.playlistSelVerif.currSelectedValNoNull.order =
                 playlistOrder.value;
         }
         rerenderPlaylistTracks(newOrderTracks, trackUl);
     }
-    function reIndexReOrderedTracks(trackList) {
-        var i = 0;
-        for (const track of trackList.values()) {
-            track.idx = i;
-            i++;
-        }
-    }
     function orderTracksByName(trackList) {
         // shallow copy just so we dont modify the original order
-        let tracksCopy = [...trackList];
+        const tracksCopy = [...trackList];
         tracksCopy.sort(function (a, b) {
             // -1 precedes, 1 suceeds, 0 is equal
-            return a.name.toUpperCase() === b.name.toUpperCase()
+            return a.title.toUpperCase() === b.title.toUpperCase()
                 ? 0
-                : a.name.toUpperCase() < b.name.toUpperCase()
+                : a.title.toUpperCase() < b.title.toUpperCase()
                     ? -1
                     : 1;
         });
@@ -293,7 +323,7 @@ const manageTracks = (function () {
     }
     function orderTracksByDateAdded(trackList) {
         // shallow copy just so we dont modify the original order
-        let tracksCopy = [...trackList];
+        const tracksCopy = [...trackList];
         tracksCopy.sort(function (a, b) {
             // -1 'a' precedes 'b', 1 'a' suceeds 'b', 0 is 'a' equal 'b'
             return a.dateAddedToPlaylist === b.dateAddedToPlaylist
@@ -304,13 +334,6 @@ const manageTracks = (function () {
         });
         return tracksCopy;
     }
-    function arrayToDoublyLinkedList(trackArr) {
-        var trackList = new doubly_linked_list_js_1.default();
-        trackArr.forEach((track) => {
-            trackList.add(track);
-        });
-        return trackList;
-    }
     function rerenderPlaylistTracks(trackList, trackArrUl) {
         removeAllChildNodes(trackArrUl);
         for (const track of trackList.values()) {
@@ -319,124 +342,130 @@ const manageTracks = (function () {
     }
     return {
         sortExpandedTracksToOrder,
-        orderTracksByDateAdded,
+        orderTracksByDateAdded
     };
 })();
 const addEventListeners = (function () {
     function addExpandedPlaylistModsSearchbarEvent() {
+        var _a;
         // add key up event to the mods expanded playlist's search bar element
-        expandedPlaylistMods
-            .getElementsByClassName(config_js_1.config.CSS.CLASSES.playlistSearch)[0]
-            .addEventListener("keyup", () => {
-            (0, config_js_1.searchUl)(trackUl, playlistSearchInput);
+        (_a = expandedPlaylistMods === null || expandedPlaylistMods === void 0 ? void 0 : expandedPlaylistMods.getElementsByClassName(config_1.config.CSS.CLASSES.playlistSearch)[0]) === null || _a === void 0 ? void 0 : _a.addEventListener('keyup', () => {
+            (0, config_1.searchUl)(trackUl, playlistSearchInput);
         });
     }
     function addExpandedPlaylistModsOrderEvent() {
         // add on change event listener to the order selection element of the mods expanded playlist
-        playlistOrder.addEventListener("change", () => {
+        playlistOrder.addEventListener('change', () => {
             manageTracks.sortExpandedTracksToOrder(false);
         });
     }
     function addDeleteRecentlyAddedTrackEvent() {
+        var _a, _b;
         function onClick() {
-            if (numToRemoveInput.value > selPlaylistTracks().size() ||
-                numToRemoveInput.value == 0) {
-                console.log("cant remove this many");
+            if (numToRemoveInput === undefined) {
+                throw new Error('number to remove input is not found');
+            }
+            const numToRemove = parseInt(numToRemoveInput.value);
+            if (numToRemove > selPlaylistTracks().size ||
+                numToRemove === 0) {
+                console.log('cant remove this many');
                 // the user is trying to delete more songs then there are available, you may want to allow this
                 return;
             }
-            let orderedTracks = manageTracks.orderTracksByDateAdded(selPlaylistTracks());
-            let tracksToRemove = orderedTracks.slice(0, numToRemoveInput.value);
+            const orderedTracks = manageTracks.orderTracksByDateAdded(selPlaylistTracks());
+            const tracksToRemove = orderedTracks.slice(0, numToRemove);
             // remove songs contained in tracksToRemove from expandablePlaylistTracks
             tracksToRemove.forEach((trackToRemove) => {
-                const idx = selPlaylistTracks().findIndex((track) => track.id == trackToRemove.id);
+                const idx = selPlaylistTracks().findIndex((track) => track.id === trackToRemove.id);
                 selPlaylistTracks().remove(idx);
             });
-            playlistActions.playlistSelVerif.currSelectedVal.addToUndoStack(tracksToRemove);
+            playlistActions.playlistSelVerif.currSelectedValNoNull.addToUndoStack(tracksToRemove);
             // not same order as some have been deleted
             manageTracks.sortExpandedTracksToOrder(false);
-            (0, config_js_1.promiseHandler)(axios.delete(config_js_1.config.URLs.deletePlaylistTracks + currPlaylist.id, {
-                data: { tracks: tracksToRemove },
+            const trackUris = tracksToRemove.map((track) => { return { uri: track.uri }; });
+            (0, config_1.promiseHandler)(axios_1.default.delete(config_1.config.URLs.deletePlaylistTracks(playlistActions.playlistSelVerif.currSelectedValNoNull.id), {
+                data: { track_uris: trackUris }
             }));
         }
-        const numToRemoveInput = document
-            .getElementById(config_js_1.config.CSS.IDs.removeEarlyAdded)
-            .getElementsByTagName("input")[0];
-        const removeBtn = document
-            .getElementById(config_js_1.config.CSS.IDs.removeEarlyAdded)
-            .getElementsByTagName("button")[0];
-        removeBtn.addEventListener("click", () => onClick());
+        const numToRemoveInput = (_a = document
+            .getElementById(config_1.config.CSS.IDs.removeEarlyAdded)) === null || _a === void 0 ? void 0 : _a.getElementsByTagName('input')[0];
+        const removeBtn = (_b = document
+            .getElementById(config_1.config.CSS.IDs.removeEarlyAdded)) === null || _b === void 0 ? void 0 : _b.getElementsByTagName('button')[0];
+        removeBtn === null || removeBtn === void 0 ? void 0 : removeBtn.addEventListener('click', () => onClick());
     }
     function addUndoPlaylistTrackDeleteEvent() {
         function onClick() {
-            const currPlaylist = playlistActions.playlistSelVerif.currSelectedVal;
-            if (!currPlaylist || currPlaylist.undoStack.length == 0) {
+            const currPlaylist = playlistActions.playlistSelVerif.currSelectedValNoNull;
+            if (!currPlaylist || currPlaylist.undoStack.length === 0) {
                 return;
             }
             const undonePlaylistId = currPlaylist.id;
-            let tracksRemoved = currPlaylist.undoStack.pop();
-            (0, config_js_1.promiseHandler)(axios.post(config_js_1.config.URLs.postPlaylistTracks + currPlaylist.id, {
-                data: { tracks: tracksRemoved },
+            const tracksRemoved = currPlaylist.undoStack.pop();
+            const trackUris = tracksRemoved.map((track) => track.uri);
+            (0, config_1.promiseHandler)(axios_1.default.post(config_1.config.URLs.postPlaylistTracks(currPlaylist.id), {
+                track_uris: trackUris
             }), () => {
                 // if the request was succesful and the user is
                 // still looking at the playlist that was undone back, reload it.
-                if (undonePlaylistId ==
-                    playlistActions.playlistSelVerif.currSelectedVal.id) {
+                if (undonePlaylistId ===
+                    playlistActions.playlistSelVerif.currSelectedValNoNull.id) {
                     // reload the playlist after adding tracks in order to show the tracks added back
-                    playlistActions.showPlaylistTracks(playlistActions.playlistSelVerif.currSelectedVal);
+                    playlistActions.showPlaylistTracks(playlistActions.playlistSelVerif.currSelectedValNoNull);
                 }
             });
         }
-        const undoBtn = document.getElementById(config_js_1.config.CSS.IDs.undo);
-        undoBtn.addEventListener("click", () => onClick());
+        const undoBtn = document.getElementById(config_1.config.CSS.IDs.undo);
+        undoBtn === null || undoBtn === void 0 ? void 0 : undoBtn.addEventListener('click', () => onClick());
     }
     function addModsOpenerEvent() {
-        const modsSection = document.getElementById(config_js_1.config.CSS.IDs.playlistMods);
-        const openModsSection = document.getElementById(config_js_1.config.CSS.IDs.modsOpener);
-        const wrenchIcon = openModsSection.getElementsByTagName("img")[0];
-        openModsSection.addEventListener("click", () => {
+        const modsSection = document.getElementById(config_1.config.CSS.IDs.playlistMods);
+        const openModsSection = document.getElementById(config_1.config.CSS.IDs.modsOpener);
+        const wrenchIcon = openModsSection === null || openModsSection === void 0 ? void 0 : openModsSection.getElementsByTagName('img')[0];
+        openModsSection === null || openModsSection === void 0 ? void 0 : openModsSection.addEventListener('click', () => {
             // expand mods section
-            modsSection.classList.toggle(config_js_1.config.CSS.CLASSES.appear);
+            modsSection === null || modsSection === void 0 ? void 0 : modsSection.classList.toggle(config_1.config.CSS.CLASSES.appear);
             // select the wrench image
-            wrenchIcon.classList.toggle(config_js_1.config.CSS.CLASSES.selected);
+            wrenchIcon === null || wrenchIcon === void 0 ? void 0 : wrenchIcon.classList.toggle(config_1.config.CSS.CLASSES.selected);
         });
     }
     function savePlaylistForm(isInTextForm) {
         // save whether the playlist is in text form or not.
-        (0, config_js_1.promiseHandler)(axios.put(config_js_1.config.URLs.putSessionData +
-            `playlist-is-in-text-form&val=${isInTextForm}`));
+        (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putPlaylistIsInTextFormData(String(isInTextForm))));
     }
     function addConvertCards() {
-        const convertBtn = document.getElementById(config_js_1.config.CSS.IDs.convertCard);
-        const convertImg = convertBtn.getElementsByTagName("img")[0];
+        const convertBtn = document.getElementById(config_1.config.CSS.IDs.convertCard);
+        const convertImg = convertBtn === null || convertBtn === void 0 ? void 0 : convertBtn.getElementsByTagName('img')[0];
         function onClick() {
-            playlistsCardContainer.classList.toggle(config_js_1.config.CSS.CLASSES.textForm);
+            if (convertImg === undefined) {
+                throw new Error('convert cards to text form buttons image is not found');
+            }
+            playlistsCardContainer === null || playlistsCardContainer === void 0 ? void 0 : playlistsCardContainer.classList.toggle(config_1.config.CSS.CLASSES.textForm);
             displayCardInfo.displayPlaylistCards(infoRetrieval.playlistObjs);
-            if (playlistsCardContainer.classList.contains(config_js_1.config.CSS.CLASSES.textForm)) {
+            if (playlistsCardContainer === null || playlistsCardContainer === void 0 ? void 0 : playlistsCardContainer.classList.contains(config_1.config.CSS.CLASSES.textForm)) {
                 savePlaylistForm(true);
-                convertImg.src = config_js_1.config.PATHS.gridView;
+                convertImg.src = config_1.config.PATHS.gridView;
             }
             else {
                 savePlaylistForm(false);
-                convertImg.src = config_js_1.config.PATHS.listView;
+                convertImg.src = config_1.config.PATHS.listView;
             }
         }
-        convertBtn.addEventListener("click", () => onClick());
+        convertBtn === null || convertBtn === void 0 ? void 0 : convertBtn.addEventListener('click', () => onClick());
     }
     function addHideShowCards() {
-        const hideShowCards = document.getElementById("hide-show-cards");
+        const hideShowCards = document.getElementById('hide-show-cards');
         function onClick() {
-            hideShowCards.classList.toggle(config_js_1.config.CSS.CLASSES.selected);
-            // if its selected we hide the cards otherwise we show them.
-            if (hideShowCards.classList.contains(config_js_1.config.CSS.CLASSES.selected)) {
-                cardResizeContainer.style.width = 0;
+            hideShowCards === null || hideShowCards === void 0 ? void 0 : hideShowCards.classList.toggle(config_1.config.CSS.CLASSES.selected);
+            // if its selected we hide the cards otherwise we show them. This occurs when screen width is a certain size and a menu sliding from the left appears
+            if (hideShowCards === null || hideShowCards === void 0 ? void 0 : hideShowCards.classList.contains(config_1.config.CSS.CLASSES.selected)) {
+                cardResizeContainer.style.width = '0';
             }
             else {
                 restrictResizeWidth();
             }
             updateHideShowCardsImg();
         }
-        hideShowCards.addEventListener("click", () => onClick());
+        hideShowCards === null || hideShowCards === void 0 ? void 0 : hideShowCards.addEventListener('click', () => onClick());
     }
     return {
         addExpandedPlaylistModsSearchbarEvent,
@@ -445,38 +474,40 @@ const addEventListeners = (function () {
         addUndoPlaylistTrackDeleteEvent,
         addModsOpenerEvent,
         addConvertCards,
-        addHideShowCards,
+        addHideShowCards
     };
 })();
 function saveResizeWidth() {
-    (0, config_js_1.promiseHandler)(axios.put(config_js_1.config.URLs.putSessionData +
-        `playlist-resize-width&val=${cardResizeContainer.getBoundingClientRect().width}`));
-    console.log("end resize");
+    (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putPlaylistResizeData(cardResizeContainer.getBoundingClientRect().width.toString())));
+    console.log('end resize');
 }
 function updateHideShowCardsImg() {
-    const hideShowCards = document.getElementById("hide-show-cards");
-    const hideShowImg = hideShowCards.getElementsByTagName("img")[0];
+    const hideShowCards = document.getElementById('hide-show-cards');
+    const hideShowImg = hideShowCards === null || hideShowCards === void 0 ? void 0 : hideShowCards.getElementsByTagName('img')[0];
+    if (hideShowImg === undefined) {
+        throw new Error('img to show and hide the text form cards is not found');
+    }
     // if its selected we hide the cards otherwise we show them.
-    if (hideShowCards.classList.contains(config_js_1.config.CSS.CLASSES.selected)) {
-        hideShowImg.src = config_js_1.config.PATHS.chevronRight;
+    if (hideShowCards === null || hideShowCards === void 0 ? void 0 : hideShowCards.classList.contains(config_1.config.CSS.CLASSES.selected)) {
+        hideShowImg.src = config_1.config.PATHS.chevronRight;
     }
     else {
-        hideShowImg.src = config_js_1.config.PATHS.chevronLeft;
+        hideShowImg.src = config_1.config.PATHS.chevronLeft;
     }
 }
 function checkIfCardFormChangeOnResize() {
     const prev = {
-        vwIsSmall: window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches,
+        vwIsSmall: window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches
     };
-    window.addEventListener("resize", function () {
+    window.addEventListener('resize', function () {
         const wasBigNowSmall = window.matchMedia(`(max-width: ${VIEWPORT_MIN}px)`).matches &&
             !prev.vwIsSmall;
         const wasSmallNowBig = prev.vwIsSmall &&
             window.matchMedia(`(min-width: ${VIEWPORT_MIN}px)`).matches;
         if (wasBigNowSmall || wasSmallNowBig) {
             if (wasSmallNowBig) {
-                const hideShowCards = document.getElementById("hide-show-cards");
-                hideShowCards.classList.remove(config_js_1.config.CSS.CLASSES.selected);
+                const hideShowCards = document.getElementById('hide-show-cards');
+                hideShowCards === null || hideShowCards === void 0 ? void 0 : hideShowCards.classList.remove(config_1.config.CSS.CLASSES.selected);
                 updateHideShowCardsImg();
             }
             // card form has changed on window resize
@@ -487,37 +518,40 @@ function checkIfCardFormChangeOnResize() {
 }
 const initialLoads = (function () {
     function loadPlaylistForm() {
-        (0, config_js_1.promiseHandler)(axios
-            .get(config_js_1.config.URLs.getSessionData + "playlist-is-in-text-form")
+        (0, config_1.promiseHandler)(axios_1.default
+            .get(config_1.config.URLs.getPlaylistIsInTextFormData)
             .then((res) => {
-            if (res.data == true) {
+            if (res.data === true) {
                 // if its in text form change it to be so.
-                const convertBtn = document.getElementById(config_js_1.config.CSS.IDs.convertCard);
-                const convertImg = convertBtn.getElementsByTagName("img")[0];
-                playlistsCardContainer.classList.add(config_js_1.config.CSS.CLASSES.textForm);
+                const convertBtn = document.getElementById(config_1.config.CSS.IDs.convertCard);
+                const convertImg = convertBtn === null || convertBtn === void 0 ? void 0 : convertBtn.getElementsByTagName('img')[0];
+                if (convertImg === undefined) {
+                    throw new Error('convert cards to text form buttons image is not found');
+                }
+                playlistsCardContainer === null || playlistsCardContainer === void 0 ? void 0 : playlistsCardContainer.classList.add(config_1.config.CSS.CLASSES.textForm);
                 displayCardInfo.displayPlaylistCards(infoRetrieval.playlistObjs);
-                convertImg.src = config_js_1.config.PATHS.gridView;
+                convertImg.src = config_1.config.PATHS.gridView;
             }
             // else it is in card form which is the default.
         }));
     }
     function loadResizeWidth() {
-        (0, config_js_1.promiseHandler)(axios
-            .get(config_js_1.config.URLs.getSessionData + "playlist-resize-width")
+        (0, config_1.promiseHandler)(axios_1.default
+            .get(config_1.config.URLs.getPlaylistResizeData)
             .then((res) => {
-            cardResizeContainer.style.width = res.data + "px";
+            cardResizeContainer.style.width = res.data + 'px';
         }));
     }
     return {
         loadPlaylistForm,
-        loadResizeWidth,
+        loadResizeWidth
     };
 })();
 (function () {
-    (0, config_js_1.promiseHandler)((0, manage_tokens_js_1.checkIfHasTokens)(), (hasToken) => {
-        (0, manage_tokens_js_1.onSuccessfulTokenCall)(hasToken, () => {
+    (0, config_1.promiseHandler)((0, manage_tokens_1.checkIfHasTokens)(), (hasToken) => {
+        (0, manage_tokens_1.onSuccessfulTokenCall)(hasToken, () => {
             // get information and onSuccess animate the elements
-            (0, config_js_1.promiseHandler)(infoRetrieval.getInitialInfo(), () => config_js_1.animationControl.animateAttributes(".playlist,#expanded-playlist-mods", config_js_1.config.CSS.CLASSES.appear, 25), () => console.log("Problem when getting information"));
+            (0, config_1.promiseHandler)(infoRetrieval.getInitialInfo(), () => config_1.animationControl.animateAttributes('.playlist,#expanded-playlist-mods', config_1.config.CSS.CLASSES.appear, 25), () => console.log('Problem when getting information'));
         });
     });
     Object.entries(addEventListeners).forEach(([, addEventListener]) => {
@@ -528,3 +562,4 @@ const initialLoads = (function () {
         loader();
     });
 })();
+//# sourceMappingURL=playlists.js.map

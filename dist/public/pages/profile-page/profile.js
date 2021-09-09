@@ -12,42 +12,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_js_1 = require("../../config.js");
-const profile_js_1 = __importDefault(require("../../components/profile.js"));
-const playlist_js_1 = require("../../components/playlist.js");
-const manage_tokens_js_1 = require("../../manage-tokens.js");
-const artist_js_1 = require("../../components/artist.js");
-const card_actions_js_1 = __importDefault(require("../../card-actions.js"));
-const doubly_linked_list_js_1 = __importDefault(require("../../components/doubly-linked-list.js"));
+const config_1 = require("../../config");
+const profile_1 = __importDefault(require("../../components/profile"));
+const playlist_1 = require("../../components/playlist");
+const manage_tokens_1 = require("../../manage-tokens");
+const artist_1 = require("../../components/artist");
+const card_actions_1 = __importDefault(require("../../card-actions"));
+const doubly_linked_list_1 = __importDefault(require("../../components/doubly-linked-list"));
+const axios_1 = __importDefault(require("axios"));
 function displayProfile(profile) {
-    const displayName = document
-        .getElementById(config_js_1.config.CSS.IDs.profileHeader)
-        .getElementsByTagName("h1")[0];
-    const followerCount = document
-        .getElementById(config_js_1.config.CSS.IDs.profileHeader)
-        .getElementsByTagName("h4")[0];
-    const profileImage = document
-        .getElementById(config_js_1.config.CSS.IDs.profileHeader)
-        .getElementsByTagName("img")[0];
+    var _a, _b, _c, _d;
+    const profileHeader = (_a = document.getElementById(config_1.config.CSS.IDs.profileHeader)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)('profile header element does not exist');
+    const displayName = (_b = profileHeader.getElementsByTagName('h1')[0]) !== null && _b !== void 0 ? _b : (0, config_1.throwExpression)('display name element does not exist');
+    const followerCount = (_c = profileHeader.getElementsByTagName('h4')[0]) !== null && _c !== void 0 ? _c : (0, config_1.throwExpression)('follower element does not exist');
+    const profileImage = (_d = profileHeader.getElementsByTagName('img')[0]) !== null && _d !== void 0 ? _d : (0, config_1.throwExpression)('profile image element does not exist');
     displayName.textContent = profile.displayName;
-    followerCount.textContent = profile.followers + " followers";
+    followerCount.textContent = profile.followers + ' followers';
     profileImage.src =
-        profile.profileImgUrl == ""
-            ? "/images/profile-user.png"
+        profile.profileImgUrl === ''
+            ? '/images/profile-user.png'
             : profile.profileImgUrl;
 }
 function retrieveProfile() {
     return __awaiter(this, void 0, void 0, function* () {
         function onSuccesful(res) {
             const data = res.data;
-            let profile = new profile_js_1.default(data.display_name, data.country, data.email, data.images, data.followers.total, data.external_urls.spotify);
+            const profile = new profile_1.default(data.display_name, data.country, data.email, data.images, data.followers.total, data.external_urls.spotify);
             displayProfile(profile);
         }
         // get profile data from api
-        yield (0, config_js_1.promiseHandler)(axios.get(config_js_1.config.URLs.getCurrentUserProfile), onSuccesful, (err) => {
-            // throw error that will be passed down to the promise handler that ran retrieveProfile().
-            throw new Error(err);
-        });
+        yield (0, config_1.promiseHandler)(axios_1.default.request({ method: 'GET', url: config_1.config.URLs.getCurrentUserProfile }), onSuccesful);
     });
 }
 const addEventListeners = (function () {
@@ -55,27 +49,28 @@ const addEventListeners = (function () {
      *
      */
     function addClearDataListener() {
-        const clearDataEl = document.getElementById(config_js_1.config.CSS.IDs.clearData);
-        clearDataEl.href = config_js_1.config.URLs.siteUrl;
+        const clearDataEl = document.getElementById(config_1.config.CSS.IDs.clearData);
+        clearDataEl.href = config_1.config.URLs.siteUrl;
         function onClick() {
-            axios.put(config_js_1.config.URLs.putClearSession);
+            axios_1.default.put(config_1.config.URLs.putClearSession);
         }
-        clearDataEl.addEventListener("click", onClick);
+        clearDataEl.addEventListener('click', onClick);
     }
     return { addClearDataListener };
 })();
 const savedTracksActions = (function () {
     function getSavedTracks() {
-        (0, config_js_1.promiseHandler)(axios.get(config_js_1.config.URLs.getCurrentUserSavedTracks), (res) => {
+        (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getCurrentUserSavedTracks), (res) => {
             // if we retrieved the tracks succesfully, then display them
-            let trackList = new doubly_linked_list_js_1.default();
-            let tracksData = res.data.items.map((item) => item.track);
-            (0, playlist_js_1.getPlaylistTracksFromDatas)(tracksData, res.data.items, trackList);
+            const trackList = new doubly_linked_list_1.default();
+            const tracksData = res.data.items.map((item) => item.track);
+            (0, playlist_1.getPlaylistTracksFromDatas)(tracksData, res.data.items, trackList);
             displaySavedTracks(trackList);
         });
     }
     function displaySavedTracks(trackList) {
-        const likedTracksUl = document.getElementById(config_js_1.config.CSS.IDs.likedTracks);
+        var _a;
+        const likedTracksUl = (_a = document.getElementById(config_1.config.CSS.IDs.likedTracks)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)(`liked tracks ul of id ${config_1.config.CSS.IDs.likedTracks} does not exist`);
         for (const track of trackList.values()) {
             likedTracksUl.append(track.getPlaylistTrackHtml(trackList));
         }
@@ -83,38 +78,39 @@ const savedTracksActions = (function () {
     return { getSavedTracks };
 })();
 const followedArtistActions = (function () {
-    const cardActionsHandler = new card_actions_js_1.default(50);
+    const cardActionsHandler = new card_actions_1.default(50);
     function getFollowedArtists() {
-        (0, config_js_1.promiseHandler)(axios.get(config_js_1.config.URLs.getFollowedArtists), (res) => {
+        (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getFollowedArtists), (res) => {
             // if we retrieved the artists succesfully, then display them
-            var artistArr = [];
-            (0, artist_js_1.generateArtistsFromData)(res.data.artists.items, artistArr);
+            const artistArr = [];
+            (0, artist_1.generateArtistsFromData)(res.data.artists.items, artistArr);
             displayFollowedArtists(artistArr);
         });
     }
     function displayFollowedArtists(followedArtists) {
-        const cardGrid = document.getElementById(config_js_1.config.CSS.IDs.followedArtists);
+        var _a;
+        const cardGrid = (_a = document.getElementById(config_1.config.CSS.IDs.followedArtists)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)(`Card grid of id ${config_1.config.CSS.IDs.followedArtists} does not exist`);
         // display the cards
         let i = 0;
         followedArtists.forEach((artist) => {
             cardGrid.append(artist.getArtistCardHtml(i, true));
             i++;
         });
-        let artistCards = Array.from(document.getElementsByClassName(config_js_1.config.CSS.CLASSES.artist));
+        const artistCards = Array.from(document.getElementsByClassName(config_1.config.CSS.CLASSES.artist));
         // add event listeners to the cards
         cardActionsHandler.addAllEventListeners(artistCards, followedArtists, null, true, false);
     }
     return { getFollowedArtists };
 })();
 (function () {
-    (0, config_js_1.promiseHandler)((0, manage_tokens_js_1.checkIfHasTokens)(), (hasToken) => (0, manage_tokens_js_1.onSuccessfulTokenCall)(hasToken, () => {
+    (0, config_1.promiseHandler)((0, manage_tokens_1.checkIfHasTokens)(), (hasToken) => (0, manage_tokens_1.onSuccessfulTokenCall)(hasToken, () => {
         // get user profile
-        (0, config_js_1.promiseHandler)(retrieveProfile(), () => {
-            (0, manage_tokens_js_1.generateLogin)({
-                classesToAdd: ["glow"],
-                parentEl: document.getElementById("account-btns"),
+        (0, config_1.promiseHandler)(retrieveProfile(), () => {
+            (0, manage_tokens_1.generateLogin)({
+                classesToAdd: ['glow'],
+                parentEl: document.getElementById('account-btns')
             });
-        }, () => console.log("Problem when getting information"));
+        }, () => console.log('Problem when getting information'));
         savedTracksActions.getSavedTracks();
         followedArtistActions.getFollowedArtists();
     }));
@@ -122,3 +118,4 @@ const followedArtistActions = (function () {
         addEventListener();
     });
 })();
+//# sourceMappingURL=profile.js.map

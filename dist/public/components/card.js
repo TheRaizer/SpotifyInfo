@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class Card {
     constructor() {
-        this.cardId = null;
+        this.cardId = '';
     }
     getCardId() {
-        if (this.cardId == null) {
-            throw new Error("Card id was asking to be retrieved but is null");
+        if (this.cardId === 'null') {
+            throw new Error('Card id was asking to be retrieved but is null');
         }
         else {
             return this.cardId;
@@ -14,3 +14,4 @@ class Card {
     }
 }
 exports.default = Card;
+//# sourceMappingURL=card.js.map

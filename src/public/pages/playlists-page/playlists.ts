@@ -461,7 +461,7 @@ const addEventListeners = (function () {
       const undonePlaylistId = currPlaylist.id
       const tracksRemoved = currPlaylist.undoStack.pop()
 
-      const trackUris = tracksRemoved.map((track) => track.uri)
+      const trackUris = tracksRemoved!.map((track) => track.uri)
       promiseHandler(
         axios.post(config.URLs.postPlaylistTracks(currPlaylist.id), {
           track_uris: trackUris

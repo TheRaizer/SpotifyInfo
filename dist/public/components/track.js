@@ -13,47 +13,57 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateTracksFromData = void 0;
-const config_js_1 = require("../config.js");
-const playback_sdk_js_1 = require("./playback-sdk.js");
-const album_js_1 = __importDefault(require("./album.js"));
-const card_js_1 = __importDefault(require("./card.js"));
-const track_play_args_js_1 = __importDefault(require("./pubsub/event-args/track-play-args.js"));
-class Track extends card_js_1.default {
+const config_1 = require("../config");
+const playback_sdk_1 = require("./playback-sdk");
+const album_1 = __importDefault(require("./album"));
+const card_1 = __importDefault(require("./card"));
+const track_play_args_1 = __importDefault(require("./pubsub/event-args/track-play-args"));
+const axios_1 = __importDefault(require("axios"));
+const eventAggregator = window.eventAggregator;
+class Track extends card_1.default {
     constructor(props) {
         super();
-        let { title, images, duration, uri, popularity, releaseDate, id, album, externalUrl, artists, idx = -1, } = props;
-        // This tracks index in an array if it is contained in one. (used to find previous and next tracks)
-        this.idx = idx;
-        this.externalUrl = externalUrl;
-        this.id = id;
-        this.title = title;
-        this.filterDataFromArtists(artists);
-        this.duration = (0, config_js_1.millisToMinutesAndSeconds)(duration);
+        const { title, images, duration, uri, popularity, releaseDate, id, album, externalUrls, artists } = props;
+        this.externalUrls = externalUrls;
+        this._id = id;
+        this._title = title;
+        this.artistsDatas = this.filterDataFromArtists(artists);
+        this._duration = (0, config_1.millisToMinutesAndSeconds)(duration);
+        this._dateAddedToPlaylist = new Date();
         // either the normal uri, or the linked_from.uri
-        this.uri = uri;
+        this._uri = uri;
         this.popularity = popularity;
-        this.dateAddedToPlaylist;
         this.releaseDate = new Date(releaseDate);
         this.album = album;
         this.features = undefined;
-        this.imageUrl = (0, config_js_1.getValidImage)(images);
-        this.selEl = null;
+        this.imageUrl = (0, config_1.getValidImage)(images);
+        this.selEl = (0, config_1.htmlToEl)('<></>');
     }
-    setDateAdded(dateAddedToPlaylist) {
-        this.dateAddedToPlaylist = new Date(dateAddedToPlaylist);
+    get id() {
+        return this._id;
+    }
+    get title() {
+        return this._title;
+    }
+    get uri() {
+        return this._uri;
+    }
+    get dateAddedToPlaylist() {
+        return this._dateAddedToPlaylist;
+    }
+    setDateAddedToPlaylist(val) {
+        this._dateAddedToPlaylist = new Date(val);
     }
     filterDataFromArtists(artists) {
-        this.artists = artists.map((artist) => {
-            return { name: artist.name, externalUrl: artist.external_urls.spotify };
-        });
+        return artists.map((artist) => artist);
     }
     generateHTMLArtistNames() {
-        let artistNames = "";
-        for (let i = 0; i < this.artists.length; i++) {
-            const artist = this.artists[i];
-            artistNames += `<a href="${artist.externalUrl}" target="_blank">${artist.name}</a>`;
-            if (i < this.artists.length - 1) {
-                artistNames += ", ";
+        let artistNames = '';
+        for (let i = 0; i < this.artistsDatas.length; i++) {
+            const artist = this.artistsDatas[i];
+            artistNames += `<a href="${artist.external_urls.spotify}" target="_blank">${artist.name}</a>`;
+            if (i < this.artistsDatas.length - 1) {
+                artistNames += ', ';
             }
         }
         return artistNames;
@@ -64,35 +74,35 @@ class Track extends card_js_1.default {
      * @returns {ChildNode} - The converted html string to an element
      */
     getTrackCardHtml(idx, unanimatedAppear = false) {
-        let id = `${config_js_1.config.CSS.IDs.trackPrefix}${idx}`;
+        const id = `${config_1.config.CSS.IDs.trackPrefix}${idx}`;
         this.cardId = id;
-        let appearClass = unanimatedAppear ? config_js_1.config.CSS.CLASSES.appear : "";
-        let html = `
-            <div class="${config_js_1.config.CSS.CLASSES.rankCard} ${config_js_1.config.CSS.CLASSES.fadeIn} ${appearClass}">
-              <h4 id="${config_js_1.config.CSS.IDs.rank}">${idx + 1}.</h4>
-              <div class="${config_js_1.config.CSS.CLASSES.flipCard} ${config_js_1.config.CSS.CLASSES.noSelect}  ${config_js_1.config.CSS.CLASSES.expandOnHover}">
-                <button class="${config_js_1.config.CSS.CLASSES.card} ${config_js_1.config.CSS.CLASSES.flipCardInner} ${config_js_1.config.CSS.CLASSES.track}" id="${this.getCardId()}">
-                  <div class="${config_js_1.config.CSS.CLASSES.flipCardFront}"  title="Click to view more Info">
+        const appearClass = unanimatedAppear ? config_1.config.CSS.CLASSES.appear : '';
+        const html = `
+            <div class="${config_1.config.CSS.CLASSES.rankCard} ${config_1.config.CSS.CLASSES.fadeIn} ${appearClass}">
+              <h4 id="${config_1.config.CSS.IDs.rank}">${idx + 1}.</h4>
+              <div class="${config_1.config.CSS.CLASSES.flipCard} ${config_1.config.CSS.CLASSES.noSelect}  ${config_1.config.CSS.CLASSES.expandOnHover}">
+                <button class="${config_1.config.CSS.CLASSES.card} ${config_1.config.CSS.CLASSES.flipCardInner} ${config_1.config.CSS.CLASSES.track}" id="${this.getCardId()}">
+                  <div class="${config_1.config.CSS.CLASSES.flipCardFront}"  title="Click to view more Info">
                     <img src="${this.imageUrl}" alt="Album Cover"></img>
                     <div>
-                      <h4 class="${config_js_1.config.CSS.CLASSES.ellipsisWrap} ${config_js_1.config.CSS.CLASSES.scrollingText}">${this.title}</h4>
+                      <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap} ${config_1.config.CSS.CLASSES.scrollingText}">${this.title}</h4>
                     </div>
                   </div>
-                  <div class=${config_js_1.config.CSS.CLASSES.flipCardBack}>
+                  <div class=${config_1.config.CSS.CLASSES.flipCardBack}>
                     <h3>Duration:</h3>
-                    <p>${this.duration}</p>
+                    <p>${this._duration}</p>
                     <h3>Release Date:</h3>
                     <p>${this.releaseDate.toDateString()}</p>
                     <h3>Album Name:</h3>
                     <a href="${this.album.externalUrl}">
-                      <p class="${config_js_1.config.CSS.CLASSES.ellipsisWrap}">${this.album.name}</p>
+                      <p class="${config_1.config.CSS.CLASSES.ellipsisWrap}">${this.album.name}</p>
                     </a>
                   </div>
                 </button>
               </div>
             </div>
           `;
-        return (0, config_js_1.htmlToEl)(html);
+        return (0, config_1.htmlToEl)(html);
     }
     /** Get a track html to be placed as a list element.
      *
@@ -100,38 +110,42 @@ class Track extends card_js_1.default {
      * @returns {ChildNode} - The converted html string to an element
      */
     getPlaylistTrackHtml(trackList, displayDate = true) {
+        // cast tracks as an IPlayable in order to reduce errors due to exessive accessability if logging it will log all Track attributes. But in code we can only access IPlayable attributes.
         const track = this;
-        var trackNode = trackList.get(this.idx, true);
+        const trackNode = trackList.find((x) => x.uri === this.uri, true);
         function playPauseClick() {
             // select this track to play or pause by publishing the track play event arg
-            window.eventAggregator.publish(new track_play_args_js_1.default(track, trackNode));
+            eventAggregator.publish(new track_play_args_1.default(track, trackNode));
         }
-        let html = `
-            <li class="${config_js_1.config.CSS.CLASSES.playlistTrack}">
-              <button class="play-pause ${(0, playback_sdk_js_1.isSamePlayingURI)(this.uri) ? config_js_1.config.CSS.CLASSES.selected : ""}"><img src="" alt="play/pause" 
-              class="${config_js_1.config.CSS.CLASSES.noSelect}"/></button>
-              <img class="${config_js_1.config.CSS.CLASSES.noSelect}" src="${this.imageUrl}"></img>
-              <div class="${config_js_1.config.CSS.CLASSES.links}">
-                <a href="${this.externalUrl}" target="_blank">
-                  <h4 class="${config_js_1.config.CSS.CLASSES.ellipsisWrap} ${config_js_1.config.CSS.CLASSES.name}">${this.title}
+        const html = `
+            <li class="${config_1.config.CSS.CLASSES.playlistTrack}">
+              <button class="play-pause ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}"><img src="" alt="play/pause" 
+              class="${config_1.config.CSS.CLASSES.noSelect}"/></button>
+              <img class="${config_1.config.CSS.CLASSES.noSelect}" src="${this.imageUrl}"></img>
+              <div class="${config_1.config.CSS.CLASSES.links}">
+                <a href="${this.externalUrls.spotify}" target="_blank">
+                  <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap} ${config_1.config.CSS.CLASSES.name}">${this.title}
                   </h4>
                 <a/>
-                <div class="${config_js_1.config.CSS.CLASSES.ellipsisWrap}">
+                <div class="${config_1.config.CSS.CLASSES.ellipsisWrap}">
                   ${this.generateHTMLArtistNames()}
                 </div>
               </div>
-              <h5>${this.duration}</h5>
+              <h5>${this._duration}</h5>
               ${displayDate
             ? `<h5>${this.dateAddedToPlaylist.toLocaleDateString()}</h5>`
-            : ""}
+            : ''}
             </li>
             `;
-        let el = (0, config_js_1.htmlToEl)(html);
+        const el = (0, config_1.htmlToEl)(html);
         // get play pause button
-        let playPauseBtn = el.childNodes[1];
+        const playPauseBtn = el === null || el === void 0 ? void 0 : el.childNodes[1];
+        if (playPauseBtn === null) {
+            throw new Error('Play pause button on track was not found');
+        }
         this.selEl = playPauseBtn;
-        playPauseBtn.addEventListener("click", () => playPauseClick(playPauseBtn));
-        (0, playback_sdk_js_1.checkIfIsPlayingElAfterRerender)(this.uri, playPauseBtn, trackNode);
+        playPauseBtn === null || playPauseBtn === void 0 ? void 0 : playPauseBtn.addEventListener('click', () => playPauseClick());
+        (0, playback_sdk_1.checkIfIsPlayingElAfterRerender)(this.uri, playPauseBtn, trackNode);
         return el;
     }
     /** Get a track html to be placed as a list element on a ranked list.
@@ -139,39 +153,39 @@ class Track extends card_js_1.default {
      * @returns {ChildNode} - The converted html string to an element
      */
     getRankedTrackHtml(rank) {
-        let html = `
-            <li class="${config_js_1.config.CSS.CLASSES.playlistTrack}">
+        const html = `
+            <li class="${config_1.config.CSS.CLASSES.playlistTrack}">
               <p>${rank}.</p>
-              <img class="${config_js_1.config.CSS.CLASSES.noSelect}" src="${this.imageUrl}"></img>
-              <div class="${config_js_1.config.CSS.CLASSES.links}">
-                <a href="${this.externalUrl}" target="_blank">
-                  <h4 class="${config_js_1.config.CSS.CLASSES.ellipsisWrap} ${config_js_1.config.CSS.CLASSES.name}">${this.title}
+              <img class="${config_1.config.CSS.CLASSES.noSelect}" src="${this.imageUrl}"></img>
+              <div class="${config_1.config.CSS.CLASSES.links}">
+                <a href="${this.externalUrls.spotify}" target="_blank">
+                  <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap} ${config_1.config.CSS.CLASSES.name}">${this.title}
                   </h4>
                 <a/>
-                <div class="${config_js_1.config.CSS.CLASSES.ellipsisWrap}">
+                <div class="${config_1.config.CSS.CLASSES.ellipsisWrap}">
                   ${this.generateHTMLArtistNames()}
                 </div>
               </div>
-              <h5>${this.duration}</h5>
+              <h5>${this._duration}</h5>
             </li>
             `;
-        return (0, config_js_1.htmlToEl)(html);
+        return (0, config_1.htmlToEl)(html);
     }
-    /** Load the features of this track from the spotify web api.*/
+    /** Load the features of this track from the spotify web api. */
     loadFeatures() {
         return __awaiter(this, void 0, void 0, function* () {
-            let res = yield axios
-                .get(config_js_1.config.URLs.getTrackFeatures + this.id)
+            const res = yield axios_1.default
+                .get(config_1.config.URLs.getTrackFeatures + this.id)
                 .catch((err) => {
                 throw err;
             });
-            let feats = res.data.audio_features;
+            const feats = res.data.audio_features;
             this.features = {
                 danceability: feats.danceability,
                 acousticness: feats.acousticness,
                 instrumentalness: feats.instrumentalness,
                 valence: feats.valence,
-                energy: feats.energy,
+                energy: feats.energy
             };
             return this.features;
         });
@@ -179,15 +193,15 @@ class Track extends card_js_1.default {
 }
 /** Generate tracks from data excluding date added.
  *
- * @param {*} datas
- * @param {DoublyLinkedList} trackList - double linked list
+ * @param {Array<TrackData>} datas
+ * @param {DoublyLinkedList<Track> | Array<Track>} tracks - double linked list
  * @returns
  */
-function generateTracksFromData(datas, trackList) {
+function generateTracksFromData(datas, tracks) {
     for (let i = 0; i < datas.length; i++) {
         const data = datas[i];
         if (data) {
-            let props = {
+            const props = {
                 title: data.name,
                 images: data.album.images,
                 duration: data.duration_ms,
@@ -195,17 +209,21 @@ function generateTracksFromData(datas, trackList) {
                 popularity: data.popularity,
                 releaseDate: data.album.release_date,
                 id: data.id,
-                album: new album_js_1.default(data.album.name, data.album.external_urls.spotify),
-                externalUrl: data.external_urls.spotify,
+                album: new album_1.default(data.album.name, data.album.external_urls.spotify),
+                externalUrls: data.external_urls,
                 artists: data.artists,
-                idx: i,
+                idx: i
             };
-            if (trackList) {
-                trackList.add(new Track(props));
+            if (Array.isArray(tracks)) {
+                tracks.push(new Track(props));
+            }
+            else {
+                tracks.add(new Track(props));
             }
         }
     }
-    return trackList;
+    return tracks;
 }
 exports.generateTracksFromData = generateTracksFromData;
 exports.default = Track;
+//# sourceMappingURL=track.js.map

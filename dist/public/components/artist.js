@@ -13,11 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateArtistsFromData = void 0;
-const config_js_1 = require("../config.js");
-const track_js_1 = require("../components/track.js");
-const card_js_1 = __importDefault(require("./card.js"));
-const doubly_linked_list_js_1 = __importDefault(require("./doubly-linked-list.js"));
-class Artist extends card_js_1.default {
+const config_1 = require("../config");
+const track_1 = require("./track");
+const card_1 = __importDefault(require("./card"));
+const doubly_linked_list_1 = __importDefault(require("./doubly-linked-list"));
+const axios_1 = __importDefault(require("axios"));
+class Artist extends card_1.default {
     constructor(id, name, genres, followerCount, externalUrl, images) {
         super();
         this.artistId = id;
@@ -25,7 +26,7 @@ class Artist extends card_js_1.default {
         this.genres = genres;
         this.followerCount = followerCount;
         this.externalUrl = externalUrl;
-        this.imageUrl = (0, config_js_1.getValidImage)(images);
+        this.imageUrl = (0, config_1.getValidImage)(images);
         this.topTracks = undefined;
     }
     /** Produces the card element of this artist.
@@ -34,15 +35,15 @@ class Artist extends card_js_1.default {
      * @returns {ChildNode} - The converted html string to an element
      */
     getArtistHtml(idx) {
-        let id = `${config_js_1.config.CSS.IDs.artistPrefix}${idx}`;
+        const id = `${config_1.config.CSS.IDs.artistPrefix}${idx}`;
         this.cardId = id;
-        let genreList = "";
+        let genreList = '';
         this.genres.forEach((genre) => {
-            genreList += "<li>" + genre + "</li>";
+            genreList += '<li>' + genre + '</li>';
         });
-        let html = `
-      <div class="${config_js_1.config.CSS.CLASSES.artist} ${config_js_1.config.CSS.CLASSES.fadeIn}" id="${this.cardId}">
-        <section class="${config_js_1.config.CSS.CLASSES.content}">
+        const html = `
+      <div class="${config_1.config.CSS.CLASSES.artist} ${config_1.config.CSS.CLASSES.fadeIn}" id="${this.cardId}">
+        <section class="${config_1.config.CSS.CLASSES.content}">
           <header class="artist-base">
             <img src=${this.imageUrl} alt="Artist"/>
             <h3>${this.name}</h3>
@@ -50,19 +51,19 @@ class Artist extends card_js_1.default {
               ${genreList}
             </ul>
           </header>
-          <div class="${config_js_1.config.CSS.CLASSES.tracksArea}">
-            <section class="${config_js_1.config.CSS.CLASSES.artistTopTracks}">
+          <div class="${config_1.config.CSS.CLASSES.tracksArea}">
+            <section class="${config_1.config.CSS.CLASSES.artistTopTracks}">
               <header>
                 <h4>Top Tracks</h4>
               </header>
-              <ul class="${config_js_1.config.CSS.CLASSES.scrollBar} ${config_js_1.config.CSS.CLASSES.trackList}">
+              <ul class="${config_1.config.CSS.CLASSES.scrollBar} ${config_1.config.CSS.CLASSES.trackList}">
               </ul>
             </section>
           </div>
         </section>
       </div>
       `;
-        return (0, config_js_1.htmlToEl)(html);
+        return (0, config_1.htmlToEl)(html);
     }
     /** Produces the card element of this artist.
      *
@@ -70,20 +71,20 @@ class Artist extends card_js_1.default {
      * @returns {ChildNode} - The converted html string to an element
      */
     getArtistCardHtml(idx, unanimatedAppear = false) {
-        let id = `${config_js_1.config.CSS.IDs.artistPrefix}${idx}`;
+        const id = `${config_1.config.CSS.IDs.artistPrefix}${idx}`;
         this.cardId = id;
-        let appearClass = unanimatedAppear ? config_js_1.config.CSS.CLASSES.appear : "";
-        let html = `
-            <div class="${config_js_1.config.CSS.CLASSES.rankCard} ${config_js_1.config.CSS.CLASSES.fadeIn} ${appearClass}">
-              <div class="${config_js_1.config.CSS.CLASSES.flipCard} ${config_js_1.config.CSS.CLASSES.noSelect}  ${config_js_1.config.CSS.CLASSES.expandOnHover}">
-                <button class="${config_js_1.config.CSS.CLASSES.card} ${config_js_1.config.CSS.CLASSES.flipCardInner} ${config_js_1.config.CSS.CLASSES.artist}" id="${this.getCardId()}">
-                  <div class="${config_js_1.config.CSS.CLASSES.flipCardFront}"  title="Click to view more Info">
+        const appearClass = unanimatedAppear ? config_1.config.CSS.CLASSES.appear : '';
+        const html = `
+            <div class="${config_1.config.CSS.CLASSES.rankCard} ${config_1.config.CSS.CLASSES.fadeIn} ${appearClass}">
+              <div class="${config_1.config.CSS.CLASSES.flipCard} ${config_1.config.CSS.CLASSES.noSelect}  ${config_1.config.CSS.CLASSES.expandOnHover}">
+                <button class="${config_1.config.CSS.CLASSES.card} ${config_1.config.CSS.CLASSES.flipCardInner} ${config_1.config.CSS.CLASSES.artist}" id="${this.getCardId()}">
+                  <div class="${config_1.config.CSS.CLASSES.flipCardFront}"  title="Click to view more Info">
                     <img src="${this.imageUrl}" alt="Album Cover"></img>
                     <div>
-                      <h4 class="${config_js_1.config.CSS.CLASSES.ellipsisWrap} ${config_js_1.config.CSS.CLASSES.scrollingText}">${this.name}</h4>
+                      <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap} ${config_1.config.CSS.CLASSES.scrollingText}">${this.name}</h4>
                     </div>
                   </div>
-                  <div class=${config_js_1.config.CSS.CLASSES.flipCardBack}>
+                  <div class=${config_1.config.CSS.CLASSES.flipCardBack}>
                     <h3>Followers:</h3>
                     <p>${this.followerCount}</p>
                   </div>
@@ -91,20 +92,20 @@ class Artist extends card_js_1.default {
               </div>
             </div>
           `;
-        return (0, config_js_1.htmlToEl)(html);
+        return (0, config_1.htmlToEl)(html);
     }
     loadTopTracks() {
         return __awaiter(this, void 0, void 0, function* () {
-            let res = yield axios.get(config_js_1.config.URLs.getArtistTopTracks(this.artistId));
-            let tracksData = res.data.tracks;
-            let trackObjs = new doubly_linked_list_js_1.default();
-            (0, track_js_1.generateTracksFromData)(tracksData, trackObjs);
+            const res = yield axios_1.default.get(config_1.config.URLs.getArtistTopTracks(this.artistId));
+            const tracksData = res.data.tracks;
+            const trackObjs = new doubly_linked_list_1.default();
+            (0, track_1.generateTracksFromData)(tracksData, trackObjs);
             this.topTracks = trackObjs;
             return trackObjs;
         });
     }
     hasLoadedTopTracks() {
-        return this.topTracks === undefined ? false : true;
+        return this.topTracks !== undefined;
     }
 }
 function generateArtistsFromData(datas, artistArr) {
@@ -115,3 +116,4 @@ function generateArtistsFromData(datas, artistArr) {
 }
 exports.generateArtistsFromData = generateArtistsFromData;
 exports.default = Artist;
+//# sourceMappingURL=artist.js.map
