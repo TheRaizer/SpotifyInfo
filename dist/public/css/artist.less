@@ -55,9 +55,24 @@
     }
 
     & .playlist-track {
-      & > p {
-        font-weight: bold;
+      & > .ranked-card-interaction-area {
         flex: 0 0 10%;
+        & > p {
+          font-weight: bold;
+          display: block;
+        }
+        & > button {
+          display: none;
+        }
+      }
+      & > .ranked-card-interaction-area:hover,
+      > .ranked-card-interaction-area.selected {
+        & > p {
+          display: none;
+        }
+        & > button {
+          display: block;
+        }
       }
       & > .links {
         flex: 0 0 40%;

@@ -41,7 +41,7 @@ const artistActions = (function () {
         throwExpression('artist does not have top tracks loaded on request to show them')
       }
       for (const track of artistObj.topTracks.values()) {
-        trackList.appendChild(track.getRankedTrackHtml(rank))
+        trackList.appendChild(track.getRankedTrackHtml(artistObj.topTracks, rank))
         rank++
       }
     })

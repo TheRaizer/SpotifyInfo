@@ -13,18 +13,18 @@ import EventAggregator from './pubsub/aggregator'
 import { IPlayable } from '../types'
 
 class SpotifyPlayback {
-  player: any;
-  isExecutingAction: boolean;
-  device_id: string;
+  private player: any;
+  private isExecutingAction: boolean;
+  private device_id: string;
   selPlaying: {
       element: null | Element
       track_uri: string
       trackDataNode: null | DoublyLinkedListNode<IPlayable>
   }
 
-  getStateInterval: NodeJS.Timeout | null;
+  private getStateInterval: NodeJS.Timeout | null;
 
-  webPlayerEls: {
+  private webPlayerEls: {
     title: Element | null
     progress: Element | null
     currTime: Element | null
@@ -32,7 +32,7 @@ class SpotifyPlayback {
     playPause: Element | null
   };
 
-  playerIsReady: boolean;
+  private playerIsReady: boolean;
 
   constructor () {
     this.isExecutingAction = false
@@ -129,7 +129,7 @@ class SpotifyPlayback {
     })
   }
 
-  getWebPlayerEls () {
+  private getWebPlayerEls () {
     const webPlayerEl = document.getElementById(config.CSS.IDs.webPlayer) ?? throwExpression('web player element does not exist')
     const playTimeBar = document.getElementById(config.CSS.IDs.playTimeBar) ?? throwExpression('play time bar element does not exist')
 
@@ -143,7 +143,7 @@ class SpotifyPlayback {
     this.webPlayerEls.duration = playTimeBar.getElementsByTagName('p')[1] as Element ?? throwExpression('web player duration time element does not exist')
   }
 
-  appendWebPlayerHtml () {
+  private appendWebPlayerHtml () {
     const html = `
     <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
       <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Title</h4>
@@ -180,7 +180,7 @@ class SpotifyPlayback {
     playNext?.addEventListener('click', () => this.tryPlayNext(this.selPlaying.trackDataNode))
   }
 
-  updateWebPlayer (percentDone: number, position: number) {
+  private updateWebPlayer (percentDone: number, position: number) {
     if (position !== 0) {
       (this.webPlayerEls.progress as HTMLElement).style.width = `${percentDone}%`
       if (this.webPlayerEls.currTime == null) {
@@ -195,7 +195,7 @@ class SpotifyPlayback {
    *
    * @param currNode - the current IPlayable node that was/is playing
    */
-  tryWebPlayerPause (currNode: DoublyLinkedListNode<IPlayable> | null) {
+  private tryWebPlayerPause (currNode: DoublyLinkedListNode<IPlayable> | null) {
     // check to see if this is the first node or if an action is processing
     if (!this.isExecutingAction && currNode !== null) {
       const prevTrack = currNode.data
@@ -207,7 +207,7 @@ class SpotifyPlayback {
    *
    * @param currNode - the current IPlayable node that was/is playing
    */
-  tryPlayPrev (currNode: DoublyLinkedListNode<IPlayable> | null) {
+  private tryPlayPrev (currNode: DoublyLinkedListNode<IPlayable> | null) {
     if (currNode === null) {
       return
     }
@@ -222,7 +222,7 @@ class SpotifyPlayback {
    *
    * @param currNode - the current IPlayable node that was/is playing
    */
-  tryPlayNext (currNode: DoublyLinkedListNode<IPlayable> | null) {
+  private tryPlayNext (currNode: DoublyLinkedListNode<IPlayable> | null) {
     if (currNode === null) {
       return
     }
@@ -233,13 +233,36 @@ class SpotifyPlayback {
     }
   }
 
-  onTrackFinish () {
+  private completelyDeselectTrack () {
     if (this.selPlaying.element === null) {
       throw new Error('Selected playing element was null before deselection on song finish')
     }
+    this.pauseDeselectTrack()
+    this.selPlaying.track_uri = ''
+  }
+
+  private pauseDeselectTrack () {
+    if (this.selPlaying.element === null) {
+      throw new Error('Selected playing element was null before deselection on song finish')
+    }
+
     this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected)
+    this.webPlayerEls.playPause?.classList.remove(config.CSS.CLASSES.selected)
     this.selPlaying.element = null
-    this.selPlaying.track_uri = '';
+  }
+
+  private selectTrack (eventArg: PlayableEventArg) {
+    this.selPlaying.trackDataNode = eventArg.playableNode
+    this.selPlaying.element = eventArg.currPlayable.selEl
+    this.selPlaying.element.classList.add(config.CSS.CLASSES.selected)
+    this.selPlaying.track_uri = eventArg.currPlayable.uri
+
+    this.webPlayerEls.playPause?.classList.add(config.CSS.CLASSES.selected)
+    this.webPlayerEls!.title!.textContent = eventArg.currPlayable.title
+  }
+
+  private onTrackFinish () {
+    this.completelyDeselectTrack();
 
     (this.webPlayerEls.progress as HTMLElement).style.width = '100%'
     clearInterval(this.getStateInterval as NodeJS.Timeout)
@@ -249,7 +272,7 @@ class SpotifyPlayback {
   /** Sets an interval that obtains the state of the player every second.
    * Should only be called when a song is playing.
    */
-  setGetStateInterval () {
+  private setGetStateInterval () {
     let durationMinSec = ''
     if (this.getStateInterval) {
       clearInterval(this.getStateInterval)
@@ -289,7 +312,7 @@ class SpotifyPlayback {
    *
    * @param {PlayableEventArg} eventArg - a class that contains the current, next and previous tracks to play
    */
-  async setSelPlayingEl (eventArg: PlayableEventArg) {
+  public async setSelPlayingEl (eventArg: PlayableEventArg) {
     // if the player isn't ready we cannot continue.
     if (!this.playerIsReady) {
       console.log('player is not ready')
@@ -300,52 +323,33 @@ class SpotifyPlayback {
     }
     this.isExecutingAction = true
     if (this.selPlaying.element != null) {
-      // if there already is a selected element unselect it
-      this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected)
-      this.webPlayerEls.playPause?.classList.remove(config.CSS.CLASSES.selected)
-
       clearInterval(this.getStateInterval as NodeJS.Timeout)
 
-      await this.pause()
-      // if the selected el is the same as the prev then null it and return so we do not end up reselecting it right after deselecting.
+      // if its the same element then pause
       if (this.selPlaying.element === eventArg.currPlayable.selEl) {
-        this.selPlaying.element = null
+        this.pauseDeselectTrack()
+        await this.pause()
         this.isExecutingAction = false
         return
+      } else {
+        // otherwise completely deselect the current track before selecting another one to play
+        this.completelyDeselectTrack()
       }
     }
 
     // prev track uri is the same then resume the song instead of replaying it.
     if (this.selPlaying.track_uri === eventArg.currPlayable.uri) {
-      await this.startTrack(
-        eventArg.currPlayable.selEl,
-        eventArg.currPlayable.uri,
-        async () => this.resume(),
-        eventArg.currPlayable.title,
-        eventArg.playableNode
-      )
+      await this.startTrack(async () => this.resume(), eventArg)
       this.isExecutingAction = false
       return
     }
 
-    await this.startTrack(
-      eventArg.currPlayable.selEl,
-      eventArg.currPlayable.uri,
-      async () => this.play(eventArg.currPlayable.uri),
-      eventArg.currPlayable.title,
-      eventArg.playableNode
-    )
+    await this.startTrack(async () => this.play(eventArg.currPlayable.uri), eventArg)
     this.isExecutingAction = false
   }
 
-  async startTrack (selEl: Element, track_uri: string, playingAsyncFunc: Function, title: string, trackNode: DoublyLinkedListNode<IPlayable>) {
-    this.selPlaying.trackDataNode = trackNode
-    this.selPlaying.element = selEl
-    this.selPlaying.element.classList.add(config.CSS.CLASSES.selected)
-    this.webPlayerEls.playPause?.classList.add(config.CSS.CLASSES.selected)
-    this.selPlaying.track_uri = track_uri
-
-    this.webPlayerEls!.title!.textContent = title
+  private async startTrack (playingAsyncFunc: Function, eventArg: PlayableEventArg) {
+    this.selectTrack(eventArg)
 
     await playingAsyncFunc()
 
@@ -358,17 +362,17 @@ class SpotifyPlayback {
    * @param {string} track_uri - the track uri to play
    * @returns whether or not the track has been played succesfully.
    */
-  async play (track_uri: string) {
+  private async play (track_uri: string) {
     await promiseHandler(
       axios.put(config.URLs.putPlayTrack(this.device_id, track_uri))
     )
   }
 
-  async resume () {
+  private async resume () {
     await this.player.resume()
   }
 
-  async pause () {
+  private async pause () {
     await this.player.pause()
   }
 }

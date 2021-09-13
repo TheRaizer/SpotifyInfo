@@ -152,27 +152,27 @@ class Track extends Card implements IPlayable {
     return htmlToEl(html) as Node
   }
 
+  private playPauseClick (trackNode: DoublyLinkedListNode<IPlayable>) {
+    const track = this as IPlayable
+    // select this track to play or pause by publishing the track play event arg
+    eventAggregator.publish(new PlayableEventArg(track, trackNode))
+  }
+
   /** Get a track html to be placed as a list element.
    *
    * @param {Boolean} displayDate - whether to display the date.
    * @returns {ChildNode} - The converted html string to an element
    */
   public getPlaylistTrackHtml (trackList: DoublyLinkedList<IPlayable>, displayDate: boolean = true): Node {
-    // cast tracks as an IPlayable in order to reduce errors due to exessive accessability if logging it will log all Track attributes. But in code we can only access IPlayable attributes.
-    const track = this as IPlayable
     const trackNode = trackList.find((x) => x.uri === this.uri, true) as DoublyLinkedListNode<IPlayable>
-
-    function playPauseClick () {
-      // select this track to play or pause by publishing the track play event arg
-      eventAggregator.publish(new PlayableEventArg(track, trackNode))
-    }
 
     const html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
               <button class="${config.CSS.CLASSES.playPause} ${
                 isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
               }"><img src="" alt="play/pause" 
-              class="${config.CSS.CLASSES.noSelect}"/></button>
+              class="${config.CSS.CLASSES.noSelect}"/>
+              </button>
               <img class="${config.CSS.CLASSES.noSelect}" src="${
       this.imageUrl
     }"></img>
@@ -204,7 +204,7 @@ class Track extends Card implements IPlayable {
       throw new Error('Play pause button on track was not found')
     }
     this.selEl = playPauseBtn as Element
-    playPauseBtn?.addEventListener('click', () => playPauseClick())
+    playPauseBtn?.addEventListener('click', () => this.playPauseClick(trackNode))
 
     checkIfIsPlayingElAfterRerender(this.uri, playPauseBtn as Element, trackNode)
 
@@ -213,12 +213,22 @@ class Track extends Card implements IPlayable {
 
   /** Get a track html to be placed as a list element on a ranked list.
    *
+   * @param {DoublyLinkedList<Track>} trackList - list of tracks that contains this track.
+   * @param {number} rank - the rank of this card
    * @returns {ChildNode} - The converted html string to an element
    */
-  public getRankedTrackHtml (rank: number): Node {
+  public getRankedTrackHtml (trackList: DoublyLinkedList<Track>, rank: number): Node {
+    const trackNode = trackList.find((x) => x.uri === this.uri, true) as DoublyLinkedListNode<IPlayable>
     const html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
+            <div class="${config.CSS.CLASSES.rankedTrackInteract}">
+              <button class="${config.CSS.CLASSES.playPause} ${
+                  isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
+                }"><img src="" alt="play/pause" 
+                class="${config.CSS.CLASSES.noSelect}"/>
+              </button>
               <p>${rank}.</p>
+            </div>
               <img class="${config.CSS.CLASSES.noSelect}" src="${
       this.imageUrl
     }"></img>
@@ -237,7 +247,25 @@ class Track extends Card implements IPlayable {
             </li>
             `
 
-    return htmlToEl(html) as Node
+    const el = htmlToEl(html)
+
+    // get play pause button
+    const playPauseBtn = el?.childNodes[1].childNodes[1]
+
+    if (playPauseBtn === null) {
+      throw new Error('Play pause button on track was not found')
+    }
+    this.selEl = playPauseBtn as Element
+    playPauseBtn?.addEventListener('click', () => {
+      // select the rank area as to keep the play/pause icon shown
+      const rankedInteract = (el as HTMLElement).getElementsByClassName(config.CSS.CLASSES.rankedTrackInteract)[0]
+      // rankedInteract.classList.toggle(config.CSS.CLASSES.selected)
+      this.playPauseClick(trackNode)
+    })
+
+    checkIfIsPlayingElAfterRerender(this.uri, playPauseBtn as Element, trackNode)
+
+    return el as Node
   }
 
   /** Load the features of this track from the spotify web api. */
