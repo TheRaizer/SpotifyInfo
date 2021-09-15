@@ -77,6 +77,8 @@ export interface IPlayable {
   selEl: Element
   uri: string
   title: string
+  onPlaying: Function
+  onStopped: Function
 }
 
 export interface IPromiseHandlerReturn<T> {

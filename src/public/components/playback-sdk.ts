@@ -246,6 +246,7 @@ class SpotifyPlayback {
       throw new Error('Selected playing element was null before deselection on song finish')
     }
 
+    this.selPlaying.trackDataNode?.data.onStopped()
     this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected)
     this.webPlayerEls.playPause?.classList.remove(config.CSS.CLASSES.selected)
     this.selPlaying.element = null
@@ -259,6 +260,8 @@ class SpotifyPlayback {
 
     this.webPlayerEls.playPause?.classList.add(config.CSS.CLASSES.selected)
     this.webPlayerEls!.title!.textContent = eventArg.currPlayable.title
+
+    this.selPlaying.trackDataNode?.data.onPlaying()
   }
 
   private onTrackFinish () {
@@ -323,6 +326,8 @@ class SpotifyPlayback {
     }
     this.isExecutingAction = true
     if (this.selPlaying.element != null) {
+      // stop the previous track that was playing
+      this.selPlaying.trackDataNode?.data.onStopped()
       clearInterval(this.getStateInterval as NodeJS.Timeout)
 
       // if its the same element then pause

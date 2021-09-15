@@ -24,14 +24,17 @@ class Track extends Card implements IPlayable {
   private _title: string;
   private _duration: string;
   private _uri: string;
-  popularity: string;
   private _dateAddedToPlaylist: Date;
+
+  popularity: string;
   releaseDate: Date;
   album: Album;
   features: FeaturesData | undefined;
   imageUrl: string;
   selEl: Element;
   artistsDatas: Array<IArtistTrackData>
+  onPlaying: Function
+  onStopped: Function
 
   public get id (): string {
     return this._id
@@ -84,6 +87,9 @@ class Track extends Card implements IPlayable {
 
     this.imageUrl = getValidImage(images)
     this.selEl = htmlToEl('<></>') as Element
+
+    this.onPlaying = () => {}
+    this.onStopped = () => {}
   }
 
   private filterDataFromArtists (artists: Array<unknown>) {
@@ -256,10 +262,13 @@ class Track extends Card implements IPlayable {
       throw new Error('Play pause button on track was not found')
     }
     this.selEl = playPauseBtn as Element
+
+    // select the rank area as to keep the play/pause icon shown
+    const rankedInteract = (el as HTMLElement).getElementsByClassName(config.CSS.CLASSES.rankedTrackInteract)[0]
+    this.onPlaying = () => rankedInteract.classList.add(config.CSS.CLASSES.selected)
+    this.onStopped = () => rankedInteract.classList.remove(config.CSS.CLASSES.selected)
+
     playPauseBtn?.addEventListener('click', () => {
-      // select the rank area as to keep the play/pause icon shown
-      const rankedInteract = (el as HTMLElement).getElementsByClassName(config.CSS.CLASSES.rankedTrackInteract)[0]
-      // rankedInteract.classList.toggle(config.CSS.CLASSES.selected)
       this.playPauseClick(trackNode)
     })
 
