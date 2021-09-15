@@ -14,6 +14,7 @@ import { IPlayable } from '../types'
 
 class SpotifyPlayback {
   private player: any;
+  // controls timing of async actions when working with webplayer sdk
   private isExecutingAction: boolean;
   private device_id: string;
   selPlaying: {
