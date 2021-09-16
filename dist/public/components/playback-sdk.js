@@ -162,6 +162,12 @@ class SpotifyPlayback {
                 (0, config_1.millisToMinutesAndSeconds)(position);
         }
     }
+    resetDuration() {
+        if (!this.isExecutingAction) {
+            this.isExecutingAction = true;
+            this.player.seek(0).then(() => { this.isExecutingAction = false; });
+        }
+    }
     /** Tries to pause the current playing IPlayable node from the web player.
      *
      * @param currNode - the current IPlayable node that was/is playing
@@ -181,10 +187,20 @@ class SpotifyPlayback {
         if (currNode === null) {
             return;
         }
-        // check to see if this is the first node or if an action is processing
-        if (!this.isExecutingAction && currNode.previous !== null) {
-            const prevTrack = currNode.previous.data;
-            this.setSelPlayingEl(new track_play_args_1.default(prevTrack, currNode.previous));
+        // if an action is processing we cannot do anything
+        if (!this.isExecutingAction) {
+            this.player.getCurrentState().then((state) => {
+                if (state.position > 1000) {
+                    this.resetDuration();
+                }
+                else {
+                    if (currNode.previous === null) {
+                        return;
+                    }
+                    const prevTrack = currNode.previous.data;
+                    this.setSelPlayingEl(new track_play_args_1.default(prevTrack, currNode.previous));
+                }
+            });
         }
     }
     /** Tries to play the next IPlayable given the current playing IPlayable node.
@@ -201,13 +217,35 @@ class SpotifyPlayback {
             this.setSelPlayingEl(new track_play_args_1.default(nextTrack, currNode.next));
         }
     }
-    onTrackFinish() {
+    completelyDeselectTrack() {
         if (this.selPlaying.element === null) {
             throw new Error('Selected playing element was null before deselection on song finish');
         }
-        this.selPlaying.element.classList.remove(config_1.config.CSS.CLASSES.selected);
-        this.selPlaying.element = null;
+        this.pauseDeselectTrack();
         this.selPlaying.track_uri = '';
+    }
+    pauseDeselectTrack() {
+        var _a, _b;
+        if (this.selPlaying.element === null) {
+            throw new Error('Selected playing element was null before deselection on song finish');
+        }
+        (_a = this.selPlaying.trackDataNode) === null || _a === void 0 ? void 0 : _a.data.onStopped();
+        this.selPlaying.element.classList.remove(config_1.config.CSS.CLASSES.selected);
+        (_b = this.webPlayerEls.playPause) === null || _b === void 0 ? void 0 : _b.classList.remove(config_1.config.CSS.CLASSES.selected);
+        this.selPlaying.element = null;
+    }
+    selectTrack(eventArg) {
+        var _a, _b;
+        this.selPlaying.trackDataNode = eventArg.playableNode;
+        this.selPlaying.element = eventArg.currPlayable.selEl;
+        this.selPlaying.element.classList.add(config_1.config.CSS.CLASSES.selected);
+        this.selPlaying.track_uri = eventArg.currPlayable.uri;
+        (_a = this.webPlayerEls.playPause) === null || _a === void 0 ? void 0 : _a.classList.add(config_1.config.CSS.CLASSES.selected);
+        this.webPlayerEls.title.textContent = eventArg.currPlayable.title;
+        (_b = this.selPlaying.trackDataNode) === null || _b === void 0 ? void 0 : _b.data.onPlaying();
+    }
+    onTrackFinish() {
+        this.completelyDeselectTrack();
         this.webPlayerEls.progress.style.width = '100%';
         clearInterval(this.getStateInterval);
         this.tryPlayNext(this.selPlaying.trackDataNode);
@@ -263,37 +301,34 @@ class SpotifyPlayback {
             }
             this.isExecutingAction = true;
             if (this.selPlaying.element != null) {
-                // if there already is a selected element unselect it
-                this.selPlaying.element.classList.remove(config_1.config.CSS.CLASSES.selected);
-                (_a = this.webPlayerEls.playPause) === null || _a === void 0 ? void 0 : _a.classList.remove(config_1.config.CSS.CLASSES.selected);
+                // stop the previous track that was playing
+                (_a = this.selPlaying.trackDataNode) === null || _a === void 0 ? void 0 : _a.data.onStopped();
                 clearInterval(this.getStateInterval);
-                yield this.pause();
-                // if the selected el is the same as the prev then null it and return so we do not end up reselecting it right after deselecting.
+                // if its the same element then pause
                 if (this.selPlaying.element === eventArg.currPlayable.selEl) {
-                    this.selPlaying.element = null;
+                    this.pauseDeselectTrack();
+                    yield this.pause();
                     this.isExecutingAction = false;
                     return;
+                }
+                else {
+                    // otherwise completely deselect the current track before selecting another one to play
+                    this.completelyDeselectTrack();
                 }
             }
             // prev track uri is the same then resume the song instead of replaying it.
             if (this.selPlaying.track_uri === eventArg.currPlayable.uri) {
-                yield this.startTrack(eventArg.currPlayable.selEl, eventArg.currPlayable.uri, () => __awaiter(this, void 0, void 0, function* () { return this.resume(); }), eventArg.currPlayable.title, eventArg.playableNode);
+                yield this.startTrack(() => __awaiter(this, void 0, void 0, function* () { return this.resume(); }), eventArg);
                 this.isExecutingAction = false;
                 return;
             }
-            yield this.startTrack(eventArg.currPlayable.selEl, eventArg.currPlayable.uri, () => __awaiter(this, void 0, void 0, function* () { return this.play(eventArg.currPlayable.uri); }), eventArg.currPlayable.title, eventArg.playableNode);
+            yield this.startTrack(() => __awaiter(this, void 0, void 0, function* () { return this.play(eventArg.currPlayable.uri); }), eventArg);
             this.isExecutingAction = false;
         });
     }
-    startTrack(selEl, track_uri, playingAsyncFunc, title, trackNode) {
-        var _a;
+    startTrack(playingAsyncFunc, eventArg) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.selPlaying.trackDataNode = trackNode;
-            this.selPlaying.element = selEl;
-            this.selPlaying.element.classList.add(config_1.config.CSS.CLASSES.selected);
-            (_a = this.webPlayerEls.playPause) === null || _a === void 0 ? void 0 : _a.classList.add(config_1.config.CSS.CLASSES.selected);
-            this.selPlaying.track_uri = track_uri;
-            this.webPlayerEls.title.textContent = title;
+            this.selectTrack(eventArg);
             yield playingAsyncFunc();
             // set playing state once song starts playing
             this.setGetStateInterval();

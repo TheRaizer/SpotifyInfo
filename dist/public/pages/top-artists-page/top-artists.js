@@ -43,7 +43,7 @@ const artistActions = (function () {
                 (0, config_1.throwExpression)('artist does not have top tracks loaded on request to show them');
             }
             for (const track of artistObj.topTracks.values()) {
-                trackList.appendChild(track.getRankedTrackHtml(rank));
+                trackList.appendChild(track.getRankedTrackHtml(artistObj.topTracks, rank));
                 rank++;
             }
         });

@@ -192,6 +192,13 @@ class SpotifyPlayback {
     }
   }
 
+  private resetDuration () {
+    if (!this.isExecutingAction) {
+      this.isExecutingAction = true
+      this.player.seek(0).then(() => { this.isExecutingAction = false })
+    }
+  }
+
   /** Tries to pause the current playing IPlayable node from the web player.
    *
    * @param currNode - the current IPlayable node that was/is playing
@@ -212,10 +219,19 @@ class SpotifyPlayback {
     if (currNode === null) {
       return
     }
-    // check to see if this is the first node or if an action is processing
-    if (!this.isExecutingAction && currNode.previous !== null) {
-      const prevTrack = currNode.previous.data
-      this.setSelPlayingEl(new PlayableEventArg(prevTrack, currNode.previous))
+    // if an action is processing we cannot do anything
+    if (!this.isExecutingAction) {
+      this.player.getCurrentState().then((state: { position: any }) => {
+        if (state.position > 1000) {
+          this.resetDuration()
+        } else {
+          if (currNode.previous === null) {
+            return
+          }
+          const prevTrack = currNode.previous.data
+          this.setSelPlayingEl(new PlayableEventArg(prevTrack, currNode.previous))
+        }
+      })
     }
   }
 

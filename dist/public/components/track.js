@@ -38,6 +38,8 @@ class Track extends card_1.default {
         this.features = undefined;
         this.imageUrl = (0, config_1.getValidImage)(images);
         this.selEl = (0, config_1.htmlToEl)('<></>');
+        this.onPlaying = () => { };
+        this.onStopped = () => { };
     }
     get id() {
         return this._id;
@@ -104,23 +106,23 @@ class Track extends card_1.default {
           `;
         return (0, config_1.htmlToEl)(html);
     }
+    playPauseClick(trackNode) {
+        const track = this;
+        // select this track to play or pause by publishing the track play event arg
+        eventAggregator.publish(new track_play_args_1.default(track, trackNode));
+    }
     /** Get a track html to be placed as a list element.
      *
      * @param {Boolean} displayDate - whether to display the date.
      * @returns {ChildNode} - The converted html string to an element
      */
     getPlaylistTrackHtml(trackList, displayDate = true) {
-        // cast tracks as an IPlayable in order to reduce errors due to exessive accessability if logging it will log all Track attributes. But in code we can only access IPlayable attributes.
-        const track = this;
         const trackNode = trackList.find((x) => x.uri === this.uri, true);
-        function playPauseClick() {
-            // select this track to play or pause by publishing the track play event arg
-            eventAggregator.publish(new track_play_args_1.default(track, trackNode));
-        }
         const html = `
             <li class="${config_1.config.CSS.CLASSES.playlistTrack}">
               <button class="${config_1.config.CSS.CLASSES.playPause} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}"><img src="" alt="play/pause" 
-              class="${config_1.config.CSS.CLASSES.noSelect}"/></button>
+              class="${config_1.config.CSS.CLASSES.noSelect}"/>
+              </button>
               <img class="${config_1.config.CSS.CLASSES.noSelect}" src="${this.imageUrl}"></img>
               <div class="${config_1.config.CSS.CLASSES.links}">
                 <a href="${this.externalUrls.spotify}" target="_blank">
@@ -144,18 +146,26 @@ class Track extends card_1.default {
             throw new Error('Play pause button on track was not found');
         }
         this.selEl = playPauseBtn;
-        playPauseBtn === null || playPauseBtn === void 0 ? void 0 : playPauseBtn.addEventListener('click', () => playPauseClick());
+        playPauseBtn === null || playPauseBtn === void 0 ? void 0 : playPauseBtn.addEventListener('click', () => this.playPauseClick(trackNode));
         (0, playback_sdk_1.checkIfIsPlayingElAfterRerender)(this.uri, playPauseBtn, trackNode);
         return el;
     }
     /** Get a track html to be placed as a list element on a ranked list.
      *
+     * @param {DoublyLinkedList<Track>} trackList - list of tracks that contains this track.
+     * @param {number} rank - the rank of this card
      * @returns {ChildNode} - The converted html string to an element
      */
-    getRankedTrackHtml(rank) {
+    getRankedTrackHtml(trackList, rank) {
+        const trackNode = trackList.find((x) => x.uri === this.uri, true);
         const html = `
             <li class="${config_1.config.CSS.CLASSES.playlistTrack}">
+            <div class="${config_1.config.CSS.CLASSES.rankedTrackInteract}">
+              <button class="${config_1.config.CSS.CLASSES.playPause} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}"><img src="" alt="play/pause" 
+                class="${config_1.config.CSS.CLASSES.noSelect}"/>
+              </button>
               <p>${rank}.</p>
+            </div>
               <img class="${config_1.config.CSS.CLASSES.noSelect}" src="${this.imageUrl}"></img>
               <div class="${config_1.config.CSS.CLASSES.links}">
                 <a href="${this.externalUrls.spotify}" target="_blank">
@@ -169,7 +179,22 @@ class Track extends card_1.default {
               <h5>${this._duration}</h5>
             </li>
             `;
-        return (0, config_1.htmlToEl)(html);
+        const el = (0, config_1.htmlToEl)(html);
+        // get play pause button
+        const playPauseBtn = el === null || el === void 0 ? void 0 : el.childNodes[1].childNodes[1];
+        if (playPauseBtn === null) {
+            throw new Error('Play pause button on track was not found');
+        }
+        this.selEl = playPauseBtn;
+        // select the rank area as to keep the play/pause icon shown
+        const rankedInteract = el.getElementsByClassName(config_1.config.CSS.CLASSES.rankedTrackInteract)[0];
+        this.onPlaying = () => rankedInteract.classList.add(config_1.config.CSS.CLASSES.selected);
+        this.onStopped = () => rankedInteract.classList.remove(config_1.config.CSS.CLASSES.selected);
+        playPauseBtn === null || playPauseBtn === void 0 ? void 0 : playPauseBtn.addEventListener('click', () => {
+            this.playPauseClick(trackNode);
+        });
+        (0, playback_sdk_1.checkIfIsPlayingElAfterRerender)(this.uri, playPauseBtn, trackNode);
+        return el;
     }
     /** Load the features of this track from the spotify web api. */
     loadFeatures() {

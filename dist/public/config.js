@@ -125,7 +125,8 @@ exports.config = {
             links: 'links',
             progress: 'progress',
             progressBar: 'progress-bar',
-            playPause: 'play-pause'
+            playPause: 'play-pause',
+            rankedTrackInteract: 'ranked-card-interaction-area'
         },
         ATTRIBUTES: {
             dataSelection: 'data-selection'
