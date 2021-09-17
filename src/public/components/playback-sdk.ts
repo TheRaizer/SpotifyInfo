@@ -324,7 +324,7 @@ class SpotifyPlayback {
           this.updateWebPlayer(percentDone, position)
         }
       })
-    }, 1000)
+    }, 500)
   }
 
   /** Select a certain play/pause element and play the given track uri
