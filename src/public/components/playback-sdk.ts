@@ -1,16 +1,15 @@
 import {
   config,
   promiseHandler,
-  htmlToEl,
   addResizeDrag,
-  millisToMinutesAndSeconds,
-  throwExpression
+  millisToMinutesAndSeconds
 } from '../config'
 import { DoublyLinkedListNode } from './doubly-linked-list'
 import PlayableEventArg from './pubsub/event-args/track-play-args'
 import axios, { AxiosResponse } from 'axios'
 import EventAggregator from './pubsub/aggregator'
 import { IPlayable } from '../types'
+import SpotifyPlaybackElement from './spotify-playback-element'
 
 class SpotifyPlayback {
   private player: any;
@@ -25,13 +24,7 @@ class SpotifyPlayback {
 
   private getStateInterval: NodeJS.Timeout | null;
 
-  private webPlayerEls: {
-    title: Element | null
-    progress: Element | null
-    currTime: Element | null
-    duration: Element | null
-    playPause: Element | null
-  };
+  private webPlayerEl: SpotifyPlaybackElement;
 
   private playerIsReady: boolean;
 
@@ -40,14 +33,8 @@ class SpotifyPlayback {
     this.player = null
     this.device_id = ''
     this.getStateInterval = null
+    this.webPlayerEl = new SpotifyPlaybackElement()
 
-    this.webPlayerEls = {
-      title: null,
-      progress: null,
-      currTime: null,
-      duration: null,
-      playPause: null
-    }
     this.selPlaying = {
       element: null,
       track_uri: '',
@@ -120,7 +107,11 @@ class SpotifyPlayback {
     this.player.addListener('ready', ({ device_id }: { device_id: string }) => {
       console.log('Ready with Device ID', device_id)
       this.device_id = device_id
-      this.appendWebPlayerHtml()
+      this.webPlayerEl.appendWebPlayerHtml(
+        () => this.tryPlayPrev(this.selPlaying.trackDataNode),
+        () => this.tryWebPlayerPause(this.selPlaying.trackDataNode),
+        () => this.tryPlayNext(this.selPlaying.trackDataNode)
+      )
       this.playerIsReady = true
     })
 
@@ -128,68 +119,6 @@ class SpotifyPlayback {
     this.player.addListener('not_ready', ({ device_id }: { device_id: string }) => {
       console.log('Device ID has gone offline', device_id)
     })
-  }
-
-  private getWebPlayerEls () {
-    const webPlayerEl = document.getElementById(config.CSS.IDs.webPlayer) ?? throwExpression('web player element does not exist')
-    const playTimeBar = document.getElementById(config.CSS.IDs.playTimeBar) ?? throwExpression('play time bar element does not exist')
-
-    this.webPlayerEls.progress = webPlayerEl.getElementsByClassName(
-      config.CSS.CLASSES.progress
-    )[0] as Element ?? throwExpression('web player progress bar does not exist')
-    this.webPlayerEls.title = webPlayerEl.getElementsByTagName('h4')[0] as Element ?? throwExpression('web player title element does not exist')
-
-    // get playtime bar elements
-    this.webPlayerEls.currTime = playTimeBar.getElementsByTagName('p')[0] as Element ?? throwExpression('web player current time element does not exist')
-    this.webPlayerEls.duration = playTimeBar.getElementsByTagName('p')[1] as Element ?? throwExpression('web player duration time element does not exist')
-  }
-
-  private appendWebPlayerHtml () {
-    const html = `
-    <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
-      <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Title</h4>
-      <div>
-        <button id="${config.CSS.IDs.playPrev}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
-        <button id="${config.CSS.IDs.webPlayerPlayPause}"><img src="${config.PATHS.playBlackIcon}" alt="play/pause"/></button>
-        <button id="${config.CSS.IDs.playNext}"><img src="${config.PATHS.playNext}" alt="next"/></button>
-      </div>
-      <div id="${config.CSS.IDs.playTimeBar}">
-        <p>0:00</p>
-        <div class="${config.CSS.CLASSES.progressBar}">
-          <div class="${config.CSS.CLASSES.progress}"></div>
-        </div>
-        <p>0:00</p>
-      </div>
-    </article>
-    `
-
-    const webPlayerEl = htmlToEl(html)
-    document.body.append(webPlayerEl as Node)
-    this.assignEventListeners()
-    this.getWebPlayerEls()
-  }
-
-  private assignEventListeners () {
-    const playPrev = document.getElementById(config.CSS.IDs.playPrev)
-    const playPause = document.getElementById(config.CSS.IDs.webPlayerPlayPause)
-    const playNext = document.getElementById(config.CSS.IDs.playNext)
-
-    this.webPlayerEls.playPause = playPause
-
-    playPrev?.addEventListener('click', () => this.tryPlayPrev(this.selPlaying.trackDataNode))
-    playPause?.addEventListener('click', () => this.tryWebPlayerPause(this.selPlaying.trackDataNode))
-    playNext?.addEventListener('click', () => this.tryPlayNext(this.selPlaying.trackDataNode))
-  }
-
-  private updateWebPlayer (percentDone: number, position: number) {
-    if (position !== 0) {
-      (this.webPlayerEls.progress as HTMLElement).style.width = `${percentDone}%`
-      if (this.webPlayerEls.currTime == null) {
-        throw new Error('Current time element is null')
-      }
-      this.webPlayerEls.currTime.textContent =
-        millisToMinutesAndSeconds(position)
-    }
   }
 
   private resetDuration () {
@@ -265,7 +194,7 @@ class SpotifyPlayback {
 
     this.selPlaying.trackDataNode?.data.onStopped()
     this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected)
-    this.webPlayerEls.playPause?.classList.remove(config.CSS.CLASSES.selected)
+    this.webPlayerEl.playPause?.classList.remove(config.CSS.CLASSES.selected)
     this.selPlaying.element = null
   }
 
@@ -275,8 +204,8 @@ class SpotifyPlayback {
     this.selPlaying.element.classList.add(config.CSS.CLASSES.selected)
     this.selPlaying.track_uri = eventArg.currPlayable.uri
 
-    this.webPlayerEls.playPause?.classList.add(config.CSS.CLASSES.selected)
-    this.webPlayerEls!.title!.textContent = eventArg.currPlayable.title
+    this.webPlayerEl.playPause?.classList.add(config.CSS.CLASSES.selected)
+    this.webPlayerEl!.title!.textContent = eventArg.currPlayable.title
 
     this.selPlaying.trackDataNode?.data.onPlaying()
   }
@@ -284,7 +213,7 @@ class SpotifyPlayback {
   private onTrackFinish () {
     this.completelyDeselectTrack();
 
-    (this.webPlayerEls.progress as HTMLElement).style.width = '100%'
+    (this.webPlayerEl.progress as HTMLElement).style.width = '100%'
     clearInterval(this.getStateInterval as NodeJS.Timeout)
     this.tryPlayNext(this.selPlaying.trackDataNode)
   }
@@ -311,7 +240,7 @@ class SpotifyPlayback {
         // if there isnt a duration set for this song set it.
         if (durationMinSec === '') {
           durationMinSec = millisToMinutesAndSeconds(duration)
-          this.webPlayerEls!.duration!.textContent = durationMinSec
+          this.webPlayerEl!.duration!.textContent = durationMinSec
         }
 
         const percentDone = (position / duration) * 100
@@ -321,7 +250,7 @@ class SpotifyPlayback {
           this.onTrackFinish()
         } else {
           // if the position isnt 0 update the web player elements
-          this.updateWebPlayer(percentDone, position)
+          this.webPlayerEl.updateElement(percentDone, position)
         }
       })
     }, 500)
