@@ -221,9 +221,9 @@ class SpotifyPlayback {
   }
 
   private onTrackFinish () {
-    this.completelyDeselectTrack();
+    this.completelyDeselectTrack()
 
-    (this.webPlayerEl.songProgress as HTMLInputElement).value = '100'
+    this.webPlayerEl.songProgress!.sliderProgress!.style.width = '100%'
     clearInterval(this.getStateInterval as NodeJS.Timeout)
     this.tryPlayNext(this.selPlaying.trackDataNode)
   }
@@ -254,12 +254,14 @@ class SpotifyPlayback {
           this.webPlayerEl!.duration!.textContent = durationMinSec
         }
 
+        const percentDone = (position / duration) * 100
+
         // the position gets set to 0 when the song is finished
         if (position === 0) {
           this.onTrackFinish()
         } else {
           // if the position isnt 0 update the web player elements
-          this.webPlayerEl.updateElement(position, duration)
+          this.webPlayerEl.updateElement(percentDone, position)
         }
       })
     }, 500)

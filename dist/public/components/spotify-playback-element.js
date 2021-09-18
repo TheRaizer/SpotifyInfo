@@ -3,13 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("../config");
 class Slider {
     constructor() {
-        this.innerSliderEl = null;
-        this._sliderEl = null;
         this.drag = false;
+        this._sliderEl = null;
+        this.sliderProgress = null;
     }
     set sliderEl(el) {
         this._sliderEl = el;
-        this.innerSliderEl = this._sliderEl.getElementsByClassName(config_1.config.CSS.CLASSES.progress)[0];
+        this.sliderProgress = el === null || el === void 0 ? void 0 : el.getElementsByClassName(config_1.config.CSS.CLASSES.progress)[0];
     }
     get sliderEl() {
         return this._sliderEl;
@@ -41,14 +41,14 @@ class SpotifyPlaybackElement {
           <button id="${config_1.config.CSS.IDs.webPlayerPlayPause}"><img src="${config_1.config.PATHS.playBlackIcon}" alt="play/pause"/></button>
           <button id="${config_1.config.CSS.IDs.playNext}"><img src="${config_1.config.PATHS.playNext}" alt="next"/></button>
         </article>
-        <div id="${config_1.config.CSS.IDs.webPlayerVolume}">
-          <div class="${config_1.config.CSS.CLASSES.progress}"></div>
+        <div class="${config_1.config.CSS.IDs.webPlayerVolume}>
+          <div id="${config_1.config.CSS.CLASSES.progress}"></div>
         </div>
       </div>
       <div id="${config_1.config.CSS.IDs.playTimeBar}">
         <p>0:00</p>
-        <div id="${config_1.config.CSS.IDs.webPlayerProgress}">
-          <div class="${config_1.config.CSS.CLASSES.progress}"></div>
+        <div class="${config_1.config.CSS.IDs.webPlayerProgress}>
+          <div id="${config_1.config.CSS.CLASSES.progress}"></div>
         </div>
         <p>0:00</p>
       </div>
@@ -67,7 +67,8 @@ class SpotifyPlaybackElement {
      */
     updateElement(percentDone, position) {
         if (position !== 0) {
-            this.songProgress.innerSliderEl.style.width = `${percentDone}%`;
+            // round each interval to the nearest second so that the movement of progress bar is by second.
+            this.songProgress.sliderProgress.style.width = `${percentDone}%`;
             if (this.currTime == null) {
                 throw new Error('Current time element is null');
             }
@@ -75,32 +76,6 @@ class SpotifyPlaybackElement {
                 (0, config_1.millisToMinutesAndSeconds)(position);
         }
     }
-    updateBar(bar, y, vol, callback, fromBottom = true) {
-        let percentage;
-        // if only volume have specificed
-        // then direct update volume
-        if (vol) {
-            percentage = vol * 100;
-        }
-        else {
-            if (fromBottom) {
-                const position = y - bar.offsetTop;
-                percentage = 100 * position / bar.clientHeight;
-            }
-            else {
-                const position = y - bar.offsetLeft;
-                percentage = 100 * position / bar.clientWidth;
-            }
-        }
-        if (percentage > 100) {
-            percentage = 100;
-        }
-        if (percentage < 0) {
-            percentage = 0;
-        }
-        callback(percentage);
-    }
-    ;
     /**
      * Retrieve the web player elements once the web player element has been appeneded to the DOM.
      */
@@ -114,7 +89,6 @@ class SpotifyPlaybackElement {
         this.currTime = (_e = playTimeBar.getElementsByTagName('p')[0]) !== null && _e !== void 0 ? _e : (0, config_1.throwExpression)('web player current time element does not exist');
         this.duration = (_f = playTimeBar.getElementsByTagName('p')[1]) !== null && _f !== void 0 ? _f : (0, config_1.throwExpression)('web player duration time element does not exist');
         this.playPause = document.getElementById(config_1.config.CSS.IDs.webPlayerPlayPause);
-        this.volume.sliderEl = document.getElementById(config_1.config.CSS.IDs.webPlayerVolume);
     }
     /**
      * Assigns the events to run on each button press that exists on the web player element.
@@ -124,25 +98,12 @@ class SpotifyPlaybackElement {
      * @param playNextFunc function to run when play next button is pressed
      */
     assignEventListeners(playPrevFunc, pauseFunc, playNextFunc, volumeChangeFunc) {
-        var _a, _b, _c;
+        var _a;
         const playPrev = document.getElementById(config_1.config.CSS.IDs.playPrev);
         const playNext = document.getElementById(config_1.config.CSS.IDs.playNext);
         playPrev === null || playPrev === void 0 ? void 0 : playPrev.addEventListener('click', playPrevFunc);
         playNext === null || playNext === void 0 ? void 0 : playNext.addEventListener('click', playNextFunc);
         (_a = this.playPause) === null || _a === void 0 ? void 0 : _a.addEventListener('click', pauseFunc);
-        (_b = this.volume.innerSliderEl) === null || _b === void 0 ? void 0 : _b.addEventListener('mousedown', (evt) => {
-            this.volume.drag = true;
-            this.updateBar(this.volume.sliderEl, evt.clientX, null, volumeChangeFunc);
-        });
-        (_c = this.volume.innerSliderEl) === null || _c === void 0 ? void 0 : _c.addEventListener('mousemove', (evt) => {
-            if (this.volume.drag) {
-                this.updateBar(this.volume.sliderEl, evt.clientX, null, volumeChangeFunc);
-            }
-        });
-        document.addEventListener('mouseup', (ev) => {
-            this.volume.drag = false;
-            this.songProgress.drag = false;
-        });
     }
 }
 exports.default = SpotifyPlaybackElement;

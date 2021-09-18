@@ -196,7 +196,7 @@ class SpotifyPlayback {
     }
     onTrackFinish() {
         this.completelyDeselectTrack();
-        this.webPlayerEl.songProgress.innerSliderEl.style.width = '100%';
+        this.webPlayerEl.songProgress.sliderProgress.style.width = '100%';
         clearInterval(this.getStateInterval);
         this.tryPlayNext(this.selPlaying.trackDataNode);
     }
