@@ -24,7 +24,7 @@ class SpotifyPlayback {
         this.player = null;
         this.device_id = '';
         this.getStateInterval = null;
-        this.playBackEl = new spotify_playback_element_1.default();
+        this.webPlayerEl = new spotify_playback_element_1.default();
         this.selPlaying = {
             element: null,
             track_uri: '',
@@ -97,7 +97,7 @@ class SpotifyPlayback {
         this.player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id);
             this.device_id = device_id;
-            this.playBackEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode));
+            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode));
             this.playerIsReady = true;
         });
         // Not Ready
@@ -105,23 +105,14 @@ class SpotifyPlayback {
             console.log('Device ID has gone offline', device_id);
         });
     }
-    updateWebPlayer(percentDone, position) {
-        if (position !== 0) {
-            this.playBackEl.progress.style.width = `${percentDone}%`;
-            if (this.playBackEl.currTime == null) {
-                throw new Error('Current time element is null');
-            }
-            this.playBackEl.currTime.textContent =
-                (0, config_1.millisToMinutesAndSeconds)(position);
-        }
-    }
     resetDuration() {
         if (!this.isExecutingAction) {
             this.isExecutingAction = true;
             this.player.seek(0).then(() => { this.isExecutingAction = false; });
         }
     }
-    /** Tries to pause the current playing IPlayable node from the web player.
+    /**
+     * Tries to pause the current playing IPlayable node from the web player.
      *
      * @param currNode - the current IPlayable node that was/is playing
      */
@@ -132,7 +123,8 @@ class SpotifyPlayback {
             this.setSelPlayingEl(new track_play_args_1.default(prevTrack, currNode));
         }
     }
-    /** Tries to play the previous IPlayable given the current playing IPlayable node.
+    /**
+     * Tries to play the previous IPlayable given the current playing IPlayable node.
      *
      * @param currNode - the current IPlayable node that was/is playing
      */
@@ -156,7 +148,8 @@ class SpotifyPlayback {
             });
         }
     }
-    /** Tries to play the next IPlayable given the current playing IPlayable node.
+    /**
+     * Tries to play the next IPlayable given the current playing IPlayable node.
      *
      * @param currNode - the current IPlayable node that was/is playing
      */
@@ -184,7 +177,7 @@ class SpotifyPlayback {
         }
         (_a = this.selPlaying.trackDataNode) === null || _a === void 0 ? void 0 : _a.data.onStopped();
         this.selPlaying.element.classList.remove(config_1.config.CSS.CLASSES.selected);
-        (_b = this.playBackEl.playPause) === null || _b === void 0 ? void 0 : _b.classList.remove(config_1.config.CSS.CLASSES.selected);
+        (_b = this.webPlayerEl.playPause) === null || _b === void 0 ? void 0 : _b.classList.remove(config_1.config.CSS.CLASSES.selected);
         this.selPlaying.element = null;
     }
     selectTrack(eventArg) {
@@ -193,17 +186,18 @@ class SpotifyPlayback {
         this.selPlaying.element = eventArg.currPlayable.selEl;
         this.selPlaying.element.classList.add(config_1.config.CSS.CLASSES.selected);
         this.selPlaying.track_uri = eventArg.currPlayable.uri;
-        (_a = this.playBackEl.playPause) === null || _a === void 0 ? void 0 : _a.classList.add(config_1.config.CSS.CLASSES.selected);
-        this.playBackEl.title.textContent = eventArg.currPlayable.title;
+        (_a = this.webPlayerEl.playPause) === null || _a === void 0 ? void 0 : _a.classList.add(config_1.config.CSS.CLASSES.selected);
+        this.webPlayerEl.title.textContent = eventArg.currPlayable.title;
         (_b = this.selPlaying.trackDataNode) === null || _b === void 0 ? void 0 : _b.data.onPlaying();
     }
     onTrackFinish() {
         this.completelyDeselectTrack();
-        this.playBackEl.progress.style.width = '100%';
+        this.webPlayerEl.progress.style.width = '100%';
         clearInterval(this.getStateInterval);
         this.tryPlayNext(this.selPlaying.trackDataNode);
     }
-    /** Sets an interval that obtains the state of the player every second.
+    /**
+     * Sets an interval that obtains the state of the player every second.
      * Should only be called when a song is playing.
      */
     setGetStateInterval() {
@@ -222,7 +216,7 @@ class SpotifyPlayback {
                 // if there isnt a duration set for this song set it.
                 if (durationMinSec === '') {
                     durationMinSec = (0, config_1.millisToMinutesAndSeconds)(duration);
-                    this.playBackEl.duration.textContent = durationMinSec;
+                    this.webPlayerEl.duration.textContent = durationMinSec;
                 }
                 const percentDone = (position / duration) * 100;
                 // the position gets set to 0 when the song is finished
@@ -231,12 +225,13 @@ class SpotifyPlayback {
                 }
                 else {
                     // if the position isnt 0 update the web player elements
-                    this.updateWebPlayer(percentDone, position);
+                    this.webPlayerEl.updateElement(percentDone, position);
                 }
             });
         }, 500);
     }
-    /** Select a certain play/pause element and play the given track uri
+    /**
+     * Select a certain play/pause element and play the given track uri
      * and unselect the previous one then pause the previous track_uri.
      *
      * @param {PlayableEventArg} eventArg - a class that contains the current, next and previous tracks to play
@@ -287,7 +282,8 @@ class SpotifyPlayback {
             this.setGetStateInterval();
         });
     }
-    /** Plays a track through this device.
+    /**
+     * Plays a track through this device.
      *
      * @param {string} track_uri - the track uri to play
      * @returns whether or not the track has been played succesfully.

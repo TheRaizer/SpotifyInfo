@@ -106,7 +106,7 @@ const artistCardsHandler = (function () {
         const artistObj = artistArr[i]
         const cardHtml = artistObj.getArtistHtml(i)
 
-        artistContainer.appendChild(cardHtml as Node)
+        artistContainer.appendChild(cardHtml)
 
         artistActions.showTopTracks(artistObj)
       } else {

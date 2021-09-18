@@ -29,10 +29,11 @@ class Playlist extends Card {
     this.undoStack.push(tracks)
   }
 
-  /** Produces the card element of this playlist.
+  /**
+   * Produces the card element of this playlist.
    *
-   * @param {Number} idx - The card index to use for the elements id suffix
-   * @returns {ChildNode} - The converted html string to an element
+   * @param {Number} idx The card index to use for the elements id suffix
+   * @returns {ChildNode} The converted html string to an element
    */
   getPlaylistCardHtml (idx: number, inTextForm: boolean, isSelected = false): Node {
     const id = `${config.CSS.IDs.playlistPrefix}${idx}`
@@ -57,9 +58,10 @@ class Playlist extends Card {
     return htmlToEl(html) as Node
   }
 
-  /** Produces list of Track class instances using track datas from spotify web api.
+  /**
+   * Produces list of Track class instances using track datas from spotify web api.
    *
-   * @returns {DoublyLinkedList<Track>} - List of track classes created using the obtained track datas.
+   * @returns {DoublyLinkedList<Track>} List of track classes created using the obtained track datas.
    */
   async loadTracks (): Promise<DoublyLinkedList<Track> | null> {
     const res = await axios.request<Array<PlaylistTrackData>>({ method: 'get', url: `${config.URLs.getPlaylistTracks + this.id}` })
@@ -86,11 +88,12 @@ class Playlist extends Card {
   }
 }
 
-/** Gets playlist tracks from data. This also initializes the date added.
+/**
+ * Gets playlist tracks from data. This also initializes the date added.
  *
- * @param {Array<TrackData>} tracksData
- * @param {Array<PlaylistTrackData>} dateAddedObjects - The object that contains the added_at variable.
- * @param {DoublyLinkedList<Track>} tracksList
+ * @param {Array<TrackData>} tracksData an array of containing each track's data
+ * @param {Array<PlaylistTrackData>} dateAddedObjects The object that contains the added_at variable.
+ * @param {DoublyLinkedList<Track>} tracksList the doubly linked list to put the tracks into.
  */
 export function getPlaylistTracksFromDatas (
   tracksData: Array<TrackData>,

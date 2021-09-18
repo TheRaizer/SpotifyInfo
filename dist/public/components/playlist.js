@@ -32,10 +32,11 @@ class Playlist extends card_1.default {
     addToUndoStack(tracks) {
         this.undoStack.push(tracks);
     }
-    /** Produces the card element of this playlist.
+    /**
+     * Produces the card element of this playlist.
      *
-     * @param {Number} idx - The card index to use for the elements id suffix
-     * @returns {ChildNode} - The converted html string to an element
+     * @param {Number} idx The card index to use for the elements id suffix
+     * @returns {ChildNode} The converted html string to an element
      */
     getPlaylistCardHtml(idx, inTextForm, isSelected = false) {
         const id = `${config_1.config.CSS.IDs.playlistPrefix}${idx}`;
@@ -51,9 +52,10 @@ class Playlist extends card_1.default {
       `;
         return (0, config_1.htmlToEl)(html);
     }
-    /** Produces list of Track class instances using track datas from spotify web api.
+    /**
+     * Produces list of Track class instances using track datas from spotify web api.
      *
-     * @returns {DoublyLinkedList<Track>} - List of track classes created using the obtained track datas.
+     * @returns {DoublyLinkedList<Track>} List of track classes created using the obtained track datas.
      */
     loadTracks() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -77,11 +79,12 @@ class Playlist extends card_1.default {
         return this.trackList !== undefined;
     }
 }
-/** Gets playlist tracks from data. This also initializes the date added.
+/**
+ * Gets playlist tracks from data. This also initializes the date added.
  *
- * @param {Array<TrackData>} tracksData
- * @param {Array<PlaylistTrackData>} dateAddedObjects - The object that contains the added_at variable.
- * @param {DoublyLinkedList<Track>} tracksList
+ * @param {Array<TrackData>} tracksData an array of containing each track's data
+ * @param {Array<PlaylistTrackData>} dateAddedObjects The object that contains the added_at variable.
+ * @param {DoublyLinkedList<Track>} tracksList the doubly linked list to put the tracks into.
  */
 function getPlaylistTracksFromDatas(tracksData, dateAddedObjects, trackList) {
     (0, track_1.generateTracksFromData)(tracksData, trackList);

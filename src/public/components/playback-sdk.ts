@@ -128,7 +128,8 @@ class SpotifyPlayback {
     }
   }
 
-  /** Tries to pause the current playing IPlayable node from the web player.
+  /**
+   * Tries to pause the current playing IPlayable node from the web player.
    *
    * @param currNode - the current IPlayable node that was/is playing
    */
@@ -140,7 +141,8 @@ class SpotifyPlayback {
     }
   }
 
-  /** Tries to play the previous IPlayable given the current playing IPlayable node.
+  /**
+   * Tries to play the previous IPlayable given the current playing IPlayable node.
    *
    * @param currNode - the current IPlayable node that was/is playing
    */
@@ -164,7 +166,8 @@ class SpotifyPlayback {
     }
   }
 
-  /** Tries to play the next IPlayable given the current playing IPlayable node.
+  /**
+   * Tries to play the next IPlayable given the current playing IPlayable node.
    *
    * @param currNode - the current IPlayable node that was/is playing
    */
@@ -218,7 +221,8 @@ class SpotifyPlayback {
     this.tryPlayNext(this.selPlaying.trackDataNode)
   }
 
-  /** Sets an interval that obtains the state of the player every second.
+  /**
+   * Sets an interval that obtains the state of the player every second.
    * Should only be called when a song is playing.
    */
   private setGetStateInterval () {
@@ -256,7 +260,8 @@ class SpotifyPlayback {
     }, 500)
   }
 
-  /** Select a certain play/pause element and play the given track uri
+  /**
+   * Select a certain play/pause element and play the given track uri
    * and unselect the previous one then pause the previous track_uri.
    *
    * @param {PlayableEventArg} eventArg - a class that contains the current, next and previous tracks to play
@@ -308,7 +313,8 @@ class SpotifyPlayback {
     this.setGetStateInterval()
   }
 
-  /** Plays a track through this device.
+  /**
+   * Plays a track through this device.
    *
    * @param {string} track_uri - the track uri to play
    * @returns whether or not the track has been played succesfully.

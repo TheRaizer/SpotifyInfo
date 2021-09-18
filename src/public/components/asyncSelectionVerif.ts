@@ -21,21 +21,23 @@ class AsyncSelectionVerif<T> {
     return this._currSelectedVal
   }
 
-  /* Change the value of the currently selected and reset the has loaded boolean.
+  /**
+   * Change the value of the currently selected and reset the has loaded boolean.
    *
-   * @param {Any} - data that has been selected
+   * @param {T} currSelectedVal the value to change the currently selected value too.
    */
   selectionChanged (currSelectedVal: T) {
     this._currSelectedVal = currSelectedVal
     this.hasLoadedCurrSelected = false
   }
 
-  /** Checks to see if a selected value post load is valid by
+  /**
+   * Checks to see if a selected value post load is valid by
    * comparing it to the currently selected value and verifying that
    * the currently selected has not already been loaded.
    *
-   * @param {T} - data that has been loaded
-   * @returns {Boolean} - whether the loaded selection is valid
+   * @param {T} postLoadVal data that has been loaded
+   * @returns {Boolean} whether the loaded selection is valid
    */
   isValid (postLoadVal: T): boolean {
     if (this._currSelectedVal !== postLoadVal || this.hasLoadedCurrSelected) {

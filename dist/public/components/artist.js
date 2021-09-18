@@ -29,7 +29,8 @@ class Artist extends card_1.default {
         this.imageUrl = (0, config_1.getValidImage)(images);
         this.topTracks = undefined;
     }
-    /** Produces the card element of this artist.
+    /**
+     *  Produces the card element of this artist.
      *
      * @param {Number} idx - The card index to use for the elements id suffix
      * @returns {ChildNode} - The converted html string to an element
@@ -65,7 +66,8 @@ class Artist extends card_1.default {
       `;
         return (0, config_1.htmlToEl)(html);
     }
-    /** Produces the card element of this artist.
+    /**
+     * Produces the card element of this artist.
      *
      * @param {Number} idx - The card index to use for the elements id suffix
      * @returns {ChildNode} - The converted html string to an element

@@ -25,12 +25,13 @@ class Artist extends Card {
     this.topTracks = undefined
   }
 
-  /** Produces the card element of this artist.
+  /**
+   *  Produces the card element of this artist.
    *
    * @param {Number} idx - The card index to use for the elements id suffix
    * @returns {ChildNode} - The converted html string to an element
    */
-  getArtistHtml (idx: number) {
+  getArtistHtml (idx: number): Node {
     const id = `${config.CSS.IDs.artistPrefix}${idx}`
 
     this.cardId = id
@@ -61,10 +62,11 @@ class Artist extends Card {
         </section>
       </div>
       `
-    return htmlToEl(html)
+    return htmlToEl(html) as Node
   }
 
-  /** Produces the card element of this artist.
+  /**
+   * Produces the card element of this artist.
    *
    * @param {Number} idx - The card index to use for the elements id suffix
    * @returns {ChildNode} - The converted html string to an element

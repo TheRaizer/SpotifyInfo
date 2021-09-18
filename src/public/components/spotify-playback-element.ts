@@ -22,6 +22,7 @@ export default class SpotifyPlaybackElement {
 
   /**
    * Append the web player element to the DOM along with the event listeners for the buttons.
+   *
    * @param playPrevFunc the function to run when the play previous button is pressed on the web player.
    * @param pauseFunc the function to run when the pause/play button is pressed on the web player.
    * @param playNextFunc the function to run when the play next button is pressed on the web player.
@@ -56,6 +57,7 @@ export default class SpotifyPlaybackElement {
 
   /**
    * Updates the web player element.
+   *
    * @param percentDone the percent of the song that has been completed
    * @param position the current position in ms that has been completed
    */
@@ -91,6 +93,7 @@ export default class SpotifyPlaybackElement {
 
   /**
    * Assigns the events to run on each button press that exists on the web player element.
+   *
    * @param playPrevFunc function to run when play previous button is pressed
    * @param pauseFunc function to run when play/pause button is pressed
    * @param playNextFunc function to run when play next button is pressed
