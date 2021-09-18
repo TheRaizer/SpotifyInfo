@@ -2,7 +2,8 @@ import {
   config,
   promiseHandler,
   addResizeDrag,
-  millisToMinutesAndSeconds
+  millisToMinutesAndSeconds,
+  htmlToEl
 } from '../config'
 import { DoublyLinkedListNode } from './doubly-linked-list'
 import PlayableEventArg from './pubsub/event-args/track-play-args'
@@ -110,7 +111,8 @@ class SpotifyPlayback {
       this.webPlayerEl.appendWebPlayerHtml(
         () => this.tryPlayPrev(this.selPlaying.trackDataNode),
         () => this.tryWebPlayerPause(this.selPlaying.trackDataNode),
-        () => this.tryPlayNext(this.selPlaying.trackDataNode)
+        () => this.tryPlayNext(this.selPlaying.trackDataNode),
+        (percent) => this.changeVolume(percent)
       )
       this.playerIsReady = true
     })
@@ -119,6 +121,11 @@ class SpotifyPlayback {
     this.player.addListener('not_ready', ({ device_id }: { device_id: string }) => {
       console.log('Device ID has gone offline', device_id)
     })
+  }
+
+  private changeVolume (percent: number) {
+    console.log(percent + '%')
+    console.log(this.player.volume)
   }
 
   private resetDuration () {
@@ -216,7 +223,7 @@ class SpotifyPlayback {
   private onTrackFinish () {
     this.completelyDeselectTrack();
 
-    (this.webPlayerEl.progress as HTMLElement).style.width = '100%'
+    (this.webPlayerEl.songProgress as HTMLInputElement).value = '100'
     clearInterval(this.getStateInterval as NodeJS.Timeout)
     this.tryPlayNext(this.selPlaying.trackDataNode)
   }
@@ -247,14 +254,12 @@ class SpotifyPlayback {
           this.webPlayerEl!.duration!.textContent = durationMinSec
         }
 
-        const percentDone = (position / duration) * 100
-
         // the position gets set to 0 when the song is finished
         if (position === 0) {
           this.onTrackFinish()
         } else {
           // if the position isnt 0 update the web player elements
-          this.webPlayerEl.updateElement(percentDone, position)
+          this.webPlayerEl.updateElement(position, duration)
         }
       })
     }, 500)
@@ -362,3 +367,9 @@ export function checkIfIsPlayingElAfterRerender (uri: string, selEl: Element, tr
     spotifyPlayback.selPlaying.trackDataNode = trackDataNode
   }
 }
+
+// append an invisible element then destroy it as a way to load the play and pause images from express.
+const preloadPlayPauseImgsHtml = `<div style="display: none"><img src="${config.PATHS.playIcon}"/><img src="${config.PATHS.pauseIcon}"/></div>`
+const preloadPlayPauseImgsEl = htmlToEl(preloadPlayPauseImgsHtml) as Node
+document.body.appendChild(preloadPlayPauseImgsEl)
+document.body.removeChild(preloadPlayPauseImgsEl)

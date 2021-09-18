@@ -755,12 +755,13 @@ footer {
   display: flex;
   width: 250px;
   height: 300px;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
-  width: 800px;
-  height: 400px;
-  margin-top: 3vh;
-  margin-bottom: 3vh;
+  width: 70vw;
+  height: 30vmax;
+  min-height: 400px;
+  margin-top: 10vh;
+  margin-bottom: 10vh;
   background-color: #303030;
   box-shadow: 0px 15px 10px -10px #111;
   border-radius: 5px;
@@ -776,16 +777,17 @@ footer {
 }
 #artist-cards-container > .artist > .content .artist-top-tracks > header > h4 {
   margin-bottom: 2%;
-  font-size: 1.4em;
+  font-size: 2em;
 }
 #artist-cards-container > .artist > .content h3 {
   font-weight: bold;
-  font-size: 1.6em;
+  font-size: 2.1em;
   margin-top: 20px;
   margin-bottom: 10px;
 }
 #artist-cards-container > .artist > .content .playlist-track > .ranked-card-interaction-area {
   flex: 0 0 10%;
+  min-width: 50px;
 }
 #artist-cards-container > .artist > .content .playlist-track > .ranked-card-interaction-area > p {
   font-weight: bold;
@@ -854,8 +856,10 @@ ul.genres > li {
 #artist-cards-container > .artist ul.track-list {
   margin-left: 20px;
   margin-right: 10px;
-  height: 350px;
-  width: 500px;
+  height: 25vmax;
+  width: 40vw;
+  min-height: 360px;
+  min-width: 490px;
   overflow-y: scroll;
   background-color: #1f1f1f;
 }
@@ -874,21 +878,45 @@ ul.genres > li {
   -ms-flex-align: center;
   align-items: center;
 }
-@media only screen and (max-width: 820px) {
+@media only screen and (max-width: 1110px) {
+  #artist-cards-container > .artist > .content {
+    flex-direction: column;
+    height: 800px;
+    width: 600px;
+  }
+  #artist-cards-container > .artist > .content .playlist-track > .links {
+    flex: 0 0 50%;
+    width: 50%;
+    max-width: 50%;
+  }
+  #artist-cards-container > .artist ul.track-list {
+    min-height: 0;
+    min-width: 0;
+    height: 350px;
+    width: 500px;
+  }
+  ul.genres {
+    margin-bottom: 20%;
+  }
+}
+@media only screen and (max-width: 620px) {
   #artist-cards-container > .artist > .content {
     flex-direction: column;
     height: 800px;
     width: 300px;
   }
   #artist-cards-container > .artist > .content .playlist-track > .links {
-    flex: 0 0 60%;
-    width: 60%;
-    max-width: 60%;
+    flex: 0 0 50%;
+    width: 50%;
+    max-width: 50%;
   }
   #artist-cards-container > .artist > .content .playlist-track > h5 {
     display: none;
   }
   #artist-cards-container > .artist ul.track-list {
+    min-height: 0;
+    min-width: 0;
+    height: 350px;
     width: 280px;
   }
   ul.genres {
@@ -1097,7 +1125,7 @@ ul.genres > li {
   color: white;
   font-size: 16px;
   width: 100px;
-  height: 43px;
+  height: 44px;
   border: none;
 }
 /* The container <div> - needed to position the dropdown content */
@@ -1174,13 +1202,25 @@ ul.genres > li {
 .track-list {
   box-shadow: inset 0px -14px 20px -15px black, inset 0px 14px 20px -15px black;
 }
-.progress-bar {
+#web-player-volume-bar {
+  border-radius: 5px;
+  width: 10px;
+  height: 100%;
+  background-color: #727272;
+}
+#web-player-volume-bar > .progress {
+  border-radius: 5px;
+  height: 40%;
+  height: inherit;
+  background-color: #e6e6e6;
+}
+#web-player-progress-bar {
   border-radius: 5px;
   width: 100%;
   height: 10px;
   background-color: #313131;
 }
-.progress-bar > .progress {
+#web-player-progress-bar > .progress {
   border-radius: 5px;
   width: 1%;
   height: inherit;

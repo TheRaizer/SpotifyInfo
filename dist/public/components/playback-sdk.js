@@ -97,13 +97,17 @@ class SpotifyPlayback {
         this.player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id);
             this.device_id = device_id;
-            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode));
+            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode), (percent) => this.changeVolume(percent));
             this.playerIsReady = true;
         });
         // Not Ready
         this.player.addListener('not_ready', ({ device_id }) => {
             console.log('Device ID has gone offline', device_id);
         });
+    }
+    changeVolume(percent) {
+        console.log(percent + '%');
+        console.log(this.player.volume);
     }
     resetDuration() {
         if (!this.isExecutingAction) {
@@ -192,7 +196,7 @@ class SpotifyPlayback {
     }
     onTrackFinish() {
         this.completelyDeselectTrack();
-        this.webPlayerEl.progress.style.width = '100%';
+        this.webPlayerEl.songProgress.innerSliderEl.style.width = '100%';
         clearInterval(this.getStateInterval);
         this.tryPlayNext(this.selPlaying.trackDataNode);
     }
@@ -326,4 +330,9 @@ function checkIfIsPlayingElAfterRerender(uri, selEl, trackDataNode) {
     }
 }
 exports.checkIfIsPlayingElAfterRerender = checkIfIsPlayingElAfterRerender;
+// append an invisible element then destroy it as a way to load the play and pause images from express.
+const preloadPlayPauseImgsHtml = `<div style="display: none"><img src="${config_1.config.PATHS.playIcon}"/><img src="${config_1.config.PATHS.pauseIcon}"/></div>`;
+const preloadPlayPauseImgsEl = (0, config_1.htmlToEl)(preloadPlayPauseImgsHtml);
+document.body.appendChild(preloadPlayPauseImgsEl);
+document.body.removeChild(preloadPlayPauseImgsEl);
 //# sourceMappingURL=playback-sdk.js.map

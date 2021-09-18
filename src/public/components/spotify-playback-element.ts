@@ -7,17 +7,19 @@ import {
 
 export default class SpotifyPlaybackElement {
   public title: Element | null
-  public progress: Element | null
   public currTime: Element | null
   public duration: Element | null
   public playPause: Element | null
+  public songProgress: HTMLInputElement | null
+  public volume: HTMLInputElement | null
 
   constructor () {
     this.title = null
-    this.progress = null
     this.currTime = null
     this.duration = null
     this.playPause = null
+    this.volume = null
+    this.songProgress = null
   }
 
   /**
@@ -30,20 +32,22 @@ export default class SpotifyPlaybackElement {
   public appendWebPlayerHtml (
     playPrevFunc: () => void,
     pauseFunc: () => void,
-    playNextFunc: () => void) {
+    playNextFunc: () => void,
+    volumeChangeFunc: (percent: number) => void) {
     const html = `
     <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
       <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Title</h4>
       <div>
-        <button id="${config.CSS.IDs.playPrev}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
-        <button id="${config.CSS.IDs.webPlayerPlayPause}"><img src="${config.PATHS.playBlackIcon}" alt="play/pause"/></button>
-        <button id="${config.CSS.IDs.playNext}"><img src="${config.PATHS.playNext}" alt="next"/></button>
+        <article>
+          <button id="${config.CSS.IDs.playPrev}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
+          <button id="${config.CSS.IDs.webPlayerPlayPause}"><img src="${config.PATHS.playBlackIcon}" alt="play/pause"/></button>
+          <button id="${config.CSS.IDs.playNext}"><img src="${config.PATHS.playNext}" alt="next"/></button>
+        </article>
+        <input id="${config.CSS.IDs.webPlayerVolume}" type="range" min="0" max="100" value="0" step="1"></input>
       </div>
       <div id="${config.CSS.IDs.playTimeBar}">
         <p>0:00</p>
-        <div class="${config.CSS.CLASSES.progressBar}">
-          <div class="${config.CSS.CLASSES.progress}"></div>
-        </div>
+        <input id="${config.CSS.IDs.webPlayerProgress}" type="range" value="0" step="1"></input>
         <p>0:00</p>
       </div>
     </article>
@@ -51,8 +55,8 @@ export default class SpotifyPlaybackElement {
 
     const webPlayerEl = htmlToEl(html)
     document.body.append(webPlayerEl as Node)
-    this.assignEventListeners(playPrevFunc, pauseFunc, playNextFunc)
     this.getWebPlayerEls()
+    this.assignEventListeners(playPrevFunc, pauseFunc, playNextFunc, volumeChangeFunc)
   }
 
   /**
@@ -61,9 +65,11 @@ export default class SpotifyPlaybackElement {
    * @param percentDone the percent of the song that has been completed
    * @param position the current position in ms that has been completed
    */
-  public updateElement (percentDone: number, position: number) {
+  public updateElement (position: number, duration: number) {
     if (position !== 0) {
-      (this.progress as HTMLElement).style.width = `${percentDone}%`
+      // round each interval to the nearest second so that the movement of progress bar is by second.
+      (this.songProgress as HTMLInputElement).max = `${duration / 1000}`;
+      (this.songProgress as HTMLInputElement).value = `${Math.round(position / 1000)}`
       if (this.currTime == null) {
         throw new Error('Current time element is null')
       }
@@ -79,9 +85,7 @@ export default class SpotifyPlaybackElement {
     const webPlayerEl = document.getElementById(config.CSS.IDs.webPlayer) ?? throwExpression('web player element does not exist')
     const playTimeBar = document.getElementById(config.CSS.IDs.playTimeBar) ?? throwExpression('play time bar element does not exist')
 
-    this.progress = webPlayerEl.getElementsByClassName(
-      config.CSS.CLASSES.progress
-    )[0] as Element ?? throwExpression('web player progress bar does not exist')
+    this.songProgress = document.getElementById(config.CSS.IDs.webPlayerProgress) as HTMLInputElement ?? throwExpression('web player progress bar does not exist')
     this.title = webPlayerEl.getElementsByTagName('h4')[0] as Element ?? throwExpression('web player title element does not exist')
 
     // get playtime bar elements
@@ -101,13 +105,14 @@ export default class SpotifyPlaybackElement {
   private assignEventListeners (
     playPrevFunc: () => void,
     pauseFunc: () => void,
-    playNextFunc: () => void) {
+    playNextFunc: () => void,
+    volumeChangeFunc: (percent: number) => void) {
     const playPrev = document.getElementById(config.CSS.IDs.playPrev)
-    const playPause = document.getElementById(config.CSS.IDs.webPlayerPlayPause)
     const playNext = document.getElementById(config.CSS.IDs.playNext)
 
     playPrev?.addEventListener('click', playPrevFunc)
-    playPause?.addEventListener('click', pauseFunc)
     playNext?.addEventListener('click', playNextFunc)
+
+    this.playPause?.addEventListener('click', pauseFunc)
   }
 }

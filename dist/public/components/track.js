@@ -160,7 +160,7 @@ class Track extends card_1.default {
         const trackNode = trackList.find((x) => x.uri === this.uri, true);
         const html = `
             <li class="${config_1.config.CSS.CLASSES.playlistTrack}">
-            <div class="${config_1.config.CSS.CLASSES.rankedTrackInteract}">
+            <div class="${config_1.config.CSS.CLASSES.rankedTrackInteract} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}"">
               <button class="${config_1.config.CSS.CLASSES.playPause} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}"><img src="" alt="play/pause" 
                 class="${config_1.config.CSS.CLASSES.noSelect}"/>
               </button>

@@ -80,7 +80,9 @@ exports.config = {
             playlistHeaderArea: 'playlist-main-header-area',
             playNext: 'play-next',
             playPrev: 'play-prev',
-            webPlayerPlayPause: 'play-pause-player'
+            webPlayerPlayPause: 'play-pause-player',
+            webPlayerVolume: 'web-player-volume-bar',
+            webPlayerProgress: 'web-player-progress-bar'
         },
         CLASSES: {
             glow: 'glow',
@@ -124,7 +126,6 @@ exports.config = {
             content: 'content',
             links: 'links',
             progress: 'progress',
-            progressBar: 'progress-bar',
             playPause: 'play-pause',
             rankedTrackInteract: 'ranked-card-interaction-area'
         },

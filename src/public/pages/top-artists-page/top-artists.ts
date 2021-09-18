@@ -92,8 +92,8 @@ const artistCardsHandler = (function () {
     config.CSS.IDs.artistCardsContainer
   ) ?? throwExpression(`artist container of id ${config.CSS.IDs.artistCardsContainer} does not exist`)
 
-  /** Generates the cards to the DOM then makes them visible
-   *
+  /**
+   * Generates the cards to the DOM then makes them visible
    * @param {Array<Artist>} artistArr array of track objects whose cards should be generated.
    * @param {Boolean} autoAppear whether to show the card without animation or with animation.
    * @returns {Array<HTMLElement>} array of the card elements.
@@ -122,8 +122,8 @@ const artistCardsHandler = (function () {
     }
   }
 
-  /** Begins retrieving artists then when done verifies it is the correct selected artist.
-   *
+  /**
+   * Begins retrieving artists then when done verifies it is the correct selected artist.
    * @param {Array<Artist>} artistArr array to load artists into.
    */
   function startLoadingArtists (artistArr: Array<Artist>) {

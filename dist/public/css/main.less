@@ -186,7 +186,21 @@ footer {
   box-shadow: inset 0px -14px 20px -15px black, inset 0px 14px 20px -15px black;
 }
 
-.progress-bar {
+#web-player-volume-bar {
+  border-radius: 5px;
+  width: 10px;
+  height: 100%;
+  background-color: rgb(114, 114, 114);
+
+  & > .progress {
+    border-radius: 5px;
+    height: 40%;
+    height: inherit;
+    background-color: rgb(230, 230, 230);
+  }
+}
+
+#web-player-progress-bar {
   border-radius: 5px;
   width: 100%;
   height: 10px;

@@ -92,8 +92,8 @@ const artistCardsHandler = (function () {
     var _a;
     const selectionVerif = new asyncSelectionVerif_1.default();
     const artistContainer = (_a = document.getElementById(config_1.config.CSS.IDs.artistCardsContainer)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)(`artist container of id ${config_1.config.CSS.IDs.artistCardsContainer} does not exist`);
-    /** Generates the cards to the DOM then makes them visible
-     *
+    /**
+     * Generates the cards to the DOM then makes them visible
      * @param {Array<Artist>} artistArr array of track objects whose cards should be generated.
      * @param {Boolean} autoAppear whether to show the card without animation or with animation.
      * @returns {Array<HTMLElement>} array of the card elements.
@@ -116,8 +116,8 @@ const artistCardsHandler = (function () {
             config_1.animationControl.animateAttributes('.' + config_1.config.CSS.CLASSES.artist, config_1.config.CSS.CLASSES.appear, 25);
         }
     }
-    /** Begins retrieving artists then when done verifies it is the correct selected artist.
-     *
+    /**
+     * Begins retrieving artists then when done verifies it is the correct selected artist.
      * @param {Array<Artist>} artistArr array to load artists into.
      */
     function startLoadingArtists(artistArr) {

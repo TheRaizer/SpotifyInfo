@@ -227,7 +227,9 @@ class Track extends Card implements IPlayable {
     const trackNode = trackList.find((x) => x.uri === this.uri, true) as DoublyLinkedListNode<IPlayable>
     const html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
-            <div class="${config.CSS.CLASSES.rankedTrackInteract}">
+            <div class="${config.CSS.CLASSES.rankedTrackInteract} ${
+                isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
+              }"">
               <button class="${config.CSS.CLASSES.playPause} ${
                   isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
                 }"><img src="" alt="play/pause" 
