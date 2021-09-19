@@ -31,22 +31,31 @@ class SpotifyPlayback {
         };
         this.playerIsReady = false;
         this._loadWebPlayer();
-        this.webPlayerEl = new spotify_playback_element_1.default(this.onSeekStart, this.seekSong);
+        // pass it the "this." attributes in this scope because when a function is called from a different class the "this." attributes are undefined.
+        this.webPlayerEl = new spotify_playback_element_1.default(() => this.onSeekStart(this.player, this.webPlayerEl), (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl), (percentage) => this.onSeeking(percentage, this.webPlayerEl));
     }
-    onSeekStart() {
-        this.player.getCurrentState().then((state) => {
+    onSeeking(percentage, webPlayerEl) {
+        const seekPosition = webPlayerEl.songProgress.max * (percentage / 100);
+        if (webPlayerEl.currTime == null) {
+            throw new Error('Current time element is null');
+        }
+        webPlayerEl.currTime.textContent = (0, config_1.millisToMinutesAndSeconds)(seekPosition);
+        console.log(webPlayerEl.currTime.textContent);
+    }
+    onSeekStart(player, webPlayerEl) {
+        player.getCurrentState().then((state) => {
             if (!state) {
                 console.error('User is not playing music through the Web Playback SDK');
                 return;
             }
-            this.webPlayerEl.songProgress.max = state.duration;
+            webPlayerEl.songProgress.max = state.duration;
         });
     }
-    seekSong(percentage) {
+    seekSong(percentage, player, webPlayerEl) {
         if (!this.isExecutingAction) {
             this.isExecutingAction = true;
-            const position = (percentage / 100) * this.webPlayerEl.songProgress.max;
-            this.player.seek(position).then(() => {
+            const position = (percentage / 100) * webPlayerEl.songProgress.max;
+            player.seek(position).then(() => {
                 this.isExecutingAction = false;
             });
         }

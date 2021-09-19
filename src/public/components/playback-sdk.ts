@@ -42,9 +42,33 @@ class SpotifyPlayback {
     this._loadWebPlayer()
 
     // pass it the "this." attributes in this scope because when a function is called from a different class the "this." attributes are undefined.
-    this.webPlayerEl = new SpotifyPlaybackElement(() => this.onSeekStart(this.player, this.webPlayerEl), (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl))
+    this.webPlayerEl = new SpotifyPlaybackElement(
+      () => this.onSeekStart(this.player, this.webPlayerEl),
+      (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl),
+      (percentage) => this.onSeeking(percentage, this.webPlayerEl)
+    )
   }
 
+  /**
+   * Update the time shown when seeking.
+   * @param percentage The percent that the bar has filled with respect to the entire bar
+   * @param webPlayerEl The webplayer element that gives us access to the song progress bar
+   */
+  private onSeeking (percentage: number, webPlayerEl: SpotifyPlaybackElement) {
+    // get the position by using the percent the progress bar.
+    const seekPosition = webPlayerEl.songProgress.max * (percentage / 100)
+    if (webPlayerEl.currTime == null) {
+      throw new Error('Current time element is null')
+    }
+    // update the text content to show the time the user will be seeking too onmouseup.
+    webPlayerEl.currTime.textContent = millisToMinutesAndSeconds(seekPosition)
+  }
+
+  /**
+   * Function to run when the seeking action begins
+   * @param player The spotify sdk player whose state we will use to change the song's progress bar's max value to the duration of the song.
+   * @param webPlayerEl The web player element that will allow us to modify the progress bars max attribute.
+   */
   private onSeekStart (player: any, webPlayerEl: SpotifyPlaybackElement) {
     player.getCurrentState().then((state: { duration: any }) => {
       if (!state) {
@@ -53,15 +77,24 @@ class SpotifyPlayback {
         )
         return
       }
+      // when first seeking, update the max attribute with the duration of the song for use when seeking.
       webPlayerEl.songProgress.max = state.duration
     })
   }
 
+  /**
+   * Function to run when you wish to seek to a certain position in a song.
+   * @param percentage The percent that the bar has filled with respect to the entire bar
+   * @param player the spotify sdk player that will seek the song to a given position
+   * @param webPlayerEl the web player element that gives us access to the song progress bar.
+   */
   private seekSong (percentage: number, player: any, webPlayerEl: SpotifyPlaybackElement) {
     if (!this.isExecutingAction) {
       this.isExecutingAction = true
+      // obtain the final position the user wishes to seek once mouse is up.
       const position = (percentage / 100) * webPlayerEl.songProgress.max
 
+      // seek to the chosen position.
       player.seek(position).then(() => {
         this.isExecutingAction = false
       })

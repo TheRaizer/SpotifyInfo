@@ -13,10 +13,12 @@ class Slider {
   public max: number = 0;
   private onDragStart: () => void;
   private onDragStop: (percentage: number) => void;
+  private onDragging: (percentage: number) => void
 
-  constructor (onDragStart: () => void, onDragStop: (percentage: number) => void) {
+  constructor (onDragStart: () => void, onDragStop: (percentage: number) => void, onDragging: (percentage: number) => void) {
     this.onDragStop = onDragStop
     this.onDragStart = onDragStart
+    this.onDragging = onDragging
   }
 
   public set sliderEl (el: HTMLElement | null) {
@@ -29,8 +31,8 @@ class Slider {
   }
 
   private updateBar (x: number) {
-    // take the position we clicked get it in relation to the outer bar and subtract the position of the outerbar element to the client as it may not be at the very left.
     const position = x - this.sliderEl!.getBoundingClientRect().x
+
     this.percentage = 100 * (position / this.sliderEl!.clientWidth)
 
     if (this.percentage > 100) {
@@ -39,18 +41,21 @@ class Slider {
     if (this.percentage < 0) {
       this.percentage = 0
     }
-    // update volume bar and video volume
+
+    // update the width of the inner slider
     this.sliderProgress!.style.width = this.percentage + '%'
   };
 
   public addEventListeners () {
     this.sliderEl?.addEventListener('mousedown', (evt) => {
       this.drag = true
+
       this.onDragStart()
       this.updateBar(evt.clientX)
     })
     document.addEventListener('mousemove', (evt) => {
       if (this.drag) {
+        this.onDragging(this.percentage)
         this.updateBar(evt.clientX)
       }
     })
@@ -70,12 +75,12 @@ export default class SpotifyPlaybackElement {
   public playPause: Element | null
   public songProgress: Slider
 
-  constructor (onSeekStart: () => void, seekSong: (percentage: number) => void) {
+  constructor (onSeekStart: () => void, seekSong: (percentage: number) => void, onSeeking: (percentage: number) => void) {
     this.title = null
     this.currTime = null
     this.duration = null
     this.playPause = null
-    this.songProgress = new Slider(onSeekStart, seekSong)
+    this.songProgress = new Slider(onSeekStart, seekSong, onSeeking)
   }
 
   /**
@@ -132,8 +137,7 @@ export default class SpotifyPlaybackElement {
       if (this.currTime == null) {
         throw new Error('Current time element is null')
       }
-      this.currTime.textContent =
-        millisToMinutesAndSeconds(position)
+      this.currTime.textContent = millisToMinutesAndSeconds(position)
     }
   }
 

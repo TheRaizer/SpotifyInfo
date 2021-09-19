@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("../config");
 class Slider {
-    constructor(onDragStart, onDragStop) {
+    constructor(onDragStart, onDragStop, onDragging) {
         this.drag = false;
         this._sliderEl = null;
         this.sliderProgress = null;
@@ -20,7 +20,7 @@ class Slider {
     }
     updateBar(x) {
         // take the position we clicked get it in relation to the outer bar and subtract the position of the outerbar element to the client as it may not be at the very left.
-        const position = x - this.sliderEl.offsetLeft - this.sliderEl.getBoundingClientRect().x;
+        const position = x - this.sliderEl.getBoundingClientRect().x;
         this.percentage = 100 * (position / this.sliderEl.clientWidth);
         if (this.percentage > 100) {
             this.percentage = 100;
@@ -53,12 +53,12 @@ class Slider {
     }
 }
 class SpotifyPlaybackElement {
-    constructor(onSeekStart, seekSong) {
+    constructor(onSeekStart, seekSong, onSeeking) {
         this.title = null;
         this.currTime = null;
         this.duration = null;
         this.playPause = null;
-        this.songProgress = new Slider(onSeekStart, seekSong);
+        this.songProgress = new Slider(onSeekStart, seekSong, onSeeking);
     }
     /**
      * Append the web player element to the DOM along with the event listeners for the buttons.
@@ -109,8 +109,7 @@ class SpotifyPlaybackElement {
             if (this.currTime == null) {
                 throw new Error('Current time element is null');
             }
-            this.currTime.textContent =
-                (0, config_1.millisToMinutesAndSeconds)(position);
+            this.currTime.textContent = (0, config_1.millisToMinutesAndSeconds)(position);
         }
     }
     /**
