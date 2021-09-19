@@ -403,7 +403,6 @@ const eventAggregator = (window as any).eventAggregator as EventAggregator
 eventAggregator.subscribe(PlayableEventArg.name, (eventArg: PlayableEventArg) =>
   spotifyPlayback.setSelPlayingEl(eventArg)
 )
-addResizeDrag()
 
 export function isSamePlayingURI (uri: string) {
   return (
@@ -425,3 +424,5 @@ const preloadPlayPauseImgsHtml = `<div style="display: none"><img src="${config.
 const preloadPlayPauseImgsEl = htmlToEl(preloadPlayPauseImgsHtml) as Node
 document.body.appendChild(preloadPlayPauseImgsEl)
 document.body.removeChild(preloadPlayPauseImgsEl)
+
+addResizeDrag('.resize-drag', 200, 100)

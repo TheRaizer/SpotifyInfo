@@ -359,7 +359,6 @@ if (window.eventAggregator === undefined) {
 const eventAggregator = window.eventAggregator;
 // subscribe the setPlaying element event
 eventAggregator.subscribe(track_play_args_1.default.name, (eventArg) => spotifyPlayback.setSelPlayingEl(eventArg));
-(0, config_1.addResizeDrag)();
 function isSamePlayingURI(uri) {
     return (uri === spotifyPlayback.selPlaying.track_uri &&
         spotifyPlayback.selPlaying.element != null);
@@ -378,4 +377,5 @@ const preloadPlayPauseImgsHtml = `<div style="display: none"><img src="${config_
 const preloadPlayPauseImgsEl = (0, config_1.htmlToEl)(preloadPlayPauseImgsHtml);
 document.body.appendChild(preloadPlayPauseImgsEl);
 document.body.removeChild(preloadPlayPauseImgsEl);
+(0, config_1.addResizeDrag)('.resize-drag', 200, 100);
 //# sourceMappingURL=playback-sdk.js.map

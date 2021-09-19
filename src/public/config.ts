@@ -366,7 +366,7 @@ function dragMoveListener (evt: Interact.InteractEvent) {
   target.setAttribute('data-x', x.toString())
   target.setAttribute('data-y', y.toString())
 }
-export function addResizeDrag () {
+export function addResizeDrag (identifier: string, minWidth: number, minHeight: number) {
   // create an element that exists as the size of the viewport in order to set the restriction of the draggable/resizable to exist only within this element.
   const viewportElementHTML = `<div id="view-port-element" style="
   pointer-events: none; 
@@ -378,18 +378,17 @@ export function addResizeDrag () {
   max-width: 100%; 
   min-height:100%; 
   max-height:100%;
-  top: 50%;
-  left: 50%;
+  top: 50%; 
+  left: 50%; 
   transform: translate(-50%, -50%);
   "></div>`
   const viewportElement = htmlToEl(viewportElementHTML) as Node
   document.body.appendChild(viewportElement)
 
-  interact('.resize-drag')
+  interact(identifier)
     .resizable({
       // resize from all edges and corners
       edges: { left: true, right: true, bottom: true, top: true },
-
       listeners: {
         move (evt) {
           const target = evt.target
@@ -418,7 +417,7 @@ export function addResizeDrag () {
 
         // minimum size
         interact.modifiers.restrictSize({
-          min: { width: 100, height: 100 }
+          min: { width: minWidth, height: minHeight }
         })
       ],
 

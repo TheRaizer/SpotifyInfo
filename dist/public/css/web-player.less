@@ -1,0 +1,75 @@
+@import "main-vars.less";
+
+#web-player-volume-bar {
+  border-radius: 5px;
+  width: 10px;
+  height: 100%;
+  background-color: rgb(114, 114, 114);
+
+  & > .progress {
+    border-radius: 5px;
+    height: 40%;
+    height: inherit;
+    background-color: rgb(230, 230, 230);
+  }
+}
+
+#web-player-progress-bar {
+  border-radius: 5px;
+  width: 100%;
+  height: 10px;
+  background-color: #464646;
+
+  & > .progress {
+    border-radius: 5px;
+    width: 1%;
+    height: inherit;
+    background-color: #d1d1d1;
+  }
+}
+
+#web-player {
+  text-align: center;
+  z-index: 20;
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  width: 200px;
+  height: 150px;
+  background-color: #272626;
+  border-radius: 5px;
+  color: @reading-color;
+
+  & > h4 {
+    margin-top: 20px;
+    font-size: 1.8em;
+    font-weight: bold;
+  }
+
+  & #playtime-bar {
+    width: 80%;
+    align-self: center;
+    display: flex;
+    align-items: center;
+
+    & > p {
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+  }
+}
+
+#play-pause-player {
+  & > img {
+    content: url("../images/play-black-30px.png");
+  }
+  &.selected {
+    & > img {
+      content: url("../images/pause-black-30px.png");
+    }
+  }
+}

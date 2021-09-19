@@ -1154,6 +1154,66 @@ ul.genres > li {
 .dropdown:hover .dropbtn {
   background-color: #3e8e41;
 }
+#web-player-volume-bar {
+  border-radius: 5px;
+  width: 10px;
+  height: 100%;
+  background-color: #727272;
+}
+#web-player-volume-bar > .progress {
+  border-radius: 5px;
+  height: 40%;
+  height: inherit;
+  background-color: #e6e6e6;
+}
+#web-player-progress-bar {
+  border-radius: 5px;
+  width: 100%;
+  height: 10px;
+  background-color: #464646;
+}
+#web-player-progress-bar > .progress {
+  border-radius: 5px;
+  width: 1%;
+  height: inherit;
+  background-color: #d1d1d1;
+}
+#web-player {
+  text-align: center;
+  z-index: 20;
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 200px;
+  height: 150px;
+  background-color: #272626;
+  border-radius: 5px;
+  color: #d4d4d4;
+}
+#web-player > h4 {
+  margin-top: 20px;
+  font-size: 1.8em;
+  font-weight: bold;
+}
+#web-player #playtime-bar {
+  width: 80%;
+  align-self: center;
+  display: flex;
+  align-items: center;
+}
+#web-player #playtime-bar > p {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+#play-pause-player > img {
+  content: url("../images/play-black-30px.png");
+}
+#play-pause-player.selected > img {
+  content: url("../images/pause-black-30px.png");
+}
 .glow {
   color: white;
   font-weight: bold;
@@ -1202,30 +1262,6 @@ ul.genres > li {
 .track-list {
   box-shadow: inset 0px -14px 20px -15px black, inset 0px 14px 20px -15px black;
 }
-#web-player-volume-bar {
-  border-radius: 5px;
-  width: 10px;
-  height: 100%;
-  background-color: #727272;
-}
-#web-player-volume-bar > .progress {
-  border-radius: 5px;
-  height: 40%;
-  height: inherit;
-  background-color: #e6e6e6;
-}
-#web-player-progress-bar {
-  border-radius: 5px;
-  width: 100%;
-  height: 10px;
-  background-color: #313131;
-}
-#web-player-progress-bar > .progress {
-  border-radius: 5px;
-  width: 1%;
-  height: inherit;
-  background-color: #616161;
-}
 .resize-drag {
   -ms-touch-action: none;
   touch-action: none;
@@ -1233,34 +1269,4 @@ ul.genres > li {
 .resize-drag * {
   -ms-touch-action: none;
   touch-action: none;
-}
-#web-player {
-  text-align: center;
-  z-index: 20;
-  position: fixed;
-  top: 50vh;
-  left: 50vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 200px;
-  height: 150px;
-  background-color: #afafaf;
-  border-radius: 5px;
-  color: #131313;
-}
-#web-player > h4 {
-  margin-top: 20px;
-  font-size: 1.8em;
-  font-weight: bold;
-}
-#web-player #playtime-bar {
-  display: flex;
-  align-items: center;
-}
-#play-pause-player > img {
-  content: url("../images/play-black-30px.png");
-}
-#play-pause-player.selected > img {
-  content: url("../images/pause-black-30px.png");
 }

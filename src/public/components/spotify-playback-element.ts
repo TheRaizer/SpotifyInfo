@@ -47,6 +47,32 @@ class Slider {
   };
 
   public addEventListeners () {
+    this.addMouseEvents()
+    this.addTouchEvents()
+  }
+
+  private addTouchEvents () {
+    this.sliderEl?.addEventListener('touchstart', (evt) => {
+      this.drag = true
+
+      this.onDragStart()
+      this.updateBar(evt.changedTouches[0].clientX)
+    })
+    document.addEventListener('touchmove', (evt) => {
+      if (this.drag) {
+        this.onDragging(this.percentage)
+        this.updateBar(evt.changedTouches[0].clientX)
+      }
+    })
+    document.addEventListener('touchend', () => {
+      if (this.drag) {
+        this.onDragStop(this.percentage)
+        this.drag = false
+      }
+    })
+  }
+
+  private addMouseEvents () {
     this.sliderEl?.addEventListener('mousedown', (evt) => {
       this.drag = true
 

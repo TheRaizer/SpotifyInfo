@@ -33,6 +33,30 @@ class Slider {
     }
     ;
     addEventListeners() {
+        this.addMouseEvents();
+        this.addTouchEvents();
+    }
+    addTouchEvents() {
+        var _a;
+        (_a = this.sliderEl) === null || _a === void 0 ? void 0 : _a.addEventListener('touchstart', (evt) => {
+            this.drag = true;
+            this.onDragStart();
+            this.updateBar(evt.changedTouches[0].clientX);
+        });
+        document.addEventListener('touchmove', (evt) => {
+            if (this.drag) {
+                this.onDragging(this.percentage);
+                this.updateBar(evt.changedTouches[0].clientX);
+            }
+        });
+        document.addEventListener('touchend', () => {
+            if (this.drag) {
+                this.onDragStop(this.percentage);
+                this.drag = false;
+            }
+        });
+    }
+    addMouseEvents() {
         var _a;
         (_a = this.sliderEl) === null || _a === void 0 ? void 0 : _a.addEventListener('mousedown', (evt) => {
             this.drag = true;
