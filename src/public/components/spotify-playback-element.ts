@@ -30,7 +30,7 @@ class Slider {
 
   private updateBar (x: number) {
     // take the position we clicked get it in relation to the outer bar and subtract the position of the outerbar element to the client as it may not be at the very left.
-    const position = x - this.sliderEl!.offsetLeft - this.sliderEl!.getBoundingClientRect().x
+    const position = x - this.sliderEl!.getBoundingClientRect().x
     this.percentage = 100 * (position / this.sliderEl!.clientWidth)
 
     if (this.percentage > 100) {
