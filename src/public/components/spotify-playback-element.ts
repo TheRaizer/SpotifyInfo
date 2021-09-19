@@ -9,6 +9,15 @@ class Slider {
   public drag: boolean = false;
   private _sliderEl: HTMLElement | null = null
   public sliderProgress: HTMLElement | null = null;
+  private percentage: number = 0;
+  public max: number = 0;
+  private onDragStart: () => void;
+  private onDragStop: (percentage: number) => void;
+
+  constructor (onDragStart: () => void, onDragStop: (percentage: number) => void) {
+    this.onDragStop = onDragStop
+    this.onDragStart = onDragStart
+  }
 
   public set sliderEl (el: HTMLElement | null) {
     this._sliderEl = el
@@ -18,6 +27,40 @@ class Slider {
   public get sliderEl (): HTMLElement | null {
     return this._sliderEl
   }
+
+  private updateBar (x: number) {
+    // take the position we clicked get it in relation to the outer bar and subtract the position of the outerbar element to the client as it may not be at the very left.
+    const position = x - this.sliderEl!.offsetLeft - this.sliderEl!.getBoundingClientRect().x
+    this.percentage = 100 * (position / this.sliderEl!.clientWidth)
+
+    if (this.percentage > 100) {
+      this.percentage = 100
+    }
+    if (this.percentage < 0) {
+      this.percentage = 0
+    }
+    // update volume bar and video volume
+    this.sliderProgress!.style.width = this.percentage + '%'
+  };
+
+  public addEventListeners () {
+    this.sliderEl?.addEventListener('mousedown', (evt) => {
+      this.drag = true
+      this.onDragStart()
+      this.updateBar(evt.clientX)
+    })
+    document.addEventListener('mousemove', (evt) => {
+      if (this.drag) {
+        this.updateBar(evt.clientX)
+      }
+    })
+    document.addEventListener('mouseup', () => {
+      if (this.drag) {
+        this.onDragStop(this.percentage)
+        this.drag = false
+      }
+    })
+  }
 }
 
 export default class SpotifyPlaybackElement {
@@ -26,15 +69,13 @@ export default class SpotifyPlaybackElement {
   public duration: Element | null
   public playPause: Element | null
   public songProgress: Slider
-  public volume: Slider
 
-  constructor () {
+  constructor (onSeekStart: () => void, seekSong: (percentage: number) => void) {
     this.title = null
     this.currTime = null
     this.duration = null
     this.playPause = null
-    this.volume = new Slider()
-    this.songProgress = new Slider()
+    this.songProgress = new Slider(onSeekStart, seekSong)
   }
 
   /**
@@ -47,8 +88,7 @@ export default class SpotifyPlaybackElement {
   public appendWebPlayerHtml (
     playPrevFunc: () => void,
     pauseFunc: () => void,
-    playNextFunc: () => void,
-    volumeChangeFunc: (percent: number) => void) {
+    playNextFunc: () => void) {
     const html = `
     <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
       <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Title</h4>
@@ -75,7 +115,7 @@ export default class SpotifyPlaybackElement {
     const webPlayerEl = htmlToEl(html)
     document.body.append(webPlayerEl as Node)
     this.getWebPlayerEls()
-    this.assignEventListeners(playPrevFunc, pauseFunc, playNextFunc, volumeChangeFunc)
+    this.assignEventListeners(playPrevFunc, pauseFunc, playNextFunc)
   }
 
   /**
@@ -85,7 +125,8 @@ export default class SpotifyPlaybackElement {
    * @param position the current position in ms that has been completed
    */
   public updateElement (percentDone: number, position: number) {
-    if (position !== 0) {
+    // if the user is dragging the song progress bar don't auto update
+    if (position !== 0 && !this.songProgress.drag) {
       // round each interval to the nearest second so that the movement of progress bar is by second.
       this.songProgress!.sliderProgress!.style.width = `${percentDone}%`
       if (this.currTime == null) {
@@ -95,26 +136,6 @@ export default class SpotifyPlaybackElement {
         millisToMinutesAndSeconds(position)
     }
   }
-
-  private updateBar (x: number, outerBar: HTMLElement, innerBar: HTMLElement, callback: (percent: number) => void) {
-    let percentage
-    // take the position we clicked get it in relation to the outer bar and subtract the position of the outerbar element to the client as it may not be at the very left.
-    const position = x - outerBar.offsetLeft - outerBar.getBoundingClientRect().x
-    percentage = 100 * (position / outerBar.clientWidth)
-    console.log(percentage)
-
-    if (percentage > 100) {
-      percentage = 100
-    }
-    if (percentage < 0) {
-      percentage = 0
-    }
-
-    // update volume bar and video volume
-    innerBar.style.width = percentage + '%'
-
-    callback(percentage)
-  };
 
   /**
    * Retrieve the web player elements once the web player element has been appeneded to the DOM.
@@ -143,8 +164,7 @@ export default class SpotifyPlaybackElement {
   private assignEventListeners (
     playPrevFunc: () => void,
     pauseFunc: () => void,
-    playNextFunc: () => void,
-    volumeChangeFunc: (percent: number) => void) {
+    playNextFunc: () => void) {
     const playPrev = document.getElementById(config.CSS.IDs.playPrev)
     const playNext = document.getElementById(config.CSS.IDs.playNext)
 
@@ -152,19 +172,6 @@ export default class SpotifyPlaybackElement {
     playNext?.addEventListener('click', playNextFunc)
 
     this.playPause?.addEventListener('click', pauseFunc)
-
-    this.songProgress.sliderEl?.addEventListener('mousedown', (ev) => {
-      this.songProgress.drag = true
-      this.updateBar(ev.clientX, this.songProgress.sliderEl as HTMLElement, this.songProgress.sliderProgress as HTMLElement, () => { console.log('Update bar') })
-    })
-    document.addEventListener('mousemove', (ev) => {
-      if (this.songProgress.drag) {
-        this.updateBar(ev.clientX, this.songProgress.sliderEl as HTMLElement, this.songProgress.sliderProgress as HTMLElement, () => { console.log('Update bar') })
-      }
-    })
-    document.addEventListener('mouseup', () => {
-      this.songProgress.drag = false
-      this.volume.drag = false
-    })
+    this.songProgress.addEventListeners()
   }
 }

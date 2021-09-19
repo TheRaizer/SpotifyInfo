@@ -24,9 +24,7 @@ class SpotifyPlayback {
   }
 
   private getStateInterval: NodeJS.Timeout | null;
-
   private webPlayerEl: SpotifyPlaybackElement;
-
   private playerIsReady: boolean;
 
   constructor () {
@@ -34,7 +32,6 @@ class SpotifyPlayback {
     this.player = null
     this.device_id = ''
     this.getStateInterval = null
-    this.webPlayerEl = new SpotifyPlaybackElement()
 
     this.selPlaying = {
       element: null,
@@ -43,6 +40,32 @@ class SpotifyPlayback {
     }
     this.playerIsReady = false
     this._loadWebPlayer()
+
+    // pass it the "this." attributes in this scope because when a function is called from a different class the "this." attributes are undefined.
+    this.webPlayerEl = new SpotifyPlaybackElement(() => this.onSeekStart(this.player, this.webPlayerEl), (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl))
+  }
+
+  private onSeekStart (player: any, webPlayerEl: SpotifyPlaybackElement) {
+    player.getCurrentState().then((state: { duration: any }) => {
+      if (!state) {
+        console.error(
+          'User is not playing music through the Web Playback SDK'
+        )
+        return
+      }
+      webPlayerEl.songProgress.max = state.duration
+    })
+  }
+
+  private seekSong (percentage: number, player: any, webPlayerEl: SpotifyPlaybackElement) {
+    if (!this.isExecutingAction) {
+      this.isExecutingAction = true
+      const position = (percentage / 100) * webPlayerEl.songProgress.max
+
+      player.seek(position).then(() => {
+        this.isExecutingAction = false
+      })
+    }
   }
 
   private async _loadWebPlayer () {
@@ -111,8 +134,7 @@ class SpotifyPlayback {
       this.webPlayerEl.appendWebPlayerHtml(
         () => this.tryPlayPrev(this.selPlaying.trackDataNode),
         () => this.tryWebPlayerPause(this.selPlaying.trackDataNode),
-        () => this.tryPlayNext(this.selPlaying.trackDataNode),
-        (percent) => this.changeVolume(percent)
+        () => this.tryPlayNext(this.selPlaying.trackDataNode)
       )
       this.playerIsReady = true
     })
@@ -121,11 +143,6 @@ class SpotifyPlayback {
     this.player.addListener('not_ready', ({ device_id }: { device_id: string }) => {
       console.log('Device ID has gone offline', device_id)
     })
-  }
-
-  private changeVolume (percent: number) {
-    console.log(percent + '%')
-    console.log(this.player.volume)
   }
 
   private resetDuration () {

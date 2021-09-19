@@ -24,7 +24,6 @@ class SpotifyPlayback {
         this.player = null;
         this.device_id = '';
         this.getStateInterval = null;
-        this.webPlayerEl = new spotify_playback_element_1.default();
         this.selPlaying = {
             element: null,
             track_uri: '',
@@ -32,6 +31,25 @@ class SpotifyPlayback {
         };
         this.playerIsReady = false;
         this._loadWebPlayer();
+        this.webPlayerEl = new spotify_playback_element_1.default(this.onSeekStart, this.seekSong);
+    }
+    onSeekStart() {
+        this.player.getCurrentState().then((state) => {
+            if (!state) {
+                console.error('User is not playing music through the Web Playback SDK');
+                return;
+            }
+            this.webPlayerEl.songProgress.max = state.duration;
+        });
+    }
+    seekSong(percentage) {
+        if (!this.isExecutingAction) {
+            this.isExecutingAction = true;
+            const position = (percentage / 100) * this.webPlayerEl.songProgress.max;
+            this.player.seek(position).then(() => {
+                this.isExecutingAction = false;
+            });
+        }
     }
     _loadWebPlayer() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -97,17 +115,13 @@ class SpotifyPlayback {
         this.player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id);
             this.device_id = device_id;
-            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode), (percent) => this.changeVolume(percent));
+            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode));
             this.playerIsReady = true;
         });
         // Not Ready
         this.player.addListener('not_ready', ({ device_id }) => {
             console.log('Device ID has gone offline', device_id);
         });
-    }
-    changeVolume(percent) {
-        console.log(percent + '%');
-        console.log(this.player.volume);
     }
     resetDuration() {
         if (!this.isExecutingAction) {
