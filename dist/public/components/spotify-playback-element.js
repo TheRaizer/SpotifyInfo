@@ -10,6 +10,7 @@ class Slider {
         this.max = 0;
         this.onDragStop = onDragStop;
         this.onDragStart = onDragStart;
+        this.onDragging = onDragging;
     }
     set sliderEl(el) {
         this._sliderEl = el;
@@ -19,7 +20,6 @@ class Slider {
         return this._sliderEl;
     }
     updateBar(x) {
-        // take the position we clicked get it in relation to the outer bar and subtract the position of the outerbar element to the client as it may not be at the very left.
         const position = x - this.sliderEl.getBoundingClientRect().x;
         this.percentage = 100 * (position / this.sliderEl.clientWidth);
         if (this.percentage > 100) {
@@ -28,7 +28,7 @@ class Slider {
         if (this.percentage < 0) {
             this.percentage = 0;
         }
-        // update volume bar and video volume
+        // update the width of the inner slider
         this.sliderProgress.style.width = this.percentage + '%';
     }
     ;
@@ -41,6 +41,7 @@ class Slider {
         });
         document.addEventListener('mousemove', (evt) => {
             if (this.drag) {
+                this.onDragging(this.percentage);
                 this.updateBar(evt.clientX);
             }
         });

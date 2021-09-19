@@ -367,7 +367,7 @@ function dragMoveListener (evt: Interact.InteractEvent) {
   target.setAttribute('data-y', y.toString())
 }
 export function addResizeDrag () {
-  // create an element that exists as the size of the viewport in order to set the restriction of the draggable to exist only within this element.
+  // create an element that exists as the size of the viewport in order to set the restriction of the draggable/resizable to exist only within this element.
   const viewportElementHTML = `<div id="view-port-element" style="
   pointer-events: none; 
   position: fixed; 
@@ -413,7 +413,7 @@ export function addResizeDrag () {
       modifiers: [
         // keep the edges inside the parent
         interact.modifiers.restrictEdges({
-          outer: 'parent'
+          outer: viewportElement as HTMLElement
         }),
 
         // minimum size
