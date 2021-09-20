@@ -2,7 +2,8 @@ import {
   config,
   htmlToEl,
   millisToMinutesAndSeconds,
-  throwExpression
+  throwExpression,
+  resizeConfig
 } from '../config'
 
 class Slider {
@@ -13,7 +14,7 @@ class Slider {
   public max: number = 0;
   private onDragStart: () => void;
   private onDragStop: (percentage: number) => void;
-  private onDragging: (percentage: number) => void
+  private onDragging: (percentage: number) => void;
 
   constructor (onDragStart: () => void, onDragStop: (percentage: number) => void, onDragging: (percentage: number) => void) {
     this.onDragStop = onDragStop
@@ -54,7 +55,7 @@ class Slider {
   private addTouchEvents () {
     this.sliderEl?.addEventListener('touchstart', (evt) => {
       this.drag = true
-
+      resizeConfig.restrictResize = true
       this.onDragStart()
       this.updateBar(evt.changedTouches[0].clientX)
     })
@@ -65,6 +66,7 @@ class Slider {
       }
     })
     document.addEventListener('touchend', () => {
+      resizeConfig.restrictResize = false
       if (this.drag) {
         this.onDragStop(this.percentage)
         this.drag = false
@@ -75,7 +77,7 @@ class Slider {
   private addMouseEvents () {
     this.sliderEl?.addEventListener('mousedown', (evt) => {
       this.drag = true
-
+      resizeConfig.restrictResize = true
       this.onDragStart()
       this.updateBar(evt.clientX)
     })
@@ -86,6 +88,7 @@ class Slider {
       }
     })
     document.addEventListener('mouseup', () => {
+      resizeConfig.restrictResize = false
       if (this.drag) {
         this.onDragStop(this.percentage)
         this.drag = false

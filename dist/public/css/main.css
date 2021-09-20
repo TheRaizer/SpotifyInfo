@@ -1204,6 +1204,12 @@ ul.genres > li {
   display: flex;
   align-items: center;
 }
+#web-player #playtime-bar :hover {
+  cursor: grab;
+}
+#web-player #playtime-bar :active {
+  cursor: grabbing;
+}
 #web-player #playtime-bar > p {
   margin-left: 5px;
   margin-right: 5px;
