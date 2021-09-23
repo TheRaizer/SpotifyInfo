@@ -175,6 +175,9 @@ export default class SpotifyPlaybackElement {
           <button id="${config.CSS.IDs.webPlayerPlayPause}"><img src="${config.PATHS.playBlackIcon}" alt="play/pause"/></button>
           <button id="${config.CSS.IDs.playNext}"><img src="${config.PATHS.playNext}" alt="next"/></button>
         </article>
+        <div id="${config.CSS.IDs.webPlayerVolume}">
+          <div class="${config.CSS.CLASSES.progress}"></div>
+        </div>
       </div>
       <div id="${config.CSS.IDs.playTimeBar}">
         <p>0:00</p>
@@ -182,9 +185,6 @@ export default class SpotifyPlaybackElement {
           <div class="${config.CSS.CLASSES.progress}"></div>
         </div>
         <p>0:00</p>
-      </div>
-      <div id="${config.CSS.IDs.webPlayerVolume}">
-        <div class="${config.CSS.CLASSES.progress}"></div>
       </div>
     </article>
     `
