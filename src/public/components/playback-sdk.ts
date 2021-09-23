@@ -42,11 +42,11 @@ class SpotifyPlayback {
     this._loadWebPlayer()
 
     // pass it the "this." attributes in this scope because when a function is called from a different class the "this." attributes are undefined.
-    this.webPlayerEl = new SpotifyPlaybackElement(
-      () => this.onSeekStart(this.player, this.webPlayerEl),
-      (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl),
-      (percentage) => this.onSeeking(percentage, this.webPlayerEl)
-    )
+    this.webPlayerEl = new SpotifyPlaybackElement()
+  }
+
+  private setVolume (percentage: number, player: any) {
+    player.setVolume(percentage / 100)
   }
 
   /**
@@ -56,7 +56,7 @@ class SpotifyPlayback {
    */
   private onSeeking (percentage: number, webPlayerEl: SpotifyPlaybackElement) {
     // get the position by using the percent the progress bar.
-    const seekPosition = webPlayerEl.songProgress.max * (percentage / 100)
+    const seekPosition = webPlayerEl.songProgress!.max * (percentage / 100)
     if (webPlayerEl.currTime == null) {
       throw new Error('Current time element is null')
     }
@@ -78,7 +78,7 @@ class SpotifyPlayback {
         return
       }
       // when first seeking, update the max attribute with the duration of the song for use when seeking.
-      webPlayerEl.songProgress.max = state.duration
+      webPlayerEl.songProgress!.max = state.duration
     })
   }
 
@@ -92,7 +92,7 @@ class SpotifyPlayback {
     if (!this.isExecutingAction) {
       this.isExecutingAction = true
       // obtain the final position the user wishes to seek once mouse is up.
-      const position = (percentage / 100) * webPlayerEl.songProgress.max
+      const position = (percentage / 100) * webPlayerEl.songProgress!.max
 
       // seek to the chosen position.
       player.seek(position).then(() => {
@@ -131,7 +131,7 @@ class SpotifyPlayback {
               // give the token to callback
               cb(res.data)
             },
-            volume: 0.1
+            volume: 0.4
           })
           this._addListeners()
           // Connect to the player!
@@ -164,10 +164,17 @@ class SpotifyPlayback {
     this.player.addListener('ready', ({ device_id }: { device_id: string }) => {
       console.log('Ready with Device ID', device_id)
       this.device_id = device_id
+
+      // append web player element to DOM
       this.webPlayerEl.appendWebPlayerHtml(
         () => this.tryPlayPrev(this.selPlaying.trackDataNode),
         () => this.tryWebPlayerPause(this.selPlaying.trackDataNode),
-        () => this.tryPlayNext(this.selPlaying.trackDataNode)
+        () => this.tryPlayNext(this.selPlaying.trackDataNode),
+        () => this.onSeekStart(this.player, this.webPlayerEl),
+        (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl),
+        (percentage) => this.onSeeking(percentage, this.webPlayerEl),
+        (percentage) => this.setVolume(percentage, this.player),
+        0.4
       )
       this.playerIsReady = true
     })
@@ -425,4 +432,4 @@ const preloadPlayPauseImgsEl = htmlToEl(preloadPlayPauseImgsHtml) as Node
 document.body.appendChild(preloadPlayPauseImgsEl)
 document.body.removeChild(preloadPlayPauseImgsEl)
 
-addResizeDrag('.resize-drag', 200, 100)
+addResizeDrag('.resize-drag', 200, 120)

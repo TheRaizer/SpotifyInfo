@@ -32,7 +32,10 @@ class SpotifyPlayback {
         this.playerIsReady = false;
         this._loadWebPlayer();
         // pass it the "this." attributes in this scope because when a function is called from a different class the "this." attributes are undefined.
-        this.webPlayerEl = new spotify_playback_element_1.default(() => this.onSeekStart(this.player, this.webPlayerEl), (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl), (percentage) => this.onSeeking(percentage, this.webPlayerEl));
+        this.webPlayerEl = new spotify_playback_element_1.default();
+    }
+    setVolume(percentage, player) {
+        player.setVolume(percentage / 100);
     }
     /**
      * Update the time shown when seeking.
@@ -113,7 +116,7 @@ class SpotifyPlayback {
                                 // give the token to callback
                                 cb(res.data);
                             },
-                            volume: 0.1
+                            volume: 0.4
                         });
                         this._addListeners();
                         // Connect to the player!
@@ -144,7 +147,8 @@ class SpotifyPlayback {
         this.player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id);
             this.device_id = device_id;
-            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode));
+            // append web player element to DOM
+            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode), () => this.onSeekStart(this.player, this.webPlayerEl), (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl), (percentage) => this.onSeeking(percentage, this.webPlayerEl), (percentage) => this.setVolume(percentage, this.player), 0.4);
             this.playerIsReady = true;
         });
         // Not Ready
@@ -377,5 +381,5 @@ const preloadPlayPauseImgsHtml = `<div style="display: none"><img src="${config_
 const preloadPlayPauseImgsEl = (0, config_1.htmlToEl)(preloadPlayPauseImgsHtml);
 document.body.appendChild(preloadPlayPauseImgsEl);
 document.body.removeChild(preloadPlayPauseImgsEl);
-(0, config_1.addResizeDrag)('.resize-drag', 200, 100);
+(0, config_1.addResizeDrag)('.resize-drag', 200, 120);
 //# sourceMappingURL=playback-sdk.js.map

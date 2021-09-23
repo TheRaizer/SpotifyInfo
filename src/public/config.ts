@@ -339,7 +339,12 @@ export function getPixelPosInElOnClick (mouseEvt: MouseEvent): { x: number; y: n
   const y = mouseEvt.clientY - rect.top // y position within the element.
   return { x, y }
 }
+export const interactJsConfig = { restrict: false }
+
 function dragMoveListener (evt: Interact.InteractEvent) {
+  if (interactJsConfig.restrict) {
+    return
+  }
   const target = evt.target
   // keep the dragged position in the data-x/data-y attributes
   if (target === null) {
@@ -366,7 +371,6 @@ function dragMoveListener (evt: Interact.InteractEvent) {
   target.setAttribute('data-x', x.toString())
   target.setAttribute('data-y', y.toString())
 }
-export const resizeConfig = { restrictResize: false }
 export function addResizeDrag (identifier: string, minWidth: number, minHeight: number) {
   // create an element that exists as the size of the viewport in order to set the restriction of the draggable/resizable to exist only within this element.
   const viewportElementHTML = `<div id="view-port-element" style="
@@ -392,7 +396,7 @@ export function addResizeDrag (identifier: string, minWidth: number, minHeight: 
       edges: { left: true, right: true, bottom: true, top: true },
       listeners: {
         move (evt) {
-          if (resizeConfig.restrictResize) {
+          if (interactJsConfig.restrict) {
             return
           }
           const target = evt.target

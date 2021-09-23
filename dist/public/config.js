@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.throwExpression = exports.addResizeDrag = exports.getPixelPosInElOnClick = exports.animationControl = exports.removeAllChildNodes = exports.getValidImage = exports.capitalizeFirstLetter = exports.isEllipsisActive = exports.getTextWidth = exports.searchUl = exports.promiseHandler = exports.htmlToEl = exports.millisToMinutesAndSeconds = exports.config = void 0;
+exports.throwExpression = exports.addResizeDrag = exports.interactJsConfig = exports.getPixelPosInElOnClick = exports.animationControl = exports.removeAllChildNodes = exports.getValidImage = exports.capitalizeFirstLetter = exports.isEllipsisActive = exports.getTextWidth = exports.searchUl = exports.promiseHandler = exports.htmlToEl = exports.millisToMinutesAndSeconds = exports.config = void 0;
 const interactjs_1 = __importDefault(require("interactjs"));
 const authEndpoint = 'https://accounts.spotify.com/authorize';
 // Replace with your app's client ID, redirect URI and desired scopes
@@ -336,7 +336,11 @@ function getPixelPosInElOnClick(mouseEvt) {
     return { x, y };
 }
 exports.getPixelPosInElOnClick = getPixelPosInElOnClick;
+exports.interactJsConfig = { restrict: false };
 function dragMoveListener(evt) {
+    if (exports.interactJsConfig.restrict) {
+        return;
+    }
     const target = evt.target;
     // keep the dragged position in the data-x/data-y attributes
     if (target === null) {
@@ -384,6 +388,9 @@ function addResizeDrag(identifier, minWidth, minHeight) {
         edges: { left: true, right: true, bottom: true, top: true },
         listeners: {
             move(evt) {
+                if (exports.interactJsConfig.restrict) {
+                    return;
+                }
                 const target = evt.target;
                 let x = parseFloat(target.getAttribute('data-x')) || 0;
                 let y = parseFloat(target.getAttribute('data-y')) || 0;
