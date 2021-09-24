@@ -1154,6 +1154,20 @@ ul.genres > li {
 .dropdown:hover .dropbtn {
   background-color: #3e8e41;
 }
+.progress {
+  border-radius: 5px;
+  background-color: #e6e6e6;
+}
+.slider:hover {
+  cursor: grab;
+}
+.slider:hover .progress {
+  transition: background-color 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  background-color: #1db954;
+}
+.slider:active {
+  cursor: grabbing;
+}
 #web-player-volume-bar {
   right: 2%;
   position: absolute;
@@ -1163,17 +1177,9 @@ ul.genres > li {
   height: 75px;
   background-color: #727272;
 }
-#web-player-volume-bar :hover {
-  cursor: grab;
-}
-#web-player-volume-bar :active {
-  cursor: grabbing;
-}
 #web-player-volume-bar > .progress {
-  border-radius: 5px;
   height: 15px;
   height: inherit;
-  background-color: #e6e6e6;
 }
 #web-player-progress-bar {
   border-radius: 5px;
@@ -1182,10 +1188,7 @@ ul.genres > li {
   background-color: #464646;
 }
 #web-player-progress-bar > .progress {
-  border-radius: 5px;
-  width: 1%;
   height: inherit;
-  background-color: #d1d1d1;
 }
 #web-player {
   text-align: center;
@@ -1217,12 +1220,6 @@ ul.genres > li {
 #web-player #playtime-bar > p {
   margin-left: 5px;
   margin-right: 5px;
-}
-#web-player #playtime-bar :hover {
-  cursor: grab;
-}
-#web-player #playtime-bar :active {
-  cursor: grabbing;
 }
 #play-pause-player > img {
   content: url("../images/play-black-30px.png");

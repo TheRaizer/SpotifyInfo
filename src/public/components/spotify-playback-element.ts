@@ -34,6 +34,7 @@ class Slider {
     }
 
     this.changeBarLength()
+    this.sliderProgress!.style.removeProperty('background-color')
   }
 
   private updateBar (mosPosVal: number) {
@@ -61,6 +62,8 @@ class Slider {
   };
 
   private changeBarLength () {
+    // set background color of all moving sliders progress as the spotify green
+    this.sliderProgress!.style.backgroundColor = '#1db954'
     if (this.topToBottom) {
       this.sliderProgress!.style.height = this.percentage + '%'
     } else {
@@ -92,6 +95,8 @@ class Slider {
       interactJsConfig.restrict = false
       if (this.drag) {
         this.onDragStop(this.percentage)
+        // remove the inline css so that its original background color returns
+        this.sliderProgress!.style.removeProperty('background-color')
         this.drag = false
       }
     })
@@ -124,6 +129,8 @@ class Slider {
       interactJsConfig.restrict = false
       if (this.drag) {
         this.onDragStop(this.percentage)
+        // remove the inline css so that its original background color returns
+        this.sliderProgress!.style.removeProperty('background-color')
         this.drag = false
       }
     })
@@ -175,13 +182,13 @@ export default class SpotifyPlaybackElement {
           <button id="${config.CSS.IDs.webPlayerPlayPause}"><img src="${config.PATHS.playBlackIcon}" alt="play/pause"/></button>
           <button id="${config.CSS.IDs.playNext}"><img src="${config.PATHS.playNext}" alt="next"/></button>
         </article>
-        <div id="${config.CSS.IDs.webPlayerVolume}">
+        <div id="${config.CSS.IDs.webPlayerVolume}" class="${config.CSS.CLASSES.slider}">
           <div class="${config.CSS.CLASSES.progress}"></div>
         </div>
       </div>
       <div id="${config.CSS.IDs.playTimeBar}">
         <p>0:00</p>
-        <div id="${config.CSS.IDs.webPlayerProgress}">
+        <div id="${config.CSS.IDs.webPlayerProgress}" class="${config.CSS.CLASSES.slider}">
           <div class="${config.CSS.CLASSES.progress}"></div>
         </div>
         <p>0:00</p>

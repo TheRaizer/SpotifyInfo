@@ -1,12 +1,24 @@
 @import "main-vars.less";
 
-#web-player-volume-bar {
-  :hover {
+.progress {
+  border-radius: 5px;
+  background-color: rgb(230, 230, 230);
+}
+
+.slider {
+  &:hover {
     cursor: grab;
+    & .progress {
+      transition: background-color 300ms @quick-bezier;
+      background-color: #1db954;
+    }
   }
-  :active {
+  &:active {
     cursor: grabbing;
   }
+}
+
+#web-player-volume-bar {
   right: 2%;
   position: absolute;
   bottom: 20px;
@@ -16,10 +28,8 @@
   background-color: rgb(114, 114, 114);
 
   & > .progress {
-    border-radius: 5px;
     height: 15px;
     height: inherit;
-    background-color: rgb(230, 230, 230);
   }
 }
 
@@ -30,10 +40,7 @@
   background-color: #464646;
 
   & > .progress {
-    border-radius: 5px;
-    width: 1%;
     height: inherit;
-    background-color: #d1d1d1;
   }
 }
 
@@ -69,12 +76,6 @@
     & > p {
       margin-left: 5px;
       margin-right: 5px;
-    }
-    :hover {
-      cursor: grab;
-    }
-    :active {
-      cursor: grabbing;
     }
   }
 }

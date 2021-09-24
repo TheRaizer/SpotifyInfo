@@ -116,7 +116,8 @@ export const config = {
       links: 'links',
       progress: 'progress',
       playPause: 'play-pause',
-      rankedTrackInteract: 'ranked-card-interaction-area'
+      rankedTrackInteract: 'ranked-card-interaction-area',
+      slider: 'slider'
     },
     ATTRIBUTES: {
       dataSelection: 'data-selection'
