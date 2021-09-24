@@ -21,4 +21,6 @@ router.get('/get-current-user-profile', spotify_controller_1.spotifyCtrl.getCurr
 router.get('/get-current-user-saved-tracks', spotify_controller_1.spotifyCtrl.getCurrentUserSavedTracks);
 router.get('/get-followed-artists', spotify_controller_1.spotifyCtrl.getFollowedArtists);
 router.put('/play-track', spotify_controller_1.spotifyCtrl.putPlayTrack);
+router.put('/put-player-volume', spotify_controller_1.spotifyCtrl.putPlayerVolumeData);
+router.get('/get-player-volume', spotify_controller_1.spotifyCtrl.getPlayerVolumeData);
 //# sourceMappingURL=spotify-actions.js.map

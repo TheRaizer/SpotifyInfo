@@ -127,7 +127,8 @@ exports.config = {
             links: 'links',
             progress: 'progress',
             playPause: 'play-pause',
-            rankedTrackInteract: 'ranked-card-interaction-area'
+            rankedTrackInteract: 'ranked-interaction-area',
+            slider: 'slider'
         },
         ATTRIBUTES: {
             dataSelection: 'data-selection'
@@ -158,7 +159,9 @@ exports.config = {
         putClearSession: '/clear-session',
         getCurrentUserSavedTracks: '/spotify/get-current-user-saved-tracks',
         getFollowedArtists: '/spotify/get-followed-artists',
-        putPlayTrack: (device_id, track_uri) => `/spotify/play-track?device_id=${device_id}&track_uri=${track_uri}`
+        putPlayTrack: (device_id, track_uri) => `/spotify/play-track?device_id=${device_id}&track_uri=${track_uri}`,
+        putPlayerVolumeData: (val) => `/spotify/put-player-volume?val=${val}`,
+        getPlayerVolumeData: '/spotify/get-player-volume'
     },
     PATHS: {
         spinner: '/images/200pxLoadingSpinner.svg',

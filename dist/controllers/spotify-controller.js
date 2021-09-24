@@ -267,6 +267,18 @@ function putPlayTrack(req, res, next) {
         });
     });
 }
+function putPlayerVolumeData(req, res) {
+    const val = req.query.val;
+    if (req.session.user !== undefined) {
+        req.session.user.playerVolume = val;
+    }
+    console.log(req.session);
+    res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
+}
+function getPlayerVolumeData(req, res) {
+    var _a;
+    res.status(http_status_codes_1.StatusCodes.OK).send((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.playerVolume);
+}
 const spotifyCtrl = {
     getTopArtists,
     getTopTracks,
@@ -283,7 +295,9 @@ const spotifyCtrl = {
     getCurrentUserProfile,
     getCurrentUserSavedTracks,
     getFollowedArtists,
-    putPlayTrack
+    putPlayTrack,
+    putPlayerVolumeData,
+    getPlayerVolumeData
 };
 exports.spotifyCtrl = spotifyCtrl;
 //# sourceMappingURL=spotify-controller.js.map

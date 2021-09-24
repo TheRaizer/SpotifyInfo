@@ -116,7 +116,7 @@ export const config = {
       links: 'links',
       progress: 'progress',
       playPause: 'play-pause',
-      rankedTrackInteract: 'ranked-card-interaction-area',
+      rankedTrackInteract: 'ranked-interaction-area',
       slider: 'slider'
     },
     ATTRIBUTES: {
@@ -151,7 +151,9 @@ export const config = {
     getCurrentUserSavedTracks: '/spotify/get-current-user-saved-tracks',
     getFollowedArtists: '/spotify/get-followed-artists',
     putPlayTrack: (device_id: string, track_uri: string) =>
-      `/spotify/play-track?device_id=${device_id}&track_uri=${track_uri}`
+      `/spotify/play-track?device_id=${device_id}&track_uri=${track_uri}`,
+    putPlayerVolumeData: (val: string) => `/spotify/put-player-volume?val=${val}`,
+    getPlayerVolumeData: '/spotify/get-player-volume'
   },
   PATHS: {
     spinner: '/images/200pxLoadingSpinner.svg',

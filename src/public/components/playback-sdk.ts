@@ -12,6 +12,16 @@ import EventAggregator from './pubsub/aggregator'
 import { IPlayable } from '../types'
 import SpotifyPlaybackElement from './spotify-playback-element'
 
+async function loadVolume () {
+  const response = await promiseHandler(axios.get(config.URLs.getPlayerVolumeData))
+  console.log(response)
+  const volume = response.res!.data
+  return volume
+}
+async function saveVolume (volume: string) {
+  promiseHandler(axios.put(config.URLs.putPlayerVolumeData(volume)))
+}
+
 class SpotifyPlayback {
   private player: any;
   // controls timing of async actions when working with webplayer sdk
@@ -45,8 +55,13 @@ class SpotifyPlayback {
     this.webPlayerEl = new SpotifyPlaybackElement()
   }
 
-  private setVolume (percentage: number, player: any) {
-    player.setVolume(percentage / 100)
+  private setVolume (percentage: number, player: any, save: boolean = false) {
+    const newVolume = percentage / 100
+    player.setVolume(newVolume)
+
+    if (save) {
+      saveVolume(newVolume.toString())
+    }
   }
 
   /**
@@ -102,6 +117,10 @@ class SpotifyPlayback {
   }
 
   private async _loadWebPlayer () {
+    // load the users saved volume if there isnt then load 0.4 as default.
+    const volume = await loadVolume()
+    console.log(volume + ' loaded.')
+
     promiseHandler<AxiosResponse<string | null>>(axios.request<string | null>({ method: 'GET', url: config.URLs.getAccessToken }), (res) => {
       // this takes too long and spotify sdk needs window.onSpotifyWebPlaybackSDKReady to be defined quicker.
       const NO_CONTENT = 204
@@ -116,9 +135,9 @@ class SpotifyPlayback {
             // give the token to callback
             cb(res.data)
           },
-          volume: 0.4
+          volume: volume
         })
-        this._addListeners()
+        this._addListeners(volume)
         // Connect to the player!
         this.player.connect()
       } else {
@@ -131,9 +150,9 @@ class SpotifyPlayback {
               // give the token to callback
               cb(res.data)
             },
-            volume: 0.4
+            volume: volume
           })
-          this._addListeners()
+          this._addListeners(volume)
           // Connect to the player!
           this.player.connect()
         }
@@ -141,7 +160,7 @@ class SpotifyPlayback {
     })
   }
 
-  private _addListeners () {
+  private _addListeners (loadedVolume: string) {
     // Error handling
     this.player.addListener('initialization_error', ({ message }: { message: unknown }) => {
       console.error(message)
@@ -173,8 +192,8 @@ class SpotifyPlayback {
         () => this.onSeekStart(this.player, this.webPlayerEl),
         (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl),
         (percentage) => this.onSeeking(percentage, this.webPlayerEl),
-        (percentage) => this.setVolume(percentage, this.player),
-        0.4
+        (percentage, save) => this.setVolume(percentage, this.player, save),
+        parseFloat(loadedVolume)
       )
       this.playerIsReady = true
     })

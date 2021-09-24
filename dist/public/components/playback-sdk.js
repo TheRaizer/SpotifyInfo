@@ -18,6 +18,19 @@ const track_play_args_1 = __importDefault(require("./pubsub/event-args/track-pla
 const axios_1 = __importDefault(require("axios"));
 const aggregator_1 = __importDefault(require("./pubsub/aggregator"));
 const spotify_playback_element_1 = __importDefault(require("./spotify-playback-element"));
+function loadVolume() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const response = yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getPlayerVolumeData));
+        console.log(response);
+        const volume = response.res.data;
+        return volume;
+    });
+}
+function saveVolume(volume) {
+    return __awaiter(this, void 0, void 0, function* () {
+        (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putPlayerVolumeData(volume)));
+    });
+}
 class SpotifyPlayback {
     constructor() {
         this.isExecutingAction = false;
@@ -34,8 +47,12 @@ class SpotifyPlayback {
         // pass it the "this." attributes in this scope because when a function is called from a different class the "this." attributes are undefined.
         this.webPlayerEl = new spotify_playback_element_1.default();
     }
-    setVolume(percentage, player) {
-        player.setVolume(percentage / 100);
+    setVolume(percentage, player, save = false) {
+        const newVolume = percentage / 100;
+        player.setVolume(newVolume);
+        if (save) {
+            saveVolume(newVolume.toString());
+        }
     }
     /**
      * Update the time shown when seeking.
@@ -85,6 +102,9 @@ class SpotifyPlayback {
     }
     _loadWebPlayer() {
         return __awaiter(this, void 0, void 0, function* () {
+            // load the users saved volume if there isnt then load 0.4 as default.
+            const volume = yield loadVolume();
+            console.log(volume + ' loaded.');
             (0, config_1.promiseHandler)(axios_1.default.request({ method: 'GET', url: config_1.config.URLs.getAccessToken }), (res) => {
                 // this takes too long and spotify sdk needs window.onSpotifyWebPlaybackSDKReady to be defined quicker.
                 const NO_CONTENT = 204;
@@ -100,7 +120,7 @@ class SpotifyPlayback {
                             // give the token to callback
                             cb(res.data);
                         },
-                        volume: 0.4
+                        volume: volume
                     });
                     this._addListeners();
                     // Connect to the player!
@@ -116,7 +136,7 @@ class SpotifyPlayback {
                                 // give the token to callback
                                 cb(res.data);
                             },
-                            volume: 0.4
+                            volume: volume
                         });
                         this._addListeners();
                         // Connect to the player!
@@ -148,7 +168,7 @@ class SpotifyPlayback {
             console.log('Ready with Device ID', device_id);
             this.device_id = device_id;
             // append web player element to DOM
-            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode), () => this.onSeekStart(this.player, this.webPlayerEl), (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl), (percentage) => this.onSeeking(percentage, this.webPlayerEl), (percentage) => this.setVolume(percentage, this.player), 0.4);
+            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode), () => this.onSeekStart(this.player, this.webPlayerEl), (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl), (percentage) => this.onSeeking(percentage, this.webPlayerEl), (percentage, save) => this.setVolume(percentage, this.player, save), 0.4);
             this.playerIsReady = true;
         });
         // Not Ready

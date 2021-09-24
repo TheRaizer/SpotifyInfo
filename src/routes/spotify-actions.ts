@@ -23,5 +23,7 @@ router.get(
 )
 router.get('/get-followed-artists', spotifyCtrl.getFollowedArtists)
 router.put('/play-track', spotifyCtrl.putPlayTrack)
+router.put('/put-player-volume', spotifyCtrl.putPlayerVolumeData)
+router.get('/get-player-volume', spotifyCtrl.getPlayerVolumeData)
 
 export { router }

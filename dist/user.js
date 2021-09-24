@@ -7,6 +7,7 @@ class User {
         this.updateDate = new Date();
         this.playlistResizeWidth = '';
         this.playlistIsInTextForm = 'false';
+        this.playerVolume = '0.4';
     }
 }
 exports.default = User;

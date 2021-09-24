@@ -171,7 +171,7 @@ export default class SpotifyPlaybackElement {
     onSeekStart: () => void,
     seekSong: (percentage: number) => void,
     onSeeking: (percentage: number) => void,
-    setVolume: (percentage: number) => void,
+    setVolume: (percentage: number, save: boolean) => void,
     initialVolume: number) {
     const html = `
     <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
@@ -241,7 +241,7 @@ export default class SpotifyPlaybackElement {
     onSeekStart: () => void,
     seekSong: (percentage: number) => void,
     onSeeking: (percentage: number) => void,
-    setVolume: (percentage: number) => void,
+    setVolume: (percentage: number, save: boolean) => void,
     initialVolume: number) {
     const webPlayerEl = document.getElementById(config.CSS.IDs.webPlayer) ?? throwExpression('web player element does not exist')
     const playTimeBar = document.getElementById(config.CSS.IDs.playTimeBar) ?? throwExpression('play time bar element does not exist')
@@ -250,7 +250,7 @@ export default class SpotifyPlaybackElement {
     const volumeSliderEl = document.getElementById(config.CSS.IDs.webPlayerVolume) as HTMLElement ?? throwExpression('web player volume bar does not exist')
 
     this.songProgress = new Slider(0, seekSong, false, onSeekStart, onSeeking, songSliderEl)
-    this.volumeBar = new Slider(initialVolume * 100, setVolume, true, () => {}, setVolume, volumeSliderEl)
+    this.volumeBar = new Slider(initialVolume * 100, (percentage) => setVolume(percentage, false), true, () => {}, (percentage) => setVolume(percentage, true), volumeSliderEl)
 
     this.title = webPlayerEl.getElementsByTagName('h4')[0] as Element ?? throwExpression('web player title element does not exist')
 

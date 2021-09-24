@@ -22,6 +22,7 @@ class Slider {
             this.sliderEl.style.transformOrigin = 'transform-origin: top';
         }
         this.changeBarLength();
+        this.sliderProgress.style.removeProperty('background-color');
     }
     updateBar(mosPosVal) {
         let position;
@@ -48,6 +49,8 @@ class Slider {
     }
     ;
     changeBarLength() {
+        // set background color of all moving sliders progress as the spotify green
+        this.sliderProgress.style.backgroundColor = '#1db954';
         if (this.topToBottom) {
             this.sliderProgress.style.height = this.percentage + '%';
         }
@@ -79,6 +82,8 @@ class Slider {
             config_1.interactJsConfig.restrict = false;
             if (this.drag) {
                 this.onDragStop(this.percentage);
+                // remove the inline css so that its original background color returns
+                this.sliderProgress.style.removeProperty('background-color');
                 this.drag = false;
             }
         });
@@ -113,6 +118,8 @@ class Slider {
             config_1.interactJsConfig.restrict = false;
             if (this.drag) {
                 this.onDragStop(this.percentage);
+                // remove the inline css so that its original background color returns
+                this.sliderProgress.style.removeProperty('background-color');
                 this.drag = false;
             }
         });
@@ -149,16 +156,16 @@ class SpotifyPlaybackElement {
           <button id="${config_1.config.CSS.IDs.webPlayerPlayPause}"><img src="${config_1.config.PATHS.playBlackIcon}" alt="play/pause"/></button>
           <button id="${config_1.config.CSS.IDs.playNext}"><img src="${config_1.config.PATHS.playNext}" alt="next"/></button>
         </article>
+        <div id="${config_1.config.CSS.IDs.webPlayerVolume}" class="${config_1.config.CSS.CLASSES.slider}">
+          <div class="${config_1.config.CSS.CLASSES.progress}"></div>
+        </div>
       </div>
       <div id="${config_1.config.CSS.IDs.playTimeBar}">
         <p>0:00</p>
-        <div id="${config_1.config.CSS.IDs.webPlayerProgress}">
+        <div id="${config_1.config.CSS.IDs.webPlayerProgress}" class="${config_1.config.CSS.CLASSES.slider}">
           <div class="${config_1.config.CSS.CLASSES.progress}"></div>
         </div>
         <p>0:00</p>
-      </div>
-      <div id="${config_1.config.CSS.IDs.webPlayerVolume}">
-        <div class="${config_1.config.CSS.CLASSES.progress}"></div>
       </div>
     </article>
     `;
@@ -199,7 +206,7 @@ class SpotifyPlaybackElement {
         const songSliderEl = (_c = document.getElementById(config_1.config.CSS.IDs.webPlayerProgress)) !== null && _c !== void 0 ? _c : (0, config_1.throwExpression)('web player progress bar does not exist');
         const volumeSliderEl = (_d = document.getElementById(config_1.config.CSS.IDs.webPlayerVolume)) !== null && _d !== void 0 ? _d : (0, config_1.throwExpression)('web player volume bar does not exist');
         this.songProgress = new Slider(0, seekSong, false, onSeekStart, onSeeking, songSliderEl);
-        this.volumeBar = new Slider(initialVolume * 100, setVolume, true, () => { }, setVolume, volumeSliderEl);
+        this.volumeBar = new Slider(initialVolume * 100, (percentage) => setVolume(percentage, false), true, () => { }, (percentage) => setVolume(percentage, true), volumeSliderEl);
         this.title = (_e = webPlayerEl.getElementsByTagName('h4')[0]) !== null && _e !== void 0 ? _e : (0, config_1.throwExpression)('web player title element does not exist');
         // get playtime bar elements
         this.currTime = (_f = playTimeBar.getElementsByTagName('p')[0]) !== null && _f !== void 0 ? _f : (0, config_1.throwExpression)('web player current time element does not exist');

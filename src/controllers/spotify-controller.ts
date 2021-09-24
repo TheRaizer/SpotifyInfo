@@ -146,6 +146,7 @@ function putPlaylistResizeData (req: Request, res: Response) {
 
   res.sendStatus(StatusCodes.CREATED)
 }
+
 function getPlaylistResizeData (req: Request, res: Response) {
   res.status(StatusCodes.OK).send(req.session.user?.playlistResizeWidth)
 }
@@ -238,6 +239,20 @@ async function putPlayTrack (req: Request, res: Response, next: NextFunction) {
     })
 }
 
+function putPlayerVolumeData (req: Request, res: Response) {
+  const val = req.query.val as string
+  if (req.session.user !== undefined) {
+    req.session.user.playerVolume = val
+  }
+  console.log(req.session)
+
+  res.sendStatus(StatusCodes.CREATED)
+}
+
+function getPlayerVolumeData (req: Request, res: Response) {
+  res.status(StatusCodes.OK).send(req.session.user?.playerVolume)
+}
+
 const spotifyCtrl = {
   getTopArtists,
   getTopTracks,
@@ -254,7 +269,9 @@ const spotifyCtrl = {
   getCurrentUserProfile,
   getCurrentUserSavedTracks,
   getFollowedArtists,
-  putPlayTrack
+  putPlayTrack,
+  putPlayerVolumeData,
+  getPlayerVolumeData
 }
 
 export { spotifyCtrl }
