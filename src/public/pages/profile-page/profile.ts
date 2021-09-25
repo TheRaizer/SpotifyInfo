@@ -11,7 +11,7 @@ import CardActionsHandler from '../../card-actions'
 import DoublyLinkedList from '../../components/doubly-linked-list'
 import axios, { AxiosResponse } from 'axios'
 import Track from '../../components/track'
-import { ProfileData, TrackData } from '../../types'
+import { ProfileData, TrackData } from '../../../types'
 
 function displayProfile (profile: Profile) {
   const profileHeader = document.getElementById(config.CSS.IDs.profileHeader) ?? throwExpression('profile header element does not exist')

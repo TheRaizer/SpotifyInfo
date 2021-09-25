@@ -12,20 +12,24 @@
 
 .topnav {
   z-index: 1000;
+  position: absolute;
   list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #303030;
   font-family: arial;
   text-align: left;
+  background-color: transparent;
   width: 100%;
-  position: sticky;
+  right: 0;
   top: 0;
 
   & li {
     float: left;
+    margin-right: 0.1vw;
     & a {
+      width: 10vw;
+      border-radius: 10px;
       display: block;
       color: white;
       text-align: center;
@@ -51,6 +55,8 @@
       }
     }
     &.right {
+      margin-left: 0;
+      margin-right: 0;
       float: right;
     }
   }

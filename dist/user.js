@@ -8,6 +8,7 @@ class User {
         this.playlistResizeWidth = '';
         this.playlistIsInTextForm = 'false';
         this.playerVolume = '0.4';
+        this.currentPlayingTrack = { title: '', uri: '', position: '' };
     }
 }
 exports.default = User;

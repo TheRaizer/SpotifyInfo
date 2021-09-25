@@ -2,7 +2,7 @@ import { config, htmlToEl, getValidImage } from '../config'
 import Track, { generateTracksFromData } from './track'
 import Card from './card'
 import DoublyLinkedList from './doubly-linked-list'
-import { ArtistData, SpotifyImg } from '../types'
+import { ArtistData, SpotifyImg } from '../../types'
 import axios from 'axios'
 
 class Artist extends Card {

@@ -138,7 +138,7 @@ class Slider {
 }
 
 export default class SpotifyPlaybackElement {
-  public title: Element | null;
+  private title: Element | null;
   public currTime: Element | null;
   public duration: Element | null;
   public playPause: Element | null;
@@ -150,6 +150,20 @@ export default class SpotifyPlaybackElement {
     this.currTime = null
     this.duration = null
     this.playPause = null
+  }
+
+  public setTitle (title: string) {
+    if (this.title === null) {
+      throw new Error('Trying to set title before it is assigned')
+    }
+    this.title!.textContent = title
+  }
+
+  public getTitle (): string {
+    if (this.title === null) {
+      throw new Error('Trying to set title before it is assigned')
+    }
+    return this.title.textContent as string
   }
 
   /**
@@ -175,7 +189,7 @@ export default class SpotifyPlaybackElement {
     initialVolume: number) {
     const html = `
     <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
-      <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Title</h4>
+      <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
       <div>
         <article>
           <button id="${config.CSS.IDs.playPrev}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>

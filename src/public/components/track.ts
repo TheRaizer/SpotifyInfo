@@ -11,7 +11,7 @@ import {
 import Album from './album'
 import Card from './card'
 import PlayableEventArg from './pubsub/event-args/track-play-args'
-import { SpotifyImg, FeaturesData, IArtistTrackData, IPlayable, ExternalUrls, TrackData } from '../types'
+import { SpotifyImg, FeaturesData, IArtistTrackData, IPlayable, ExternalUrls, TrackData } from '../../types'
 import DoublyLinkedList, { DoublyLinkedListNode } from '../components/doubly-linked-list'
 import axios from 'axios'
 import EventAggregator from './pubsub/aggregator'

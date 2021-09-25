@@ -1,5 +1,5 @@
 import { getValidImage } from '../config'
-import { SpotifyImg } from '../types'
+import { SpotifyImg } from '../../types'
 export default class Profile {
   displayName: string;
   country: string;

@@ -244,7 +244,6 @@ function putPlayerVolumeData (req: Request, res: Response) {
   if (req.session.user !== undefined) {
     req.session.user.playerVolume = val
   }
-  console.log(req.session)
 
   res.sendStatus(StatusCodes.CREATED)
 }

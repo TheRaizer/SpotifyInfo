@@ -9,7 +9,7 @@ import { DoublyLinkedListNode } from './doubly-linked-list'
 import PlayableEventArg from './pubsub/event-args/track-play-args'
 import axios, { AxiosResponse } from 'axios'
 import EventAggregator from './pubsub/aggregator'
-import { IPlayable } from '../types'
+import { IPlayable } from '../../types'
 import SpotifyPlaybackElement from './spotify-playback-element'
 
 async function loadVolume () {
@@ -291,7 +291,7 @@ class SpotifyPlayback {
     this.selPlaying.track_uri = eventArg.currPlayable.uri
 
     this.webPlayerEl.playPause?.classList.add(config.CSS.CLASSES.selected)
-    this.webPlayerEl!.title!.textContent = eventArg.currPlayable.title
+    this.webPlayerEl.setTitle(eventArg.currPlayable.title)
 
     this.selPlaying.trackDataNode?.data.onPlaying()
   }

@@ -15,7 +15,7 @@ import CardActionsHandler from '../../card-actions'
 import DoublyLinkedList, { arrayToDoublyLinkedList } from '../../components/doubly-linked-list'
 import interact from 'interactjs'
 import axios, { AxiosResponse } from 'axios'
-import { PlaylistData } from '../../types'
+import { PlaylistData } from '../../../types'
 import Track from '../../components/track'
 
 const expandedPlaylistMods = document.getElementById(

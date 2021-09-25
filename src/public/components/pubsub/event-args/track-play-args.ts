@@ -1,4 +1,4 @@
-import { IPlayable } from '../../../types'
+import { IPlayable } from '../../../../types'
 import { DoublyLinkedListNode } from '../../doubly-linked-list'
 
 export default class PlayableEventArg {

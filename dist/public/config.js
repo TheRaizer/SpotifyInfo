@@ -161,7 +161,9 @@ exports.config = {
         getFollowedArtists: '/spotify/get-followed-artists',
         putPlayTrack: (device_id, track_uri) => `/spotify/play-track?device_id=${device_id}&track_uri=${track_uri}`,
         putPlayerVolumeData: (val) => `/spotify/put-player-volume?val=${val}`,
-        getPlayerVolumeData: '/spotify/get-player-volume'
+        getPlayerVolumeData: '/spotify/get-player-volume',
+        putPlayingSongData: (title, uri, pos) => `/spotify/put-playing-song?title=${title}&uri=${uri}&pos=${pos}`,
+        getPlayingSongData: '/spotify/get-playing-song'
     },
     PATHS: {
         spinner: '/images/200pxLoadingSpinner.svg',
@@ -204,7 +206,7 @@ function htmlToEl(html) {
 exports.htmlToEl = htmlToEl;
 function promiseHandler(promise, onSuccesful = (res) => { }, onFailure = (err) => {
     if (err) {
-        throw new Error();
+        console.error(err);
     }
 }) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -214,7 +216,6 @@ function promiseHandler(promise, onSuccesful = (res) => { }, onFailure = (err) =
             return { res: res, err: null };
         }
         catch (err) {
-            console.error(err);
             onFailure(err);
             return { res: null, err: err };
         }

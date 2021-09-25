@@ -1,7 +1,7 @@
 
 import interact from 'interactjs'
 import Interact from '@interactjs/types'
-import { IPromiseHandlerReturn, SpotifyImg } from './types'
+import { IPromiseHandlerReturn, SpotifyImg } from '../types'
 
 const authEndpoint = 'https://accounts.spotify.com/authorize'
 // Replace with your app's client ID, redirect URI and desired scopes
@@ -153,7 +153,9 @@ export const config = {
     putPlayTrack: (device_id: string, track_uri: string) =>
       `/spotify/play-track?device_id=${device_id}&track_uri=${track_uri}`,
     putPlayerVolumeData: (val: string) => `/spotify/put-player-volume?val=${val}`,
-    getPlayerVolumeData: '/spotify/get-player-volume'
+    getPlayerVolumeData: '/spotify/get-player-volume',
+    putPlayingSongData: (title: string, uri: string, pos: string) => `/spotify/put-playing-song?title=${title}&uri=${uri}&pos=${pos}`,
+    getPlayingSongData: '/spotify/get-playing-song'
   },
   PATHS: {
     spinner: '/images/200pxLoadingSpinner.svg',
@@ -199,7 +201,7 @@ export async function promiseHandler<T> (
   onSuccesful = (res: T) => { },
   onFailure = (err: unknown) => {
     if (err) {
-      throw new Error()
+      console.error(err)
     }
   }
 ) {
@@ -208,7 +210,6 @@ export async function promiseHandler<T> (
     onSuccesful(res as T)
     return { res: res, err: null } as IPromiseHandlerReturn<T>
   } catch (err: unknown) {
-    console.error(err)
     onFailure(err)
     return { res: null, err: err } as IPromiseHandlerReturn<T>
   }

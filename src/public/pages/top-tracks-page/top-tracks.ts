@@ -17,7 +17,7 @@ import AsyncSelectionVerif from '../../components/asyncSelectionVerif'
 import CardActionsHandler from '../../card-actions'
 import axios from 'axios'
 import { Chart, LinearScale, CategoryScale, BarController, BarElement } from 'chart.js'
-import { FeaturesData } from '../../types'
+import { FeaturesData } from '../../../types'
 
 Chart.register(LinearScale, CategoryScale, BarController, BarElement)
 const DEFAULT_VIEWABLE_CARDS = 5

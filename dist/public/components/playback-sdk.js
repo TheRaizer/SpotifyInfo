@@ -122,7 +122,7 @@ class SpotifyPlayback {
                         },
                         volume: volume
                     });
-                    this._addListeners();
+                    this._addListeners(volume);
                     // Connect to the player!
                     this.player.connect();
                 }
@@ -138,7 +138,7 @@ class SpotifyPlayback {
                             },
                             volume: volume
                         });
-                        this._addListeners();
+                        this._addListeners(volume);
                         // Connect to the player!
                         this.player.connect();
                     };
@@ -146,7 +146,7 @@ class SpotifyPlayback {
             });
         });
     }
-    _addListeners() {
+    _addListeners(loadedVolume) {
         // Error handling
         this.player.addListener('initialization_error', ({ message }) => {
             console.error(message);
@@ -168,7 +168,7 @@ class SpotifyPlayback {
             console.log('Ready with Device ID', device_id);
             this.device_id = device_id;
             // append web player element to DOM
-            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode), () => this.onSeekStart(this.player, this.webPlayerEl), (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl), (percentage) => this.onSeeking(percentage, this.webPlayerEl), (percentage, save) => this.setVolume(percentage, this.player, save), 0.4);
+            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode), () => this.onSeekStart(this.player, this.webPlayerEl), (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl), (percentage) => this.onSeeking(percentage, this.webPlayerEl), (percentage, save) => this.setVolume(percentage, this.player, save), parseFloat(loadedVolume));
             this.playerIsReady = true;
         });
         // Not Ready
@@ -258,7 +258,7 @@ class SpotifyPlayback {
         this.selPlaying.element.classList.add(config_1.config.CSS.CLASSES.selected);
         this.selPlaying.track_uri = eventArg.currPlayable.uri;
         (_a = this.webPlayerEl.playPause) === null || _a === void 0 ? void 0 : _a.classList.add(config_1.config.CSS.CLASSES.selected);
-        this.webPlayerEl.title.textContent = eventArg.currPlayable.title;
+        this.webPlayerEl.setTitle(eventArg.currPlayable.title);
         (_b = this.selPlaying.trackDataNode) === null || _b === void 0 ? void 0 : _b.data.onPlaying();
     }
     onTrackFinish() {

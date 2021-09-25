@@ -134,6 +134,18 @@ class SpotifyPlaybackElement {
         this.duration = null;
         this.playPause = null;
     }
+    setTitle(title) {
+        if (this.title === null) {
+            throw new Error('Trying to set title before it is assigned');
+        }
+        this.title.textContent = title;
+    }
+    getTitle() {
+        if (this.title === null) {
+            throw new Error('Trying to set title before it is assigned');
+        }
+        return this.title.textContent;
+    }
     /**
      * Append the web player element to the DOM along with the event listeners for the buttons.
      *
@@ -149,7 +161,7 @@ class SpotifyPlaybackElement {
     appendWebPlayerHtml(playPrevFunc, pauseFunc, playNextFunc, onSeekStart, seekSong, onSeeking, setVolume, initialVolume) {
         const html = `
     <article id="${config_1.config.CSS.IDs.webPlayer}" class="resize-drag">
-      <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap}">Title</h4>
+      <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
       <div>
         <article>
           <button id="${config_1.config.CSS.IDs.playPrev}"><img src="${config_1.config.PATHS.playPrev}" alt="previous"/></button>
