@@ -161,7 +161,11 @@ exports.config = {
         getFollowedArtists: '/spotify/get-followed-artists',
         putPlayTrack: (device_id, track_uri) => `/spotify/play-track?device_id=${device_id}&track_uri=${track_uri}`,
         putPlayerVolumeData: (val) => `/user/put-player-volume?val=${val}`,
-        getPlayerVolumeData: '/user/get-player-volume'
+        getPlayerVolumeData: '/user/get-player-volume',
+        putTerm: (term, termType) => `/user/put-top-${termType}-term?term=${term}`,
+        getTerm: (termType) => `/user/get-top-${termType}-term`,
+        putCurrPlaylistId: (id) => `/user/put-current-playlist-id?id=${id}`,
+        getCurrPlaylistId: '/user/get-current-playlist-id'
     },
     PATHS: {
         spinner: '/images/200pxLoadingSpinner.svg',

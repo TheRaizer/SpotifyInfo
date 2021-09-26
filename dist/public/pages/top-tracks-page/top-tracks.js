@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 const track_1 = require("../../components/track");
 const config_1 = require("../../config");
@@ -20,6 +21,7 @@ const asyncSelectionVerif_1 = __importDefault(require("../../components/asyncSel
 const card_actions_1 = __importDefault(require("../../card-actions"));
 const axios_1 = __importDefault(require("axios"));
 const chart_js_1 = require("chart.js");
+const save_load_term_1 = require("../../components/save-load-term");
 chart_js_1.Chart.register(chart_js_1.LinearScale, chart_js_1.CategoryScale, chart_js_1.BarController, chart_js_1.BarElement);
 const DEFAULT_VIEWABLE_CARDS = 5;
 const MAX_VIEWABLE_CARDS = 50;
@@ -28,20 +30,20 @@ const trackActions = (function () {
     const cardActionsHandler = new card_actions_1.default(MAX_VIEWABLE_CARDS);
     const selections = {
         numViewableCards: DEFAULT_VIEWABLE_CARDS,
-        term: 'short_term'
+        term: save_load_term_1.TERMS.SHORT_TERM
     };
     function addTrackCardListeners(trackArr) {
         const trackCards = Array.from(document.getElementsByClassName(config_1.config.CSS.CLASSES.track));
         cardActionsHandler.addAllEventListeners(trackCards, trackArr, null, true, false);
     }
     function getCurrSelTopTracks() {
-        if (selections.term === 'short_term') {
+        if (selections.term === save_load_term_1.TERMS.SHORT_TERM) {
             return trackArrs.topTrackObjsShortTerm;
         }
-        else if (selections.term === 'medium_term') {
+        else if (selections.term === save_load_term_1.TERMS.MID_TERM) {
             return trackArrs.topTrackObjsMidTerm;
         }
-        else if (selections.term === 'long_term') {
+        else if (selections.term === save_load_term_1.TERMS.LONG_TERM) {
             return trackArrs.topTrackObjsLongTerm;
         }
         else {
@@ -174,16 +176,6 @@ const displayCardInfo = (function () {
         displayTrackCards
     };
 })();
-/** The feature keys that are used in the 'feature' objectsobjects outputted by the spotify web api. */
-const FEATURE_KEYS = {
-    POPULARITY: 'popularity',
-    VALENCE: 'valence',
-    DANCEABILITY: 'danceability',
-    INSTRUMENTALNESS: 'instrumentalness',
-    ENERGY: 'energy',
-    ACOUSTICNESS: 'acousticness'
-};
-Object.freeze(FEATURE_KEYS);
 /** Manages a feature's information for all tracks in a term. */
 class Feature {
     constructor(featKey, definition) {
@@ -222,6 +214,16 @@ class Feature {
     }
 }
 const featureManager = (function () {
+    /** The feature keys that are used in the 'feature' objectsobjects outputted by the spotify web api. */
+    let FEATURE_KEYS;
+    (function (FEATURE_KEYS) {
+        FEATURE_KEYS["POPULARITY"] = "popularity";
+        FEATURE_KEYS["VALENCE"] = "valence";
+        FEATURE_KEYS["DANCEABILITY"] = "danceability";
+        FEATURE_KEYS["INSTRUMENTALNESS"] = "instrumentalness";
+        FEATURE_KEYS["ENERGY"] = "energy";
+        FEATURE_KEYS["ACOUSTICNESS"] = "acousticness";
+    })(FEATURE_KEYS || (FEATURE_KEYS = {}));
     const tracksChartEl = document.getElementById(config_1.config.CSS.IDs.tracksChart);
     const FEAT_HIGH = 60;
     const FEAT_LOW = 40;
@@ -496,20 +498,21 @@ const featureManager = (function () {
         selections
     };
 })();
+const featureSelections = (_a = document
+    .getElementById(config_1.config.CSS.IDs.featureSelections)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)(`element of id ${config_1.config.CSS.IDs.featureSelections} does not exist`);
+const trackTermSelections = (_b = document
+    .getElementById(config_1.config.CSS.IDs.tracksTermSelections)) !== null && _b !== void 0 ? _b : (0, config_1.throwExpression)(`element of id ${config_1.config.CSS.IDs.tracksTermSelections} does not exist`);
+const selections = {
+    featureTabManager: new SelectableTabEls_1.default(),
+    termTabManager: new SelectableTabEls_1.default()
+};
+function selectInitialTabs(term) {
+    (0, save_load_term_1.selectStartTermTab)(term, selections.termTabManager, trackTermSelections);
+    const featBtn = featureSelections.getElementsByTagName('button')[0];
+    const featBorder = featureSelections.getElementsByClassName(config_1.config.CSS.CLASSES.borderCover)[0];
+    selections.featureTabManager.selectNewTab(featBtn, featBorder);
+}
 const addEventListeners = (function () {
-    var _a, _b;
-    const featureSelections = (_a = document
-        .getElementById(config_1.config.CSS.IDs.featureSelections)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)(`element of id ${config_1.config.CSS.IDs.featureSelections} does not exist`);
-    const trackTermSelections = (_b = document
-        .getElementById(config_1.config.CSS.IDs.tracksTermSelections)) !== null && _b !== void 0 ? _b : (0, config_1.throwExpression)(`element of id ${config_1.config.CSS.IDs.tracksTermSelections} does not exist`);
-    const selections = {
-        featureTabManager: new SelectableTabEls_1.default(featureSelections.getElementsByTagName('button')[0], // first tab is selected first by default
-        featureSelections.getElementsByClassName(config_1.config.CSS.CLASSES.borderCover)[0] // first tab is selected first by default
-        ),
-        termTabManager: new SelectableTabEls_1.default(trackTermSelections.getElementsByTagName('button')[0], // first tab is selected first by default
-        trackTermSelections.getElementsByClassName(config_1.config.CSS.CLASSES.borderCover)[0] // first tab is selected first by default
-        )
-    };
     function addTrackFeatureButtonEvents() {
         function onClick(btn, borderCover) {
             var _a;
@@ -546,7 +549,8 @@ const addEventListeners = (function () {
     function addTrackTermButtonEvents() {
         function onClick(btn, borderCover) {
             var _a;
-            trackActions.selections.term = (_a = btn.getAttribute(config_1.config.CSS.ATTRIBUTES.dataSelection)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)('a track term button does not have the data selection attribute');
+            trackActions.selections.term = (0, save_load_term_1.determineTerm)((_a = btn.getAttribute(config_1.config.CSS.ATTRIBUTES.dataSelection)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)('a track term button does not have the data selection attribute'));
+            (0, save_load_term_1.saveTerm)(trackActions.selections.term, save_load_term_1.TERM_TYPE.TRACKS);
             selections.termTabManager.selectNewTab(btn, borderCover);
             const currTracks = trackActions.getCurrSelTopTracks();
             displayCardInfo.displayTrackCards(currTracks);
@@ -621,9 +625,12 @@ const addEventListeners = (function () {
 })();
 (function () {
     (0, config_1.promiseHandler)((0, manage_tokens_1.checkIfHasTokens)(), (hasToken) => (0, manage_tokens_1.onSuccessfulTokenCall)(hasToken, () => {
-        // when entering the page always show short term tracks first
-        trackActions.selections.term = 'short_term';
-        displayCardInfo.displayTrackCards(trackArrs.topTrackObjsShortTerm);
+        // load the term that was the user last had it on
+        (0, save_load_term_1.loadTerm)(save_load_term_1.TERM_TYPE.TRACKS).then(term => {
+            trackActions.selections.term = term;
+            displayCardInfo.displayTrackCards(trackActions.getCurrSelTopTracks());
+            selectInitialTabs(term);
+        });
     }));
     Object.entries(addEventListeners).forEach(([, addEventListener]) => {
         addEventListener();

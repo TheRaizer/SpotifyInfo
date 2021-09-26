@@ -18,6 +18,7 @@ import CardActionsHandler from '../../card-actions'
 import axios from 'axios'
 import { Chart, LinearScale, CategoryScale, BarController, BarElement } from 'chart.js'
 import { FeaturesData } from '../../../types'
+import { determineTerm, IdxFromTerm, loadTerm, saveTerm, selectStartTermTab, TERMS, TERM_TYPE } from '../../components/save-load-term'
 
 Chart.register(LinearScale, CategoryScale, BarController, BarElement)
 const DEFAULT_VIEWABLE_CARDS = 5
@@ -28,7 +29,7 @@ const trackActions = (function () {
   const cardActionsHandler = new CardActionsHandler(MAX_VIEWABLE_CARDS)
   const selections = {
     numViewableCards: DEFAULT_VIEWABLE_CARDS,
-    term: 'short_term'
+    term: TERMS.SHORT_TERM
   }
   function addTrackCardListeners (trackArr: Array<Track>) {
     const trackCards = Array.from(
@@ -44,11 +45,11 @@ const trackActions = (function () {
   }
 
   function getCurrSelTopTracks () {
-    if (selections.term === 'short_term') {
+    if (selections.term === TERMS.SHORT_TERM) {
       return trackArrs.topTrackObjsShortTerm
-    } else if (selections.term === 'medium_term') {
+    } else if (selections.term === TERMS.MID_TERM) {
       return trackArrs.topTrackObjsMidTerm
-    } else if (selections.term === 'long_term') {
+    } else if (selections.term === TERMS.LONG_TERM) {
       return trackArrs.topTrackObjsLongTerm
     } else {
       throw new Error('Selected track term is invalid ' + selections.term)
@@ -196,17 +197,6 @@ const displayCardInfo = (function () {
   }
 })()
 
-/** The feature keys that are used in the 'feature' objectsobjects outputted by the spotify web api. */
-const FEATURE_KEYS = {
-  POPULARITY: 'popularity',
-  VALENCE: 'valence',
-  DANCEABILITY: 'danceability',
-  INSTRUMENTALNESS: 'instrumentalness',
-  ENERGY: 'energy',
-  ACOUSTICNESS: 'acousticness'
-}
-Object.freeze(FEATURE_KEYS)
-
 /** Manages a feature's information for all tracks in a term. */
 class Feature {
   featKey: string;
@@ -260,12 +250,21 @@ class Feature {
 }
 
 const featureManager = (function () {
-  const tracksChartEl = document.getElementById(config.CSS.IDs.tracksChart)
-  const FEAT_HIGH = 60
-  const FEAT_LOW = 40
-  const charts = {
-    tracksChart: null
-  }
+/** The feature keys that are used in the 'feature' objectsobjects outputted by the spotify web api. */
+enum FEATURE_KEYS {
+  POPULARITY = 'popularity',
+  VALENCE = 'valence',
+  DANCEABILITY = 'danceability',
+  INSTRUMENTALNESS = 'instrumentalness',
+  ENERGY = 'energy',
+  ACOUSTICNESS = 'acousticness'
+}
+const tracksChartEl = document.getElementById(config.CSS.IDs.tracksChart)
+const FEAT_HIGH = 60
+const FEAT_LOW = 40
+const charts = {
+  tracksChart: null
+}
   type TrackFeatsType = {
     [key: string]: Feature
   }
@@ -567,22 +566,26 @@ const featureManager = (function () {
   }
 })()
 
-const addEventListeners = (function () {
-  const featureSelections = document
-    .getElementById(config.CSS.IDs.featureSelections) ?? throwExpression(`element of id ${config.CSS.IDs.featureSelections} does not exist`)
-  const trackTermSelections = document
-    .getElementById(config.CSS.IDs.tracksTermSelections) ?? throwExpression(`element of id ${config.CSS.IDs.tracksTermSelections} does not exist`)
+const featureSelections = document
+  .getElementById(config.CSS.IDs.featureSelections) ?? throwExpression(`element of id ${config.CSS.IDs.featureSelections} does not exist`)
+const trackTermSelections = document
+  .getElementById(config.CSS.IDs.tracksTermSelections) ?? throwExpression(`element of id ${config.CSS.IDs.tracksTermSelections} does not exist`)
 
-  const selections = {
-    featureTabManager: new SelectableTabEls(
-      featureSelections.getElementsByTagName('button')[0], // first tab is selected first by default
-      featureSelections.getElementsByClassName(config.CSS.CLASSES.borderCover)[0] // first tab is selected first by default
-    ),
-    termTabManager: new SelectableTabEls(
-      trackTermSelections.getElementsByTagName('button')[0], // first tab is selected first by default
-      trackTermSelections.getElementsByClassName(config.CSS.CLASSES.borderCover)[0] // first tab is selected first by default
-    )
-  }
+const selections = {
+  featureTabManager: new SelectableTabEls(),
+  termTabManager: new SelectableTabEls()
+}
+
+function selectInitialTabs (term: TERMS) {
+  selectStartTermTab(term, selections.termTabManager, trackTermSelections)
+
+  const featBtn = featureSelections.getElementsByTagName('button')[0]
+  const featBorder = featureSelections.getElementsByClassName(config.CSS.CLASSES.borderCover)[0]
+
+  selections.featureTabManager.selectNewTab(featBtn, featBorder)
+}
+
+const addEventListeners = (function () {
   function addTrackFeatureButtonEvents () {
     function onClick (btn: Element, borderCover: Element) {
       const feature = btn.getAttribute(config.CSS.ATTRIBUTES.dataSelection) ?? throwExpression('track feature button does not contain data selection attribute')
@@ -626,7 +629,8 @@ const addEventListeners = (function () {
 
   function addTrackTermButtonEvents () {
     function onClick (btn: Element, borderCover: Element) {
-      trackActions.selections.term = btn.getAttribute(config.CSS.ATTRIBUTES.dataSelection) ?? throwExpression('a track term button does not have the data selection attribute')
+      trackActions.selections.term = determineTerm(btn.getAttribute(config.CSS.ATTRIBUTES.dataSelection) ?? throwExpression('a track term button does not have the data selection attribute'))
+      saveTerm(trackActions.selections.term, TERM_TYPE.TRACKS)
       selections.termTabManager.selectNewTab(btn, borderCover)
 
       const currTracks = trackActions.getCurrSelTopTracks()
@@ -713,9 +717,12 @@ const addEventListeners = (function () {
 (function () {
   promiseHandler(checkIfHasTokens(), (hasToken) =>
     onSuccessfulTokenCall(hasToken, () => {
-      // when entering the page always show short term tracks first
-      trackActions.selections.term = 'short_term'
-      displayCardInfo.displayTrackCards(trackArrs.topTrackObjsShortTerm)
+      // load the term that was the user last had it on
+      loadTerm(TERM_TYPE.TRACKS).then(term => {
+        trackActions.selections.term = term
+        displayCardInfo.displayTrackCards(trackActions.getCurrSelTopTracks())
+        selectInitialTabs(term)
+      })
     })
   )
 

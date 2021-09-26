@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 const artist_1 = require("../../components/artist");
 const config_1 = require("../../config");
@@ -18,11 +19,12 @@ const SelectableTabEls_1 = __importDefault(require("../../components/SelectableT
 const manage_tokens_1 = require("../../manage-tokens");
 const asyncSelectionVerif_1 = __importDefault(require("../../components/asyncSelectionVerif"));
 const axios_1 = __importDefault(require("axios"));
+const save_load_term_1 = require("../../components/save-load-term");
 const MAX_VIEWABLE_CARDS = 5;
 const artistActions = (function () {
     const selections = {
         numViewableCards: MAX_VIEWABLE_CARDS,
-        term: 'short_term'
+        term: save_load_term_1.TERMS.SHORT_TERM
     };
     function loadArtistTopTracks(artistObj, callback) {
         artistObj
@@ -68,13 +70,13 @@ const artistActions = (function () {
         });
     }
     function getCurrSelTopArtists() {
-        if (selections.term === 'short_term') {
+        if (selections.term === save_load_term_1.TERMS.SHORT_TERM) {
             return artistArrs.topArtistObjsShortTerm;
         }
-        else if (selections.term === 'medium_term') {
+        else if (selections.term === save_load_term_1.TERMS.MID_TERM) {
             return artistArrs.topArtistObjsMidTerm;
         }
-        else if (selections.term === 'long_term') {
+        else if (selections.term === save_load_term_1.TERMS.LONG_TERM) {
             return artistArrs.topArtistObjsLongTerm;
         }
         else {
@@ -167,22 +169,18 @@ const artistArrs = (function () {
         topArtistObjsLongTerm
     };
 })();
+const artistTermSelections = (_a = document
+    .getElementById(config_1.config.CSS.IDs.artistTermSelections)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)(`term selection of id ${config_1.config.CSS.IDs.artistTermSelections} does not exist`);
+const selections = {
+    termTabManager: new SelectableTabEls_1.default()
+};
 const addEventListeners = (function () {
-    var _a;
-    const artistTermSelections = (_a = document
-        .getElementById(config_1.config.CSS.IDs.artistTermSelections)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)(`term selection of id ${config_1.config.CSS.IDs.artistTermSelections} does not exist`);
-    const selections = {
-        termTabManager: new SelectableTabEls_1.default(artistTermSelections.getElementsByTagName('button')[0], // first tab is selected first by default
-        artistTermSelections.getElementsByClassName(config_1.config.CSS.CLASSES.borderCover)[0] // first tab is selected first by default
-        )
-    };
     function addArtistTermButtonEvents() {
         function onClick(btn, borderCover) {
-            const attr = btn.getAttribute(config_1.config.CSS.ATTRIBUTES.dataSelection);
-            if (attr === null) {
-                (0, config_1.throwExpression)(`attribute ${config_1.config.CSS.ATTRIBUTES.dataSelection} does not exist on term button`);
-            }
-            artistActions.selections.term = attr;
+            var _a;
+            const attr = (_a = btn.getAttribute(config_1.config.CSS.ATTRIBUTES.dataSelection)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)(`attribute ${config_1.config.CSS.ATTRIBUTES.dataSelection} does not exist on term button`);
+            artistActions.selections.term = (0, save_load_term_1.determineTerm)(attr);
+            (0, save_load_term_1.saveTerm)(artistActions.selections.term, save_load_term_1.TERM_TYPE.ARTISTS);
             selections.termTabManager.selectNewTab(btn, borderCover);
             const currArtists = artistActions.getCurrSelTopArtists();
             artistCardsHandler.displayArtistCards(currArtists);
@@ -199,35 +197,17 @@ const addEventListeners = (function () {
             btn.addEventListener('click', () => onClick(btn, borderCover));
         }
     }
-    // function resetViewableCards () {
-    //   const viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks)
-    //   trackActions.selections.numViewableCards = DEFAULT_VIEWABLE_CARDS
-    //   viewAllEl.textContent = 'See All 50'
-    // }
-    // function addViewAllTracksEvent () {
-    //   const viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks)
-    //   function onClick () {
-    //     if (trackActions.selections.numViewableCards == DEFAULT_VIEWABLE_CARDS) {
-    //       trackActions.selections.numViewableCards = MAX_VIEWABLE_CARDS
-    //       viewAllEl.textContent = 'See Less'
-    //     } else {
-    //       resetViewableCards()
-    //     }
-    //     const currTracks = trackActions.getCurrSelTopTracks()
-    //     displayCardInfo.displayTrackCards(currTracks)
-    //   }
-    //   viewAllEl.addEventListener('click', () => onClick())
-    // }
     return {
         addArtistTermButtonEvents
-        // addViewAllTracksEvent,
     };
 })();
 (function () {
     (0, config_1.promiseHandler)((0, manage_tokens_1.checkIfHasTokens)(), (hasToken) => (0, manage_tokens_1.onSuccessfulTokenCall)(hasToken, () => {
-        // when entering the page always show short term tracks first
-        artistActions.selections.term = 'short_term';
-        artistCardsHandler.displayArtistCards(artistArrs.topArtistObjsShortTerm);
+        (0, save_load_term_1.loadTerm)(save_load_term_1.TERM_TYPE.ARTISTS).then(term => {
+            artistActions.selections.term = term;
+            artistCardsHandler.displayArtistCards(artistActions.getCurrSelTopArtists());
+            (0, save_load_term_1.selectStartTermTab)(term, selections.termTabManager, artistTermSelections);
+        });
     }));
     Object.entries(addEventListeners).forEach(([, addEventListener]) => {
         addEventListener();

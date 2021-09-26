@@ -1,24 +1,24 @@
 import { config } from '../config'
 
 class SelectableTabEls {
-  btn: Element;
-  borderCover: Element;
-  constructor (btn: Element, borderCover: Element) {
-    this.btn = btn
-    this.borderCover = borderCover
+  btn: Element | undefined;
+  borderCover: Element | undefined;
+
+  private unselectEls () {
+    if (this.btn && this.borderCover) {
+      this.btn.classList.remove(config.CSS.CLASSES.selected)
+      this.borderCover.classList.remove(config.CSS.CLASSES.selected)
+    }
   }
 
-  unselectEls () {
-    this.btn.classList.remove(config.CSS.CLASSES.selected)
-    this.borderCover.classList.remove(config.CSS.CLASSES.selected)
+  private selectEls () {
+    if (this.btn && this.borderCover) {
+      this.btn.classList.add(config.CSS.CLASSES.selected)
+      this.borderCover.classList.add(config.CSS.CLASSES.selected)
+    }
   }
 
-  selectEls () {
-    this.btn.classList.add(config.CSS.CLASSES.selected)
-    this.borderCover.classList.add(config.CSS.CLASSES.selected)
-  }
-
-  selectNewTab (btn: Element, borderCover: Element) {
+  public selectNewTab (btn: Element, borderCover: Element) {
     // unselect the previous tab
     this.unselectEls()
 

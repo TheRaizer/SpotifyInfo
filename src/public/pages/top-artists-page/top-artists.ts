@@ -14,13 +14,14 @@ import {
 } from '../../manage-tokens'
 import AsyncSelectionVerif from '../../components/asyncSelectionVerif'
 import axios from 'axios'
+import { determineTerm, loadTerm, saveTerm, selectStartTermTab, TERMS, TERM_TYPE } from '../../components/save-load-term'
 
 const MAX_VIEWABLE_CARDS = 5
 
 const artistActions = (function () {
   const selections = {
     numViewableCards: MAX_VIEWABLE_CARDS,
-    term: 'short_term'
+    term: TERMS.SHORT_TERM
   }
   function loadArtistTopTracks (artistObj: Artist, callback: Function) {
     artistObj
@@ -68,11 +69,11 @@ const artistActions = (function () {
     generateArtistsFromData(res!.data, artistArr)
   }
   function getCurrSelTopArtists () {
-    if (selections.term === 'short_term') {
+    if (selections.term === TERMS.SHORT_TERM) {
       return artistArrs.topArtistObjsShortTerm
-    } else if (selections.term === 'medium_term') {
+    } else if (selections.term === TERMS.MID_TERM) {
       return artistArrs.topArtistObjsMidTerm
-    } else if (selections.term === 'long_term') {
+    } else if (selections.term === TERMS.LONG_TERM) {
       return artistArrs.topArtistObjsLongTerm
     } else {
       throw new Error('Selected track term is invalid ' + selections.term)
@@ -179,25 +180,22 @@ const artistArrs = (function () {
   }
 })()
 
-const addEventListeners = (function () {
-  const artistTermSelections = document
-    .getElementById(config.CSS.IDs.artistTermSelections) ?? throwExpression(`term selection of id ${config.CSS.IDs.artistTermSelections} does not exist`)
-  const selections = {
-    termTabManager: new SelectableTabEls(
-      artistTermSelections.getElementsByTagName('button')[0], // first tab is selected first by default
-      artistTermSelections.getElementsByClassName(config.CSS.CLASSES.borderCover)[0] // first tab is selected first by default
-    )
-  }
+const artistTermSelections = document
+  .getElementById(config.CSS.IDs.artistTermSelections) ?? throwExpression(`term selection of id ${config.CSS.IDs.artistTermSelections} does not exist`)
+const selections = {
+  termTabManager: new SelectableTabEls()
+}
 
+const addEventListeners = (function () {
   function addArtistTermButtonEvents () {
     function onClick (btn: Element, borderCover: Element) {
       const attr = btn.getAttribute(
         config.CSS.ATTRIBUTES.dataSelection
-      )
-      if (attr === null) {
-        throwExpression(`attribute ${config.CSS.ATTRIBUTES.dataSelection} does not exist on term button`)
-      }
-      artistActions.selections.term = attr
+      ) ?? throwExpression(`attribute ${config.CSS.ATTRIBUTES.dataSelection} does not exist on term button`)
+
+      artistActions.selections.term = determineTerm(attr)
+
+      saveTerm(artistActions.selections.term, TERM_TYPE.ARTISTS)
       selections.termTabManager.selectNewTab(btn, borderCover)
 
       const currArtists = artistActions.getCurrSelTopArtists()
@@ -218,40 +216,19 @@ const addEventListeners = (function () {
     }
   }
 
-  // function resetViewableCards () {
-  //   const viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks)
-  //   trackActions.selections.numViewableCards = DEFAULT_VIEWABLE_CARDS
-  //   viewAllEl.textContent = 'See All 50'
-  // }
-
-  // function addViewAllTracksEvent () {
-  //   const viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks)
-  //   function onClick () {
-  //     if (trackActions.selections.numViewableCards == DEFAULT_VIEWABLE_CARDS) {
-  //       trackActions.selections.numViewableCards = MAX_VIEWABLE_CARDS
-  //       viewAllEl.textContent = 'See Less'
-  //     } else {
-  //       resetViewableCards()
-  //     }
-  //     const currTracks = trackActions.getCurrSelTopTracks()
-  //     displayCardInfo.displayTrackCards(currTracks)
-  //   }
-
-  //   viewAllEl.addEventListener('click', () => onClick())
-  // }
-
   return {
     addArtistTermButtonEvents
-    // addViewAllTracksEvent,
   }
 })();
 
 (function () {
   promiseHandler(checkIfHasTokens(), (hasToken) =>
     onSuccessfulTokenCall(hasToken, () => {
-      // when entering the page always show short term tracks first
-      artistActions.selections.term = 'short_term'
-      artistCardsHandler.displayArtistCards(artistArrs.topArtistObjsShortTerm)
+      loadTerm(TERM_TYPE.ARTISTS).then(term => {
+        artistActions.selections.term = term
+        artistCardsHandler.displayArtistCards(artistActions.getCurrSelTopArtists())
+        selectStartTermTab(term, selections.termTabManager, artistTermSelections)
+      })
     })
   )
   Object.entries(addEventListeners).forEach(([, addEventListener]) => {

@@ -2,6 +2,7 @@
 import interact from 'interactjs'
 import Interact from '@interactjs/types'
 import { IPromiseHandlerReturn, SpotifyImg } from '../types'
+import { TERMS, TERM_TYPE } from './components/save-load-term'
 
 const authEndpoint = 'https://accounts.spotify.com/authorize'
 // Replace with your app's client ID, redirect URI and desired scopes
@@ -154,10 +155,8 @@ export const config = {
       `/spotify/play-track?device_id=${device_id}&track_uri=${track_uri}`,
     putPlayerVolumeData: (val: string) => `/user/put-player-volume?val=${val}`,
     getPlayerVolumeData: '/user/get-player-volume',
-    putTopTracksTerm: (term: string) => `/user/put-top-tracks-term?term=${term}`,
-    getTopTracksTerm: '/user/get-top-tracks-term',
-    putTopArtistsTerm: (term: string) => `/user/put-top-artists-term?term=${term}`,
-    getTopArtistsTerm: '/user/get-top-artists-term',
+    putTerm: (term: TERMS, termType: TERM_TYPE) => `/user/put-top-${termType}-term?term=${term}`,
+    getTerm: (termType: TERM_TYPE) => `/user/get-top-${termType}-term`,
     putCurrPlaylistId: (id: string) => `/user/put-current-playlist-id?id=${id}`,
     getCurrPlaylistId: '/user/get-current-playlist-id'
   },
