@@ -12,15 +12,9 @@ router.get('/get-playlist-tracks', spotify_controller_1.spotifyCtrl.getPlaylistT
 router.get('/get-tracks-features', spotify_controller_1.spotifyCtrl.getTrackFeatures);
 router.delete('/delete-playlist-items', spotify_controller_1.spotifyCtrl.deletePlaylistItems);
 router.post('/post-playlist-items', spotify_controller_1.spotifyCtrl.postPlaylistItems);
-router.put('/put-playlist-resize-data', spotify_controller_1.spotifyCtrl.putPlaylistResizeData);
-router.get('/get-playlist-resize-data', spotify_controller_1.spotifyCtrl.getPlaylistResizeData);
-router.put('/put-playlist-text-form-data', spotify_controller_1.spotifyCtrl.putPlaylistTextFormData);
-router.get('/get-playlist-text-form-data', spotify_controller_1.spotifyCtrl.getPlaylistTextFormData);
 router.get('/get-artist-top-tracks', spotify_controller_1.spotifyCtrl.getArtistTopTracks);
 router.get('/get-current-user-profile', spotify_controller_1.spotifyCtrl.getCurrentUserProfile);
 router.get('/get-current-user-saved-tracks', spotify_controller_1.spotifyCtrl.getCurrentUserSavedTracks);
 router.get('/get-followed-artists', spotify_controller_1.spotifyCtrl.getFollowedArtists);
 router.put('/play-track', spotify_controller_1.spotifyCtrl.putPlayTrack);
-router.put('/put-player-volume', spotify_controller_1.spotifyCtrl.putPlayerVolumeData);
-router.get('/get-player-volume', spotify_controller_1.spotifyCtrl.getPlayerVolumeData);
 //# sourceMappingURL=spotify-actions.js.map

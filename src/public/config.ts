@@ -141,10 +141,10 @@ export const config = {
     getTrackFeatures: '/spotify/get-tracks-features?track_ids=',
     putRefreshAccessToken: '/tokens/refresh-token',
     putSessionData: '/spotify/put-session-data?attr=',
-    putPlaylistResizeData: (val: string) => `/spotify/put-playlist-resize-data?val=${val}`,
-    getPlaylistResizeData: '/spotify/get-playlist-resize-data',
-    putPlaylistIsInTextFormData: (val: string) => `/spotify/put-playlist-text-form-data?val=${val}`,
-    getPlaylistIsInTextFormData: '/spotify/get-playlist-text-form-data',
+    putPlaylistResizeData: (val: string) => `/user/put-playlist-resize-data?val=${val}`,
+    getPlaylistResizeData: '/user/get-playlist-resize-data',
+    putPlaylistIsInTextFormData: (val: string) => `/user/put-playlist-text-form-data?val=${val}`,
+    getPlaylistIsInTextFormData: '/user/get-playlist-text-form-data',
     getArtistTopTracks: (id: string) => `/spotify/get-artist-top-tracks?id=${id}`,
     getCurrentUserProfile: '/spotify/get-current-user-profile',
     putClearSession: '/clear-session',
@@ -152,10 +152,14 @@ export const config = {
     getFollowedArtists: '/spotify/get-followed-artists',
     putPlayTrack: (device_id: string, track_uri: string) =>
       `/spotify/play-track?device_id=${device_id}&track_uri=${track_uri}`,
-    putPlayerVolumeData: (val: string) => `/spotify/put-player-volume?val=${val}`,
-    getPlayerVolumeData: '/spotify/get-player-volume',
-    putPlayingSongData: (title: string, uri: string, pos: string) => `/spotify/put-playing-song?title=${title}&uri=${uri}&pos=${pos}`,
-    getPlayingSongData: '/spotify/get-playing-song'
+    putPlayerVolumeData: (val: string) => `/user/put-player-volume?val=${val}`,
+    getPlayerVolumeData: '/user/get-player-volume',
+    putTopTracksTerm: (term: string) => `/user/put-top-tracks-term?term=${term}`,
+    getTopTracksTerm: '/user/get-top-tracks-term',
+    putTopArtistsTerm: (term: string) => `/user/put-top-artists-term?term=${term}`,
+    getTopArtistsTerm: '/user/get-top-artists-term',
+    putCurrPlaylistId: (id: string) => `/user/put-current-playlist-id?id=${id}`,
+    getCurrPlaylistId: '/user/get-current-playlist-id'
   },
   PATHS: {
     spinner: '/images/200pxLoadingSpinner.svg',

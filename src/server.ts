@@ -11,6 +11,7 @@ import type { SessionOptions } from 'express-session'
 
 import { router as tokens } from './routes/tokens'
 import { router as spotifyActions } from './routes/spotify-actions'
+import { router as userActions } from './routes/user-actions'
 import RedisStore from 'connect-redis'
 import crypto from 'crypto'
 import { v4 as uuidv4 } from 'uuid'
@@ -122,6 +123,7 @@ app.use(express.json())
 
 app.use('/tokens', tokens)
 app.use('/spotify', spotifyActions)
+app.use('/user', userActions)
 
 app.use(logErrors)
 

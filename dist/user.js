@@ -8,7 +8,9 @@ class User {
         this.playlistResizeWidth = '';
         this.playlistIsInTextForm = 'false';
         this.playerVolume = '0.4';
-        this.currentPlayingTrack = { title: '', uri: '', position: '' };
+        this.topTracksTerm = 'short_term';
+        this.topArtistsTerm = 'short_term';
+        this.currPlaylistId = '';
     }
 }
 exports.default = User;

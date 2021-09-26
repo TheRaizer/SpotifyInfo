@@ -159,30 +159,6 @@ function postPlaylistItems(req, res, next) {
         });
     });
 }
-function putPlaylistResizeData(req, res) {
-    const val = req.query.val;
-    if (req.session.user !== undefined) {
-        req.session.user.playlistResizeWidth = val;
-    }
-    console.log(req.session);
-    res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
-}
-function getPlaylistResizeData(req, res) {
-    var _a;
-    res.status(http_status_codes_1.StatusCodes.OK).send((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.playlistResizeWidth);
-}
-function putPlaylistTextFormData(req, res) {
-    const val = req.query.val;
-    if (req.session.user !== undefined) {
-        req.session.user.playlistIsInTextForm = val;
-    }
-    console.log(req.session);
-    res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
-}
-function getPlaylistTextFormData(req, res) {
-    var _a;
-    res.status(http_status_codes_1.StatusCodes.OK).send((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.playlistIsInTextForm);
-}
 function getArtistTopTracks(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const id = req.query.id;
@@ -267,17 +243,6 @@ function putPlayTrack(req, res, next) {
         });
     });
 }
-function putPlayerVolumeData(req, res) {
-    const val = req.query.val;
-    if (req.session.user !== undefined) {
-        req.session.user.playerVolume = val;
-    }
-    res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
-}
-function getPlayerVolumeData(req, res) {
-    var _a;
-    res.status(http_status_codes_1.StatusCodes.OK).send((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.playerVolume);
-}
 const spotifyCtrl = {
     getTopArtists,
     getTopTracks,
@@ -286,17 +251,11 @@ const spotifyCtrl = {
     getTrackFeatures,
     deletePlaylistItems,
     postPlaylistItems,
-    putPlaylistResizeData,
-    getPlaylistResizeData,
-    putPlaylistTextFormData,
-    getPlaylistTextFormData,
     getArtistTopTracks,
     getCurrentUserProfile,
     getCurrentUserSavedTracks,
     getFollowedArtists,
-    putPlayTrack,
-    putPlayerVolumeData,
-    getPlayerVolumeData
+    putPlayTrack
 };
 exports.spotifyCtrl = spotifyCtrl;
 //# sourceMappingURL=spotify-controller.js.map

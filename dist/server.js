@@ -11,6 +11,7 @@ const helmet_1 = __importDefault(require("helmet"));
 const express_session_1 = __importDefault(require("express-session"));
 const tokens_1 = require("./routes/tokens");
 const spotify_actions_1 = require("./routes/spotify-actions");
+const user_actions_1 = require("./routes/user-actions");
 const connect_redis_1 = __importDefault(require("connect-redis"));
 const crypto_1 = __importDefault(require("crypto"));
 const uuid_1 = require("uuid");
@@ -102,6 +103,7 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.use('/tokens', tokens_1.router);
 app.use('/spotify', spotify_actions_1.router);
+app.use('/user', user_actions_1.router);
 app.use(logErrors);
 app.use(express_1.default.static(path_1.default.join(__dirname, '/public')));
 // '/' represents the home page which will render index.html from express server

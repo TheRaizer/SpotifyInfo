@@ -136,32 +136,6 @@ async function postPlaylistItems (req: Request, res: Response, next: NextFunctio
       next(err)
     })
 }
-
-function putPlaylistResizeData (req: Request, res: Response) {
-  const val = req.query.val as string
-  if (req.session.user !== undefined) {
-    req.session.user.playlistResizeWidth = val
-  }
-  console.log(req.session)
-
-  res.sendStatus(StatusCodes.CREATED)
-}
-
-function getPlaylistResizeData (req: Request, res: Response) {
-  res.status(StatusCodes.OK).send(req.session.user?.playlistResizeWidth)
-}
-function putPlaylistTextFormData (req: Request, res: Response) {
-  const val = req.query.val as string
-  if (req.session.user !== undefined) {
-    req.session.user.playlistIsInTextForm = val
-  }
-  console.log(req.session)
-
-  res.sendStatus(StatusCodes.CREATED)
-}
-function getPlaylistTextFormData (req: Request, res: Response) {
-  res.status(StatusCodes.OK).send(req.session.user?.playlistIsInTextForm)
-}
 async function getArtistTopTracks (req: Request, res: Response, next: NextFunction) {
   const id = req.query.id as string
 
@@ -239,19 +213,6 @@ async function putPlayTrack (req: Request, res: Response, next: NextFunction) {
     })
 }
 
-function putPlayerVolumeData (req: Request, res: Response) {
-  const val = req.query.val as string
-  if (req.session.user !== undefined) {
-    req.session.user.playerVolume = val
-  }
-
-  res.sendStatus(StatusCodes.CREATED)
-}
-
-function getPlayerVolumeData (req: Request, res: Response) {
-  res.status(StatusCodes.OK).send(req.session.user?.playerVolume)
-}
-
 const spotifyCtrl = {
   getTopArtists,
   getTopTracks,
@@ -260,17 +221,11 @@ const spotifyCtrl = {
   getTrackFeatures,
   deletePlaylistItems,
   postPlaylistItems,
-  putPlaylistResizeData,
-  getPlaylistResizeData,
-  putPlaylistTextFormData,
-  getPlaylistTextFormData,
   getArtistTopTracks,
   getCurrentUserProfile,
   getCurrentUserSavedTracks,
   getFollowedArtists,
-  putPlayTrack,
-  putPlayerVolumeData,
-  getPlayerVolumeData
+  putPlayTrack
 }
 
 export { spotifyCtrl }

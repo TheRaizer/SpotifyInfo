@@ -698,6 +698,9 @@ footer {
 #playlist-main-header-area > * {
   margin-top: 10px;
 }
+#info-container {
+  margin-top: 5vh;
+}
 @media only screen and (max-width: 600px) {
   #hide-show-cards {
     display: block;
@@ -1056,9 +1059,9 @@ ul.genres > li {
 */
 .topnav {
   z-index: 1000;
-  position: absolute;
+  position: fixed;
   list-style-type: none;
-  margin: 0;
+  margin: 15px 0 0 0;
   padding: 0;
   overflow: hidden;
   font-family: arial;
@@ -1070,19 +1073,20 @@ ul.genres > li {
 }
 .topnav li {
   float: left;
-  margin-right: 0.1vw;
+  margin-right: 0.5vw;
+  margin-left: 0.5vw;
 }
 .topnav li a {
   width: 10vw;
-  border-radius: 10px;
+  border-radius: 30px;
   display: block;
   color: white;
   text-align: center;
-  padding: 14px 16px;
+  padding: 0.8vw 0.2vw;
   text-decoration: none;
   float: left;
   font-size: 17px;
-  font-weight: 400;
+  background-color: rgba(126, 126, 126, 0.199);
   -webkit-transition: background-color 300ms ease-out;
   -o-transition: background-color 300ms ease-out;
   transition: background-color 300ms ease-out;
@@ -1134,7 +1138,8 @@ ul.genres > li {
 }
 /* Dropdown Button */
 .dropbtn {
-  border-radius: 10px;
+  margin-right: 0.5vw;
+  border-radius: 30px;
   display: block;
   color: white;
   text-align: center;
@@ -1143,6 +1148,7 @@ ul.genres > li {
   float: left;
   font-size: 17px;
   font-weight: 400;
+  background-color: rgba(126, 126, 126, 0.199);
   -webkit-transition: background-color 300ms ease-out;
   -o-transition: background-color 300ms ease-out;
   transition: background-color 300ms ease-out;
@@ -1156,10 +1162,11 @@ ul.genres > li {
 }
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
-  display: none;
   position: fixed;
+  border-radius: 30px;
+  display: none;
   right: 0;
-  top: 44px;
+  top: 60px;
   background-color: #919191;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
