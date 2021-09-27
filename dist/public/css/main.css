@@ -1095,7 +1095,7 @@ ul.genres > li {
   padding: 10px 16px;
 }
 .topnav li a:hover:not(.active) {
-  background-color: rgba(221, 221, 221, 0.815);
+  background-color: rgba(221, 221, 221, 0.966);
   color: black;
 }
 .topnav li a.active:hover {
@@ -1138,6 +1138,7 @@ ul.genres > li {
 }
 /* Dropdown Button */
 .dropbtn {
+  width: 10vw;
   margin-right: 0.5vw;
   border-radius: 30px;
   display: block;
@@ -1149,9 +1150,7 @@ ul.genres > li {
   font-size: 17px;
   font-weight: 400;
   background-color: rgba(126, 126, 126, 0.199);
-  -webkit-transition: background-color 300ms ease-out;
-  -o-transition: background-color 300ms ease-out;
-  transition: background-color 300ms ease-out;
+  transition: background-color 300ms ease-out, top 300ms ease, opacity 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .dropbtn:hover {
   background-color: #1db954;
@@ -1162,11 +1161,12 @@ ul.genres > li {
 }
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
+  margin-right: 0.5vw;
   position: fixed;
   border-radius: 30px;
   display: none;
   right: 0;
-  top: 60px;
+  top: -200px;
   background-color: #919191;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
@@ -1180,10 +1180,11 @@ ul.genres > li {
   display: flex;
   flex-direction: column;
   opacity: 1;
+  top: 60px;
 }
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {
-  background-color: #3e8e41;
+  background-color: #1db954;
 }
 .progress {
   border-radius: 5px;
