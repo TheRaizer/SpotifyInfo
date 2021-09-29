@@ -11,7 +11,7 @@ import {
   checkIfHasTokens,
   onSuccessfulTokenCall
 } from '../../manage-tokens'
-import CardActionsHandler from '../../card-actions'
+import CardActionsHandler from '../../components/card-actions'
 import DoublyLinkedList, { arrayToDoublyLinkedList } from '../../components/doubly-linked-list'
 import interact from 'interactjs'
 import axios, { AxiosResponse } from 'axios'

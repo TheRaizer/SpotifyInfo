@@ -1,5 +1,6 @@
 class Card {
   cardId: string;
+
   constructor () {
     this.cardId = ''
   }

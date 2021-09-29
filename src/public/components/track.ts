@@ -132,6 +132,7 @@ class Track extends Card implements IPlayable {
                   <div class="${
                     config.CSS.CLASSES.flipCardFront
                   }"  title="Click to view more Info">
+                    <div ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="play-arrow ${config.CSS.CLASSES.expandOnHover}" title="Click to play song"></div>
                     <img src="${this.imageUrl}" alt="Album Cover"></img>
                     <div>
                       <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
@@ -145,8 +146,8 @@ class Track extends Card implements IPlayable {
                     <h3>Release Date:</h3>
                     <p>${this.releaseDate.toDateString()}</p>
                     <h3>Album Name:</h3>
-                    <a href="${this.album.externalUrl}">
-                      <p class="${config.CSS.CLASSES.ellipsisWrap}">${
+                    <a href="${this.externalUrls.spotify}">
+                      <p ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="${config.CSS.CLASSES.ellipsisWrap}">${
       this.album.name
     }</p>
                     </a>
@@ -155,6 +156,7 @@ class Track extends Card implements IPlayable {
               </div>
             </div>
           `
+
     return htmlToEl(html) as Node
   }
 

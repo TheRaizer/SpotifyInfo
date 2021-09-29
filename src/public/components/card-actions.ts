@@ -1,5 +1,5 @@
-import { config, isEllipsisActive, getTextWidth } from './config'
-import Card from './components/card'
+import { config, isEllipsisActive, getTextWidth } from '../config'
+import Card from './card'
 
 export default class CardActionsHandler {
   storedSelEls: Array<Element>;
@@ -27,6 +27,7 @@ export default class CardActionsHandler {
     allowUnselSelected: boolean = false,
     unselectPrevious: boolean = true
   ) {
+    // if the selected card is selected, and we can unselect it, do so.
     if (this.storedSelEls.includes(selCardEl)) {
       if (allowUnselSelected) {
         const selCard = this.storedSelEls[this.storedSelEls.indexOf(selCardEl)]
@@ -50,7 +51,7 @@ export default class CardActionsHandler {
       )
     }
 
-    // unselect the previously selected card if it exists
+    // unselect the previously selected card if it exists and if we are allowed too
     if (Object.keys(this.storedSelEls).length > 0 && unselectPrevious) {
       const storedEl = this.storedSelEls.pop()
       if (storedEl !== undefined) { storedEl.classList.remove(config.CSS.CLASSES.selected) }
@@ -146,7 +147,12 @@ export default class CardActionsHandler {
     this.clearSelectedEls()
 
     cards.forEach((trackCard) => {
-      trackCard.addEventListener('click', () =>
+      trackCard.addEventListener('click', (evt) => {
+        console.log(evt.target)
+        if ((evt!.target as HTMLElement)?.getAttribute('data-restrict-flip-on-click')) {
+          console.log('leave')
+          return
+        }
         this.onCardClick(
           trackCard,
           objArr,
@@ -154,6 +160,7 @@ export default class CardActionsHandler {
           allowUnselected,
           unselectPrevious
         )
+      }
       )
       trackCard.addEventListener('mouseenter', () => {
         this.scrollTextOnCardEnter(trackCard)

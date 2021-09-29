@@ -1315,3 +1315,13 @@ ul.genres > li {
   -ms-touch-action: none;
   touch-action: none;
 }
+.play-arrow {
+  position: absolute;
+  left: 90px;
+  top: 65px;
+  width: 0;
+  height: 0;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-left: 35px solid #1db954;
+}

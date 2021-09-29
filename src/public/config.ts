@@ -121,7 +121,8 @@ export const config = {
       slider: 'slider'
     },
     ATTRIBUTES: {
-      dataSelection: 'data-selection'
+      dataSelection: 'data-selection',
+      restrictFlipOnClick: 'data-restrict-flip-on-click'
     }
   },
   URLs: {

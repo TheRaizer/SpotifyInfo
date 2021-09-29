@@ -7,7 +7,7 @@ import {
   generateLogin
 } from '../../manage-tokens'
 import Artist, { generateArtistsFromData } from '../../components/artist'
-import CardActionsHandler from '../../card-actions'
+import CardActionsHandler from '../../components/card-actions'
 import DoublyLinkedList from '../../components/doubly-linked-list'
 import axios, { AxiosResponse } from 'axios'
 import Track from '../../components/track'

@@ -14,11 +14,11 @@ import {
   onSuccessfulTokenCall
 } from '../../manage-tokens'
 import AsyncSelectionVerif from '../../components/asyncSelectionVerif'
-import CardActionsHandler from '../../card-actions'
+import CardActionsHandler from '../../components/card-actions'
 import axios from 'axios'
 import { Chart, LinearScale, CategoryScale, BarController, BarElement } from 'chart.js'
 import { FeaturesData } from '../../../types'
-import { determineTerm, IdxFromTerm, loadTerm, saveTerm, selectStartTermTab, TERMS, TERM_TYPE } from '../../components/save-load-term'
+import { determineTerm, loadTerm, saveTerm, selectStartTermTab, TERMS, TERM_TYPE } from '../../components/save-load-term'
 
 Chart.register(LinearScale, CategoryScale, BarController, BarElement)
 const DEFAULT_VIEWABLE_CARDS = 5
