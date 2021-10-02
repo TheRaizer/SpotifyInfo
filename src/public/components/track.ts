@@ -132,7 +132,7 @@ class Track extends Card implements IPlayable {
                   <div class="${
                     config.CSS.CLASSES.flipCardFront
                   }"  title="Click to view more Info">
-                    <div ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="play-arrow ${config.CSS.CLASSES.expandOnHover}" title="Click to play song"></div>
+                    <div ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="circle" title="Click to play song"></div>
                     <img src="${this.imageUrl}" alt="Album Cover"></img>
                     <div>
                       <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${

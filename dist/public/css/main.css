@@ -333,6 +333,9 @@ footer {
   -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
+.flip-card-inner.selected .play-arrow {
+  display: none;
+}
 .flip-card-front,
 .flip-card-back {
   margin-top: 15%;
@@ -1078,6 +1081,7 @@ ul.genres > li {
 }
 .topnav li a {
   width: 10vw;
+  height: 20px;
   border-radius: 30px;
   display: block;
   color: white;
@@ -1092,7 +1096,7 @@ ul.genres > li {
   transition: background-color 300ms ease-out;
 }
 .topnav li a.spotify-logo {
-  padding: 10px 16px;
+  padding: 0.8vw 0.2vw;
 }
 .topnav li a:hover:not(.active) {
   background-color: rgba(221, 221, 221, 0.966);
@@ -1139,12 +1143,12 @@ ul.genres > li {
 /* Dropdown Button */
 .dropbtn {
   width: 10vw;
+  padding: 0.8vw 0.2vw;
   margin-right: 0.5vw;
   border-radius: 30px;
   display: block;
   color: white;
   text-align: center;
-  padding: 14px 16px;
   text-decoration: none;
   float: left;
   font-size: 17px;
@@ -1168,7 +1172,6 @@ ul.genres > li {
   right: 0;
   top: -200px;
   background-color: #919191;
-  min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 }
 /* Change color of dropdown links on hover */
@@ -1315,10 +1318,32 @@ ul.genres > li {
   -ms-touch-action: none;
   touch-action: none;
 }
-.play-arrow {
-  position: absolute;
-  left: 90px;
+.circle {
+  left: 87px;
   top: 65px;
+  display: inline-block;
+  vertical-align: middle;
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: #000;
+  border-radius: 50%;
+  transform: rotate(90deg);
+  transition: transform 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.circle:hover {
+  transform: rotate(90deg) scale(1.1);
+}
+.circle:after {
+  position: absolute;
+  content: "";
+  top: 50%;
+  left: 50%;
+  border: 10px solid transparent;
+  border-bottom: 10px solid #fff;
+  transform: translateX(-50%) translateY(-85%);
+}
+.play-arrow {
   width: 0;
   height: 0;
   border-top: 20px solid transparent;
