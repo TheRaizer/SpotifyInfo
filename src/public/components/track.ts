@@ -118,6 +118,7 @@ class Track extends Card implements IPlayable {
     const id = `${config.CSS.IDs.trackPrefix}${idx}`
     this.cardId = id
     const appearClass = unanimatedAppear ? config.CSS.CLASSES.appear : ''
+
     const html = `
             <div class="${config.CSS.CLASSES.rankCard} ${
       config.CSS.CLASSES.fadeIn
@@ -132,7 +133,9 @@ class Track extends Card implements IPlayable {
                   <div class="${
                     config.CSS.CLASSES.flipCardFront
                   }"  title="Click to view more Info">
-                    <div ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="circle" title="Click to play song"></div>
+                    <div ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="${config.CSS.CLASSES.playBtn} ${
+                isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
+              }" title="Click to play song"></div>
                     <img src="${this.imageUrl}" alt="Album Cover"></img>
                     <div>
                       <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
@@ -157,7 +160,17 @@ class Track extends Card implements IPlayable {
             </div>
           `
 
-    return htmlToEl(html) as Node
+    const el = htmlToEl(html) as HTMLElement
+    const playBtn = el.getElementsByClassName(config.CSS.CLASSES.playBtn)[0]
+
+    this.selEl = playBtn
+
+    playBtn.addEventListener('click', () => {
+      const trackNode = new DoublyLinkedListNode<IPlayable>(this)
+      this.playPauseClick(trackNode)
+    })
+
+    return el as Node
   }
 
   private playPauseClick (trackNode: DoublyLinkedListNode<IPlayable>) {
@@ -231,7 +244,7 @@ class Track extends Card implements IPlayable {
             <li class="${config.CSS.CLASSES.playlistTrack}">
             <div class="${config.CSS.CLASSES.rankedTrackInteract} ${
                 isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
-              }"">
+              }">
               <button class="${config.CSS.CLASSES.playPause} ${
                   isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
                 }"><img src="" alt="play/pause" 

@@ -118,7 +118,8 @@ export const config = {
       progress: 'progress',
       playPause: 'play-pause',
       rankedTrackInteract: 'ranked-interaction-area',
-      slider: 'slider'
+      slider: 'slider',
+      playBtn: 'play-btn'
     },
     ATTRIBUTES: {
       dataSelection: 'data-selection',

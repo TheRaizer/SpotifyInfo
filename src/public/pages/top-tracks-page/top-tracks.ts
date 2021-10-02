@@ -148,7 +148,7 @@ const displayCardInfo = (function () {
     animationControl.animateAttributes(
       '.' + config.CSS.CLASSES.rankCard,
       config.CSS.CLASSES.appear,
-      25
+      5
     )
     return cardHtmls
   }
