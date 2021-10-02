@@ -18,6 +18,7 @@ const playback_sdk_1 = require("./playback-sdk");
 const album_1 = __importDefault(require("./album"));
 const card_1 = __importDefault(require("./card"));
 const track_play_args_1 = __importDefault(require("./pubsub/event-args/track-play-args"));
+const doubly_linked_list_1 = require("../components/doubly-linked-list");
 const axios_1 = __importDefault(require("axios"));
 const eventAggregator = window.eventAggregator;
 class Track extends card_1.default {
@@ -82,9 +83,10 @@ class Track extends card_1.default {
         const html = `
             <div class="${config_1.config.CSS.CLASSES.rankCard} ${config_1.config.CSS.CLASSES.fadeIn} ${appearClass}">
               <h4 id="${config_1.config.CSS.IDs.rank}">${idx + 1}.</h4>
-              <div class="${config_1.config.CSS.CLASSES.flipCard} ${config_1.config.CSS.CLASSES.noSelect}  ${config_1.config.CSS.CLASSES.expandOnHover}">
-                <button class="${config_1.config.CSS.CLASSES.card} ${config_1.config.CSS.CLASSES.flipCardInner} ${config_1.config.CSS.CLASSES.track}" id="${this.getCardId()}">
+              <div class="${config_1.config.CSS.CLASSES.flipCard} ${config_1.config.CSS.CLASSES.noSelect}">
+                <button class="${config_1.config.CSS.CLASSES.card} ${config_1.config.CSS.CLASSES.expandOnHover} ${config_1.config.CSS.CLASSES.flipCardInner} ${config_1.config.CSS.CLASSES.track}" id="${this.getCardId()}">
                   <div class="${config_1.config.CSS.CLASSES.flipCardFront}"  title="Click to view more Info">
+                    <div ${config_1.config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}" title="Click to play song"></div>
                     <img src="${this.imageUrl}" alt="Album Cover"></img>
                     <div>
                       <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap} ${config_1.config.CSS.CLASSES.scrollingText}">${this.title}</h4>
@@ -96,15 +98,22 @@ class Track extends card_1.default {
                     <h3>Release Date:</h3>
                     <p>${this.releaseDate.toDateString()}</p>
                     <h3>Album Name:</h3>
-                    <a href="${this.album.externalUrl}">
-                      <p class="${config_1.config.CSS.CLASSES.ellipsisWrap}">${this.album.name}</p>
+                    <a href="${this.externalUrls.spotify}">
+                      <p ${config_1.config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="${config_1.config.CSS.CLASSES.ellipsisWrap}">${this.album.name}</p>
                     </a>
                   </div>
                 </button>
               </div>
             </div>
           `;
-        return (0, config_1.htmlToEl)(html);
+        const el = (0, config_1.htmlToEl)(html);
+        const playBtn = el.getElementsByClassName(config_1.config.CSS.CLASSES.playBtn)[0];
+        this.selEl = playBtn;
+        playBtn.addEventListener('click', () => {
+            const trackNode = new doubly_linked_list_1.DoublyLinkedListNode(this);
+            this.playPauseClick(trackNode);
+        });
+        return el;
     }
     playPauseClick(trackNode) {
         const track = this;
@@ -160,7 +169,7 @@ class Track extends card_1.default {
         const trackNode = trackList.find((x) => x.uri === this.uri, true);
         const html = `
             <li class="${config_1.config.CSS.CLASSES.playlistTrack}">
-            <div class="${config_1.config.CSS.CLASSES.rankedTrackInteract} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}"">
+            <div class="${config_1.config.CSS.CLASSES.rankedTrackInteract} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}">
               <button class="${config_1.config.CSS.CLASSES.playPause} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}"><img src="" alt="play/pause" 
                 class="${config_1.config.CSS.CLASSES.noSelect}"/>
               </button>

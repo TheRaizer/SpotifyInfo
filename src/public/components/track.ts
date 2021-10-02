@@ -126,8 +126,8 @@ class Track extends Card implements IPlayable {
               <h4 id="${config.CSS.IDs.rank}">${idx + 1}.</h4>
               <div class="${config.CSS.CLASSES.flipCard} ${
       config.CSS.CLASSES.noSelect
-    }  ${config.CSS.CLASSES.expandOnHover}">
-                <button class="${config.CSS.CLASSES.card} ${
+    }">
+                <button class="${config.CSS.CLASSES.card} ${config.CSS.CLASSES.expandOnHover} ${
       config.CSS.CLASSES.flipCardInner
     } ${config.CSS.CLASSES.track}" id="${this.getCardId()}">
                   <div class="${

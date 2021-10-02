@@ -17,7 +17,7 @@ const profile_1 = __importDefault(require("../../components/profile"));
 const playlist_1 = require("../../components/playlist");
 const manage_tokens_1 = require("../../manage-tokens");
 const artist_1 = require("../../components/artist");
-const card_actions_1 = __importDefault(require("../../card-actions"));
+const card_actions_1 = __importDefault(require("../../components/card-actions"));
 const doubly_linked_list_1 = __importDefault(require("../../components/doubly-linked-list"));
 const axios_1 = __importDefault(require("axios"));
 function displayProfile(profile) {

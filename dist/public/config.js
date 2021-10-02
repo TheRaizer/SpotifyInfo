@@ -128,10 +128,12 @@ exports.config = {
             progress: 'progress',
             playPause: 'play-pause',
             rankedTrackInteract: 'ranked-interaction-area',
-            slider: 'slider'
+            slider: 'slider',
+            playBtn: 'play-btn'
         },
         ATTRIBUTES: {
-            dataSelection: 'data-selection'
+            dataSelection: 'data-selection',
+            restrictFlipOnClick: 'data-restrict-flip-on-click'
         }
     },
     URLs: {

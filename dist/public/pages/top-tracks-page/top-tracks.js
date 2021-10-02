@@ -18,7 +18,7 @@ const config_1 = require("../../config");
 const SelectableTabEls_1 = __importDefault(require("../../components/SelectableTabEls"));
 const manage_tokens_1 = require("../../manage-tokens");
 const asyncSelectionVerif_1 = __importDefault(require("../../components/asyncSelectionVerif"));
-const card_actions_1 = __importDefault(require("../../card-actions"));
+const card_actions_1 = __importDefault(require("../../components/card-actions"));
 const axios_1 = __importDefault(require("axios"));
 const chart_js_1 = require("chart.js");
 const save_load_term_1 = require("../../components/save-load-term");
@@ -132,7 +132,7 @@ const displayCardInfo = (function () {
         trackActions.addTrackCardListeners(trackArr);
         featureManager.changeTracksChart(tracksDisplayed);
         // animate the cards into view
-        config_1.animationControl.animateAttributes('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 25);
+        config_1.animationControl.animateAttributes('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 5);
         return cardHtmls;
     }
     /** Begins retrieving tracks then verifies it is the correct selected tracks.
