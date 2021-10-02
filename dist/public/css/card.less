@@ -58,12 +58,6 @@
     margin-left: 5%;
     margin-right: 5%;
   }
-  &:hover {
-    & .play-btn {
-      opacity: 1;
-      pointer-events: all;
-    }
-  }
   &.selected {
     background-color: @primary-green;
   }
@@ -72,6 +66,14 @@
 .flip-card {
   -webkit-perspective: 1000px;
   perspective: 1000px;
+
+  &:hover {
+    & .play-btn {
+      opacity: 1;
+      pointer-events: all;
+    }
+  }
+
   & > .selected {
     background-color: initial;
   }
