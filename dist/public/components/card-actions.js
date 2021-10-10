@@ -112,9 +112,7 @@ class CardActionsHandler {
         cards.forEach((trackCard) => {
             trackCard.addEventListener('click', (evt) => {
                 var _a;
-                console.log(evt.target);
                 if ((_a = evt.target) === null || _a === void 0 ? void 0 : _a.getAttribute('data-restrict-flip-on-click')) {
-                    console.log('leave');
                     return;
                 }
                 this.onCardClick(trackCard, objArr, clickCallBack, allowUnselected, unselectPrevious);

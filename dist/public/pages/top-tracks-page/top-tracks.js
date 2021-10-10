@@ -115,23 +115,24 @@ const displayCardInfo = (function () {
     function generateCards(trackArr) {
         (0, config_1.removeAllChildNodes)(tracksContainer);
         const cardHtmls = [];
-        // fill arr of card elements and append them to DOM
+        // array is used to update chart with the shown cards
         const tracksDisplayed = [];
         for (let i = 0; i < trackArr.length; i++) {
             const trackObj = trackArr[i];
+            const cardHtml = trackObj.getTrackCardHtml(i);
+            cardHtmls.push(cardHtml);
+            tracksContainer === null || tracksContainer === void 0 ? void 0 : tracksContainer.appendChild(cardHtml);
             if (i < trackActions.selections.numViewableCards) {
-                const cardHtml = trackObj.getTrackCardHtml(i);
                 tracksDisplayed.push(trackObj);
-                cardHtmls.push(cardHtml);
-                tracksContainer === null || tracksContainer === void 0 ? void 0 : tracksContainer.appendChild(cardHtml);
             }
             else {
-                break;
+                // make the card html invisible
+                cardHtml.classList.add(config_1.config.CSS.CLASSES.displayNone);
             }
         }
         trackActions.addTrackCardListeners(trackArr);
         featureManager.changeTracksChart(tracksDisplayed);
-        // animate the cards into view
+        // set appear class on all cards, even though some are not going to be visible
         config_1.animationControl.animateAttributes('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 5);
         return cardHtmls;
     }
@@ -164,6 +165,7 @@ const displayCardInfo = (function () {
      * @returns {Array<HTMLElement>} list of Card HTMLElement's.
      */
     function displayTrackCards(trackArr) {
+        console.log(trackArr);
         trackActions.selectionVerif.selectionChanged(trackArr);
         if (trackArr.length > 0) {
             return generateCards(trackArr);
@@ -172,8 +174,57 @@ const displayCardInfo = (function () {
             return startLoadingTracks(trackArr);
         }
     }
+    /**
+     * Removes a css class off a given number of cards in order to make the visible.
+     * @param numToDisplay the number of cards to display
+     * @param trackArr the array of tracks that are currently displayed
+     */
+    function removeDisplayNoneClass(numToDisplay, trackArr) {
+        const cards = tracksContainer === null || tracksContainer === void 0 ? void 0 : tracksContainer.childNodes;
+        if (!cards || trackArr.length !== cards.length) {
+            throw new Error('track array length and cards length do not match');
+        }
+        else if (!cards) {
+            throw new Error('there are no valid card elements to display.');
+        }
+        const tracksDisplayed = [];
+        // by removing displayNone, we are displaying the number of cards wanted to be visible
+        for (let i = 0; i < numToDisplay; i++) {
+            tracksDisplayed.push(trackArr[i]);
+            cards[i].classList.remove(config_1.config.CSS.CLASSES.displayNone);
+            // remove appear class if it exists as it will be added on through animation
+            cards[i].classList.remove(config_1.config.CSS.CLASSES.appear);
+        }
+        featureManager.changeTracksChart(tracksDisplayed);
+        // animate the cards into view
+        config_1.animationControl.animateAttributes('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 5);
+    }
+    /**
+     * Adds a css class to cards starting from the last in order to hide them.
+     * @param numToDisplay the number of cards to display
+     * @param trackArr the array of tracks that are currently displayed
+     */
+    function setDisplayNoneClass(numToDisplay, trackArr) {
+        const cards = tracksContainer === null || tracksContainer === void 0 ? void 0 : tracksContainer.childNodes;
+        if (!cards) {
+            return;
+        }
+        const tracksDisplayed = [];
+        // from the last cards to the index of the card you want to keep visible, hide them.
+        for (let i = cards.length - 1; i >= numToDisplay; i--) {
+            console.log(cards[i]);
+            cards[i].classList.add(config_1.config.CSS.CLASSES.displayNone);
+        }
+        // add only the tracks that will end up shown
+        for (let i = 0; i < numToDisplay; i++) {
+            tracksDisplayed.push(trackArr[i]);
+        }
+        featureManager.changeTracksChart(tracksDisplayed);
+    }
     return {
-        displayTrackCards
+        displayTrackCards,
+        removeDisplayNoneClass,
+        setDisplayNoneClass
     };
 })();
 /** Manages a feature's information for all tracks in a term. */
@@ -596,9 +647,11 @@ const addEventListeners = (function () {
     }
     function resetViewableCards() {
         var _a;
+        const currTracks = trackActions.getCurrSelTopTracks();
         const viewAllEl = (_a = document.getElementById(config_1.config.CSS.IDs.viewAllTopTracks)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)(`element of id ${config_1.config.CSS.IDs.viewAllTopTracks} does not exist`);
         trackActions.selections.numViewableCards = DEFAULT_VIEWABLE_CARDS;
         viewAllEl.textContent = 'See All 50';
+        displayCardInfo.setDisplayNoneClass(trackActions.selections.numViewableCards, currTracks);
     }
     function addViewAllTracksEvent() {
         var _a;
@@ -612,7 +665,7 @@ const addEventListeners = (function () {
                 resetViewableCards();
             }
             const currTracks = trackActions.getCurrSelTopTracks();
-            displayCardInfo.displayTrackCards(currTracks);
+            displayCardInfo.removeDisplayNoneClass(trackActions.selections.numViewableCards, currTracks);
         }
         viewAllEl.addEventListener('click', () => onClick());
     }

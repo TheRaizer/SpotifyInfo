@@ -83,8 +83,8 @@ class Track extends card_1.default {
         const html = `
             <div class="${config_1.config.CSS.CLASSES.rankCard} ${config_1.config.CSS.CLASSES.fadeIn} ${appearClass}">
               <h4 id="${config_1.config.CSS.IDs.rank}">${idx + 1}.</h4>
-              <div class="${config_1.config.CSS.CLASSES.flipCard} ${config_1.config.CSS.CLASSES.noSelect}">
-                <button class="${config_1.config.CSS.CLASSES.card} ${config_1.config.CSS.CLASSES.expandOnHover} ${config_1.config.CSS.CLASSES.flipCardInner} ${config_1.config.CSS.CLASSES.track}" id="${this.getCardId()}">
+              <div class="${config_1.config.CSS.CLASSES.flipCard} ${config_1.config.CSS.CLASSES.noSelect}  ${config_1.config.CSS.CLASSES.expandOnHover}">
+                <button class="${config_1.config.CSS.CLASSES.card} ${config_1.config.CSS.CLASSES.flipCardInner} ${config_1.config.CSS.CLASSES.track}" id="${this.getCardId()}">
                   <div class="${config_1.config.CSS.CLASSES.flipCardFront}"  title="Click to view more Info">
                     <div ${config_1.config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}" title="Click to play song"></div>
                     <img src="${this.imageUrl}" alt="Album Cover"></img>

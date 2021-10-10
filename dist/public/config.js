@@ -129,7 +129,8 @@ exports.config = {
             playPause: 'play-pause',
             rankedTrackInteract: 'ranked-interaction-area',
             slider: 'slider',
-            playBtn: 'play-btn'
+            playBtn: 'play-btn',
+            displayNone: 'display-none'
         },
         ATTRIBUTES: {
             dataSelection: 'data-selection',
