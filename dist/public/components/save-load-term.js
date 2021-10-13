@@ -45,7 +45,9 @@ function loadTerm(termType) {
         if (err) {
             return TERMS.SHORT_TERM;
         }
-        return determineTerm(res === null || res === void 0 ? void 0 : res.data);
+        else {
+            return determineTerm(res === null || res === void 0 ? void 0 : res.data);
+        }
     });
 }
 exports.loadTerm = loadTerm;

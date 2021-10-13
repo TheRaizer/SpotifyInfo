@@ -46,7 +46,6 @@ function obtainTokens() {
             (0, manage_tokens_1.generateLogin)({ changeAccount: false });
             createSpotifyLoginButton();
         });
-        console.log('get tokens');
         return hasToken;
     });
 }

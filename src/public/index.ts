@@ -38,7 +38,6 @@ async function obtainTokens () {
     generateLogin({ changeAccount: false })
     createSpotifyLoginButton()
   })
-  console.log('get tokens')
   return hasToken
 }
 

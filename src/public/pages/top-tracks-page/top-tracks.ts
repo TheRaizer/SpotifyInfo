@@ -81,15 +81,16 @@ const trackActions = (function () {
     }
   }
   async function retrieveTracks (trackArr: Array<Track>) {
-    const { res, err } = await promiseHandler(
-      axios.get(config.URLs.getTopTracks + selections.term)
-    )
-    if (err) {
-      throw new Error(err as string)
-    }
+    const { res } = await promiseHandler(
+      axios.get(config.URLs.getTopTracks + selections.term),
+      () => {}, () => {
+        throw new Error('Issue retrieving tracks')
+      })
     generateTracksFromData(res?.data, trackArr)
 
-    await promiseHandler(loadFeatures(trackArr))
+    await promiseHandler(loadFeatures(trackArr), () => {}, () => {
+      throw new Error('Issue retrieving tracks')
+    })
   }
   return {
     addTrackCardListeners,
@@ -175,6 +176,8 @@ const displayCardInfo = (function () {
         return
       }
       return generateCards(trackArr)
+    }).catch((err) => {
+      throw new Error(err)
     })
   }
 

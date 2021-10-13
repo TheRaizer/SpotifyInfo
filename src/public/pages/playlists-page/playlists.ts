@@ -29,12 +29,6 @@ const playlistOrder = expandedPlaylistMods?.getElementsByClassName(
   config.CSS.CLASSES.playlistOrder
 )[0] as HTMLInputElement
 
-// TEST
-const val = document.getElementById('ELEMENT DOES NOT EXIST')
-console.log(val?.getElementsByClassName(
-  config.CSS.CLASSES.playlistOrder
-)[0]) // this will log as undefined because 'val' is undefined
-
 const trackUl = expandedPlaylistMods?.getElementsByTagName('ul')[0]
 const playlistSearchInput = expandedPlaylistMods?.getElementsByClassName(
   config.CSS.CLASSES.playlistSearch

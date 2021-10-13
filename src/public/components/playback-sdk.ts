@@ -13,10 +13,13 @@ import { IPlayable } from '../../types'
 import SpotifyPlaybackElement from './spotify-playback-element'
 
 async function loadVolume () {
-  const response = await promiseHandler(axios.get(config.URLs.getPlayerVolumeData))
-  console.log(response)
-  const volume = response.res!.data
-  return volume
+  const { res, err } = await promiseHandler(axios.get(config.URLs.getPlayerVolumeData))
+
+  if (err) {
+    return 0
+  } else {
+    return res!.data
+  }
 }
 async function saveVolume (volume: string) {
   promiseHandler(axios.put(config.URLs.putPlayerVolumeData(volume)))
@@ -119,7 +122,6 @@ class SpotifyPlayback {
   private async _loadWebPlayer () {
     // load the users saved volume if there isnt then load 0.4 as default.
     const volume = await loadVolume()
-    console.log(volume + ' loaded.')
 
     promiseHandler<AxiosResponse<string | null>>(axios.request<string | null>({ method: 'GET', url: config.URLs.getAccessToken }), (res) => {
       // this takes too long and spotify sdk needs window.onSpotifyWebPlaybackSDKReady to be defined quicker.

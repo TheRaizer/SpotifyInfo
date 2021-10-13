@@ -3,14 +3,6 @@ import axios from 'axios'
 
 const HALF_HOUR = 1.8e6 /* 30 min in ms */
 
-type HasTokenRes = {
-  data: boolean
-}
-
-function isTokenRes (res: any): res is HasTokenRes {
-  return typeof res.data === 'boolean'
-}
-
 export async function checkIfHasTokens (): Promise<boolean> {
   // if the user stays on the same page for 30 min refresh the token.
   const startRefreshInterval = () => {
@@ -22,14 +14,9 @@ export async function checkIfHasTokens (): Promise<boolean> {
   }
   let hasToken = false
   // await promise resolve that returns whether the session has tokens.
-  // because token is stored in session we need to reassign 'hasToken' to the client so we do not need to run this method again on refresh
   await promiseHandler(
     axios.get(config.URLs.getHasTokens),
     (res) => {
-      if (!isTokenRes(res)) {
-        throw new Error('Invalid has token response')
-      }
-
       hasToken = res.data
     }
   )

@@ -30,8 +30,9 @@ export async function loadTerm (termType: TERM_TYPE) : Promise<TERMS> {
   const { res, err } = await promiseHandler<AxiosResponse<string | null>>((axios.request<string | null>({ method: 'GET', url: config.URLs.getTerm(termType) })))
   if (err) {
     return TERMS.SHORT_TERM
+  } else {
+    return determineTerm(res?.data as string)
   }
-  return determineTerm(res?.data as string)
 }
 
 export async function saveTerm (term: TERMS, termType: TERM_TYPE) {

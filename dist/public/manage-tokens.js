@@ -16,9 +16,6 @@ exports.onSuccessfulTokenCall = exports.generateLogin = exports.getTokens = expo
 const config_1 = require("./config");
 const axios_1 = __importDefault(require("axios"));
 const HALF_HOUR = 1.8e6; /* 30 min in ms */
-function isTokenRes(res) {
-    return typeof res.data === 'boolean';
-}
 function checkIfHasTokens() {
     return __awaiter(this, void 0, void 0, function* () {
         // if the user stays on the same page for 30 min refresh the token.
@@ -31,11 +28,7 @@ function checkIfHasTokens() {
         };
         let hasToken = false;
         // await promise resolve that returns whether the session has tokens.
-        // because token is stored in session we need to reassign 'hasToken' to the client so we do not need to run this method again on refresh
         yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getHasTokens), (res) => {
-            if (!isTokenRes(res)) {
-                throw new Error('Invalid has token response');
-            }
             hasToken = res.data;
         });
         if (hasToken) {

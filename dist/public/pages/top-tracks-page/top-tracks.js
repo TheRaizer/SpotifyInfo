@@ -78,12 +78,13 @@ const trackActions = (function () {
     }
     function retrieveTracks(trackArr) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { res, err } = yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getTopTracks + selections.term));
-            if (err) {
-                throw new Error(err);
-            }
+            const { res } = yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getTopTracks + selections.term), () => { }, () => {
+                throw new Error('Issue retrieving tracks');
+            });
             (0, track_1.generateTracksFromData)(res === null || res === void 0 ? void 0 : res.data, trackArr);
-            yield (0, config_1.promiseHandler)(loadFeatures(trackArr));
+            yield (0, config_1.promiseHandler)(loadFeatures(trackArr), () => { }, () => {
+                throw new Error('Issue retrieving tracks');
+            });
         });
     }
     return {
@@ -155,6 +156,8 @@ const displayCardInfo = (function () {
                 return;
             }
             return generateCards(trackArr);
+        }).catch((err) => {
+            throw new Error(err);
         });
     }
     /** Load track objects if not loaded, then generate cards with the objects.

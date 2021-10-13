@@ -20,10 +20,13 @@ const aggregator_1 = __importDefault(require("./pubsub/aggregator"));
 const spotify_playback_element_1 = __importDefault(require("./spotify-playback-element"));
 function loadVolume() {
     return __awaiter(this, void 0, void 0, function* () {
-        const response = yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getPlayerVolumeData));
-        console.log(response);
-        const volume = response.res.data;
-        return volume;
+        const { res, err } = yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getPlayerVolumeData));
+        if (err) {
+            return 0;
+        }
+        else {
+            return res.data;
+        }
     });
 }
 function saveVolume(volume) {
