@@ -3,7 +3,8 @@ import {
   promiseHandler,
   addResizeDrag,
   millisToMinutesAndSeconds,
-  htmlToEl
+  htmlToEl,
+  throwExpression
 } from '../config'
 import { DoublyLinkedListNode } from './doubly-linked-list'
 import PlayableEventArg from './pubsub/event-args/track-play-args'
@@ -222,6 +223,7 @@ class SpotifyPlayback {
     // check to see if this is the first node or if an action is processing
     if (!this.isExecutingAction && currNode !== null) {
       const prevTrack = currNode.data
+      console.log('Try player pause')
       this.setSelPlayingEl(new PlayableEventArg(prevTrack, currNode))
     }
   }
@@ -349,6 +351,14 @@ class SpotifyPlayback {
    * Select a certain play/pause element and play the given track uri
    * and unselect the previous one then pause the previous track_uri.
    *
+   * The reassigning of elements is in the case that this function is called through the web player element,
+   * as there is a chance that the selected playing element is either non-existent, or is different then then
+   * the previous i.e. rerendered, or has an equivalent element when on for example a different term tab.
+   *
+   * Reassigning is done so that the potentially different equivalent element can act as the initially
+   * selected element, in showing pause/play symbols in accordance to whether the
+   * song was paused/played through the web player.
+   *
    * @param {PlayableEventArg} eventArg - a class that contains the current, next and previous tracks to play
    */
   public async setSelPlayingEl (eventArg: PlayableEventArg) {
@@ -366,8 +376,11 @@ class SpotifyPlayback {
       this.selPlaying.trackDataNode?.data.onStopped()
       clearInterval(this.getStateInterval as NodeJS.Timeout)
 
+      // reassign the element if it exists as it may have been rerendered and therefore the previous value is pointing to nothing
+      this.selPlaying.element = document.getElementById(this.selPlaying.element.id) ?? this.selPlaying.element
+
       // if its the same element then pause
-      if (this.selPlaying.element === eventArg.currPlayable.selEl) {
+      if (this.selPlaying.element.id === eventArg.currPlayable.selEl.id) {
         this.pauseDeselectTrack()
         await this.pause()
         this.isExecutingAction = false
@@ -380,11 +393,15 @@ class SpotifyPlayback {
 
     // prev track uri is the same then resume the song instead of replaying it.
     if (this.selPlaying.track_uri === eventArg.currPlayable.uri) {
+      // this selEl could corrospond to the same song but is an element that is non-existent, so reassign it to a equivalent existing element if this is the case.
+      eventArg.currPlayable.selEl = document.getElementById(eventArg.currPlayable.selEl.id) ?? eventArg.currPlayable.selEl
+
       await this.startTrack(async () => this.resume(), eventArg)
       this.isExecutingAction = false
       return
     }
 
+    console.log('start track')
     await this.startTrack(async () => this.play(eventArg.currPlayable.uri), eventArg)
     this.isExecutingAction = false
   }

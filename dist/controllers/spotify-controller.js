@@ -71,7 +71,7 @@ function getPlaylists(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         yield (0, axios_1.default)({
             method: 'get',
-            url: 'https://api.spotify.com/v1/me/playlists',
+            url: 'https://api.spotify.com/v1/me/playlists?limit=50',
             headers: spotifyGetHeaders(req)
         })
             .then(function (response) {

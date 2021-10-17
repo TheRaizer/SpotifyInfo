@@ -107,7 +107,6 @@ class SpotifyPlayback {
         return __awaiter(this, void 0, void 0, function* () {
             // load the users saved volume if there isnt then load 0.4 as default.
             const volume = yield loadVolume();
-            console.log(volume + ' loaded.');
             (0, config_1.promiseHandler)(axios_1.default.request({ method: 'GET', url: config_1.config.URLs.getAccessToken }), (res) => {
                 // this takes too long and spotify sdk needs window.onSpotifyWebPlaybackSDKReady to be defined quicker.
                 const NO_CONTENT = 204;

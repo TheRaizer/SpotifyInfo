@@ -133,7 +133,7 @@ class Track extends Card implements IPlayable {
                   <div class="${
                     config.CSS.CLASSES.flipCardFront
                   }"  title="Click to view more Info">
-                    <div ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="${config.CSS.CLASSES.playBtn} ${
+                    <div ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" id="${this._uri}" class="${config.CSS.CLASSES.playBtn} ${
                 isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
               }" title="Click to play song"></div>
                     <img src="${this.imageUrl}" alt="Album Cover"></img>
@@ -186,10 +186,12 @@ class Track extends Card implements IPlayable {
    */
   public getPlaylistTrackHtml (trackList: DoublyLinkedList<IPlayable>, displayDate: boolean = true): Node {
     const trackNode = trackList.find((x) => x.uri === this.uri, true) as DoublyLinkedListNode<IPlayable>
+    // for the unique play pause ID also use the date added to playlist as there can be duplicates of a song in a playlist.
+    const playPauseId = this._uri + this.dateAddedToPlaylist
 
     const html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
-              <button class="${config.CSS.CLASSES.playPause} ${
+              <button id="${playPauseId}" class="${config.CSS.CLASSES.playPause} ${
                 isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
               }"><img src="" alt="play/pause" 
               class="${config.CSS.CLASSES.noSelect}"/>
@@ -245,7 +247,7 @@ class Track extends Card implements IPlayable {
             <div class="${config.CSS.CLASSES.rankedTrackInteract} ${
                 isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
               }">
-              <button class="${config.CSS.CLASSES.playPause} ${
+              <button id="${this._uri}" class="${config.CSS.CLASSES.playPause} ${
                   isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
                 }"><img src="" alt="play/pause" 
                 class="${config.CSS.CLASSES.noSelect}"/>

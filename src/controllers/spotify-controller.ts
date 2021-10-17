@@ -53,7 +53,7 @@ async function getTopTracks (req: Request, res: Response, next: NextFunction) {
 async function getPlaylists (req: Request, res: Response, next: NextFunction) {
   await axios({
     method: 'get',
-    url: 'https://api.spotify.com/v1/me/playlists',
+    url: 'https://api.spotify.com/v1/me/playlists?limit=50',
     headers: spotifyGetHeaders(req)
   })
     .then(function (response: { data: { items: Array<unknown> } }) {

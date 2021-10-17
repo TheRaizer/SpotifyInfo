@@ -44,9 +44,6 @@ const expandedPlaylistMods = document.getElementById(config_1.config.CSS.IDs.exp
 const playlistHeaderArea = document.getElementById(config_1.config.CSS.IDs.playlistHeaderArea);
 // add on change event listener to the order selection element of the mods expanded playlist
 const playlistOrder = expandedPlaylistMods === null || expandedPlaylistMods === void 0 ? void 0 : expandedPlaylistMods.getElementsByClassName(config_1.config.CSS.CLASSES.playlistOrder)[0];
-// TEST
-const val = document.getElementById('ELEMENT DOES NOT EXIST');
-console.log(val === null || val === void 0 ? void 0 : val.getElementsByClassName(config_1.config.CSS.CLASSES.playlistOrder)[0]); // this will log as undefined because 'val' is undefined
 const trackUl = expandedPlaylistMods === null || expandedPlaylistMods === void 0 ? void 0 : expandedPlaylistMods.getElementsByTagName('ul')[0];
 const playlistSearchInput = expandedPlaylistMods === null || expandedPlaylistMods === void 0 ? void 0 : expandedPlaylistMods.getElementsByClassName(config_1.config.CSS.CLASSES.playlistSearch)[0];
 const playlistsCardContainer = document.getElementById(config_1.config.CSS.IDs.playlistCardsContainer);

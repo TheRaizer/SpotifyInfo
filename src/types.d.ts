@@ -73,6 +73,9 @@ export type TrackData = {
   idx: number
 }
 
+/**
+ * selEl must have a unique id as play and pause elements are compared by element id.
+ */
 export interface IPlayable {
   selEl: Element
   uri: string
