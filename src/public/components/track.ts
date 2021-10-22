@@ -191,10 +191,9 @@ class Track extends Card implements IPlayable {
 
     const html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
-              <button id="${playPauseId}" class="${config.CSS.CLASSES.playPause} ${
+              <button id="${playPauseId}" class="${config.CSS.CLASSES.playBtn} ${
                 isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
-              }"><img src="" alt="play/pause" 
-              class="${config.CSS.CLASSES.noSelect}"/>
+              }">
               </button>
               <img class="${config.CSS.CLASSES.noSelect}" src="${
       this.imageUrl
@@ -247,10 +246,9 @@ class Track extends Card implements IPlayable {
             <div class="${config.CSS.CLASSES.rankedTrackInteract} ${
                 isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
               }">
-              <button id="${this._uri}" class="${config.CSS.CLASSES.playPause} ${
+              <button id="${this._uri}" class="${config.CSS.CLASSES.playBtn} ${
                   isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
-                }"><img src="" alt="play/pause" 
-                class="${config.CSS.CLASSES.noSelect}"/>
+                }">
               </button>
               <p>${rank}.</p>
             </div>

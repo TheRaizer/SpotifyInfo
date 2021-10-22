@@ -130,7 +130,8 @@
     width: 60px;
     height: 60px;
   }
-  & .play-pause {
+  & .play-btn {
+    background-color: transparent;
     // don't grow or shrink
     flex: 0 0 50px;
     height: 50px;
@@ -138,20 +139,16 @@
     margin-right: 2%;
     padding: 8px 8px;
     border-radius: 30px;
-    background-color: transparent;
 
-    transition: background-color 400ms @quick-bezier;
-    & > img {
-      content: url("../images/play-30px.png");
-    }
     &:hover {
-      background-color: rgb(150, 150, 150);
+      background-color: black;
     }
     &.selected {
-      background-color: rgb(150, 150, 150);
-      & > img {
-        content: url("../images/pause-30px.png");
-      }
+      background-color: black;
+    }
+    &:after {
+      border-width: 12px;
+      border-bottom-width: 15px;
     }
   }
   & > .links {

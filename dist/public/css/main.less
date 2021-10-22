@@ -21,7 +21,8 @@ img {
 }
 
 h1 {
-  margin-top: 5vmin;
+  margin-top: 14vmin;
+  margin-bottom: 8vmin;
 
   font-size: 400%;
   font-weight: bold;
@@ -200,4 +201,42 @@ footer {
     -ms-touch-action: none;
     touch-action: none;
   }
+}
+
+// Use even-numbered diameters for smooth rendering
+.play-btn {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background: #000;
+  border-radius: 50%;
+  transform: rotate(90deg);
+
+  transition: transform 300ms @quick-bezier, opacity 500ms @quick-bezier;
+
+  &:hover {
+    transform: rotate(90deg) scale(1.1);
+  }
+  &.selected {
+    // pause button/two straight vertical lines
+    &::after {
+      width: 20px;
+      height: 20px;
+      border-color: white;
+      border-style: double;
+      border-width: 0px 0px 0px 15px;
+      transform: rotate(90deg);
+      left: 15%;
+    }
+  }
+}
+// play button/triangle
+.play-btn:after {
+  position: absolute;
+  content: "";
+  top: 50%;
+  left: 50%;
+  border: 10px solid transparent;
+  border-bottom: 10px solid #fff;
+  transform: translateX(-50%) translateY(-85%);
 }

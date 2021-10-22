@@ -61,6 +61,23 @@
   &.selected {
     background-color: @primary-green;
   }
+
+  & .play-btn {
+    pointer-events: none;
+    opacity: 0;
+    left: 87px;
+    top: 65px;
+    display: inline-block;
+    vertical-align: middle;
+    position: absolute;
+    &.selected {
+      opacity: 1;
+      pointer-events: all;
+      &::after {
+        left: 3px;
+      }
+    }
+  }
 }
 
 .flip-card {
@@ -141,50 +158,6 @@
     visibility: visible;
     opacity: 1;
   }
-}
-
-// Use even-numbered diameters for smooth rendering
-.play-btn {
-  opacity: 0;
-  pointer-events: none;
-  left: 87px;
-  top: 65px;
-  display: inline-block;
-  vertical-align: middle;
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  background: #000;
-  border-radius: 50%;
-  transform: rotate(90deg);
-
-  transition: transform 300ms @quick-bezier, opacity 500ms @quick-bezier;
-
-  &:hover {
-    transform: rotate(90deg) scale(1.1);
-  }
-  &.selected {
-    opacity: 1;
-    pointer-events: all;
-    &::after {
-      width: 20px;
-      height: 20px;
-      border-color: white;
-      border-style: double;
-      border-width: 0px 0px 0px 15px;
-      transform: rotate(90deg);
-      left: 3px;
-    }
-  }
-}
-.play-btn:after {
-  position: absolute;
-  content: "";
-  top: 50%;
-  left: 50%;
-  border: 10px solid transparent;
-  border-bottom: 10px solid #fff;
-  transform: translateX(-50%) translateY(-85%);
 }
 
 #track-cards-container {
