@@ -381,7 +381,7 @@ function dragMoveListener (evt: Interact.InteractEvent) {
   target.setAttribute('data-x', x.toString())
   target.setAttribute('data-y', y.toString())
 }
-export function addResizeDrag (identifier: string, minWidth: number, minHeight: number) {
+export function addResizeDragAroundViewPort (identifier: string, minWidth: number, minHeight: number) {
   // create an element that exists as the size of the viewport in order to set the restriction of the draggable/resizable to exist only within this element.
   const viewportElementHTML = `<div id="view-port-element" style="
   pointer-events: none; 
@@ -414,8 +414,11 @@ export function addResizeDrag (identifier: string, minWidth: number, minHeight: 
           let y = parseFloat(target.getAttribute('data-y')) || 0
 
           // update the element's style
-          target.style.width = evt.rect.width + 'px'
-          target.style.height = evt.rect.height + 'px'
+          const newWidth = (evt.rect.width / window.innerWidth) * 100
+          const newHeight = (evt.rect.height / window.innerHeight) * 100
+
+          target.style.width = newWidth + 'vw'
+          target.style.height = newHeight + 'vh'
 
           // translate when resizing from top or left edges
           x += evt.deltaRect.left

@@ -1,10 +1,9 @@
 import {
   config,
   promiseHandler,
-  addResizeDrag,
+  addResizeDragAroundViewPort,
   millisToMinutesAndSeconds,
-  htmlToEl,
-  throwExpression
+  htmlToEl
 } from '../config'
 import { DoublyLinkedListNode } from './doubly-linked-list'
 import PlayableEventArg from './pubsub/event-args/track-play-args'
@@ -470,4 +469,4 @@ const preloadPlayPauseImgsEl = htmlToEl(preloadPlayPauseImgsHtml) as Node
 document.body.appendChild(preloadPlayPauseImgsEl)
 document.body.removeChild(preloadPlayPauseImgsEl)
 
-addResizeDrag('.resize-drag', 200, 120)
+addResizeDragAroundViewPort('.resize-drag', 200, 120)
