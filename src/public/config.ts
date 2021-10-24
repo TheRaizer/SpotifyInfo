@@ -415,10 +415,9 @@ export function addResizeDragAroundViewPort (identifier: string, minWidth: numbe
 
           // update the element's style
           const newWidth = (evt.rect.width / window.innerWidth) * 100
-          const newHeight = (evt.rect.height / window.innerHeight) * 100
 
           target.style.width = newWidth + 'vw'
-          target.style.height = newHeight + 'vh'
+          target.style.height = evt.rect.height + 'px'
 
           // translate when resizing from top or left edges
           x += evt.deltaRect.left

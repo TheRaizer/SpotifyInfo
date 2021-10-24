@@ -226,7 +226,6 @@ export default class SpotifyPlaybackElement {
       playNextFunc
     )
     this.playerEl = webPlayerEl as HTMLElement
-    this.onWindowResize()
   }
 
   /**
@@ -277,22 +276,6 @@ export default class SpotifyPlaybackElement {
     this.duration = playTimeBar.getElementsByTagName('p')[1] as Element ?? throwExpression('web player duration time element does not exist')
 
     this.playPause = document.getElementById(config.CSS.IDs.webPlayerPlayPause)
-  }
-
-  private offScreen (rect: DOMRect) {
-    return (
-      (rect.x + rect.width) < 0 ||
-             (rect.y + rect.height) < 0 ||
-             (rect.x > window.innerWidth || rect.y > window.innerHeight)
-    )
-  }
-
-  private onWindowResize () {
-    window.addEventListener('resize', (evt) => {
-      if (this.playerEl) {
-        console.log(this.offScreen(this.playerEl.getBoundingClientRect()))
-      }
-    })
   }
 
   /**
