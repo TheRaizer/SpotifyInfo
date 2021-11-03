@@ -295,6 +295,7 @@ class SpotifyPlayback {
 
     this.webPlayerEl.playPause?.classList.add(config.CSS.CLASSES.selected)
     this.webPlayerEl.setTitle(eventArg.currPlayable.title)
+    this.webPlayerEl.setImgSrc(eventArg.currPlayable.imageUrl)
 
     this.selPlaying.trackDataNode?.data.onPlaying()
   }

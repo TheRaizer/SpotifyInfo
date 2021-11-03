@@ -79,6 +79,7 @@ export type TrackData = {
 export interface IPlayable {
   selEl: Element
   uri: string
+  imageUrl: string
   title: string
   onPlaying: Function
   onStopped: Function

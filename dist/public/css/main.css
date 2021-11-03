@@ -1288,6 +1288,9 @@ ul.genres > li {
 #play-pause-player.selected > img {
   content: url("../images/pause-black-30px.png");
 }
+#player-track-img {
+  margin: 5px 5px 5px 5px;
+}
 .glow {
   color: white;
   font-weight: bold;

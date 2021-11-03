@@ -152,6 +152,13 @@ export default class SpotifyPlaybackElement {
     this.playPause = null
   }
 
+  public setImgSrc (imgSrc: string) {
+    const playerTrackImg = document.getElementById(config.CSS.IDs.playerTrackImg) as HTMLImageElement
+    if (playerTrackImg) {
+      playerTrackImg.src = imgSrc
+    }
+  }
+
   public setTitle (title: string) {
     if (this.title === null) {
       throw new Error('Trying to set title before it is assigned')
@@ -189,6 +196,7 @@ export default class SpotifyPlaybackElement {
     initialVolume: number) {
     const html = `
     <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
+      <img class="${config.CSS.CLASSES.column}" src="" alt="track" id="${config.CSS.IDs.playerTrackImg}"/>
       <div class="${config.CSS.CLASSES.column}" style="flex-basis: 30%; max-width: 30%;">
         <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
       </div>

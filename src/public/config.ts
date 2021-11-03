@@ -72,7 +72,8 @@ export const config = {
       playPrev: 'play-prev',
       webPlayerPlayPause: 'play-pause-player',
       webPlayerVolume: 'web-player-volume-bar',
-      webPlayerProgress: 'web-player-progress-bar'
+      webPlayerProgress: 'web-player-progress-bar',
+      playerTrackImg: 'player-track-img'
     },
     CLASSES: {
       glow: 'glow',
