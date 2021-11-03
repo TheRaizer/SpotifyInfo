@@ -120,7 +120,9 @@ export const config = {
       rankedTrackInteract: 'ranked-interaction-area',
       slider: 'slider',
       playBtn: 'play-btn',
-      displayNone: 'display-none'
+      displayNone: 'display-none',
+      column: 'column',
+      webPlayerControls: 'web-player-controls'
     },
     ATTRIBUTES: {
       dataSelection: 'data-selection',

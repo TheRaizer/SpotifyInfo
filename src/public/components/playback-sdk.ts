@@ -469,4 +469,4 @@ const preloadPlayPauseImgsEl = htmlToEl(preloadPlayPauseImgsHtml) as Node
 document.body.appendChild(preloadPlayPauseImgsEl)
 document.body.removeChild(preloadPlayPauseImgsEl)
 
-addResizeDragAroundViewPort('.resize-drag', 200, 120)
+addResizeDragAroundViewPort('.resize-drag', 200, 100)

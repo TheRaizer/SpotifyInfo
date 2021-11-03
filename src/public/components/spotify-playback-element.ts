@@ -144,14 +144,12 @@ export default class SpotifyPlaybackElement {
   public playPause: Element | null;
   public songProgress: Slider | null = null;
   private volumeBar: Slider | null = null;
-  private playerEl: HTMLElement | null;
 
   constructor () {
     this.title = null
     this.currTime = null
     this.duration = null
     this.playPause = null
-    this.playerEl = null
   }
 
   public setTitle (title: string) {
@@ -191,23 +189,27 @@ export default class SpotifyPlaybackElement {
     initialVolume: number) {
     const html = `
     <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
-      <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
-      <div>
-        <article>
-          <button id="${config.CSS.IDs.playPrev}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
-          <button id="${config.CSS.IDs.webPlayerPlayPause}"><img src="${config.PATHS.playBlackIcon}" alt="play/pause"/></button>
-          <button id="${config.CSS.IDs.playNext}"><img src="${config.PATHS.playNext}" alt="next"/></button>
-        </article>
-        <div id="${config.CSS.IDs.webPlayerVolume}" class="${config.CSS.CLASSES.slider}">
-          <div class="${config.CSS.CLASSES.progress}"></div>
-        </div>
+      <div class="${config.CSS.CLASSES.column}" style="flex-basis: 30%; max-width: 30%;">
+        <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
       </div>
-      <div id="${config.CSS.IDs.playTimeBar}">
-        <p>0:00</p>
-        <div id="${config.CSS.IDs.webPlayerProgress}" class="${config.CSS.CLASSES.slider}">
-          <div class="${config.CSS.CLASSES.progress}"></div>
+      <div class="${config.CSS.CLASSES.webPlayerControls} ${config.CSS.CLASSES.column}">
+        <div>
+          <article>
+            <button id="${config.CSS.IDs.playPrev}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
+            <button id="${config.CSS.IDs.webPlayerPlayPause}"><img src="${config.PATHS.playBlackIcon}" alt="play/pause"/></button>
+            <button id="${config.CSS.IDs.playNext}"><img src="${config.PATHS.playNext}" alt="next"/></button>
+          </article>
+          <div id="${config.CSS.IDs.webPlayerVolume}" class="${config.CSS.CLASSES.slider}">
+            <div class="${config.CSS.CLASSES.progress}"></div>
+          </div>
         </div>
-        <p>0:00</p>
+        <div id="${config.CSS.IDs.playTimeBar}">
+          <p>0:00</p>
+          <div id="${config.CSS.IDs.webPlayerProgress}" class="${config.CSS.CLASSES.slider}">
+            <div class="${config.CSS.CLASSES.progress}"></div>
+          </div>
+          <p>0:00</p>
+        </div>
       </div>
     </article>
     `
@@ -225,7 +227,6 @@ export default class SpotifyPlaybackElement {
       pauseFunc,
       playNextFunc
     )
-    this.playerEl = webPlayerEl as HTMLElement
   }
 
   /**

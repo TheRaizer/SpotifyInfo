@@ -45,42 +45,52 @@
 }
 
 #web-player {
-  text-align: center;
-  z-index: 20;
-  position: fixed;
-  top: 87.5vh;
-  left: 0;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  flex-direction: row;
 
   // get width excluding scroll bar
   width: calc(100vw - (100vw - 100%));
-  height: 120px;
+  height: 100px;
 
   min-width: 200px;
-  min-height: 120px;
+  min-height: 100px;
 
   background-color: #272626;
   border-radius: 5px;
   color: @reading-color;
+  z-index: 20;
+  position: fixed;
+  top: 89.5vh;
+  left: 0;
 
-  & > h4 {
-    margin-top: 20px;
-    font-size: 1.8em;
+  & h4 {
+    margin-left: 5%;
+    font-size: 1.2em;
     font-weight: bold;
   }
 
-  & #playtime-bar {
-    padding-bottom: 2vh;
-    width: 80%;
-    align-self: center;
+  & > .column {
+    flex: auto;
     display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+  & > .web-player-controls {
+    text-align: center;
     align-items: center;
+    flex-basis: 90%;
+    margin-right: 20%;
 
-    & > p {
-      margin-left: 5px;
-      margin-right: 5px;
+    & #playtime-bar {
+      width: 80%;
+      align-self: center;
+      display: flex;
+      align-items: center;
+
+      & > p {
+        margin-left: 5px;
+        margin-right: 5px;
+      }
     }
   }
 }
