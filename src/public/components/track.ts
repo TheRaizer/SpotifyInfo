@@ -107,6 +107,7 @@ class Track extends Card implements IPlayable {
         artistNames += ', '
       }
     }
+    console.log(artistNames)
     return artistNames
   }
 

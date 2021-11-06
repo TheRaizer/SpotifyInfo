@@ -156,9 +156,8 @@ export default class SpotifyPlaybackElement {
   public setArtists (artistHtml: string) {
     const artistNameEl = document.getElementById(config.CSS.IDs.webPlayerArtists)
     if (artistNameEl) {
-      const webPlayerEl = htmlToEl(artistHtml)
       removeAllChildNodes(artistNameEl)
-      artistNameEl.append(webPlayerEl as Node)
+      artistNameEl.innerHTML += artistHtml
     }
   }
 
@@ -207,7 +206,7 @@ export default class SpotifyPlaybackElement {
     const html = `
     <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
       <img class="${config.CSS.CLASSES.column}" src="${config.PATHS.profileUser}" alt="track" id="${config.CSS.IDs.playerTrackImg}"/>
-      <div class="${config.CSS.CLASSES.column}" style="flex-basis: 30%; max-width: 30%;">
+      <div class="${config.CSS.CLASSES.column}" style="flex-basis: 30%; max-width: 18.5vw;">
         <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
         <span id="${config.CSS.IDs.webPlayerArtists}"></span>
       </div>
