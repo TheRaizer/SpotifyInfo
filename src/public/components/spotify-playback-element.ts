@@ -3,7 +3,8 @@ import {
   htmlToEl,
   millisToMinutesAndSeconds,
   throwExpression,
-  interactJsConfig
+  interactJsConfig,
+  removeAllChildNodes
 } from '../config'
 
 class Slider {
@@ -152,6 +153,15 @@ export default class SpotifyPlaybackElement {
     this.playPause = null
   }
 
+  public setArtists (artistHtml: string) {
+    const artistNameEl = document.getElementById(config.CSS.IDs.webPlayerArtists)
+    if (artistNameEl) {
+      const webPlayerEl = htmlToEl(artistHtml)
+      removeAllChildNodes(artistNameEl)
+      artistNameEl.append(webPlayerEl as Node)
+    }
+  }
+
   public setImgSrc (imgSrc: string) {
     const playerTrackImg = document.getElementById(config.CSS.IDs.playerTrackImg) as HTMLImageElement
     if (playerTrackImg) {
@@ -196,9 +206,10 @@ export default class SpotifyPlaybackElement {
     initialVolume: number) {
     const html = `
     <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
-      <img class="${config.CSS.CLASSES.column}" src="" alt="track" id="${config.CSS.IDs.playerTrackImg}"/>
+      <img class="${config.CSS.CLASSES.column}" src="${config.PATHS.profileUser}" alt="track" id="${config.CSS.IDs.playerTrackImg}"/>
       <div class="${config.CSS.CLASSES.column}" style="flex-basis: 30%; max-width: 30%;">
         <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
+        <span id="${config.CSS.IDs.webPlayerArtists}"></span>
       </div>
       <div class="${config.CSS.CLASSES.webPlayerControls} ${config.CSS.CLASSES.column}">
         <div>

@@ -32,9 +32,9 @@ class Track extends Card implements IPlayable {
   features: FeaturesData | undefined;
   imageUrl: string;
   selEl: Element;
-  artistsDatas: Array<IArtistTrackData>
   onPlaying: Function
   onStopped: Function
+  artistsHtml: string
 
   public get id (): string {
     return this._id
@@ -74,7 +74,7 @@ class Track extends Card implements IPlayable {
     this.externalUrls = externalUrls
     this._id = id
     this._title = title
-    this.artistsDatas = this.filterDataFromArtists(artists)
+    this.artistsHtml = this.generateHTMLArtistNames(artists)
     this._duration = millisToMinutesAndSeconds(duration)
     this._dateAddedToPlaylist = new Date()
 
@@ -96,13 +96,14 @@ class Track extends Card implements IPlayable {
     return artists.map((artist) => artist as IArtistTrackData)
   }
 
-  public generateHTMLArtistNames () {
+  private generateHTMLArtistNames (artists: Array<unknown>) {
+    const artistsDatas = this.filterDataFromArtists(artists)
     let artistNames = ''
-    for (let i = 0; i < this.artistsDatas.length; i++) {
-      const artist = this.artistsDatas[i]
+    for (let i = 0; i < artistsDatas.length; i++) {
+      const artist = artistsDatas[i]
       artistNames += `<a href="${artist.external_urls.spotify}" target="_blank">${artist.name}</a>`
 
-      if (i < this.artistsDatas.length - 1) {
+      if (i < artistsDatas.length - 1) {
         artistNames += ', '
       }
     }
@@ -206,7 +207,7 @@ class Track extends Card implements IPlayable {
                   </h4>
                 <a/>
                 <div class="${config.CSS.CLASSES.ellipsisWrap}">
-                  ${this.generateHTMLArtistNames()}
+                  ${this.artistsHtml}
                 </div>
               </div>
               <h5>${this._duration}</h5>
@@ -263,7 +264,7 @@ class Track extends Card implements IPlayable {
                   </h4>
                 <a/>
                 <div class="${config.CSS.CLASSES.ellipsisWrap}">
-                  ${this.generateHTMLArtistNames()}
+                  ${this.artistsHtml}
                 </div>
               </div>
               <h5>${this._duration}</h5>

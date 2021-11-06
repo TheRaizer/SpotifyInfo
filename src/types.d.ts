@@ -81,6 +81,7 @@ export interface IPlayable {
   uri: string
   imageUrl: string
   title: string
+  artistsHtml: string
   onPlaying: Function
   onStopped: Function
 }

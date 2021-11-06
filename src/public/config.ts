@@ -73,7 +73,8 @@ export const config = {
       webPlayerPlayPause: 'play-pause-player',
       webPlayerVolume: 'web-player-volume-bar',
       webPlayerProgress: 'web-player-progress-bar',
-      playerTrackImg: 'player-track-img'
+      playerTrackImg: 'player-track-img',
+      webPlayerArtists: 'web-player-artists'
     },
     CLASSES: {
       glow: 'glow',
@@ -187,7 +188,8 @@ export const config = {
     playBlackIcon: '/images/play-black-30px.png',
     pauseBlackIcon: '/images/pause-black-30px.png',
     playNext: '/images/next-30px.png',
-    playPrev: '/images/previous-30px.png'
+    playPrev: '/images/previous-30px.png',
+    profileUser: '/images/profile-user.png'
   }
 }
 
@@ -421,6 +423,12 @@ export function addResizeDragAroundViewPort (identifier: string, minWidth: numbe
 
           target.style.width = newWidth + 'vw'
           target.style.height = evt.rect.height + 'px'
+
+          if (evt.rect.height >= 679) {
+            target.classList.add(config.CSS.CLASSES.column)
+          } else {
+            target.classList.remove(config.CSS.CLASSES.column)
+          }
 
           // translate when resizing from top or left edges
           x += evt.deltaRect.left
