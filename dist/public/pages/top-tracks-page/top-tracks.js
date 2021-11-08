@@ -671,11 +671,29 @@ const addEventListeners = (function () {
         }
         viewAllEl.addEventListener('click', () => onClick());
     }
+    function addGeneratePlaylistEvent() {
+        function generatePlaylistFromTopTracks(term) {
+            return __awaiter(this, void 0, void 0, function* () {
+                yield (0, config_1.promiseHandler)((0, axios_1.default)({
+                    method: 'post',
+                    url: config_1.config.URLs.postPlaylist('Top ' + term + 'tracks of ' + new Date().toDateString()),
+                    data: {
+                        description: 'description'
+                    }
+                }), () => { }, () => {
+                    throw new Error('Issue creating playlist');
+                });
+            });
+        }
+        const button = document.getElementById(config_1.config.CSS.IDs.generatePlaylist);
+        button === null || button === void 0 ? void 0 : button.addEventListener('click', () => generatePlaylistFromTopTracks(trackActions.selections.term));
+    }
     return {
         addTrackFeatureButtonEvents,
         addTrackTermButtonEvents,
         addExpandDescOnHoverEvents,
-        addViewAllTracksEvent
+        addViewAllTracksEvent,
+        addGeneratePlaylistEvent
     };
 })();
 (function () {

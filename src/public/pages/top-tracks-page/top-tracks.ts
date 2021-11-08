@@ -652,9 +652,6 @@ function selectInitialTabs (term: TERMS) {
   selections.featureTabManager.selectNewTab(featBtn, featBorder)
 }
 
-function generatePlaylistFromTopTracks (term: TERMS) {
-}
-
 const addEventListeners = (function () {
   function addTrackFeatureButtonEvents () {
     function onClick (btn: Element, borderCover: Element) {
@@ -779,11 +776,30 @@ const addEventListeners = (function () {
     viewAllEl.addEventListener('click', () => onClick())
   }
 
+  function addGeneratePlaylistEvent () {
+    async function generatePlaylistFromTopTracks (term: TERMS) {
+      await promiseHandler(
+        axios({
+          method: 'post',
+          url: config.URLs.postPlaylist('Top ' + term + 'tracks of ' + new Date().toDateString()),
+          data: {
+            description: 'description'
+          }
+        }),
+        () => {}, () => {
+          throw new Error('Issue creating playlist')
+        })
+    }
+    const button = document.getElementById(config.CSS.IDs.generatePlaylist)
+    button?.addEventListener('click', () => generatePlaylistFromTopTracks(trackActions.selections.term))
+  }
+
   return {
     addTrackFeatureButtonEvents,
     addTrackTermButtonEvents,
     addExpandDescOnHoverEvents,
-    addViewAllTracksEvent
+    addViewAllTracksEvent,
+    addGeneratePlaylistEvent
   }
 })();
 

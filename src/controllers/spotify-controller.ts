@@ -148,7 +148,6 @@ async function getArtistTopTracks (req: Request, res: Response, next: NextFuncti
       res.status(StatusCodes.OK).send(response.data)
     })
     .catch((err: Error) => {
-      // run next to pass this error down to a middleware that will handle it
       next(err)
     })
 }
@@ -158,11 +157,15 @@ async function getCurrentUserProfile (req: Request, res: Response, next: NextFun
     url: 'https://api.spotify.com/v1/me',
     headers: spotifyGetHeaders(req)
   })
-    .then(function (response: { data: unknown }) {
+    .then(function (response: { data: {id: string; display_name: string} }) {
+      if (req.session.user !== undefined) {
+        req.session.user.id = response.data.id
+        req.session.user.username = response.data.display_name
+        console.log(req.session)
+      }
       res.status(StatusCodes.OK).send(response.data)
     })
     .catch((err: Error) => {
-      // run next to pass this error down to a middleware that will handle it
       next(err)
     })
 }
@@ -176,7 +179,6 @@ async function getCurrentUserSavedTracks (req: Request, res: Response, next: Nex
       res.status(StatusCodes.OK).send(response.data)
     })
     .catch((err: Error) => {
-      // run next to pass this error down to a middleware that will handle it
       next(err)
     })
 }
@@ -190,7 +192,6 @@ async function getFollowedArtists (req: Request, res: Response, next: NextFuncti
       res.status(StatusCodes.OK).send(response.data)
     })
     .catch((err: Error) => {
-      // run next to pass this error down to a middleware that will handle it
       next(err)
     })
 }
@@ -208,19 +209,17 @@ async function putPlayTrack (req: Request, res: Response, next: NextFunction) {
       res.sendStatus(StatusCodes.CREATED)
     })
     .catch((err: Error) => {
-      // run next to pass this error down to a middleware that will handle it
       next(err)
     })
 }
 
 async function postCreatePlaylist (req: Request, res: Response, next: NextFunction) {
-  const user_id = req.query.user_id as string
   const name = req.query.name as string
-  const description = req.query.description as string
+  const description = req.body.description as string
 
   await axios({
     method: 'post',
-    url: `https://api.spotify.com/v1/users/${user_id}/playlists`,
+    url: `https://api.spotify.com/v1/users/${req.session.user?.id}/playlists`,
     data: {
       name: name,
       description: description,
@@ -232,12 +231,11 @@ async function postCreatePlaylist (req: Request, res: Response, next: NextFuncti
       res.sendStatus(StatusCodes.CREATED)
     })
     .catch((err: Error) => {
-      // run next to pass this error down to a middleware that will handle it
       next(err)
     })
 }
 
-async function postAddItemsToPlaylist (req: Request, res: Response, next: NextFunction) {
+async function postItemsToPlaylist (req: Request, res: Response, next: NextFunction) {
   const playlist_id = req.query.playlist_id as string
   const itemUris: Array<string> = req.body.track_uris
 
@@ -251,7 +249,6 @@ async function postAddItemsToPlaylist (req: Request, res: Response, next: NextFu
       res.sendStatus(StatusCodes.CREATED)
     })
     .catch((err: Error) => {
-      // run next to pass this error down to a middleware that will handle it
       next(err)
     })
 }
@@ -270,7 +267,7 @@ const spotifyCtrl = {
   getFollowedArtists,
   putPlayTrack,
   postCreatePlaylist,
-  postAddItemsToPlaylist
+  postItemsToPlaylist
 }
 
 export { spotifyCtrl }

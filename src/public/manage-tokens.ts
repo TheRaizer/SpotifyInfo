@@ -36,13 +36,17 @@ export async function getTokens (onNoToken: () => void) {
   let authCode = urlParams.get('code')
 
   if (authCode) {
+    // obtain tokens
     await promiseHandler(
-      axios.get(config.URLs.getObtainTokensPrefix(authCode)), // no need to specify type as no type value is used.
+      axios.get(config.URLs.getObtainTokensPrefix(authCode)),
 
       // if the request was succesful we have recieved a token
       () => (hasToken = true)
     )
     authCode = ''
+
+    // get user info
+    await promiseHandler(axios.get(config.URLs.getCurrentUserProfile))
   } else {
     onNoToken()
   }

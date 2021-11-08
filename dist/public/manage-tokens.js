@@ -47,10 +47,13 @@ function getTokens(onNoToken) {
         // hopefully came back from the spotify GET request otherwise it is null
         let authCode = urlParams.get('code');
         if (authCode) {
-            yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getObtainTokensPrefix(authCode)), // no need to specify type as no type value is used.
+            // obtain tokens
+            yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getObtainTokensPrefix(authCode)), 
             // if the request was succesful we have recieved a token
             () => (hasToken = true));
             authCode = '';
+            // get user info
+            yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getCurrentUserProfile));
         }
         else {
             onNoToken();

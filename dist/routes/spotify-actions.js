@@ -17,4 +17,6 @@ router.get('/get-current-user-profile', spotify_controller_1.spotifyCtrl.getCurr
 router.get('/get-current-user-saved-tracks', spotify_controller_1.spotifyCtrl.getCurrentUserSavedTracks);
 router.get('/get-followed-artists', spotify_controller_1.spotifyCtrl.getFollowedArtists);
 router.put('/play-track', spotify_controller_1.spotifyCtrl.putPlayTrack);
+router.post('/post-playlist', spotify_controller_1.spotifyCtrl.postCreatePlaylist);
+router.post('/post-items-to-playlist', spotify_controller_1.spotifyCtrl.postItemsToPlaylist);
 //# sourceMappingURL=spotify-actions.js.map

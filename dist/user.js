@@ -11,6 +11,8 @@ class User {
         this.topTracksTerm = 'short_term';
         this.topArtistsTerm = 'short_term';
         this.currPlaylistId = '';
+        this.id = '';
+        this.username = '';
     }
 }
 exports.default = User;

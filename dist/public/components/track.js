@@ -70,7 +70,6 @@ class Track extends card_1.default {
                 artistNames += ', ';
             }
         }
-        console.log(artistNames);
         return artistNames;
     }
     /** Produces the card element of this track.

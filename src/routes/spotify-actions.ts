@@ -19,6 +19,6 @@ router.get(
 router.get('/get-followed-artists', spotifyCtrl.getFollowedArtists)
 router.put('/play-track', spotifyCtrl.putPlayTrack)
 router.post('/post-playlist', spotifyCtrl.postCreatePlaylist)
-router.post('/post-add-items-to-playlist', spotifyCtrl.postAddItemsToPlaylist)
+router.post('/post-items-to-playlist', spotifyCtrl.postItemsToPlaylist)
 
 export { router }

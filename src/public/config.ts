@@ -74,7 +74,8 @@ export const config = {
       webPlayerVolume: 'web-player-volume-bar',
       webPlayerProgress: 'web-player-progress-bar',
       playerTrackImg: 'player-track-img',
-      webPlayerArtists: 'web-player-artists'
+      webPlayerArtists: 'web-player-artists',
+      generatePlaylist: 'generate-playlist'
     },
     CLASSES: {
       glow: 'glow',
@@ -165,7 +166,8 @@ export const config = {
     putTerm: (term: TERMS, termType: TERM_TYPE) => `/user/put-top-${termType}-term?term=${term}`,
     getTerm: (termType: TERM_TYPE) => `/user/get-top-${termType}-term`,
     putCurrPlaylistId: (id: string) => `/user/put-current-playlist-id?id=${id}`,
-    getCurrPlaylistId: '/user/get-current-playlist-id'
+    getCurrPlaylistId: '/user/get-current-playlist-id',
+    postPlaylist: (name: string) => `/spotify/post-playlist?name=${name}`
   },
   PATHS: {
     spinner: '/images/200pxLoadingSpinner.svg',

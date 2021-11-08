@@ -9,6 +9,8 @@ class User {
   topTracksTerm: string = 'short_term';
   topArtistsTerm: string = 'short_term';
   currPlaylistId: string = '';
+  id: string = '';
+  username: string = '';
 }
 
 export default User

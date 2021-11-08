@@ -171,7 +171,6 @@ function getArtistTopTracks(req, res, next) {
             res.status(http_status_codes_1.StatusCodes.OK).send(response.data);
         })
             .catch((err) => {
-            // run next to pass this error down to a middleware that will handle it
             next(err);
         });
     });
@@ -184,10 +183,14 @@ function getCurrentUserProfile(req, res, next) {
             headers: spotifyGetHeaders(req)
         })
             .then(function (response) {
+            if (req.session.user !== undefined) {
+                req.session.user.id = response.data.id;
+                req.session.user.username = response.data.display_name;
+                console.log(req.session);
+            }
             res.status(http_status_codes_1.StatusCodes.OK).send(response.data);
         })
             .catch((err) => {
-            // run next to pass this error down to a middleware that will handle it
             next(err);
         });
     });
@@ -203,7 +206,6 @@ function getCurrentUserSavedTracks(req, res, next) {
             res.status(http_status_codes_1.StatusCodes.OK).send(response.data);
         })
             .catch((err) => {
-            // run next to pass this error down to a middleware that will handle it
             next(err);
         });
     });
@@ -219,7 +221,6 @@ function getFollowedArtists(req, res, next) {
             res.status(http_status_codes_1.StatusCodes.OK).send(response.data);
         })
             .catch((err) => {
-            // run next to pass this error down to a middleware that will handle it
             next(err);
         });
     });
@@ -238,7 +239,47 @@ function putPlayTrack(req, res, next) {
             res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
         })
             .catch((err) => {
-            // run next to pass this error down to a middleware that will handle it
+            next(err);
+        });
+    });
+}
+function postCreatePlaylist(req, res, next) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const name = req.query.name;
+        const description = req.body.description;
+        yield (0, axios_1.default)({
+            method: 'post',
+            url: `https://api.spotify.com/v1/users/${(_a = req.session.user) === null || _a === void 0 ? void 0 : _a.id}/playlists`,
+            data: {
+                name: name,
+                description: description,
+                public: false
+            },
+            headers: spotifyGetHeaders(req)
+        })
+            .then(() => {
+            res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
+        })
+            .catch((err) => {
+            next(err);
+        });
+    });
+}
+function postItemsToPlaylist(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const playlist_id = req.query.playlist_id;
+        const itemUris = req.body.track_uris;
+        yield (0, axios_1.default)({
+            method: 'post',
+            url: `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
+            data: { uris: itemUris },
+            headers: spotifyGetHeaders(req)
+        })
+            .then(() => {
+            res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
+        })
+            .catch((err) => {
             next(err);
         });
     });
@@ -255,7 +296,9 @@ const spotifyCtrl = {
     getCurrentUserProfile,
     getCurrentUserSavedTracks,
     getFollowedArtists,
-    putPlayTrack
+    putPlayTrack,
+    postCreatePlaylist,
+    postItemsToPlaylist
 };
 exports.spotifyCtrl = spotifyCtrl;
 //# sourceMappingURL=spotify-controller.js.map
