@@ -652,6 +652,9 @@ function selectInitialTabs (term: TERMS) {
   selections.featureTabManager.selectNewTab(featBtn, featBorder)
 }
 
+function generatePlaylistFromTopTracks (term: TERMS) {
+}
+
 const addEventListeners = (function () {
   function addTrackFeatureButtonEvents () {
     function onClick (btn: Element, borderCover: Element) {

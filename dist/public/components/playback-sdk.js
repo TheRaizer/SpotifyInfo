@@ -193,6 +193,7 @@ class SpotifyPlayback {
         // check to see if this is the first node or if an action is processing
         if (!this.isExecutingAction && currNode !== null) {
             const prevTrack = currNode.data;
+            console.log('Try player pause');
             this.setSelPlayingEl(new track_play_args_1.default(prevTrack, currNode));
         }
     }
@@ -261,6 +262,8 @@ class SpotifyPlayback {
         this.selPlaying.track_uri = eventArg.currPlayable.uri;
         (_a = this.webPlayerEl.playPause) === null || _a === void 0 ? void 0 : _a.classList.add(config_1.config.CSS.CLASSES.selected);
         this.webPlayerEl.setTitle(eventArg.currPlayable.title);
+        this.webPlayerEl.setImgSrc(eventArg.currPlayable.imageUrl);
+        this.webPlayerEl.setArtists(eventArg.currPlayable.artistsHtml);
         (_b = this.selPlaying.trackDataNode) === null || _b === void 0 ? void 0 : _b.data.onPlaying();
     }
     onTrackFinish() {
@@ -307,10 +310,18 @@ class SpotifyPlayback {
      * Select a certain play/pause element and play the given track uri
      * and unselect the previous one then pause the previous track_uri.
      *
+     * The reassigning of elements is in the case that this function is called through the web player element,
+     * as there is a chance that the selected playing element is either non-existent, or is different then then
+     * the previous i.e. rerendered, or has an equivalent element when on for example a different term tab.
+     *
+     * Reassigning is done so that the potentially different equivalent element can act as the initially
+     * selected element, in showing pause/play symbols in accordance to whether the
+     * song was paused/played through the web player.
+     *
      * @param {PlayableEventArg} eventArg - a class that contains the current, next and previous tracks to play
      */
     setSelPlayingEl(eventArg) {
-        var _a;
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             // if the player isn't ready we cannot continue.
             if (!this.playerIsReady) {
@@ -325,8 +336,10 @@ class SpotifyPlayback {
                 // stop the previous track that was playing
                 (_a = this.selPlaying.trackDataNode) === null || _a === void 0 ? void 0 : _a.data.onStopped();
                 clearInterval(this.getStateInterval);
+                // reassign the element if it exists as it may have been rerendered and therefore the previous value is pointing to nothing
+                this.selPlaying.element = (_b = document.getElementById(this.selPlaying.element.id)) !== null && _b !== void 0 ? _b : this.selPlaying.element;
                 // if its the same element then pause
-                if (this.selPlaying.element === eventArg.currPlayable.selEl) {
+                if (this.selPlaying.element.id === eventArg.currPlayable.selEl.id) {
                     this.pauseDeselectTrack();
                     yield this.pause();
                     this.isExecutingAction = false;
@@ -339,10 +352,13 @@ class SpotifyPlayback {
             }
             // prev track uri is the same then resume the song instead of replaying it.
             if (this.selPlaying.track_uri === eventArg.currPlayable.uri) {
+                // this selEl could corrospond to the same song but is an element that is non-existent, so reassign it to a equivalent existing element if this is the case.
+                eventArg.currPlayable.selEl = (_c = document.getElementById(eventArg.currPlayable.selEl.id)) !== null && _c !== void 0 ? _c : eventArg.currPlayable.selEl;
                 yield this.startTrack(() => __awaiter(this, void 0, void 0, function* () { return this.resume(); }), eventArg);
                 this.isExecutingAction = false;
                 return;
             }
+            console.log('start track');
             yield this.startTrack(() => __awaiter(this, void 0, void 0, function* () { return this.play(eventArg.currPlayable.uri); }), eventArg);
             this.isExecutingAction = false;
         });
@@ -403,5 +419,5 @@ const preloadPlayPauseImgsHtml = `<div style="display: none"><img src="${config_
 const preloadPlayPauseImgsEl = (0, config_1.htmlToEl)(preloadPlayPauseImgsHtml);
 document.body.appendChild(preloadPlayPauseImgsEl);
 document.body.removeChild(preloadPlayPauseImgsEl);
-(0, config_1.addResizeDrag)('.resize-drag', 200, 120);
+(0, config_1.addResizeDragAroundViewPort)('.resize-drag', 200, 100);
 //# sourceMappingURL=playback-sdk.js.map

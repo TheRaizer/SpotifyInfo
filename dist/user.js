@@ -6,7 +6,7 @@ class User {
         this.refresh_token = '';
         this.updateDate = new Date();
         this.playlistResizeWidth = '';
-        this.playlistIsInTextForm = 'false';
+        this.playlistIsInTextForm = 'true';
         this.playerVolume = '0.4';
         this.topTracksTerm = 'short_term';
         this.topArtistsTerm = 'short_term';

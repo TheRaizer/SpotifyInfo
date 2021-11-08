@@ -28,7 +28,7 @@ class Track extends card_1.default {
         this.externalUrls = externalUrls;
         this._id = id;
         this._title = title;
-        this.artistsDatas = this.filterDataFromArtists(artists);
+        this.artistsHtml = this.generateHTMLArtistNames(artists);
         this._duration = (0, config_1.millisToMinutesAndSeconds)(duration);
         this._dateAddedToPlaylist = new Date();
         // either the normal uri, or the linked_from.uri
@@ -60,15 +60,17 @@ class Track extends card_1.default {
     filterDataFromArtists(artists) {
         return artists.map((artist) => artist);
     }
-    generateHTMLArtistNames() {
+    generateHTMLArtistNames(artists) {
+        const artistsDatas = this.filterDataFromArtists(artists);
         let artistNames = '';
-        for (let i = 0; i < this.artistsDatas.length; i++) {
-            const artist = this.artistsDatas[i];
+        for (let i = 0; i < artistsDatas.length; i++) {
+            const artist = artistsDatas[i];
             artistNames += `<a href="${artist.external_urls.spotify}" target="_blank">${artist.name}</a>`;
-            if (i < this.artistsDatas.length - 1) {
+            if (i < artistsDatas.length - 1) {
                 artistNames += ', ';
             }
         }
+        console.log(artistNames);
         return artistNames;
     }
     /** Produces the card element of this track.
@@ -86,7 +88,7 @@ class Track extends card_1.default {
               <div class="${config_1.config.CSS.CLASSES.flipCard} ${config_1.config.CSS.CLASSES.noSelect}  ${config_1.config.CSS.CLASSES.expandOnHover}">
                 <button class="${config_1.config.CSS.CLASSES.card} ${config_1.config.CSS.CLASSES.flipCardInner} ${config_1.config.CSS.CLASSES.track}" id="${this.getCardId()}">
                   <div class="${config_1.config.CSS.CLASSES.flipCardFront}"  title="Click to view more Info">
-                    <div ${config_1.config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}" title="Click to play song"></div>
+                    <div ${config_1.config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" id="${this._uri}" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}" title="Click to play song"></div>
                     <img src="${this.imageUrl}" alt="Album Cover"></img>
                     <div>
                       <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap} ${config_1.config.CSS.CLASSES.scrollingText}">${this.title}</h4>
@@ -127,10 +129,11 @@ class Track extends card_1.default {
      */
     getPlaylistTrackHtml(trackList, displayDate = true) {
         const trackNode = trackList.find((x) => x.uri === this.uri, true);
+        // for the unique play pause ID also use the date added to playlist as there can be duplicates of a song in a playlist.
+        const playPauseId = this._uri + this.dateAddedToPlaylist;
         const html = `
             <li class="${config_1.config.CSS.CLASSES.playlistTrack}">
-              <button class="${config_1.config.CSS.CLASSES.playPause} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}"><img src="" alt="play/pause" 
-              class="${config_1.config.CSS.CLASSES.noSelect}"/>
+              <button id="${playPauseId}" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}">
               </button>
               <img class="${config_1.config.CSS.CLASSES.noSelect}" src="${this.imageUrl}"></img>
               <div class="${config_1.config.CSS.CLASSES.links}">
@@ -139,7 +142,7 @@ class Track extends card_1.default {
                   </h4>
                 <a/>
                 <div class="${config_1.config.CSS.CLASSES.ellipsisWrap}">
-                  ${this.generateHTMLArtistNames()}
+                  ${this.artistsHtml}
                 </div>
               </div>
               <h5>${this._duration}</h5>
@@ -170,8 +173,7 @@ class Track extends card_1.default {
         const html = `
             <li class="${config_1.config.CSS.CLASSES.playlistTrack}">
             <div class="${config_1.config.CSS.CLASSES.rankedTrackInteract} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}">
-              <button class="${config_1.config.CSS.CLASSES.playPause} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}"><img src="" alt="play/pause" 
-                class="${config_1.config.CSS.CLASSES.noSelect}"/>
+              <button id="${this._uri}" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}">
               </button>
               <p>${rank}.</p>
             </div>
@@ -182,7 +184,7 @@ class Track extends card_1.default {
                   </h4>
                 <a/>
                 <div class="${config_1.config.CSS.CLASSES.ellipsisWrap}">
-                  ${this.generateHTMLArtistNames()}
+                  ${this.artistsHtml}
                 </div>
               </div>
               <h5>${this._duration}</h5>

@@ -216,6 +216,10 @@ const infoRetrieval = (function () {
                 const playlistDatas = res.data;
                 // generate Playlist instances from the data
                 playlistDatas.forEach((data) => {
+                    // deleted playlists will have no name, but will still show the songs (spotify api thing), so just don't show them
+                    if (data.name === '') {
+                        return;
+                    }
                     playlistObjs.push(new playlist_1.default(data.name, data.images, data.id));
                 });
                 displayCardInfo.displayPlaylistCards(playlistObjs);

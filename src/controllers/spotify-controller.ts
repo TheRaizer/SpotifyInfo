@@ -213,6 +213,49 @@ async function putPlayTrack (req: Request, res: Response, next: NextFunction) {
     })
 }
 
+async function postCreatePlaylist (req: Request, res: Response, next: NextFunction) {
+  const user_id = req.query.user_id as string
+  const name = req.query.name as string
+  const description = req.query.description as string
+
+  await axios({
+    method: 'post',
+    url: `https://api.spotify.com/v1/users/${user_id}/playlists`,
+    data: {
+      name: name,
+      description: description,
+      public: false
+    },
+    headers: spotifyGetHeaders(req)
+  })
+    .then(() => {
+      res.sendStatus(StatusCodes.CREATED)
+    })
+    .catch((err: Error) => {
+      // run next to pass this error down to a middleware that will handle it
+      next(err)
+    })
+}
+
+async function postAddItemsToPlaylist (req: Request, res: Response, next: NextFunction) {
+  const playlist_id = req.query.playlist_id as string
+  const itemUris: Array<string> = req.body.track_uris
+
+  await axios({
+    method: 'post',
+    url: `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
+    data: { uris: itemUris },
+    headers: spotifyGetHeaders(req)
+  })
+    .then(() => {
+      res.sendStatus(StatusCodes.CREATED)
+    })
+    .catch((err: Error) => {
+      // run next to pass this error down to a middleware that will handle it
+      next(err)
+    })
+}
+
 const spotifyCtrl = {
   getTopArtists,
   getTopTracks,
@@ -225,7 +268,9 @@ const spotifyCtrl = {
   getCurrentUserProfile,
   getCurrentUserSavedTracks,
   getFollowedArtists,
-  putPlayTrack
+  putPlayTrack,
+  postCreatePlaylist,
+  postAddItemsToPlaylist
 }
 
 export { spotifyCtrl }

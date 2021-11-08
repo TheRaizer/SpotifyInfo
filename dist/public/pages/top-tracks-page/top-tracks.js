@@ -168,7 +168,6 @@ const displayCardInfo = (function () {
      * @returns {Array<HTMLElement>} list of Card HTMLElement's.
      */
     function displayTrackCards(trackArr) {
-        console.log(trackArr);
         trackActions.selectionVerif.selectionChanged(trackArr);
         if (trackArr.length > 0) {
             return generateCards(trackArr);

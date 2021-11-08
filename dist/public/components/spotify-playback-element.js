@@ -134,6 +134,19 @@ class SpotifyPlaybackElement {
         this.duration = null;
         this.playPause = null;
     }
+    setArtists(artistHtml) {
+        const artistNameEl = document.getElementById(config_1.config.CSS.IDs.webPlayerArtists);
+        if (artistNameEl) {
+            (0, config_1.removeAllChildNodes)(artistNameEl);
+            artistNameEl.innerHTML += artistHtml;
+        }
+    }
+    setImgSrc(imgSrc) {
+        const playerTrackImg = document.getElementById(config_1.config.CSS.IDs.playerTrackImg);
+        if (playerTrackImg) {
+            playerTrackImg.src = imgSrc;
+        }
+    }
     setTitle(title) {
         if (this.title === null) {
             throw new Error('Trying to set title before it is assigned');
@@ -161,23 +174,29 @@ class SpotifyPlaybackElement {
     appendWebPlayerHtml(playPrevFunc, pauseFunc, playNextFunc, onSeekStart, seekSong, onSeeking, setVolume, initialVolume) {
         const html = `
     <article id="${config_1.config.CSS.IDs.webPlayer}" class="resize-drag">
-      <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
-      <div>
-        <article>
-          <button id="${config_1.config.CSS.IDs.playPrev}"><img src="${config_1.config.PATHS.playPrev}" alt="previous"/></button>
-          <button id="${config_1.config.CSS.IDs.webPlayerPlayPause}"><img src="${config_1.config.PATHS.playBlackIcon}" alt="play/pause"/></button>
-          <button id="${config_1.config.CSS.IDs.playNext}"><img src="${config_1.config.PATHS.playNext}" alt="next"/></button>
-        </article>
-        <div id="${config_1.config.CSS.IDs.webPlayerVolume}" class="${config_1.config.CSS.CLASSES.slider}">
-          <div class="${config_1.config.CSS.CLASSES.progress}"></div>
-        </div>
+      <img class="${config_1.config.CSS.CLASSES.column}" src="${config_1.config.PATHS.profileUser}" alt="track" id="${config_1.config.CSS.IDs.playerTrackImg}"/>
+      <div class="${config_1.config.CSS.CLASSES.column}" style="flex-basis: 30%; max-width: 18.5vw;">
+        <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
+        <span id="${config_1.config.CSS.IDs.webPlayerArtists}"></span>
       </div>
-      <div id="${config_1.config.CSS.IDs.playTimeBar}">
-        <p>0:00</p>
-        <div id="${config_1.config.CSS.IDs.webPlayerProgress}" class="${config_1.config.CSS.CLASSES.slider}">
-          <div class="${config_1.config.CSS.CLASSES.progress}"></div>
+      <div class="${config_1.config.CSS.CLASSES.webPlayerControls} ${config_1.config.CSS.CLASSES.column}">
+        <div>
+          <article>
+            <button id="${config_1.config.CSS.IDs.playPrev}"><img src="${config_1.config.PATHS.playPrev}" alt="previous"/></button>
+            <button id="${config_1.config.CSS.IDs.webPlayerPlayPause}"><img src="${config_1.config.PATHS.playBlackIcon}" alt="play/pause"/></button>
+            <button id="${config_1.config.CSS.IDs.playNext}"><img src="${config_1.config.PATHS.playNext}" alt="next"/></button>
+          </article>
+          <div id="${config_1.config.CSS.IDs.webPlayerVolume}" class="${config_1.config.CSS.CLASSES.slider}">
+            <div class="${config_1.config.CSS.CLASSES.progress}"></div>
+          </div>
         </div>
-        <p>0:00</p>
+        <div id="${config_1.config.CSS.IDs.playTimeBar}">
+          <p>0:00</p>
+          <div id="${config_1.config.CSS.IDs.webPlayerProgress}" class="${config_1.config.CSS.CLASSES.slider}">
+            <div class="${config_1.config.CSS.CLASSES.progress}"></div>
+          </div>
+          <p>0:00</p>
+        </div>
       </div>
     </article>
     `;

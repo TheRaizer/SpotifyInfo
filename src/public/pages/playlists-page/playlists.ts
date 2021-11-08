@@ -160,7 +160,7 @@ const playlistActions = (function () {
         playlistObj.order === playlistOrder.value
       )
     } else {
-    // tracks aren't loaded so lazy load them then show them
+      // tracks aren't loaded so lazy load them then show them
 
       whenTracksLoading()
       loadPlaylistTracks(playlistObj, () => {

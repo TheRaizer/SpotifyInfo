@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.throwExpression = exports.addResizeDrag = exports.interactJsConfig = exports.getPixelPosInElOnClick = exports.animationControl = exports.removeAllChildNodes = exports.getValidImage = exports.capitalizeFirstLetter = exports.isEllipsisActive = exports.getTextWidth = exports.searchUl = exports.promiseHandler = exports.htmlToEl = exports.millisToMinutesAndSeconds = exports.config = void 0;
+exports.throwExpression = exports.addResizeDragAroundViewPort = exports.interactJsConfig = exports.getPixelPosInElOnClick = exports.animationControl = exports.removeAllChildNodes = exports.getValidImage = exports.capitalizeFirstLetter = exports.isEllipsisActive = exports.getTextWidth = exports.searchUl = exports.promiseHandler = exports.htmlToEl = exports.millisToMinutesAndSeconds = exports.config = void 0;
 const interactjs_1 = __importDefault(require("interactjs"));
 const authEndpoint = 'https://accounts.spotify.com/authorize';
 // Replace with your app's client ID, redirect URI and desired scopes
@@ -82,7 +82,9 @@ exports.config = {
             playPrev: 'play-prev',
             webPlayerPlayPause: 'play-pause-player',
             webPlayerVolume: 'web-player-volume-bar',
-            webPlayerProgress: 'web-player-progress-bar'
+            webPlayerProgress: 'web-player-progress-bar',
+            playerTrackImg: 'player-track-img',
+            webPlayerArtists: 'web-player-artists'
         },
         CLASSES: {
             glow: 'glow',
@@ -130,7 +132,9 @@ exports.config = {
             rankedTrackInteract: 'ranked-interaction-area',
             slider: 'slider',
             playBtn: 'play-btn',
-            displayNone: 'display-none'
+            displayNone: 'display-none',
+            column: 'column',
+            webPlayerControls: 'web-player-controls'
         },
         ATTRIBUTES: {
             dataSelection: 'data-selection',
@@ -191,7 +195,8 @@ exports.config = {
         playBlackIcon: '/images/play-black-30px.png',
         pauseBlackIcon: '/images/pause-black-30px.png',
         playNext: '/images/next-30px.png',
-        playPrev: '/images/previous-30px.png'
+        playPrev: '/images/previous-30px.png',
+        profileUser: '/images/profile-user.png'
     }
 };
 function millisToMinutesAndSeconds(millis) {
@@ -373,7 +378,7 @@ function dragMoveListener(evt) {
     target.setAttribute('data-x', x.toString());
     target.setAttribute('data-y', y.toString());
 }
-function addResizeDrag(identifier, minWidth, minHeight) {
+function addResizeDragAroundViewPort(identifier, minWidth, minHeight) {
     // create an element that exists as the size of the viewport in order to set the restriction of the draggable/resizable to exist only within this element.
     const viewportElementHTML = `<div id="view-port-element" style="
   pointer-events: none; 
@@ -404,8 +409,15 @@ function addResizeDrag(identifier, minWidth, minHeight) {
                 let x = parseFloat(target.getAttribute('data-x')) || 0;
                 let y = parseFloat(target.getAttribute('data-y')) || 0;
                 // update the element's style
-                target.style.width = evt.rect.width + 'px';
+                const newWidth = (evt.rect.width / window.innerWidth) * 100;
+                target.style.width = newWidth + 'vw';
                 target.style.height = evt.rect.height + 'px';
+                if (evt.rect.height >= 679) {
+                    target.classList.add(exports.config.CSS.CLASSES.column);
+                }
+                else {
+                    target.classList.remove(exports.config.CSS.CLASSES.column);
+                }
                 // translate when resizing from top or left edges
                 x += evt.deltaRect.left;
                 y += evt.deltaRect.top;
@@ -437,7 +449,7 @@ function addResizeDrag(identifier, minWidth, minHeight) {
         ]
     });
 }
-exports.addResizeDrag = addResizeDrag;
+exports.addResizeDragAroundViewPort = addResizeDragAroundViewPort;
 function throwExpression(errorMessage) {
     throw new Error(errorMessage);
 }
