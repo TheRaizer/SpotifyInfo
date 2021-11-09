@@ -6,7 +6,8 @@ import {
   capitalizeFirstLetter,
   removeAllChildNodes,
   animationControl,
-  throwExpression
+  throwExpression,
+  addItemsToPlaylist
 } from '../../config'
 import SelectableTabEls from '../../components/SelectableTabEls'
 import {
@@ -778,10 +779,10 @@ const addEventListeners = (function () {
 
   function addGeneratePlaylistEvent () {
     async function generatePlaylistFromTopTracks (term: TERMS) {
-      await promiseHandler(
+      const promise = await promiseHandler(
         axios({
           method: 'post',
-          url: config.URLs.postPlaylist('Top ' + term + 'tracks of ' + new Date().toDateString()),
+          url: config.URLs.postPlaylist('Top ' + term + ' tracks of ' + new Date().toDateString()),
           data: {
             description: 'description'
           }
@@ -789,6 +790,8 @@ const addEventListeners = (function () {
         () => {}, () => {
           throw new Error('Issue creating playlist')
         })
+      const uris = trackActions.getCurrSelTopTracks().map((track) => track.uri)
+      await addItemsToPlaylist(promise.res?.data.id, uris)
     }
     const button = document.getElementById(config.CSS.IDs.generatePlaylist)
     button?.addEventListener('click', () => generatePlaylistFromTopTracks(trackActions.selections.term))

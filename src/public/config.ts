@@ -3,6 +3,7 @@ import interact from 'interactjs'
 import Interact from '@interactjs/types'
 import { IPromiseHandlerReturn, SpotifyImg } from '../types'
 import { TERMS, TERM_TYPE } from './components/save-load-term'
+import axios from 'axios'
 
 const authEndpoint = 'https://accounts.spotify.com/authorize'
 // Replace with your app's client ID, redirect URI and desired scopes
@@ -167,7 +168,8 @@ export const config = {
     getTerm: (termType: TERM_TYPE) => `/user/get-top-${termType}-term`,
     putCurrPlaylistId: (id: string) => `/user/put-current-playlist-id?id=${id}`,
     getCurrPlaylistId: '/user/get-current-playlist-id',
-    postPlaylist: (name: string) => `/spotify/post-playlist?name=${name}`
+    postPlaylist: (name: string) => `/spotify/post-playlist?name=${name}`,
+    postItemsToPlaylist: (playlistId: string) => `/spotify/post-items-to-playlist?playlist_id=${playlistId}`
   },
   PATHS: {
     spinner: '/images/200pxLoadingSpinner.svg',
@@ -470,4 +472,18 @@ export function addResizeDragAroundViewPort (identifier: string, minWidth: numbe
 
 export function throwExpression (errorMessage: string): never {
   throw new Error(errorMessage)
+}
+
+export async function addItemsToPlaylist (playlistId: string, uris: Array<string>) {
+  await promiseHandler(
+    axios({
+      method: 'post',
+      url: config.URLs.postItemsToPlaylist(playlistId),
+      data: {
+        uris: uris
+      }
+    }),
+    () => {}, () => {
+      throw new Error('Issue adding items to playlist')
+    })
 }

@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.throwExpression = exports.addResizeDragAroundViewPort = exports.interactJsConfig = exports.getPixelPosInElOnClick = exports.animationControl = exports.removeAllChildNodes = exports.getValidImage = exports.capitalizeFirstLetter = exports.isEllipsisActive = exports.getTextWidth = exports.searchUl = exports.promiseHandler = exports.htmlToEl = exports.millisToMinutesAndSeconds = exports.config = void 0;
+exports.addItemsToPlaylist = exports.throwExpression = exports.addResizeDragAroundViewPort = exports.interactJsConfig = exports.getPixelPosInElOnClick = exports.animationControl = exports.removeAllChildNodes = exports.getValidImage = exports.capitalizeFirstLetter = exports.isEllipsisActive = exports.getTextWidth = exports.searchUl = exports.promiseHandler = exports.htmlToEl = exports.millisToMinutesAndSeconds = exports.config = void 0;
 const interactjs_1 = __importDefault(require("interactjs"));
+const axios_1 = __importDefault(require("axios"));
 const authEndpoint = 'https://accounts.spotify.com/authorize';
 // Replace with your app's client ID, redirect URI and desired scopes
 const redirectUri = 'http://localhost:3000';
@@ -174,7 +175,8 @@ exports.config = {
         getTerm: (termType) => `/user/get-top-${termType}-term`,
         putCurrPlaylistId: (id) => `/user/put-current-playlist-id?id=${id}`,
         getCurrPlaylistId: '/user/get-current-playlist-id',
-        postPlaylist: (name) => `/spotify/post-playlist?name=${name}`
+        postPlaylist: (name) => `/spotify/post-playlist?name=${name}`,
+        postItemsToPlaylist: (playlistId) => `/spotify/post-items-to-playlist?playlist_id=${playlistId}`
     },
     PATHS: {
         spinner: '/images/200pxLoadingSpinner.svg',
@@ -456,4 +458,18 @@ function throwExpression(errorMessage) {
     throw new Error(errorMessage);
 }
 exports.throwExpression = throwExpression;
+function addItemsToPlaylist(playlistId, uris) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield promiseHandler((0, axios_1.default)({
+            method: 'post',
+            url: exports.config.URLs.postItemsToPlaylist(playlistId),
+            data: {
+                uris: uris
+            }
+        }), () => { }, () => {
+            throw new Error('Issue adding items to playlist');
+        });
+    });
+}
+exports.addItemsToPlaylist = addItemsToPlaylist;
 //# sourceMappingURL=config.js.map

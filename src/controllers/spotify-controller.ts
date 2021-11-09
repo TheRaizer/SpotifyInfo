@@ -227,8 +227,8 @@ async function postCreatePlaylist (req: Request, res: Response, next: NextFuncti
     },
     headers: spotifyGetHeaders(req)
   })
-    .then(() => {
-      res.sendStatus(StatusCodes.CREATED)
+    .then((response: { data: unknown }) => {
+      res.status(StatusCodes.CREATED).send(response.data)
     })
     .catch((err: Error) => {
       next(err)
@@ -237,12 +237,12 @@ async function postCreatePlaylist (req: Request, res: Response, next: NextFuncti
 
 async function postItemsToPlaylist (req: Request, res: Response, next: NextFunction) {
   const playlist_id = req.query.playlist_id as string
-  const itemUris: Array<string> = req.body.track_uris
+  const uris: Array<string> = req.body.uris
 
   await axios({
     method: 'post',
     url: `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
-    data: { uris: itemUris },
+    data: { uris: uris },
     headers: spotifyGetHeaders(req)
   })
     .then(() => {

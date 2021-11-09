@@ -258,8 +258,8 @@ function postCreatePlaylist(req, res, next) {
             },
             headers: spotifyGetHeaders(req)
         })
-            .then(() => {
-            res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
+            .then((response) => {
+            res.status(http_status_codes_1.StatusCodes.CREATED).send(response.data);
         })
             .catch((err) => {
             next(err);
@@ -269,11 +269,11 @@ function postCreatePlaylist(req, res, next) {
 function postItemsToPlaylist(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const playlist_id = req.query.playlist_id;
-        const itemUris = req.body.track_uris;
+        const uris = req.body.uris;
         yield (0, axios_1.default)({
             method: 'post',
             url: `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
-            data: { uris: itemUris },
+            data: { uris: uris },
             headers: spotifyGetHeaders(req)
         })
             .then(() => {

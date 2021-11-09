@@ -673,16 +673,19 @@ const addEventListeners = (function () {
     }
     function addGeneratePlaylistEvent() {
         function generatePlaylistFromTopTracks(term) {
+            var _a;
             return __awaiter(this, void 0, void 0, function* () {
-                yield (0, config_1.promiseHandler)((0, axios_1.default)({
+                const promise = yield (0, config_1.promiseHandler)((0, axios_1.default)({
                     method: 'post',
-                    url: config_1.config.URLs.postPlaylist('Top ' + term + 'tracks of ' + new Date().toDateString()),
+                    url: config_1.config.URLs.postPlaylist('Top ' + term + ' tracks of ' + new Date().toDateString()),
                     data: {
                         description: 'description'
                     }
                 }), () => { }, () => {
                     throw new Error('Issue creating playlist');
                 });
+                const uris = trackActions.getCurrSelTopTracks().map((track) => track.uri);
+                yield (0, config_1.addItemsToPlaylist)((_a = promise.res) === null || _a === void 0 ? void 0 : _a.data.id, uris);
             });
         }
         const button = document.getElementById(config_1.config.CSS.IDs.generatePlaylist);
