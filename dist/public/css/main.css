@@ -1312,11 +1312,9 @@ ul.genres > li {
   margin-left: 5px;
   margin-right: 5px;
 }
-#play-pause-player > img {
-  content: url("../images/play-black-30px.png");
-}
-#play-pause-player.selected > img {
-  content: url("../images/pause-black-30px.png");
+#play-pause-player {
+  width: 51px;
+  height: 51px;
 }
 #player-track-img {
   margin: 5px 5px 5px 5px;

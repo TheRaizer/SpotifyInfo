@@ -74,9 +74,7 @@ const resizeActions = (function () {
     initialLoads.loadResizeWidth()
   }
   function disableResize () {
-    if (interact.isSet(cardResizeContainer)) {
-      interact(cardResizeContainer).unset()
-    }
+    interact(resizeId).unset()
     // once we disable the resize we must restrict the width to fit within VIEWPORT_MIN pixels.
     restrictResizeWidth()
   }

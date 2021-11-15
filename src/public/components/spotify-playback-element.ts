@@ -214,7 +214,7 @@ export default class SpotifyPlaybackElement {
         <div>
           <article>
             <button id="${config.CSS.IDs.playPrev}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
-            <button id="${config.CSS.IDs.webPlayerPlayPause}"><img src="${config.PATHS.playBlackIcon}" alt="play/pause"/></button>
+            <button id="${config.CSS.IDs.webPlayerPlayPause}" class="${config.CSS.CLASSES.playBtn}"></button>
             <button id="${config.CSS.IDs.playNext}"><img src="${config.PATHS.playNext}" alt="next"/></button>
           </article>
           <div id="${config.CSS.IDs.webPlayerVolume}" class="${config.CSS.CLASSES.slider}">
