@@ -26,6 +26,11 @@ Chart.register(LinearScale, CategoryScale, BarController, BarElement)
 const DEFAULT_VIEWABLE_CARDS = 5
 const MAX_VIEWABLE_CARDS = 50
 
+const tracksTextContainer = document.getElementById(config.CSS.IDs.topTracksTextFormContainer)
+const tracksCardContainer = document.getElementById(
+  config.CSS.IDs.trackCardsContainer
+)
+
 const trackActions = (function () {
   const selectionVerif = new AsyncSelectionVerif<Array<Track>>()
   const cardActionsHandler = new CardActionsHandler(MAX_VIEWABLE_CARDS)
@@ -116,11 +121,6 @@ const trackArrs = (function () {
 })()
 
 const displayCardInfo = (function () {
-  const tracksCardContainer = document.getElementById(
-    config.CSS.IDs.trackCardsContainer
-  )
-  const tracksTextContainer = document.getElementById(config.CSS.IDs.topTracksTextFormContainer)
-
   /**
    * Generates the cards to the DOM then makes them visible
    *
@@ -191,11 +191,24 @@ const displayCardInfo = (function () {
     )
   }
 
+  /**
+   * Depending on the given card form, this function will generate the respective track html and append it to the DOM.
+   * @param trackArr the array of tracks whose html should be appended
+   * @param inTextForm whether the tracks are in card form or text form
+   */
+  function generateTrackHTML (trackArr: Array<Track>, inTextForm: boolean) {
+    if (inTextForm) {
+      generateAsRankedTracksHTML(trackArr)
+    } else {
+      generateAsCards(trackArr)
+    }
+  }
+
   /** Begins retrieving tracks then verifies it is the correct selected tracks.
    *
    * @param {Array<Track>} trackArr array to load tracks into.
    */
-  function startLoadingTracks (trackArr: Array<Track>) {
+  function startLoadingTracks (trackArr: Array<Track>, inTextForm: boolean) {
     // initially show the loading spinner
     const htmlString = `
             <div>
@@ -203,35 +216,37 @@ const displayCardInfo = (function () {
             </div>`
     const spinnerEl = htmlToEl(htmlString)
 
-    removeAllChildNodes(tracksCardContainer as Node)
-    tracksCardContainer?.appendChild(spinnerEl as Node)
+    // append spinner to either text form container or card container as to have them properly removed when their respective function run
+    if (inTextForm) {
+      removeAllChildNodes(tracksTextContainer as Node)
+      tracksTextContainer?.appendChild(spinnerEl as Node)
+    } else {
+      removeAllChildNodes(tracksCardContainer as Node)
+      tracksCardContainer?.appendChild(spinnerEl as Node)
+    }
 
     trackActions.retrieveTracks(trackArr).then(() => {
       // after retrieving async verify if it is the same arr of trackObjs as what was selected
       if (!trackActions.selectionVerif.isValid(trackArr)) {
         return
       }
-      generateAsCards(trackArr)
-      generateAsRankedTracksHTML(trackArr)
+      generateTrackHTML(trackArr, inTextForm)
     }).catch((err) => {
       throw new Error(err)
     })
   }
 
-  /** Load track objects if not loaded, then generate cards with the objects.
+  /** Load track objects if not loaded, then generate track html with the objects using the savedLoad.savedOptions.isInTextForm to determine what form they will take.
    *
    * @param {Array<Track>} trackArr - List of track objects whose cards should be generated or
    * empty list that should be filled when loading tracks.
-   * @param {Boolean} autoAppear whether to show the cards without animation.
-   * @returns {Array<HTMLElement>} list of Card HTMLElement's.
    */
-  function displayTrackCards (trackArr: Array<Track>) {
+  function displayTracks (trackArr: Array<Track>) {
     trackActions.selectionVerif.selectionChanged(trackArr)
     if (trackArr.length > 0) {
-      generateAsCards(trackArr)
-      generateAsRankedTracksHTML(trackArr)
+      generateTrackHTML(trackArr, saveLoad.savedOptions.inTextForm)
     } else {
-      startLoadingTracks(trackArr)
+      startLoadingTracks(trackArr, saveLoad.savedOptions.inTextForm)
     }
   }
 
@@ -295,9 +310,10 @@ const displayCardInfo = (function () {
   }
 
   return {
-    displayTrackCards,
+    displayTracks,
     removeDisplayNoneClass,
-    setDisplayNoneClass
+    setDisplayNoneClass,
+    generateAsRankedTracksHTML
   }
 })()
 
@@ -738,7 +754,7 @@ const addEventListeners = (function () {
       selections.termTabManager.selectNewTab(btn, borderCover)
 
       const currTracks = trackActions.getCurrSelTopTracks()
-      displayCardInfo.displayTrackCards(currTracks)
+      displayCardInfo.displayTracks(currTracks)
     }
 
     const trackTermBtns = trackTermSelections
@@ -836,29 +852,37 @@ const addEventListeners = (function () {
   function addConvertCards () {
     const convertBtn = document.getElementById(config.CSS.IDs.convertCard)
     const convertImg = convertBtn?.getElementsByTagName('img')[0]
-    const tracksTextContainer = document.getElementById(config.CSS.IDs.topTracksTextFormContainer)
-    const tracksCardContainer = document.getElementById(
-      config.CSS.IDs.trackCardsContainer
-    )
 
     function onClick () {
       if (convertImg === undefined) {
         throw new Error('convert cards to text form buttons image is not found')
       }
+      // hide the respective container
       tracksTextContainer?.classList.toggle(config.CSS.CLASSES.displayNone)
       tracksCardContainer?.classList.toggle(config.CSS.CLASSES.displayNone)
 
+      // show either the text form or card form and save it
       if (
         tracksTextContainer?.classList.contains(config.CSS.CLASSES.displayNone)
       ) {
+        saveLoad.savedOptions.inTextForm = false
         saveLoad.saveTopTracksForm(false)
         convertImg.src = config.PATHS.listView
+
+        if (tracksTextContainer) {
+          removeAllChildNodes(tracksTextContainer)
+        }
       } else {
+        saveLoad.savedOptions.inTextForm = true
         saveLoad.saveTopTracksForm(true)
         trackActions.selections.numViewableCards = MAX_VIEWABLE_CARDS
+        if (tracksCardContainer) {
+          removeAllChildNodes(tracksCardContainer)
+        }
         // also disable see all button
         convertImg.src = config.PATHS.gridView
       }
+      displayCardInfo.displayTracks(trackActions.getCurrSelTopTracks())
     }
 
     convertBtn?.addEventListener('click', () => onClick())
@@ -875,6 +899,7 @@ const addEventListeners = (function () {
 })()
 
 const saveLoad = (function () {
+  const savedOptions = { inTextForm: false }
   function saveTopTracksForm (isInTextForm: boolean) {
     promiseHandler(
       axios.put(
@@ -885,11 +910,21 @@ const saveLoad = (function () {
   function loadTopTracksForm () {
   }
 
-  return { saveTopTracksForm, loadTopTracksForm }
+  return { saveTopTracksForm, loadTopTracksForm, savedOptions }
 })()
 
 const initialLoads = (function () {
   function loadPlaylistForm () {
+    function determineDisplay (isInTextForm: boolean) {
+      if (isInTextForm) {
+        tracksTextContainer?.classList.remove(config.CSS.CLASSES.displayNone)
+        tracksCardContainer?.classList.add(config.CSS.CLASSES.displayNone)
+      } else {
+        tracksTextContainer?.classList.add(config.CSS.CLASSES.displayNone)
+        tracksCardContainer?.classList.remove(config.CSS.CLASSES.displayNone)
+      }
+    }
+
     promiseHandler(
       axios
         .get(config.URLs.getTopTracksIsInTextFormData)
@@ -905,7 +940,11 @@ const initialLoads = (function () {
             // show text versions of the cards and hide card versions
             convertImg.src = config.PATHS.gridView
           }
-          // else it is in card form which is the default.
+          saveLoad.savedOptions.inTextForm = res.data
+          determineDisplay(saveLoad.savedOptions.inTextForm)
+
+          // display tracks after loading whether it was in text or card form
+          displayCardInfo.displayTracks(trackActions.getCurrSelTopTracks())
         })
     )
   }
@@ -920,7 +959,6 @@ const initialLoads = (function () {
       // load the term that was the user last had it on
       loadTerm(TERM_TYPE.TRACKS).then(term => {
         trackActions.selections.term = term
-        displayCardInfo.displayTrackCards(trackActions.getCurrSelTopTracks())
         selectInitialTabs(term)
       })
     })
