@@ -6,7 +6,6 @@ function putPlaylistResizeData (req: Request, res: Response) {
   if (req.session.user !== undefined) {
     req.session.user.playlistResizeWidth = val
   }
-  console.log(req.session)
 
   res.sendStatus(StatusCodes.CREATED)
 }
@@ -19,12 +18,23 @@ function putPlaylistTextFormData (req: Request, res: Response) {
   if (req.session.user !== undefined) {
     req.session.user.playlistIsInTextForm = val
   }
-  console.log(req.session)
 
   res.sendStatus(StatusCodes.CREATED)
 }
 function getPlaylistTextFormData (req: Request, res: Response) {
   res.status(StatusCodes.OK).send(req.session.user?.playlistIsInTextForm)
+}
+
+function putTopTracksTextFormData (req: Request, res: Response) {
+  const val = req.query.val as string
+  if (req.session.user !== undefined) {
+    req.session.user.topTracksIsInTextForm = val
+  }
+
+  res.sendStatus(StatusCodes.CREATED)
+}
+function getTopTracksTextFormData (req: Request, res: Response) {
+  res.status(StatusCodes.OK).send(req.session.user?.topTracksIsInTextForm)
 }
 
 function putPlayerVolumeData (req: Request, res: Response) {
@@ -84,6 +94,8 @@ const userCtrl = {
   getPlaylistResizeData,
   putPlaylistTextFormData,
   getPlaylistTextFormData,
+  putTopTracksTextFormData,
+  getTopTracksTextFormData,
   putPlayerVolumeData,
   getPlayerVolumeData,
   putTopTracksTerm,

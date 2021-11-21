@@ -9,6 +9,8 @@ router.put('/put-playlist-resize-data', user_controller_1.userCtrl.putPlaylistRe
 router.get('/get-playlist-resize-data', user_controller_1.userCtrl.getPlaylistResizeData);
 router.put('/put-playlist-text-form-data', user_controller_1.userCtrl.putPlaylistTextFormData);
 router.get('/get-playlist-text-form-data', user_controller_1.userCtrl.getPlaylistTextFormData);
+router.put('/put-top-tracks-text-form-data', user_controller_1.userCtrl.putTopTracksTextFormData);
+router.get('/get-top-tracks-text-form-data', user_controller_1.userCtrl.getTopTracksTextFormData);
 router.put('/put-player-volume', user_controller_1.userCtrl.putPlayerVolumeData);
 router.get('/get-player-volume', user_controller_1.userCtrl.getPlayerVolumeData);
 router.put('/put-top-tracks-term', user_controller_1.userCtrl.putTopTracksTerm);

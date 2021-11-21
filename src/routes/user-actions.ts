@@ -8,6 +8,9 @@ router.get('/get-playlist-resize-data', userCtrl.getPlaylistResizeData)
 router.put('/put-playlist-text-form-data', userCtrl.putPlaylistTextFormData)
 router.get('/get-playlist-text-form-data', userCtrl.getPlaylistTextFormData)
 
+router.put('/put-top-tracks-text-form-data', userCtrl.putTopTracksTextFormData)
+router.get('/get-top-tracks-text-form-data', userCtrl.getTopTracksTextFormData)
+
 router.put('/put-player-volume', userCtrl.putPlayerVolumeData)
 router.get('/get-player-volume', userCtrl.getPlayerVolumeData)
 

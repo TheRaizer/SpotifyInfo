@@ -797,12 +797,80 @@ const addEventListeners = (function () {
     button?.addEventListener('click', () => generatePlaylistFromTopTracks(trackActions.selections.term))
   }
 
+  function addConvertCards () {
+    const convertBtn = document.getElementById(config.CSS.IDs.convertCard)
+    const convertImg = convertBtn?.getElementsByTagName('img')[0]
+
+    const textContainer = document.getElementById(config.CSS.IDs.topTracksTextFormContainer)
+
+    function onClick () {
+      if (convertImg === undefined) {
+        throw new Error('convert cards to text form buttons image is not found')
+      }
+      textContainer?.classList.toggle(config.CSS.CLASSES.displayNone)
+      // ALSO HIDE THE CARD CONTAINER
+
+      if (
+        textContainer?.classList.contains(config.CSS.CLASSES.displayNone)
+      ) {
+        saveLoad.saveTopTracksForm(false)
+        convertImg.src = config.PATHS.listView
+      } else {
+        saveLoad.saveTopTracksForm(true)
+        convertImg.src = config.PATHS.gridView
+      }
+    }
+
+    convertBtn?.addEventListener('click', () => onClick())
+  }
+
   return {
     addTrackFeatureButtonEvents,
     addTrackTermButtonEvents,
     addExpandDescOnHoverEvents,
     addViewAllTracksEvent,
-    addGeneratePlaylistEvent
+    addGeneratePlaylistEvent,
+    addConvertCards
+  }
+})()
+
+const saveLoad = (function () {
+  function saveTopTracksForm (isInTextForm: boolean) {
+    promiseHandler(
+      axios.put(
+        config.URLs.putTopTracksIsInTextFormData(String(isInTextForm))
+      )
+    )
+  }
+  function loadTopTracksForm () {
+  }
+
+  return { saveTopTracksForm, loadTopTracksForm }
+})()
+
+const initialLoads = (function () {
+  function loadPlaylistForm () {
+    promiseHandler(
+      axios
+        .get(config.URLs.getTopTracksIsInTextFormData)
+        .then((res) => {
+          if (res.data === true) {
+            const convertBtn = document.getElementById(
+              config.CSS.IDs.convertCard
+            )
+            const convertImg = convertBtn?.getElementsByTagName('img')[0]
+            if (convertImg === undefined) {
+              throw new Error('convert cards to text form buttons image is not found')
+            }
+            // show text versions of the cards and hide card versions
+            convertImg.src = config.PATHS.gridView
+          }
+          // else it is in card form which is the default.
+        })
+    )
+  }
+  return {
+    loadPlaylistForm
   }
 })();
 
@@ -820,5 +888,8 @@ const addEventListeners = (function () {
 
   Object.entries(addEventListeners).forEach(([, addEventListener]) => {
     addEventListener()
+  })
+  Object.entries(initialLoads).forEach(([, loader]) => {
+    loader()
   })
 })()

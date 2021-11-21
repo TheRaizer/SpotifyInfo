@@ -7,7 +7,6 @@ function putPlaylistResizeData(req, res) {
     if (req.session.user !== undefined) {
         req.session.user.playlistResizeWidth = val;
     }
-    console.log(req.session);
     res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
 }
 function getPlaylistResizeData(req, res) {
@@ -19,12 +18,22 @@ function putPlaylistTextFormData(req, res) {
     if (req.session.user !== undefined) {
         req.session.user.playlistIsInTextForm = val;
     }
-    console.log(req.session);
     res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
 }
 function getPlaylistTextFormData(req, res) {
     var _a;
     res.status(http_status_codes_1.StatusCodes.OK).send((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.playlistIsInTextForm);
+}
+function putTopTracksTextFormData(req, res) {
+    const val = req.query.val;
+    if (req.session.user !== undefined) {
+        req.session.user.topTracksIsInTextForm = val;
+    }
+    res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
+}
+function getTopTracksTextFormData(req, res) {
+    var _a;
+    res.status(http_status_codes_1.StatusCodes.OK).send((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.topTracksIsInTextForm);
 }
 function putPlayerVolumeData(req, res) {
     const val = req.query.val;
@@ -75,6 +84,8 @@ const userCtrl = {
     getPlaylistResizeData,
     putPlaylistTextFormData,
     getPlaylistTextFormData,
+    putTopTracksTextFormData,
+    getTopTracksTextFormData,
     putPlayerVolumeData,
     getPlayerVolumeData,
     putTopTracksTerm,

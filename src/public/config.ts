@@ -76,7 +76,9 @@ export const config = {
       webPlayerProgress: 'web-player-progress-bar',
       playerTrackImg: 'player-track-img',
       webPlayerArtists: 'web-player-artists',
-      generatePlaylist: 'generate-playlist'
+      generatePlaylist: 'generate-playlist',
+      hideShowPlaylistTxt: 'hide-show-playlist-txt',
+      topTracksTextFormContainer: 'term-text-form-container'
     },
     CLASSES: {
       glow: 'glow',
@@ -155,6 +157,8 @@ export const config = {
     getPlaylistResizeData: '/user/get-playlist-resize-data',
     putPlaylistIsInTextFormData: (val: string) => `/user/put-playlist-text-form-data?val=${val}`,
     getPlaylistIsInTextFormData: '/user/get-playlist-text-form-data',
+    putTopTracksIsInTextFormData: (val: string) => `/user/put-top-tracks-text-form-data?val=${val}`,
+    getTopTracksIsInTextFormData: '/user/get-top-tracks-text-form-data',
     getArtistTopTracks: (id: string) => `/spotify/get-artist-top-tracks?id=${id}`,
     getCurrentUserProfile: '/spotify/get-current-user-profile',
     putClearSession: '/clear-session',

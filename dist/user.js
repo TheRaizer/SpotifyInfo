@@ -7,6 +7,7 @@ class User {
         this.updateDate = new Date();
         this.playlistResizeWidth = '';
         this.playlistIsInTextForm = 'true';
+        this.topTracksIsInTextForm = 'true';
         this.playerVolume = '0.4';
         this.topTracksTerm = 'short_term';
         this.topArtistsTerm = 'short_term';

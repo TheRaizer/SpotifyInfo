@@ -68,7 +68,7 @@ const resizeActions = (function () {
           }
         }
       })
-      .on('resizeend', saveResizeWidth)
+      .on('resizeend', saveLoad.saveResizeWidth)
 
     // once we renable the resize we must set its width to be what the user last set it too.
     initialLoads.loadResizeWidth()
@@ -492,14 +492,6 @@ const addEventListeners = (function () {
       wrenchIcon?.classList.toggle(config.CSS.CLASSES.selected)
     })
   }
-  function savePlaylistForm (isInTextForm: boolean) {
-    // save whether the playlist is in text form or not.
-    promiseHandler(
-      axios.put(
-        config.URLs.putPlaylistIsInTextFormData(String(isInTextForm))
-      )
-    )
-  }
   function addConvertCards () {
     const convertBtn = document.getElementById(config.CSS.IDs.convertCard)
     const convertImg = convertBtn?.getElementsByTagName('img')[0]
@@ -513,29 +505,32 @@ const addEventListeners = (function () {
       if (
         playlistsCardContainer?.classList.contains(config.CSS.CLASSES.textForm)
       ) {
-        savePlaylistForm(true)
+        saveLoad.savePlaylistForm(true)
         convertImg.src = config.PATHS.gridView
       } else {
-        savePlaylistForm(false)
+        saveLoad.savePlaylistForm(false)
         convertImg.src = config.PATHS.listView
       }
     }
 
     convertBtn?.addEventListener('click', () => onClick())
   }
-  function addHideShowCards () {
-    const hideShowCards = document.getElementById('hide-show-cards')
+  /**
+   * Add event listener onto
+   */
+  function addHideShowPlaylistTxt () {
+    const toggleBtn = document.getElementById(config.CSS.IDs.hideShowPlaylistTxt)
     function onClick () {
-      hideShowCards?.classList.toggle(config.CSS.CLASSES.selected)
+      toggleBtn?.classList.toggle(config.CSS.CLASSES.selected)
       // if its selected we hide the cards otherwise we show them. This occurs when screen width is a certain size and a menu sliding from the left appears
-      if (hideShowCards?.classList.contains(config.CSS.CLASSES.selected)) {
+      if (toggleBtn?.classList.contains(config.CSS.CLASSES.selected)) {
         cardResizeContainer.style.width = '0'
       } else {
         restrictResizeWidth()
       }
-      updateHideShowCardsImg()
+      updateHideShowPlaylistTxtIcon()
     }
-    hideShowCards?.addEventListener('click', () => onClick())
+    toggleBtn?.addEventListener('click', () => onClick())
   }
   return {
     addExpandedPlaylistModsSearchbarEvent,
@@ -544,30 +539,46 @@ const addEventListeners = (function () {
     addUndoPlaylistTrackDeleteEvent,
     addModsOpenerEvent,
     addConvertCards,
-    addHideShowCards
+    addHideShowPlaylistTxt
   }
 })()
 
-function saveResizeWidth () {
-  promiseHandler(
-    axios.put(
-      config.URLs.putPlaylistResizeData(cardResizeContainer.getBoundingClientRect().width.toString()))
-  )
-  console.log('end resize')
-}
+const saveLoad = (function () {
+  function saveResizeWidth () {
+    promiseHandler(
+      axios.put(
+        config.URLs.putPlaylistResizeData(cardResizeContainer.getBoundingClientRect().width.toString()))
+    )
+  }
+  function savePlaylistForm (isInTextForm: boolean) {
+    promiseHandler(
+      axios.put(
+        config.URLs.putPlaylistIsInTextFormData(String(isInTextForm))
+      )
+    )
+  }
 
-function updateHideShowCardsImg () {
-  const hideShowCards = document.getElementById('hide-show-cards')
-  const hideShowImg = hideShowCards?.getElementsByTagName('img')[0]
+  return {
+    saveResizeWidth,
+    savePlaylistForm
+  }
+})()
 
-  if (hideShowImg === undefined) {
+/**
+ * update the icon to show a chevron left or chevron right depending on whether the playlist text is shown or not.
+ */
+function updateHideShowPlaylistTxtIcon () {
+  const toggleBtn = document.getElementById(config.CSS.IDs.hideShowPlaylistTxt)
+  const btnIcon = toggleBtn?.getElementsByTagName('img')[0]
+
+  if (btnIcon === undefined) {
     throw new Error('img to show and hide the text form cards is not found')
   }
   // if its selected we hide the cards otherwise we show them.
-  if (hideShowCards?.classList.contains(config.CSS.CLASSES.selected)) {
-    hideShowImg.src = config.PATHS.chevronRight
+  if (toggleBtn?.classList.contains(config.CSS.CLASSES.selected)) {
+    btnIcon.src = config.PATHS.chevronRight
   } else {
-    hideShowImg.src = config.PATHS.chevronLeft
+    btnIcon.src = config.PATHS.chevronLeft
   }
 }
 
@@ -586,9 +597,9 @@ function checkIfCardFormChangeOnResize () {
 
     if (wasBigNowSmall || wasSmallNowBig) {
       if (wasSmallNowBig) {
-        const hideShowCards = document.getElementById('hide-show-cards')
-        hideShowCards?.classList.remove(config.CSS.CLASSES.selected)
-        updateHideShowCardsImg()
+        const toggleBtn = document.getElementById(config.CSS.IDs.hideShowPlaylistTxt)
+        toggleBtn?.classList.remove(config.CSS.CLASSES.selected)
+        updateHideShowPlaylistTxtIcon()
       }
       // card form has changed on window resize
       displayCardInfo.displayPlaylistCards(infoRetrieval.playlistObjs)
@@ -606,7 +617,6 @@ const initialLoads = (function () {
         .get(config.URLs.getPlaylistIsInTextFormData)
         .then((res) => {
           if (res.data === true) {
-            // if its in text form change it to be so.
             const convertBtn = document.getElementById(
               config.CSS.IDs.convertCard
             )

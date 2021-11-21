@@ -691,12 +691,63 @@ const addEventListeners = (function () {
         const button = document.getElementById(config_1.config.CSS.IDs.generatePlaylist);
         button === null || button === void 0 ? void 0 : button.addEventListener('click', () => generatePlaylistFromTopTracks(trackActions.selections.term));
     }
+    function addConvertCards() {
+        const convertBtn = document.getElementById(config_1.config.CSS.IDs.convertCard);
+        const convertImg = convertBtn === null || convertBtn === void 0 ? void 0 : convertBtn.getElementsByTagName('img')[0];
+        const textContainer = document.getElementById(config_1.config.CSS.IDs.topTracksTextFormContainer);
+        function onClick() {
+            if (convertImg === undefined) {
+                throw new Error('convert cards to text form buttons image is not found');
+            }
+            textContainer === null || textContainer === void 0 ? void 0 : textContainer.classList.toggle(config_1.config.CSS.CLASSES.displayNone);
+            // ALSO HIDE THE CARD CONTAINER
+            if (textContainer === null || textContainer === void 0 ? void 0 : textContainer.classList.contains(config_1.config.CSS.CLASSES.displayNone)) {
+                saveLoad.saveTopTracksForm(false);
+                convertImg.src = config_1.config.PATHS.listView;
+            }
+            else {
+                saveLoad.saveTopTracksForm(true);
+                convertImg.src = config_1.config.PATHS.gridView;
+            }
+        }
+        convertBtn === null || convertBtn === void 0 ? void 0 : convertBtn.addEventListener('click', () => onClick());
+    }
     return {
         addTrackFeatureButtonEvents,
         addTrackTermButtonEvents,
         addExpandDescOnHoverEvents,
         addViewAllTracksEvent,
-        addGeneratePlaylistEvent
+        addGeneratePlaylistEvent,
+        addConvertCards
+    };
+})();
+const saveLoad = (function () {
+    function saveTopTracksForm(isInTextForm) {
+        (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putTopTracksIsInTextFormData(String(isInTextForm))));
+    }
+    function loadTopTracksForm() {
+    }
+    return { saveTopTracksForm, loadTopTracksForm };
+})();
+const initialLoads = (function () {
+    function loadPlaylistForm() {
+        (0, config_1.promiseHandler)(axios_1.default
+            .get(config_1.config.URLs.getTopTracksIsInTextFormData)
+            .then((res) => {
+            if (res.data === true) {
+                const convertBtn = document.getElementById(config_1.config.CSS.IDs.convertCard);
+                const convertImg = convertBtn === null || convertBtn === void 0 ? void 0 : convertBtn.getElementsByTagName('img')[0];
+                if (convertImg === undefined) {
+                    throw new Error('convert cards to text form buttons image is not found');
+                }
+                // show text versions of the cards and hide card versions
+                convertImg.src = config_1.config.PATHS.gridView;
+            }
+            // else it is in card form which is the default.
+        }));
+    }
+    return {
+        loadPlaylistForm
     };
 })();
 (function () {
@@ -710,6 +761,9 @@ const addEventListeners = (function () {
     }));
     Object.entries(addEventListeners).forEach(([, addEventListener]) => {
         addEventListener();
+    });
+    Object.entries(initialLoads).forEach(([, loader]) => {
+        loader();
     });
 })();
 //# sourceMappingURL=top-tracks.js.map

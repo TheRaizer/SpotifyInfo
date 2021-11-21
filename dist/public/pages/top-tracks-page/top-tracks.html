@@ -62,7 +62,12 @@
         <h1 id="top-tracks-header">Your Top Tracks</h1>
       </header>
       <main id="info-container">
-        <button id="generate-playlist" class="glow">Generate Playlist</button>
+        <span>
+          <button id="convert-card">
+            <img src="images/list-view-icon.png" alt="Change Form" />
+          </button>
+          <button id="generate-playlist" class="glow">Generate Playlist</button>
+        </span>
         <div
           class="border-connected-btn-container no-select"
           id="tracks-term-selections"
@@ -101,6 +106,7 @@
           <div class="expand-to-children">
             <div class="card-grid scroll-bar" id="track-cards-container"></div>
           </div>
+          <div id="term-text-form-container" class="display-none"></div>
           <button id="view-all-top-tracks" class="glow">See All 50</button>
           <header
             class="border-connected-btn-container no-select"

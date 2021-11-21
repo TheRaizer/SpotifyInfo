@@ -708,7 +708,7 @@ footer {
   border-right-color: #5f5f5f;
   border-right-width: 9px;
 }
-#hide-show-cards {
+#hide-show-playlist-txt {
   margin-left: 10px;
   display: none;
 }
@@ -723,7 +723,7 @@ footer {
   margin-top: 5vh;
 }
 @media only screen and (max-width: 600px) {
-  #hide-show-cards {
+  #hide-show-playlist-txt {
     display: block;
   }
   #convert-card {
@@ -1315,6 +1315,7 @@ ul.genres > li {
 #play-pause-player {
   width: 51px;
   height: 51px;
+  margin-bottom: 20%;
 }
 #player-track-img {
   margin: 5px 5px 5px 5px;
