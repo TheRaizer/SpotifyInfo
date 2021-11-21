@@ -590,6 +590,30 @@ footer {
   min-width: fit-content;
   color: #9c9c9c;
 }
+.playlist-track > .ranked-interaction-area {
+  flex: 0 0 10%;
+  display: flex;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  margin-right: 20px;
+  max-width: 50px;
+}
+.playlist-track > .ranked-interaction-area > p {
+  font-weight: bold;
+  display: block;
+}
+.playlist-track > .ranked-interaction-area > button {
+  display: none;
+}
+.playlist-track > .ranked-interaction-area:hover > p,
+.playlist-track > .ranked-interaction-area.selected > p {
+  display: none;
+}
+.playlist-track > .ranked-interaction-area:hover > button,
+.playlist-track > .ranked-interaction-area.selected > button {
+  display: block;
+}
 .playlist-config img {
   margin-left: 20%;
   width: 30px;
@@ -811,30 +835,6 @@ footer {
   margin-top: 20px;
   margin-bottom: 10px;
 }
-#artist-cards-container > .artist > .content .playlist-track > .ranked-interaction-area {
-  flex: 0 0 10%;
-  display: flex;
-  align-items: center;
-  width: 50px;
-  height: 50px;
-  margin-right: 20px;
-  max-width: 50px;
-}
-#artist-cards-container > .artist > .content .playlist-track > .ranked-interaction-area > p {
-  font-weight: bold;
-  display: block;
-}
-#artist-cards-container > .artist > .content .playlist-track > .ranked-interaction-area > button {
-  display: none;
-}
-#artist-cards-container > .artist > .content .playlist-track > .ranked-interaction-area:hover > p,
-#artist-cards-container > .artist > .content .playlist-track > .ranked-interaction-area.selected > p {
-  display: none;
-}
-#artist-cards-container > .artist > .content .playlist-track > .ranked-interaction-area:hover > button,
-#artist-cards-container > .artist > .content .playlist-track > .ranked-interaction-area.selected > button {
-  display: block;
-}
 #artist-cards-container > .artist > .content .playlist-track > .links {
   flex: 0 0 40%;
   margin-left: 5%;
@@ -953,6 +953,11 @@ ul.genres > li {
   ul.genres {
     margin-bottom: 20%;
   }
+}
+#term-text-form-container {
+  height: 70vh;
+  overflow-y: scroll;
+  background-color: #1f1f1f;
 }
 .profile-area ul.track-list {
   height: 430px;
