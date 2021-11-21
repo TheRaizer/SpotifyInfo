@@ -20,6 +20,7 @@ import axios from 'axios'
 import { Chart, LinearScale, CategoryScale, BarController, BarElement } from 'chart.js'
 import { FeaturesData } from '../../../types'
 import { determineTerm, loadTerm, saveTerm, selectStartTermTab, TERMS, TERM_TYPE } from '../../components/save-load-term'
+import { arrayToDoublyLinkedList } from '../../components/doubly-linked-list'
 
 Chart.register(LinearScale, CategoryScale, BarController, BarElement)
 const DEFAULT_VIEWABLE_CARDS = 5
@@ -115,18 +116,19 @@ const trackArrs = (function () {
 })()
 
 const displayCardInfo = (function () {
-  const tracksContainer = document.getElementById(
+  const tracksCardContainer = document.getElementById(
     config.CSS.IDs.trackCardsContainer
   )
+  const tracksTextContainer = document.getElementById(config.CSS.IDs.topTracksTextFormContainer)
 
-  /** Generates the cards to the DOM then makes them visible
+  /**
+   * Generates the cards to the DOM then makes them visible
    *
    * @param {Array<Track>} trackArr array of track objects whose cards should be generated.
-   * @param {Boolean} unanimatedAppear whether to show the card without animation or with animation.
    * @returns {Array<HTMLElement>} array of the card elements.
    */
-  function generateCards (trackArr: Array<Track>) {
-    removeAllChildNodes(tracksContainer as Node)
+  function generateAsCards (trackArr: Array<Track>) {
+    removeAllChildNodes(tracksCardContainer as Node)
     const cardHtmls = []
 
     // array is used to update chart with the shown cards
@@ -136,7 +138,7 @@ const displayCardInfo = (function () {
       const trackObj = trackArr[i]
       const cardHtml = trackObj.getTrackCardHtml(i)
       cardHtmls.push(cardHtml)
-      tracksContainer?.appendChild(cardHtml)
+      tracksCardContainer?.appendChild(cardHtml)
       if (i < trackActions.selections.numViewableCards) {
         tracksDisplayed.push(trackObj)
       } else {
@@ -154,8 +156,41 @@ const displayCardInfo = (function () {
       config.CSS.CLASSES.appear,
       5
     )
-    return cardHtmls
   }
+  /**
+   * Generates the tracks as ranked tracks in a playlist to the DOM then makes them visible
+   *
+   * @param {Array<Track>} trackArr array of track objects whose cards should be generated.
+   * @returns {Array<HTMLElement>} array of the card elements.
+   */
+  function generateAsRankedTracksHTML (trackArr: Array<Track>) {
+    removeAllChildNodes(tracksTextContainer as Node)
+    const rankedTrackHtmls = []
+
+    // array is used to update chart with the shown cards
+    const tracksDisplayed = []
+
+    const trackLinkedList = arrayToDoublyLinkedList(trackArr)
+
+    for (let i = 0; i < trackArr.length; i++) {
+      const trackObj = trackArr[i]
+
+      const rankedTrackHTML = trackObj.getRankedTrackHtml(trackLinkedList, i + 1)
+      rankedTrackHtmls.push(rankedTrackHTML)
+      tracksTextContainer?.appendChild(rankedTrackHTML)
+      tracksDisplayed.push(trackObj)
+    }
+
+    featureManager.changeTracksChart(tracksDisplayed)
+
+    // set appear class on all cards, even though some are not going to be visible
+    animationControl.animateAttributes(
+      '.' + config.CSS.CLASSES.rankCard,
+      config.CSS.CLASSES.appear,
+      5
+    )
+  }
+
   /** Begins retrieving tracks then verifies it is the correct selected tracks.
    *
    * @param {Array<Track>} trackArr array to load tracks into.
@@ -168,15 +203,16 @@ const displayCardInfo = (function () {
             </div>`
     const spinnerEl = htmlToEl(htmlString)
 
-    removeAllChildNodes(tracksContainer as Node)
-    tracksContainer?.appendChild(spinnerEl as Node)
+    removeAllChildNodes(tracksCardContainer as Node)
+    tracksCardContainer?.appendChild(spinnerEl as Node)
 
     trackActions.retrieveTracks(trackArr).then(() => {
       // after retrieving async verify if it is the same arr of trackObjs as what was selected
       if (!trackActions.selectionVerif.isValid(trackArr)) {
         return
       }
-      return generateCards(trackArr)
+      generateAsCards(trackArr)
+      generateAsRankedTracksHTML(trackArr)
     }).catch((err) => {
       throw new Error(err)
     })
@@ -192,9 +228,10 @@ const displayCardInfo = (function () {
   function displayTrackCards (trackArr: Array<Track>) {
     trackActions.selectionVerif.selectionChanged(trackArr)
     if (trackArr.length > 0) {
-      return generateCards(trackArr)
+      generateAsCards(trackArr)
+      generateAsRankedTracksHTML(trackArr)
     } else {
-      return startLoadingTracks(trackArr)
+      startLoadingTracks(trackArr)
     }
   }
 
@@ -204,7 +241,7 @@ const displayCardInfo = (function () {
    * @param trackArr the array of tracks that are currently displayed
    */
   function removeDisplayNoneClass (numToDisplay: number, trackArr: Array<Track>) {
-    const cards = tracksContainer?.childNodes
+    const cards = tracksCardContainer?.childNodes
     if (!cards || trackArr.length !== cards.length) {
       throw new Error('track array length and cards length do not match')
     } else if (!cards) {
@@ -237,7 +274,7 @@ const displayCardInfo = (function () {
    * @param trackArr the array of tracks that are currently displayed
    */
   function setDisplayNoneClass (numToDisplay: number, trackArr: Array<Track>) {
-    const cards = tracksContainer?.childNodes
+    const cards = tracksCardContainer?.childNodes
     if (!cards) {
       return
     }
@@ -246,7 +283,6 @@ const displayCardInfo = (function () {
 
     // from the last cards to the index of the card you want to keep visible, hide them.
     for (let i = cards.length - 1; i >= numToDisplay; i--) {
-      console.log(cards[i]);
       (cards[i] as HTMLElement).classList.add(config.CSS.CLASSES.displayNone)
     }
 
@@ -800,23 +836,27 @@ const addEventListeners = (function () {
   function addConvertCards () {
     const convertBtn = document.getElementById(config.CSS.IDs.convertCard)
     const convertImg = convertBtn?.getElementsByTagName('img')[0]
-
-    const textContainer = document.getElementById(config.CSS.IDs.topTracksTextFormContainer)
+    const tracksTextContainer = document.getElementById(config.CSS.IDs.topTracksTextFormContainer)
+    const tracksCardContainer = document.getElementById(
+      config.CSS.IDs.trackCardsContainer
+    )
 
     function onClick () {
       if (convertImg === undefined) {
         throw new Error('convert cards to text form buttons image is not found')
       }
-      textContainer?.classList.toggle(config.CSS.CLASSES.displayNone)
-      // ALSO HIDE THE CARD CONTAINER
+      tracksTextContainer?.classList.toggle(config.CSS.CLASSES.displayNone)
+      tracksCardContainer?.classList.toggle(config.CSS.CLASSES.displayNone)
 
       if (
-        textContainer?.classList.contains(config.CSS.CLASSES.displayNone)
+        tracksTextContainer?.classList.contains(config.CSS.CLASSES.displayNone)
       ) {
         saveLoad.saveTopTracksForm(false)
         convertImg.src = config.PATHS.listView
       } else {
         saveLoad.saveTopTracksForm(true)
+        trackActions.selections.numViewableCards = MAX_VIEWABLE_CARDS
+        // also disable see all button
         convertImg.src = config.PATHS.gridView
       }
     }
