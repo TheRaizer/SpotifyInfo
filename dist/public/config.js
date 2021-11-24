@@ -88,7 +88,8 @@ exports.config = {
             webPlayerArtists: 'web-player-artists',
             generatePlaylist: 'generate-playlist',
             hideShowPlaylistTxt: 'hide-show-playlist-txt',
-            topTracksTextFormContainer: 'term-text-form-container'
+            topTracksTextFormContainer: 'term-text-form-container',
+            username: 'username'
         },
         CLASSES: {
             glow: 'glow',
@@ -180,7 +181,8 @@ exports.config = {
         putCurrPlaylistId: (id) => `/user/put-current-playlist-id?id=${id}`,
         getCurrPlaylistId: '/user/get-current-playlist-id',
         postPlaylist: (name) => `/spotify/post-playlist?name=${name}`,
-        postItemsToPlaylist: (playlistId) => `/spotify/post-items-to-playlist?playlist_id=${playlistId}`
+        postItemsToPlaylist: (playlistId) => `/spotify/post-items-to-playlist?playlist_id=${playlistId}`,
+        getUsername: '/user/get-username'
     },
     PATHS: {
         spinner: '/images/200pxLoadingSpinner.svg',

@@ -22,9 +22,12 @@ const card_actions_1 = __importDefault(require("../../components/card-actions"))
 const axios_1 = __importDefault(require("axios"));
 const chart_js_1 = require("chart.js");
 const save_load_term_1 = require("../../components/save-load-term");
+const doubly_linked_list_1 = require("../../components/doubly-linked-list");
 chart_js_1.Chart.register(chart_js_1.LinearScale, chart_js_1.CategoryScale, chart_js_1.BarController, chart_js_1.BarElement);
 const DEFAULT_VIEWABLE_CARDS = 5;
 const MAX_VIEWABLE_CARDS = 50;
+const tracksTextContainer = document.getElementById(config_1.config.CSS.IDs.topTracksTextFormContainer);
+const tracksCardContainer = document.getElementById(config_1.config.CSS.IDs.trackCardsContainer);
 const trackActions = (function () {
     const selectionVerif = new asyncSelectionVerif_1.default();
     const cardActionsHandler = new card_actions_1.default(MAX_VIEWABLE_CARDS);
@@ -106,15 +109,14 @@ const trackArrs = (function () {
     };
 })();
 const displayCardInfo = (function () {
-    const tracksContainer = document.getElementById(config_1.config.CSS.IDs.trackCardsContainer);
-    /** Generates the cards to the DOM then makes them visible
+    /**
+     * Generates the cards to the DOM then makes them visible
      *
      * @param {Array<Track>} trackArr array of track objects whose cards should be generated.
-     * @param {Boolean} unanimatedAppear whether to show the card without animation or with animation.
      * @returns {Array<HTMLElement>} array of the card elements.
      */
-    function generateCards(trackArr) {
-        (0, config_1.removeAllChildNodes)(tracksContainer);
+    function generateAsCards(trackArr) {
+        (0, config_1.removeAllChildNodes)(tracksCardContainer);
         const cardHtmls = [];
         // array is used to update chart with the shown cards
         const tracksDisplayed = [];
@@ -122,7 +124,7 @@ const displayCardInfo = (function () {
             const trackObj = trackArr[i];
             const cardHtml = trackObj.getTrackCardHtml(i);
             cardHtmls.push(cardHtml);
-            tracksContainer === null || tracksContainer === void 0 ? void 0 : tracksContainer.appendChild(cardHtml);
+            tracksCardContainer === null || tracksCardContainer === void 0 ? void 0 : tracksCardContainer.appendChild(cardHtml);
             if (i < trackActions.selections.numViewableCards) {
                 tracksDisplayed.push(trackObj);
             }
@@ -135,45 +137,85 @@ const displayCardInfo = (function () {
         featureManager.changeTracksChart(tracksDisplayed);
         // set appear class on all cards, even though some are not going to be visible
         config_1.animationControl.animateAttributes('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 5);
-        return cardHtmls;
+    }
+    /**
+     * Generates the tracks as ranked tracks in a playlist to the DOM then makes them visible
+     *
+     * @param {Array<Track>} trackArr array of track objects whose cards should be generated.
+     * @returns {Array<HTMLElement>} array of the card elements.
+     */
+    function generateAsRankedTracksHTML(trackArr) {
+        (0, config_1.removeAllChildNodes)(tracksTextContainer);
+        const rankedTrackHtmls = [];
+        // array is used to update chart with the shown cards
+        const tracksDisplayed = [];
+        const trackLinkedList = (0, doubly_linked_list_1.arrayToDoublyLinkedList)(trackArr);
+        for (let i = 0; i < trackArr.length; i++) {
+            const trackObj = trackArr[i];
+            const rankedTrackHTML = trackObj.getRankedTrackHtml(trackLinkedList, i + 1);
+            rankedTrackHtmls.push(rankedTrackHTML);
+            tracksTextContainer === null || tracksTextContainer === void 0 ? void 0 : tracksTextContainer.appendChild(rankedTrackHTML);
+            tracksDisplayed.push(trackObj);
+        }
+        featureManager.changeTracksChart(tracksDisplayed);
+        // set appear class on all cards, even though some are not going to be visible
+        config_1.animationControl.animateAttributes('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 5);
+    }
+    /**
+     * Depending on the given card form, this function will generate the respective track html and append it to the DOM.
+     * @param trackArr the array of tracks whose html should be appended
+     * @param inTextForm whether the tracks are in card form or text form
+     */
+    function generateTrackHTML(trackArr, inTextForm) {
+        if (inTextForm) {
+            generateAsRankedTracksHTML(trackArr);
+        }
+        else {
+            generateAsCards(trackArr);
+        }
     }
     /** Begins retrieving tracks then verifies it is the correct selected tracks.
      *
      * @param {Array<Track>} trackArr array to load tracks into.
      */
-    function startLoadingTracks(trackArr) {
+    function startLoadingTracks(trackArr, inTextForm) {
         // initially show the loading spinner
         const htmlString = `
             <div>
               <img src="${config_1.config.PATHS.spinner}" alt="Loading..." />
             </div>`;
         const spinnerEl = (0, config_1.htmlToEl)(htmlString);
-        (0, config_1.removeAllChildNodes)(tracksContainer);
-        tracksContainer === null || tracksContainer === void 0 ? void 0 : tracksContainer.appendChild(spinnerEl);
+        // append spinner to either text form container or card container as to have them properly removed when their respective function run
+        if (inTextForm) {
+            (0, config_1.removeAllChildNodes)(tracksTextContainer);
+            tracksTextContainer === null || tracksTextContainer === void 0 ? void 0 : tracksTextContainer.appendChild(spinnerEl);
+        }
+        else {
+            (0, config_1.removeAllChildNodes)(tracksCardContainer);
+            tracksCardContainer === null || tracksCardContainer === void 0 ? void 0 : tracksCardContainer.appendChild(spinnerEl);
+        }
         trackActions.retrieveTracks(trackArr).then(() => {
             // after retrieving async verify if it is the same arr of trackObjs as what was selected
             if (!trackActions.selectionVerif.isValid(trackArr)) {
                 return;
             }
-            return generateCards(trackArr);
+            generateTrackHTML(trackArr, inTextForm);
         }).catch((err) => {
             throw new Error(err);
         });
     }
-    /** Load track objects if not loaded, then generate cards with the objects.
+    /** Load track objects if not loaded, then generate track html with the objects using the savedLoad.savedOptions.isInTextForm to determine what form they will take.
      *
      * @param {Array<Track>} trackArr - List of track objects whose cards should be generated or
      * empty list that should be filled when loading tracks.
-     * @param {Boolean} autoAppear whether to show the cards without animation.
-     * @returns {Array<HTMLElement>} list of Card HTMLElement's.
      */
-    function displayTrackCards(trackArr) {
+    function displayTracks(trackArr) {
         trackActions.selectionVerif.selectionChanged(trackArr);
         if (trackArr.length > 0) {
-            return generateCards(trackArr);
+            generateTrackHTML(trackArr, saveLoad.savedOptions.inTextForm);
         }
         else {
-            return startLoadingTracks(trackArr);
+            startLoadingTracks(trackArr, saveLoad.savedOptions.inTextForm);
         }
     }
     /**
@@ -182,7 +224,7 @@ const displayCardInfo = (function () {
      * @param trackArr the array of tracks that are currently displayed
      */
     function removeDisplayNoneClass(numToDisplay, trackArr) {
-        const cards = tracksContainer === null || tracksContainer === void 0 ? void 0 : tracksContainer.childNodes;
+        const cards = tracksCardContainer === null || tracksCardContainer === void 0 ? void 0 : tracksCardContainer.childNodes;
         if (!cards || trackArr.length !== cards.length) {
             throw new Error('track array length and cards length do not match');
         }
@@ -207,14 +249,13 @@ const displayCardInfo = (function () {
      * @param trackArr the array of tracks that are currently displayed
      */
     function setDisplayNoneClass(numToDisplay, trackArr) {
-        const cards = tracksContainer === null || tracksContainer === void 0 ? void 0 : tracksContainer.childNodes;
+        const cards = tracksCardContainer === null || tracksCardContainer === void 0 ? void 0 : tracksCardContainer.childNodes;
         if (!cards) {
             return;
         }
         const tracksDisplayed = [];
         // from the last cards to the index of the card you want to keep visible, hide them.
         for (let i = cards.length - 1; i >= numToDisplay; i--) {
-            console.log(cards[i]);
             cards[i].classList.add(config_1.config.CSS.CLASSES.displayNone);
         }
         // add only the tracks that will end up shown
@@ -224,9 +265,10 @@ const displayCardInfo = (function () {
         featureManager.changeTracksChart(tracksDisplayed);
     }
     return {
-        displayTrackCards,
+        displayTracks,
         removeDisplayNoneClass,
-        setDisplayNoneClass
+        setDisplayNoneClass,
+        generateAsRankedTracksHTML
     };
 })();
 /** Manages a feature's information for all tracks in a term. */
@@ -606,7 +648,7 @@ const addEventListeners = (function () {
             (0, save_load_term_1.saveTerm)(trackActions.selections.term, save_load_term_1.TERM_TYPE.TRACKS);
             selections.termTabManager.selectNewTab(btn, borderCover);
             const currTracks = trackActions.getCurrSelTopTracks();
-            displayCardInfo.displayTrackCards(currTracks);
+            displayCardInfo.displayTracks(currTracks);
         }
         const trackTermBtns = trackTermSelections
             .getElementsByTagName('button');
@@ -694,21 +736,33 @@ const addEventListeners = (function () {
     function addConvertCards() {
         const convertBtn = document.getElementById(config_1.config.CSS.IDs.convertCard);
         const convertImg = convertBtn === null || convertBtn === void 0 ? void 0 : convertBtn.getElementsByTagName('img')[0];
-        const textContainer = document.getElementById(config_1.config.CSS.IDs.topTracksTextFormContainer);
         function onClick() {
             if (convertImg === undefined) {
                 throw new Error('convert cards to text form buttons image is not found');
             }
-            textContainer === null || textContainer === void 0 ? void 0 : textContainer.classList.toggle(config_1.config.CSS.CLASSES.displayNone);
-            // ALSO HIDE THE CARD CONTAINER
-            if (textContainer === null || textContainer === void 0 ? void 0 : textContainer.classList.contains(config_1.config.CSS.CLASSES.displayNone)) {
+            // hide the respective container
+            tracksTextContainer === null || tracksTextContainer === void 0 ? void 0 : tracksTextContainer.classList.toggle(config_1.config.CSS.CLASSES.displayNone);
+            tracksCardContainer === null || tracksCardContainer === void 0 ? void 0 : tracksCardContainer.classList.toggle(config_1.config.CSS.CLASSES.displayNone);
+            // show either the text form or card form and save it
+            if (tracksTextContainer === null || tracksTextContainer === void 0 ? void 0 : tracksTextContainer.classList.contains(config_1.config.CSS.CLASSES.displayNone)) {
+                saveLoad.savedOptions.inTextForm = false;
                 saveLoad.saveTopTracksForm(false);
                 convertImg.src = config_1.config.PATHS.listView;
+                if (tracksTextContainer) {
+                    (0, config_1.removeAllChildNodes)(tracksTextContainer);
+                }
             }
             else {
+                saveLoad.savedOptions.inTextForm = true;
                 saveLoad.saveTopTracksForm(true);
+                trackActions.selections.numViewableCards = MAX_VIEWABLE_CARDS;
+                if (tracksCardContainer) {
+                    (0, config_1.removeAllChildNodes)(tracksCardContainer);
+                }
+                // also disable see all button
                 convertImg.src = config_1.config.PATHS.gridView;
             }
+            displayCardInfo.displayTracks(trackActions.getCurrSelTopTracks());
         }
         convertBtn === null || convertBtn === void 0 ? void 0 : convertBtn.addEventListener('click', () => onClick());
     }
@@ -722,15 +776,26 @@ const addEventListeners = (function () {
     };
 })();
 const saveLoad = (function () {
+    const savedOptions = { inTextForm: false };
     function saveTopTracksForm(isInTextForm) {
         (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putTopTracksIsInTextFormData(String(isInTextForm))));
     }
     function loadTopTracksForm() {
     }
-    return { saveTopTracksForm, loadTopTracksForm };
+    return { saveTopTracksForm, loadTopTracksForm, savedOptions };
 })();
 const initialLoads = (function () {
     function loadPlaylistForm() {
+        function determineDisplay(isInTextForm) {
+            if (isInTextForm) {
+                tracksTextContainer === null || tracksTextContainer === void 0 ? void 0 : tracksTextContainer.classList.remove(config_1.config.CSS.CLASSES.displayNone);
+                tracksCardContainer === null || tracksCardContainer === void 0 ? void 0 : tracksCardContainer.classList.add(config_1.config.CSS.CLASSES.displayNone);
+            }
+            else {
+                tracksTextContainer === null || tracksTextContainer === void 0 ? void 0 : tracksTextContainer.classList.add(config_1.config.CSS.CLASSES.displayNone);
+                tracksCardContainer === null || tracksCardContainer === void 0 ? void 0 : tracksCardContainer.classList.remove(config_1.config.CSS.CLASSES.displayNone);
+            }
+        }
         (0, config_1.promiseHandler)(axios_1.default
             .get(config_1.config.URLs.getTopTracksIsInTextFormData)
             .then((res) => {
@@ -743,7 +808,10 @@ const initialLoads = (function () {
                 // show text versions of the cards and hide card versions
                 convertImg.src = config_1.config.PATHS.gridView;
             }
-            // else it is in card form which is the default.
+            saveLoad.savedOptions.inTextForm = res.data;
+            determineDisplay(saveLoad.savedOptions.inTextForm);
+            // display tracks after loading whether it was in text or card form
+            displayCardInfo.displayTracks(trackActions.getCurrSelTopTracks());
         }));
     }
     return {
@@ -755,7 +823,6 @@ const initialLoads = (function () {
         // load the term that was the user last had it on
         (0, save_load_term_1.loadTerm)(save_load_term_1.TERM_TYPE.TRACKS).then(term => {
             trackActions.selections.term = term;
-            displayCardInfo.displayTrackCards(trackActions.getCurrSelTopTracks());
             selectInitialTabs(term);
         });
     }));

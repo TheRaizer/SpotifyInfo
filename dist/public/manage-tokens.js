@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.onSuccessfulTokenCall = exports.generateLogin = exports.getTokens = exports.checkIfHasTokens = void 0;
 const config_1 = require("./config");
 const axios_1 = __importDefault(require("axios"));
+const user_data_1 = require("./user-data");
 const HALF_HOUR = 1.8e6; /* 30 min in ms */
 function checkIfHasTokens() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -52,7 +53,7 @@ function getTokens(onNoToken) {
             // if the request was succesful we have recieved a token
             () => (hasToken = true));
             authCode = '';
-            // get user info
+            // get user info from spotify
             yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getCurrentUserProfile));
         }
         else {
@@ -105,6 +106,7 @@ function onSuccessfulTokenCall(hasToken, hasTokenCallback = () => { }, noTokenCa
             throw new Error('Info container Element does not exist');
         }
         infoContainer.style.display = 'block';
+        (0, user_data_1.displayUsername)();
         hasTokenCallback();
     }
     else {

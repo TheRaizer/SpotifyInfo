@@ -19,4 +19,5 @@ router.put('/put-top-artists-term', user_controller_1.userCtrl.putTopArtistsTerm
 router.get('/get-top-artists-term', user_controller_1.userCtrl.getTopArtistsTerm);
 router.put('/put-current-playlist-id', user_controller_1.userCtrl.putCurrPlaylistId);
 router.get('/get-current-playlist-id', user_controller_1.userCtrl.getCurrPlaylistId);
+router.get('/get-username', user_controller_1.userCtrl.getUsername);
 //# sourceMappingURL=user-actions.js.map

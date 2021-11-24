@@ -23,4 +23,6 @@ router.get('/get-top-artists-term', userCtrl.getTopArtistsTerm)
 router.put('/put-current-playlist-id', userCtrl.putCurrPlaylistId)
 router.get('/get-current-playlist-id', userCtrl.getCurrPlaylistId)
 
+router.get('/get-username', userCtrl.getUsername)
+
 export { router }

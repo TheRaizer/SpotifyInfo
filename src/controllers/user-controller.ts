@@ -89,6 +89,18 @@ function getCurrPlaylistId (req: Request, res: Response) {
   res.status(StatusCodes.OK).send(req.session.user?.currPlaylistId)
 }
 
+function getUsername (req: Request, res: Response) {
+  if (req.session.user !== undefined) {
+    if (req.session.user.username === '') {
+      res.sendStatus(StatusCodes.NO_CONTENT)
+    } else {
+      res.status(StatusCodes.OK).send(req.session.user.username)
+    }
+  } else {
+    res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
+  }
+}
+
 const userCtrl = {
   putPlaylistResizeData,
   getPlaylistResizeData,
@@ -103,7 +115,8 @@ const userCtrl = {
   putTopArtistsTerm,
   getTopArtistsTerm,
   putCurrPlaylistId,
-  getCurrPlaylistId
+  getCurrPlaylistId,
+  getUsername
 }
 
 export { userCtrl }

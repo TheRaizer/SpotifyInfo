@@ -1,5 +1,6 @@
 import { config, promiseHandler } from './config'
 import axios from 'axios'
+import { displayUsername } from './user-data'
 
 const HALF_HOUR = 1.8e6 /* 30 min in ms */
 
@@ -26,6 +27,7 @@ export async function checkIfHasTokens (): Promise<boolean> {
   }
   return hasToken
 }
+
 export async function getTokens (onNoToken: () => void) {
   let hasToken = false
   // create a parameter searcher in the URL after '?' which holds the requests body parameters
@@ -45,7 +47,7 @@ export async function getTokens (onNoToken: () => void) {
     )
     authCode = ''
 
-    // get user info
+    // get user info from spotify
     await promiseHandler(axios.get(config.URLs.getCurrentUserProfile))
   } else {
     onNoToken()
@@ -113,6 +115,7 @@ export function onSuccessfulTokenCall (
       throw new Error('Info container Element does not exist')
     }
     infoContainer.style.display = 'block'
+    displayUsername()
     hasTokenCallback()
   } else {
     // if there is no token redirect to allow access page

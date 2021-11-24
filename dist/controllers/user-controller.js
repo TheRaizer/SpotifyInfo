@@ -79,6 +79,19 @@ function getCurrPlaylistId(req, res) {
     var _a;
     res.status(http_status_codes_1.StatusCodes.OK).send((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.currPlaylistId);
 }
+function getUsername(req, res) {
+    if (req.session.user !== undefined) {
+        if (req.session.user.username === '') {
+            res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
+        }
+        else {
+            res.status(http_status_codes_1.StatusCodes.OK).send(req.session.user.username);
+        }
+    }
+    else {
+        res.sendStatus(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
 const userCtrl = {
     putPlaylistResizeData,
     getPlaylistResizeData,
@@ -93,7 +106,8 @@ const userCtrl = {
     putTopArtistsTerm,
     getTopArtistsTerm,
     putCurrPlaylistId,
-    getCurrPlaylistId
+    getCurrPlaylistId,
+    getUsername
 };
 exports.userCtrl = userCtrl;
 //# sourceMappingURL=user-controller.js.map
