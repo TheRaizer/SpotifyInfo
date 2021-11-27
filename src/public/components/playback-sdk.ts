@@ -1,7 +1,6 @@
 import {
   config,
   promiseHandler,
-  addResizeDragAroundViewPort,
   millisToMinutesAndSeconds,
   htmlToEl
 } from '../config'
@@ -470,5 +469,3 @@ const preloadPlayPauseImgsHtml = `<div style="display: none"><img src="${config.
 const preloadPlayPauseImgsEl = htmlToEl(preloadPlayPauseImgsHtml) as Node
 document.body.appendChild(preloadPlayPauseImgsEl)
 document.body.removeChild(preloadPlayPauseImgsEl)
-
-addResizeDragAroundViewPort('.resize-drag', 200, 100)

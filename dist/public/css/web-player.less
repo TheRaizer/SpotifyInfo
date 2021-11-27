@@ -25,12 +25,12 @@
   position: absolute;
   bottom: 20px;
   border-radius: 5px;
-  width: 10px;
-  height: 75px;
+  width: 75px;
+  height: 7px;
+  top: 50%;
   background-color: rgb(114, 114, 114);
 
   & > .progress {
-    height: 15px;
     height: inherit;
   }
 }
@@ -38,7 +38,7 @@
 #web-player-progress-bar {
   border-radius: 5px;
   width: 100%;
-  height: 10px;
+  height: 7px;
   background-color: #464646;
 
   & > .progress {
@@ -62,7 +62,7 @@
   color: @reading-color;
   z-index: 20;
   position: fixed;
-  top: 89.5vh;
+  bottom: 0;
   left: 0;
 
   & h4 {
@@ -89,13 +89,6 @@
   &.column {
     flex-direction: column;
     align-items: center;
-    & > #playtime-bar {
-      width: 80%;
-    }
-    & > .web-player-controls {
-      width: 100%;
-      margin-right: 0;
-    }
     & h4 {
       margin-left: 5%;
       font-size: 2.5em;
@@ -114,7 +107,13 @@
     align-items: center;
     flex-basis: 90%;
     margin-right: 20%;
+    width: 100%;
 
+    & .play-btn.selected::after {
+      width: 18px;
+      height: 18px;
+      left: 5%;
+    }
     & #playtime-bar {
       width: 80%;
       align-self: center;
@@ -130,9 +129,9 @@
 }
 
 #play-pause-player {
-  width: 51px;
-  height: 51px;
-  margin-bottom: 20%;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 10%;
 }
 
 #player-track-img {

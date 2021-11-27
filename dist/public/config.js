@@ -12,8 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addItemsToPlaylist = exports.throwExpression = exports.addResizeDragAroundViewPort = exports.interactJsConfig = exports.getPixelPosInElOnClick = exports.animationControl = exports.removeAllChildNodes = exports.getValidImage = exports.capitalizeFirstLetter = exports.isEllipsisActive = exports.getTextWidth = exports.searchUl = exports.promiseHandler = exports.htmlToEl = exports.millisToMinutesAndSeconds = exports.config = void 0;
-const interactjs_1 = __importDefault(require("interactjs"));
+exports.addItemsToPlaylist = exports.throwExpression = exports.getPixelPosInElOnClick = exports.animationControl = exports.removeAllChildNodes = exports.getValidImage = exports.capitalizeFirstLetter = exports.isEllipsisActive = exports.getTextWidth = exports.searchUl = exports.promiseHandler = exports.htmlToEl = exports.millisToMinutesAndSeconds = exports.config = void 0;
 const axios_1 = __importDefault(require("axios"));
 const authEndpoint = 'https://accounts.spotify.com/authorize';
 // Replace with your app's client ID, redirect URI and desired scopes
@@ -360,106 +359,6 @@ function getPixelPosInElOnClick(mouseEvt) {
     return { x, y };
 }
 exports.getPixelPosInElOnClick = getPixelPosInElOnClick;
-exports.interactJsConfig = { restrict: false };
-function dragMoveListener(evt) {
-    if (exports.interactJsConfig.restrict) {
-        return;
-    }
-    const target = evt.target;
-    // keep the dragged position in the data-x/data-y attributes
-    if (target === null) {
-        throw new Error('Interactjs Event does not contain target');
-    }
-    let x = 0;
-    let y = 0;
-    const dataX = target.getAttribute('data-x');
-    const dataY = target.getAttribute('data-y');
-    if (typeof dataX === 'string' && typeof dataY === 'string') {
-        x = parseFloat(dataX) + evt.dx;
-        y = parseFloat(dataY) + evt.dy;
-    }
-    else {
-        x += evt.dx;
-        y += evt.dy;
-    }
-    // translate the element
-    target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-    // update the posiion attributes
-    target.setAttribute('data-x', x.toString());
-    target.setAttribute('data-y', y.toString());
-}
-function addResizeDragAroundViewPort(identifier, minWidth, minHeight) {
-    // create an element that exists as the size of the viewport in order to set the restriction of the draggable/resizable to exist only within this element.
-    const viewportElementHTML = `<div id="view-port-element" style="
-  pointer-events: none; 
-  position: fixed; 
-  visibility: hidden;
-  width: 100vw; 
-  height:100vh; 
-  min-width: 100%; 
-  max-width: 100%; 
-  min-height:100%; 
-  max-height:100%;
-  top: 50%; 
-  left: 50%; 
-  transform: translate(-50%, -50%);
-  "></div>`;
-    const viewportElement = htmlToEl(viewportElementHTML);
-    document.body.appendChild(viewportElement);
-    (0, interactjs_1.default)(identifier)
-        .resizable({
-        // resize from all edges and corners
-        edges: { left: true, right: true, bottom: true, top: true },
-        listeners: {
-            move(evt) {
-                if (exports.interactJsConfig.restrict) {
-                    return;
-                }
-                const target = evt.target;
-                let x = parseFloat(target.getAttribute('data-x')) || 0;
-                let y = parseFloat(target.getAttribute('data-y')) || 0;
-                // update the element's style
-                const newWidth = (evt.rect.width / window.innerWidth) * 100;
-                target.style.width = newWidth + 'vw';
-                target.style.height = evt.rect.height + 'px';
-                if (evt.rect.height >= 679) {
-                    target.classList.add(exports.config.CSS.CLASSES.column);
-                }
-                else {
-                    target.classList.remove(exports.config.CSS.CLASSES.column);
-                }
-                // translate when resizing from top or left edges
-                x += evt.deltaRect.left;
-                y += evt.deltaRect.top;
-                target.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-                target.setAttribute('data-x', x);
-                target.setAttribute('data-y', y);
-            }
-        },
-        modifiers: [
-            // keep the edges inside the parent
-            interactjs_1.default.modifiers.restrictEdges({
-                outer: viewportElement
-            }),
-            // minimum size
-            interactjs_1.default.modifiers.restrictSize({
-                min: { width: minWidth, height: minHeight }
-            })
-        ],
-        inertia: false
-    })
-        .draggable({
-        listeners: { move: dragMoveListener },
-        inertia: false,
-        modifiers: [
-            interactjs_1.default.modifiers.restrictRect({
-                restriction: viewportElement,
-                endOnly: false
-            })
-        ]
-    });
-}
-exports.addResizeDragAroundViewPort = addResizeDragAroundViewPort;
 function throwExpression(errorMessage) {
     throw new Error(errorMessage);
 }

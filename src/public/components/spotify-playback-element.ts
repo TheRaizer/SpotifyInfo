@@ -3,7 +3,6 @@ import {
   htmlToEl,
   millisToMinutesAndSeconds,
   throwExpression,
-  interactJsConfig,
   removeAllChildNodes
 } from '../config'
 
@@ -80,7 +79,6 @@ class Slider {
   private addTouchEvents () {
     this.sliderEl?.addEventListener('touchstart', (evt) => {
       this.drag = true
-      interactJsConfig.restrict = true
       if (this.onDragStart !== null) {
         this.onDragStart()
       }
@@ -93,7 +91,6 @@ class Slider {
       }
     })
     document.addEventListener('touchend', () => {
-      interactJsConfig.restrict = false
       if (this.drag) {
         this.onDragStop(this.percentage)
         // remove the inline css so that its original background color returns
@@ -106,7 +103,6 @@ class Slider {
   private addMouseEvents () {
     this.sliderEl?.addEventListener('mousedown', (evt) => {
       this.drag = true
-      interactJsConfig.restrict = true
       if (this.onDragStart !== null) {
         this.onDragStart()
       }
@@ -127,7 +123,6 @@ class Slider {
       }
     })
     document.addEventListener('mouseup', () => {
-      interactJsConfig.restrict = false
       if (this.drag) {
         this.onDragStop(this.percentage)
         // remove the inline css so that its original background color returns
@@ -286,7 +281,7 @@ export default class SpotifyPlaybackElement {
     const volumeSliderEl = document.getElementById(config.CSS.IDs.webPlayerVolume) as HTMLElement ?? throwExpression('web player volume bar does not exist')
 
     this.songProgress = new Slider(0, seekSong, false, onSeekStart, onSeeking, songSliderEl)
-    this.volumeBar = new Slider(initialVolume * 100, (percentage) => setVolume(percentage, false), true, () => {}, (percentage) => setVolume(percentage, true), volumeSliderEl)
+    this.volumeBar = new Slider(initialVolume * 100, (percentage) => setVolume(percentage, false), false, () => {}, (percentage) => setVolume(percentage, true), volumeSliderEl)
 
     this.title = webPlayerEl.getElementsByTagName('h4')[0] as Element ?? throwExpression('web player title element does not exist')
 

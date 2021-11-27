@@ -419,5 +419,4 @@ const preloadPlayPauseImgsHtml = `<div style="display: none"><img src="${config_
 const preloadPlayPauseImgsEl = (0, config_1.htmlToEl)(preloadPlayPauseImgsHtml);
 document.body.appendChild(preloadPlayPauseImgsEl);
 document.body.removeChild(preloadPlayPauseImgsEl);
-(0, config_1.addResizeDragAroundViewPort)('.resize-drag', 200, 100);
 //# sourceMappingURL=playback-sdk.js.map

@@ -66,7 +66,6 @@ class Slider {
         var _a;
         (_a = this.sliderEl) === null || _a === void 0 ? void 0 : _a.addEventListener('touchstart', (evt) => {
             this.drag = true;
-            config_1.interactJsConfig.restrict = true;
             if (this.onDragStart !== null) {
                 this.onDragStart();
             }
@@ -79,7 +78,6 @@ class Slider {
             }
         });
         document.addEventListener('touchend', () => {
-            config_1.interactJsConfig.restrict = false;
             if (this.drag) {
                 this.onDragStop(this.percentage);
                 // remove the inline css so that its original background color returns
@@ -92,7 +90,6 @@ class Slider {
         var _a;
         (_a = this.sliderEl) === null || _a === void 0 ? void 0 : _a.addEventListener('mousedown', (evt) => {
             this.drag = true;
-            config_1.interactJsConfig.restrict = true;
             if (this.onDragStart !== null) {
                 this.onDragStart();
             }
@@ -115,7 +112,6 @@ class Slider {
             }
         });
         document.addEventListener('mouseup', () => {
-            config_1.interactJsConfig.restrict = false;
             if (this.drag) {
                 this.onDragStop(this.percentage);
                 // remove the inline css so that its original background color returns
