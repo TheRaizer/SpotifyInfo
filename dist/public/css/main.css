@@ -985,6 +985,9 @@ ul.genres > li {
   align-items: flex-start;
   box-shadow: inset 0px -20px 12px -15px black;
 }
+#profile-header > h1 {
+  margin-top: 5vmin;
+}
 #account-btns {
   display: flex;
   flex-direction: column;
@@ -1230,8 +1233,9 @@ ul.genres > li {
   position: absolute;
   bottom: 20px;
   border-radius: 5px;
-  width: 75px;
+  width: 100px;
   height: 7px;
+  top: 50%;
   background-color: #727272;
 }
 #web-player-volume-bar > .progress {
@@ -1316,6 +1320,7 @@ ul.genres > li {
   margin-right: 5px;
 }
 #play-pause-player {
+  position: relative;
   width: 36px;
   height: 36px;
   margin-bottom: 10%;
@@ -1327,6 +1332,29 @@ ul.genres > li {
 }
 #web-player-artists {
   margin-left: 5%;
+}
+#play-next {
+  height: 36px;
+  width: 36px;
+  background: #000;
+  border-radius: 50%;
+}
+#play-next > img {
+  height: 26px;
+  width: 26px;
+}
+#play-prev {
+  height: 36px;
+  width: 36px;
+  background: #000;
+  border-radius: 50%;
+}
+#play-prev > img {
+  height: 26px;
+  width: 26px;
+}
+#web-player-buttons {
+  display: flex;
 }
 .glow {
   color: white;

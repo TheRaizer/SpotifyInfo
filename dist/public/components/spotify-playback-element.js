@@ -178,9 +178,9 @@ class SpotifyPlaybackElement {
       <div class="${config_1.config.CSS.CLASSES.webPlayerControls} ${config_1.config.CSS.CLASSES.column}">
         <div>
           <article>
-            <button id="${config_1.config.CSS.IDs.playPrev}"><img src="${config_1.config.PATHS.playPrev}" alt="previous"/></button>
+            <button id="${config_1.config.CSS.IDs.playPrev}" class="${config_1.config.CSS.CLASSES.expandOnHover}"><img src="${config_1.config.PATHS.playPrev}" alt="previous"/></button>
             <button id="${config_1.config.CSS.IDs.webPlayerPlayPause}" class="${config_1.config.CSS.CLASSES.playBtn}"></button>
-            <button id="${config_1.config.CSS.IDs.playNext}"><img src="${config_1.config.PATHS.playNext}" alt="next"/></button>
+            <button id="${config_1.config.CSS.IDs.playNext}" class="${config_1.config.CSS.CLASSES.expandOnHover}"><img src="${config_1.config.PATHS.playNext}" alt="next"/></button>
           </article>
           <div id="${config_1.config.CSS.IDs.webPlayerVolume}" class="${config_1.config.CSS.CLASSES.slider}">
             <div class="${config_1.config.CSS.CLASSES.progress}"></div>
@@ -233,7 +233,7 @@ class SpotifyPlaybackElement {
         const songSliderEl = (_c = document.getElementById(config_1.config.CSS.IDs.webPlayerProgress)) !== null && _c !== void 0 ? _c : (0, config_1.throwExpression)('web player progress bar does not exist');
         const volumeSliderEl = (_d = document.getElementById(config_1.config.CSS.IDs.webPlayerVolume)) !== null && _d !== void 0 ? _d : (0, config_1.throwExpression)('web player volume bar does not exist');
         this.songProgress = new Slider(0, seekSong, false, onSeekStart, onSeeking, songSliderEl);
-        this.volumeBar = new Slider(initialVolume * 100, (percentage) => setVolume(percentage, false), true, () => { }, (percentage) => setVolume(percentage, true), volumeSliderEl);
+        this.volumeBar = new Slider(initialVolume * 100, (percentage) => setVolume(percentage, false), false, () => { }, (percentage) => setVolume(percentage, true), volumeSliderEl);
         this.title = (_e = webPlayerEl.getElementsByTagName('h4')[0]) !== null && _e !== void 0 ? _e : (0, config_1.throwExpression)('web player title element does not exist');
         // get playtime bar elements
         this.currTime = (_f = playTimeBar.getElementsByTagName('p')[0]) !== null && _f !== void 0 ? _f : (0, config_1.throwExpression)('web player current time element does not exist');

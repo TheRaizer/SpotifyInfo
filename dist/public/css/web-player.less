@@ -25,7 +25,7 @@
   position: absolute;
   bottom: 20px;
   border-radius: 5px;
-  width: 75px;
+  width: 100px;
   height: 7px;
   top: 50%;
   background-color: rgb(114, 114, 114);
@@ -129,6 +129,7 @@
 }
 
 #play-pause-player {
+  position: relative;
   width: 36px;
   height: 36px;
   margin-bottom: 10%;
@@ -142,4 +143,32 @@
 
 #web-player-artists {
   margin-left: 5%;
+}
+
+#play-next {
+  height: 36px;
+  width: 36px;
+
+  background: #000;
+  border-radius: 50%;
+  & > img {
+    height: 26px;
+    width: 26px;
+  }
+}
+
+#play-prev {
+  height: 36px;
+  width: 36px;
+
+  background: #000;
+  border-radius: 50%;
+  & > img {
+    height: 26px;
+    width: 26px;
+  }
+}
+
+#web-player-buttons {
+  display: flex;
 }

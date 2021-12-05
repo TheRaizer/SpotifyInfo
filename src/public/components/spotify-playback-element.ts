@@ -207,10 +207,10 @@ export default class SpotifyPlaybackElement {
       </div>
       <div class="${config.CSS.CLASSES.webPlayerControls} ${config.CSS.CLASSES.column}">
         <div>
-          <article>
-            <button id="${config.CSS.IDs.playPrev}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
+          <article id="web-player-buttons">
+            <button id="${config.CSS.IDs.playPrev}" class="${config.CSS.CLASSES.expandOnHover}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
             <button id="${config.CSS.IDs.webPlayerPlayPause}" class="${config.CSS.CLASSES.playBtn}"></button>
-            <button id="${config.CSS.IDs.playNext}"><img src="${config.PATHS.playNext}" alt="next"/></button>
+            <button id="${config.CSS.IDs.playNext}" class="${config.CSS.CLASSES.expandOnHover}"><img src="${config.PATHS.playNext}" alt="next"/></button>
           </article>
           <div id="${config.CSS.IDs.webPlayerVolume}" class="${config.CSS.CLASSES.slider}">
             <div class="${config.CSS.CLASSES.progress}"></div>
