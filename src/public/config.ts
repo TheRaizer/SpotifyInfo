@@ -77,7 +77,8 @@ export const config = {
       generatePlaylist: 'generate-playlist',
       hideShowPlaylistTxt: 'hide-show-playlist-txt',
       topTracksTextFormContainer: 'term-text-form-container',
-      username: 'username'
+      username: 'username',
+      topNavMobile: 'topnav-mobile'
     },
     CLASSES: {
       glow: 'glow',

@@ -954,7 +954,7 @@ const initialLoads = (function () {
 })();
 
 (function () {
-  promiseHandler(checkIfHasTokens(), (hasToken) =>
+  promiseHandler<boolean>(checkIfHasTokens(), (hasToken) =>
     onSuccessfulTokenCall(hasToken, () => {
       // load the term that was the user last had it on
       loadTerm(TERM_TYPE.TRACKS).then(term => {

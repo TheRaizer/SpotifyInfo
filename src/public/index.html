@@ -45,7 +45,7 @@
           </li>
           <li class="right">
             <div class="dropdown">
-              <button class="dropbtn">Person Name</button>
+              <button class="dropbtn" id="username">Person Name</button>
               <div class="dropdown-content">
                 <a href="/profile">Profile</a>
               </div>
@@ -53,21 +53,23 @@
           </li>
         </ul>
       </nav>
+      <nav id="topnav-mobile">
+        <a class="active" href="/">Home</a>
+        <a href="/top-tracks">Top Tracks</a>
+        <a href="/top-artists">Top Artists</a>
+        <a href="/playlists">Playlists</a>
+        <a href="https://www.spotify.com" class="spotify-logo">
+          <img src="/images/Spotify_Logo_RGB_White.png" alt="Spotify" width="73"
+          height"22" />
+        </a>
+        <a href="/profile">Profile</a>
+      </nav>
     </section>
     <section id="login">
       <div id="circle"></div>
       <div id="info-container"></div>
     </section>
     <img id="get-token-loading-spinner" src="/images/200pxLoadingSpinner.svg" />
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
-      integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-    <script type="module" src="bundle.js"></script>
-    <script type="module" src="config.js"></script>
-    <script type="module" src="index.js"></script>
-    <script type="module" src="manage-tokens.js"></script>
+    <script type="module" src="index-bundle.js"></script>
   </body>
 </html>

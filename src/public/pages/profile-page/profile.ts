@@ -124,7 +124,7 @@ const followedArtistActions = (function () {
 })();
 
 (function () {
-  promiseHandler(checkIfHasTokens(), (hasToken) =>
+  promiseHandler<boolean>(checkIfHasTokens(), (hasToken) =>
     onSuccessfulTokenCall(hasToken, () => {
       // get user profile
       promiseHandler(

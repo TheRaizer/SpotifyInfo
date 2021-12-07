@@ -222,7 +222,7 @@ const addEventListeners = (function () {
 })();
 
 (function () {
-  promiseHandler(checkIfHasTokens(), (hasToken) =>
+  promiseHandler<boolean>(checkIfHasTokens(), (hasToken) =>
     onSuccessfulTokenCall(hasToken, () => {
       loadTerm(TERM_TYPE.ARTISTS).then(term => {
         artistActions.selections.term = term

@@ -1,4 +1,4 @@
-import { config, promiseHandler } from './config'
+import { config, promiseHandler, throwExpression } from './config'
 import axios from 'axios'
 import { displayUsername } from './user-data'
 
@@ -28,7 +28,7 @@ export async function checkIfHasTokens (): Promise<boolean> {
   return hasToken
 }
 
-export async function getTokens (onNoToken: () => void) {
+export async function getTokens () {
   let hasToken = false
   // create a parameter searcher in the URL after '?' which holds the requests body parameters
   const urlParams = new URLSearchParams(window.location.search)
@@ -49,8 +49,6 @@ export async function getTokens (onNoToken: () => void) {
 
     // get user info from spotify
     await promiseHandler(axios.get(config.URLs.getCurrentUserProfile))
-  } else {
-    onNoToken()
   }
 
   window.history.pushState(null, '', '/')
@@ -98,7 +96,8 @@ export function generateLogin ({
 export function onSuccessfulTokenCall (
   hasToken: boolean,
   hasTokenCallback = () => { },
-  noTokenCallBack = () => { }
+  noTokenCallBack = () => { },
+  redirectHome = true
 ) {
   const getTokensSpinner = document.getElementById(
     config.CSS.IDs.getTokenLoadingSpinner
@@ -108,18 +107,21 @@ export function onSuccessfulTokenCall (
   getTokensSpinner?.parentNode?.removeChild(getTokensSpinner)
 
   const infoContainer = document.getElementById(config.CSS.IDs.infoContainer)
+
+  // generate the nav login
+  generateLogin({ changeAccount: hasToken, parentEl: document.getElementById(config.CSS.IDs.topNavMobile) ?? throwExpression('No top nav mobile element found') })
+  generateLogin({ changeAccount: hasToken })
   if (hasToken) {
-    // generate the nav login
-    generateLogin()
     if (infoContainer == null) {
       throw new Error('Info container Element does not exist')
     }
     infoContainer.style.display = 'block'
     displayUsername()
+    console.log('display username')
     hasTokenCallback()
   } else {
     // if there is no token redirect to allow access page
-    window.location.href = config.URLs.siteUrl
+    if (redirectHome) { window.location.href = config.URLs.siteUrl }
     noTokenCallBack()
   }
 }
