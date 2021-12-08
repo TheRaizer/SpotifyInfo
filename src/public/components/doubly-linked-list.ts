@@ -652,10 +652,18 @@ class DoublyLinkedList<T> {
 
   /**
    * Converts the list into a string representation.
-   * @returns {String} A string representation of the list.
+   * @returns {string} A string representation of the list.
    */
   toString (): string {
     return [...this].toString()
+  }
+
+  /**
+   * Converts the doubly linked list to an array.
+   * @returns {Array<T>} An array of the data from the linked list.
+   */
+  toArray (): Array<T> {
+    return [...this]
   }
 }
 
