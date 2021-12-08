@@ -705,6 +705,12 @@ function selectInitialTabs (term: TERMS) {
   selections.featureTabManager.selectNewTab(featBtn, featBorder)
 }
 
+function hideViewAllButtonOnTextForm () {
+  const viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks) ?? throwExpression(`element of id ${config.CSS.IDs.viewAllTopTracks} does not exist`)
+  viewAllEl.classList.add(config.CSS.CLASSES.displayNone)
+  viewAllEl.textContent = 'See Less'
+}
+
 const addEventListeners = (function () {
   function addTrackFeatureButtonEvents () {
     function onClick (btn: Element, borderCover: Element) {
@@ -852,6 +858,7 @@ const addEventListeners = (function () {
   function addConvertCards () {
     const convertBtn = document.getElementById(config.CSS.IDs.convertCard)
     const convertImg = convertBtn?.getElementsByTagName('img')[0]
+    const viewAllEl = document.getElementById(config.CSS.IDs.viewAllTopTracks) ?? throwExpression(`element of id ${config.CSS.IDs.viewAllTopTracks} does not exist`)
 
     function onClick () {
       if (convertImg === undefined) {
@@ -872,6 +879,8 @@ const addEventListeners = (function () {
         if (tracksTextContainer) {
           removeAllChildNodes(tracksTextContainer)
         }
+
+        viewAllEl.classList.remove(config.CSS.CLASSES.displayNone)
       } else {
         saveLoad.savedOptions.inTextForm = true
         saveLoad.saveTopTracksForm(true)
@@ -881,6 +890,7 @@ const addEventListeners = (function () {
         }
         // also disable see all button
         convertImg.src = config.PATHS.gridView
+        hideViewAllButtonOnTextForm()
       }
       displayCardInfo.displayTracks(trackActions.getCurrSelTopTracks())
     }
@@ -907,10 +917,8 @@ const saveLoad = (function () {
       )
     )
   }
-  function loadTopTracksForm () {
-  }
 
-  return { saveTopTracksForm, loadTopTracksForm, savedOptions }
+  return { saveTopTracksForm, savedOptions }
 })()
 
 const initialLoads = (function () {
@@ -919,6 +927,9 @@ const initialLoads = (function () {
       if (isInTextForm) {
         tracksTextContainer?.classList.remove(config.CSS.CLASSES.displayNone)
         tracksCardContainer?.classList.add(config.CSS.CLASSES.displayNone)
+
+        trackActions.selections.numViewableCards = MAX_VIEWABLE_CARDS
+        hideViewAllButtonOnTextForm()
       } else {
         tracksTextContainer?.classList.add(config.CSS.CLASSES.displayNone)
         tracksCardContainer?.classList.remove(config.CSS.CLASSES.displayNone)
