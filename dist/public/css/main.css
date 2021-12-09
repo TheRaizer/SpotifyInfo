@@ -1351,10 +1351,8 @@ ul.genres > li {
   margin-right: 5px;
 }
 #play-pause-player {
-  position: relative;
   width: 36px;
   height: 36px;
-  margin-bottom: 10%;
 }
 #player-track-img {
   margin: 5px 5px 5px 5px;
@@ -1385,7 +1383,18 @@ ul.genres > li {
   width: 26px;
 }
 #web-player-buttons {
+  width: 150px;
   display: flex;
+  align-items: center;
+  margin-bottom: 10%;
+  justify-content: space-around;
+}
+#shuffle > img {
+  width: 20px;
+  content: url(../images/shuffle-icon.png);
+}
+#shuffle > img:hover {
+  content: url("../images/shuffle-icon-bright.png");
 }
 .glow {
   color: white;

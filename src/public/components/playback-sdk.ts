@@ -23,13 +23,15 @@ async function loadVolume () {
 async function saveVolume (volume: string) {
   promiseHandler(axios.put(config.URLs.putPlayerVolumeData(volume)))
 }
-
+export const playerPublicVars = {
+  isShuffle: false
+}
 class SpotifyPlayback {
   private player: any;
   // controls timing of async actions when working with webplayer sdk
   private isExecutingAction: boolean;
   private device_id: string;
-  selPlaying: {
+  public selPlaying: {
       element: null | Element
       track_uri: string
       trackDataNode: null | DoublyLinkedListNode<IPlayable>

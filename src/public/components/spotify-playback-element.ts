@@ -5,6 +5,7 @@ import {
   throwExpression,
   removeAllChildNodes
 } from '../config'
+import { playerPublicVars } from './playback-sdk'
 
 class Slider {
   public drag: boolean = false;
@@ -208,6 +209,7 @@ export default class SpotifyPlaybackElement {
       <div class="${config.CSS.CLASSES.webPlayerControls} ${config.CSS.CLASSES.column}">
         <div>
           <article id="web-player-buttons">
+            <button id="${config.CSS.IDs.shuffle}"><img src="${config.PATHS.shuffleIcon}"/></button>
             <button id="${config.CSS.IDs.playPrev}" class="${config.CSS.CLASSES.expandOnHover}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
             <button id="${config.CSS.IDs.webPlayerPlayPause}" class="${config.CSS.CLASSES.playBtn}"></button>
             <button id="${config.CSS.IDs.playNext}" class="${config.CSS.CLASSES.expandOnHover}"><img src="${config.PATHS.playNext}" alt="next"/></button>
@@ -305,7 +307,11 @@ export default class SpotifyPlaybackElement {
     playNextFunc: () => void) {
     const playPrev = document.getElementById(config.CSS.IDs.playPrev)
     const playNext = document.getElementById(config.CSS.IDs.playNext)
+    const shuffle = document.getElementById(config.CSS.IDs.shuffle)
 
+    shuffle?.addEventListener('click', () => {
+      playerPublicVars.isShuffle = !playerPublicVars.isShuffle
+    })
     playPrev?.addEventListener('click', playPrevFunc)
     playNext?.addEventListener('click', playNextFunc)
 

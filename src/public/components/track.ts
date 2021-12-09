@@ -2,17 +2,19 @@ import {
   config,
   millisToMinutesAndSeconds,
   htmlToEl,
-  getValidImage
+  getValidImage,
+  shuffle
 } from '../config'
 import {
   checkIfIsPlayingElAfterRerender,
-  isSamePlayingURI
+  isSamePlayingURI,
+  playerPublicVars
 } from './playback-sdk'
 import Album from './album'
 import Card from './card'
 import PlayableEventArg from './pubsub/event-args/track-play-args'
 import { SpotifyImg, FeaturesData, IArtistTrackData, IPlayable, ExternalUrls, TrackData } from '../../types'
-import DoublyLinkedList, { DoublyLinkedListNode } from '../components/doubly-linked-list'
+import DoublyLinkedList, { arrayToDoublyLinkedList, DoublyLinkedListNode } from '../components/doubly-linked-list'
 import axios from 'axios'
 import EventAggregator from './pubsub/aggregator'
 
@@ -174,10 +176,36 @@ class Track extends Card implements IPlayable {
     return el as Node
   }
 
-  private playPauseClick (trackNode: DoublyLinkedListNode<IPlayable>) {
+  private playPauseClick (trackNode: DoublyLinkedListNode<IPlayable>, trackList: DoublyLinkedList<IPlayable> | null = null) {
     const track = this as IPlayable
-    // select this track to play or pause by publishing the track play event arg
-    eventAggregator.publish(new PlayableEventArg(track, trackNode))
+
+    // if the track list is given then we are playing from a playlist and not a card, we need shuffle to be on, and we cannot be pausing.
+    if (trackList && playerPublicVars.isShuffle && !isSamePlayingURI(this.uri)) {
+      // shuffle array
+      let trackArr = trackList.toArray()
+      trackArr = shuffle(trackArr)
+
+      // remove this track from the array
+      const index = trackArr.indexOf(track)
+      trackArr.splice(index, 1)
+
+      // generate a doubly linked list
+      const shuffledList = arrayToDoublyLinkedList(trackArr)
+
+      // place this track at the front of the list
+      shuffledList.insertBefore(track, 0)
+
+      // get the new node which is now part of the shuffled doubly linked list
+      const newNode = shuffledList.find((trk) => trk.selEl.id === track.selEl.id, true) as DoublyLinkedListNode<IPlayable>
+
+      console.log(trackList)
+      console.log(shuffledList)
+      // select this track to play or pause by publishing the track play event arg
+      eventAggregator.publish(new PlayableEventArg(track, newNode))
+    } else {
+      // select this track to play or pause by publishing the track play event arg
+      eventAggregator.publish(new PlayableEventArg(track, trackNode))
+    }
   }
 
   /** Get a track html to be placed as a list element.
@@ -227,7 +255,7 @@ class Track extends Card implements IPlayable {
       throw new Error('Play pause button on track was not found')
     }
     this.selEl = playPauseBtn as Element
-    playPauseBtn?.addEventListener('click', () => this.playPauseClick(trackNode))
+    playPauseBtn?.addEventListener('click', () => this.playPauseClick(trackNode, trackList))
 
     checkIfIsPlayingElAfterRerender(this.uri, playPauseBtn as Element, trackNode)
 
@@ -287,7 +315,7 @@ class Track extends Card implements IPlayable {
     this.onStopped = () => rankedInteract.classList.remove(config.CSS.CLASSES.selected)
 
     playPauseBtn?.addEventListener('click', () => {
-      this.playPauseClick(trackNode)
+      this.playPauseClick(trackNode, trackList)
     })
 
     checkIfIsPlayingElAfterRerender(this.uri, playPauseBtn as Element, trackNode)

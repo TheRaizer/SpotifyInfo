@@ -78,7 +78,8 @@ export const config = {
       hideShowPlaylistTxt: 'hide-show-playlist-txt',
       topTracksTextFormContainer: 'term-text-form-container',
       username: 'username',
-      topNavMobile: 'topnav-mobile'
+      topNavMobile: 'topnav-mobile',
+      shuffle: 'shuffle'
     },
     CLASSES: {
       glow: 'glow',
@@ -198,7 +199,9 @@ export const config = {
     pauseBlackIcon: '/images/pause-black-30px.png',
     playNext: '/images/next-30px.png',
     playPrev: '/images/previous-30px.png',
-    profileUser: '/images/profile-user.png'
+    profileUser: '/images/profile-user.png',
+    shuffleIcon: '/images/shuffle-icon.png',
+    shuffleIconGreen: '/images/shuffle-icon-green.png'
   }
 }
 
@@ -380,4 +383,22 @@ export async function addItemsToPlaylist (playlistId: string, uris: Array<string
     () => {}, () => {
       throw new Error('Issue adding items to playlist')
     })
+}
+
+export function shuffle<T> (array: Array<T>) {
+  let currentIndex = array.length
+  let randomIndex
+
+  // While there remain elements to shuffle...
+  while (currentIndex !== 0) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]]
+  }
+
+  return array
 }

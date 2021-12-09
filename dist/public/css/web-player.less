@@ -129,10 +129,8 @@
 }
 
 #play-pause-player {
-  position: relative;
   width: 36px;
   height: 36px;
-  margin-bottom: 10%;
 }
 
 #player-track-img {
@@ -170,5 +168,20 @@
 }
 
 #web-player-buttons {
+  width: 150px;
   display: flex;
+  align-items: center;
+  margin-bottom: 10%;
+  justify-content: space-around;
+}
+
+#shuffle {
+  & > img {
+    width: 20px;
+    content: url(../images/shuffle-icon.png);
+
+    &:hover {
+      content: url("../images/shuffle-icon-bright.png");
+    }
+  }
 }
