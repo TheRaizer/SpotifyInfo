@@ -8,6 +8,7 @@ import {
 import {
   checkIfIsPlayingElAfterRerender,
   isSamePlayingURI,
+  isSamePlayingURIWithEl,
   playerPublicVars
 } from './playback-sdk'
 import Album from './album'
@@ -137,7 +138,7 @@ class Track extends Card implements IPlayable {
                     config.CSS.CLASSES.flipCardFront
                   }"  title="Click to view more Info">
                     <div ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" id="${this._uri}" class="${config.CSS.CLASSES.playBtn} ${
-                isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
+                isSamePlayingURIWithEl(this.uri) ? config.CSS.CLASSES.selected : ''
               }" title="Click to play song"></div>
                     <img src="${this.imageUrl}" alt="Album Cover"></img>
                     <div>
@@ -178,34 +179,12 @@ class Track extends Card implements IPlayable {
 
   private playPauseClick (trackNode: DoublyLinkedListNode<IPlayable>, trackList: DoublyLinkedList<IPlayable> | null = null) {
     const track = this as IPlayable
+    let trackArr = null
 
-    // if the track list is given then we are playing from a playlist and not a card, we need shuffle to be on, and we cannot be pausing.
-    if (trackList && playerPublicVars.isShuffle && !isSamePlayingURI(this.uri)) {
-      // shuffle array
-      let trackArr = trackList.toArray()
-      trackArr = shuffle(trackArr)
-
-      // remove this track from the array
-      const index = trackArr.indexOf(track)
-      trackArr.splice(index, 1)
-
-      // generate a doubly linked list
-      const shuffledList = arrayToDoublyLinkedList(trackArr)
-
-      // place this track at the front of the list
-      shuffledList.insertBefore(track, 0)
-
-      // get the new node which is now part of the shuffled doubly linked list
-      const newNode = shuffledList.find((trk) => trk.selEl.id === track.selEl.id, true) as DoublyLinkedListNode<IPlayable>
-
-      console.log(trackList)
-      console.log(shuffledList)
-      // select this track to play or pause by publishing the track play event arg
-      eventAggregator.publish(new PlayableEventArg(track, newNode))
-    } else {
-      // select this track to play or pause by publishing the track play event arg
-      eventAggregator.publish(new PlayableEventArg(track, trackNode))
+    if (trackList) {
+      trackArr = trackList.toArray()
     }
+    eventAggregator.publish(new PlayableEventArg(track, trackNode, trackArr))
   }
 
   /** Get a track html to be placed as a list element.
@@ -221,7 +200,7 @@ class Track extends Card implements IPlayable {
     const html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
               <button id="${playPauseId}" class="${config.CSS.CLASSES.playBtn} ${
-                isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
+                isSamePlayingURIWithEl(this.uri) ? config.CSS.CLASSES.selected : ''
               }">
               </button>
               <img class="${config.CSS.CLASSES.noSelect}" src="${
@@ -273,10 +252,10 @@ class Track extends Card implements IPlayable {
     const html = `
             <li class="${config.CSS.CLASSES.playlistTrack}">
             <div class="${config.CSS.CLASSES.rankedTrackInteract} ${
-                isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
+                isSamePlayingURIWithEl(this.uri) ? config.CSS.CLASSES.selected : ''
               }">
               <button id="${this._uri}" class="${config.CSS.CLASSES.playBtn} ${
-                  isSamePlayingURI(this.uri) ? config.CSS.CLASSES.selected : ''
+                  isSamePlayingURIWithEl(this.uri) ? config.CSS.CLASSES.selected : ''
                 }">
               </button>
               <p>${rank}.</p>

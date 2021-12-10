@@ -2,9 +2,10 @@ import {
   config,
   promiseHandler,
   millisToMinutesAndSeconds,
-  htmlToEl
+  htmlToEl,
+  shuffle
 } from '../config'
-import { DoublyLinkedListNode } from './doubly-linked-list'
+import { arrayToDoublyLinkedList, DoublyLinkedListNode } from './doubly-linked-list'
 import PlayableEventArg from './pubsub/event-args/track-play-args'
 import axios, { AxiosResponse } from 'axios'
 import EventAggregator from './pubsub/aggregator'
@@ -34,12 +35,16 @@ class SpotifyPlayback {
   public selPlaying: {
       element: null | Element
       track_uri: string
-      trackDataNode: null | DoublyLinkedListNode<IPlayable>
+      // this node may be a shuffled or unshuffled node
+      playableNode: null | DoublyLinkedListNode<IPlayable>
+      // this array is always in standard order and never shuffled.
+      playableArr: null | Array<IPlayable>
   }
 
   private getStateInterval: NodeJS.Timeout | null;
   private webPlayerEl: SpotifyPlaybackElement;
   private playerIsReady: boolean;
+  private wasInShuffle = false;
 
   constructor () {
     this.isExecutingAction = false
@@ -50,7 +55,8 @@ class SpotifyPlayback {
     this.selPlaying = {
       element: null,
       track_uri: '',
-      trackDataNode: null
+      playableNode: null,
+      playableArr: null
     }
     this.playerIsReady = false
     this._loadWebPlayer()
@@ -189,9 +195,9 @@ class SpotifyPlayback {
 
       // append web player element to DOM
       this.webPlayerEl.appendWebPlayerHtml(
-        () => this.tryPlayPrev(this.selPlaying.trackDataNode),
-        () => this.tryWebPlayerPause(this.selPlaying.trackDataNode),
-        () => this.tryPlayNext(this.selPlaying.trackDataNode),
+        () => this.tryPlayPrev(this.selPlaying.playableNode),
+        () => this.tryWebPlayerPause(this.selPlaying.playableNode),
+        () => this.tryPlayNext(this.selPlaying.playableNode),
         () => this.onSeekStart(this.player, this.webPlayerEl),
         (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl),
         (percentage) => this.onSeeking(percentage, this.webPlayerEl),
@@ -224,7 +230,7 @@ class SpotifyPlayback {
     if (!this.isExecutingAction && currNode !== null) {
       const prevTrack = currNode.data
       console.log('Try player pause')
-      this.setSelPlayingEl(new PlayableEventArg(prevTrack, currNode))
+      this.setSelPlayingEl(new PlayableEventArg(prevTrack, currNode, this.selPlaying.playableArr))
     }
   }
 
@@ -247,7 +253,7 @@ class SpotifyPlayback {
             return
           }
           const prevTrack = currNode.previous.data
-          this.setSelPlayingEl(new PlayableEventArg(prevTrack, currNode.previous))
+          this.setSelPlayingEl(new PlayableEventArg(prevTrack, currNode.previous, this.selPlaying.playableArr))
         }
       })
     }
@@ -265,7 +271,7 @@ class SpotifyPlayback {
     // check to see if this is the last node or if an action is processing
     if (!this.isExecutingAction && currNode.next !== null) {
       const nextTrack = currNode.next.data
-      this.setSelPlayingEl(new PlayableEventArg(nextTrack, currNode.next))
+      this.setSelPlayingEl(new PlayableEventArg(nextTrack, currNode.next, this.selPlaying.playableArr))
     }
   }
 
@@ -282,14 +288,17 @@ class SpotifyPlayback {
       throw new Error('Selected playing element was null before deselection on song finish')
     }
 
-    this.selPlaying.trackDataNode?.data.onStopped()
+    this.selPlaying.playableNode?.data.onStopped()
     this.selPlaying.element.classList.remove(config.CSS.CLASSES.selected)
     this.webPlayerEl.playPause?.classList.remove(config.CSS.CLASSES.selected)
     this.selPlaying.element = null
   }
 
-  private selectTrack (eventArg: PlayableEventArg) {
-    this.selPlaying.trackDataNode = eventArg.playableNode
+  private selectTrack (eventArg: PlayableEventArg, playThruWebPlayer: boolean) {
+    const prevPlayable = this.selPlaying.playableNode != null ? this.selPlaying.playableNode.data : null
+
+    this.selPlaying.playableNode = eventArg.playableNode
+    this.selPlaying.playableArr = eventArg.playableArr
     this.selPlaying.element = eventArg.currPlayable.selEl
     this.selPlaying.element.classList.add(config.CSS.CLASSES.selected)
     this.selPlaying.track_uri = eventArg.currPlayable.uri
@@ -299,7 +308,14 @@ class SpotifyPlayback {
     this.webPlayerEl.setImgSrc(eventArg.currPlayable.imageUrl)
     this.webPlayerEl.setArtists(eventArg.currPlayable.artistsHtml)
 
-    this.selPlaying.trackDataNode?.data.onPlaying()
+    this.selPlaying.playableNode?.data.onPlaying()
+
+    if (!playThruWebPlayer) {
+      this.checkToShuffleIPlayables()
+    } else if (!this.wasInShuffle && playerPublicVars.isShuffle) {
+      this.wasInShuffle = true
+      this.checkToShuffleIPlayables(prevPlayable)
+    }
   }
 
   private onTrackFinish () {
@@ -307,7 +323,7 @@ class SpotifyPlayback {
 
     this.webPlayerEl.songProgress!.sliderProgress!.style.width = '100%'
     clearInterval(this.getStateInterval as NodeJS.Timeout)
-    this.tryPlayNext(this.selPlaying.trackDataNode)
+    this.tryPlayNext(this.selPlaying.playableNode)
   }
 
   /**
@@ -363,7 +379,7 @@ class SpotifyPlayback {
    *
    * @param {PlayableEventArg} eventArg - a class that contains the current, next and previous tracks to play
    */
-  public async setSelPlayingEl (eventArg: PlayableEventArg) {
+  public async setSelPlayingEl (eventArg: PlayableEventArg, playThruWebPlayer = true) {
     // if the player isn't ready we cannot continue.
     if (!this.playerIsReady) {
       console.log('player is not ready')
@@ -373,9 +389,10 @@ class SpotifyPlayback {
       return
     }
     this.isExecutingAction = true
+
     if (this.selPlaying.element != null) {
       // stop the previous track that was playing
-      this.selPlaying.trackDataNode?.data.onStopped()
+      this.selPlaying.playableNode?.data.onStopped()
       clearInterval(this.getStateInterval as NodeJS.Timeout)
 
       // reassign the element if it exists as it may have been rerendered and therefore the previous value is pointing to nothing
@@ -398,23 +415,54 @@ class SpotifyPlayback {
       // this selEl could corrospond to the same song but is an element that is non-existent, so reassign it to a equivalent existing element if this is the case.
       eventArg.currPlayable.selEl = document.getElementById(eventArg.currPlayable.selEl.id) ?? eventArg.currPlayable.selEl
 
-      await this.startTrack(async () => this.resume(), eventArg)
+      await this.startTrack(async () => this.resume(), eventArg, playThruWebPlayer)
       this.isExecutingAction = false
       return
     }
 
     console.log('start track')
-    await this.startTrack(async () => this.play(eventArg.currPlayable.uri), eventArg)
+    await this.startTrack(async () => this.play(eventArg.currPlayable.uri), eventArg, playThruWebPlayer)
     this.isExecutingAction = false
   }
 
-  private async startTrack (playingAsyncFunc: Function, eventArg: PlayableEventArg) {
-    this.selectTrack(eventArg)
+  private async startTrack (playingAsyncFunc: Function, eventArg: PlayableEventArg, playThruWebPlayer: boolean) {
+    this.selectTrack(eventArg, playThruWebPlayer)
 
     await playingAsyncFunc()
 
     // set playing state once song starts playing
     this.setGetStateInterval()
+  }
+
+  private checkToShuffleIPlayables (playableToPushBefore: IPlayable | null = null) {
+    if (playerPublicVars.isShuffle && this.selPlaying.playableArr !== null && this.selPlaying.playableNode !== null) {
+      console.log('shuffle')
+      const selPlayable = this.selPlaying.playableNode.data
+
+      // shuffle array
+      const trackArr = shuffle(this.selPlaying.playableArr)
+
+      // remove this track from the array
+      const index = trackArr.indexOf(selPlayable)
+      trackArr.splice(index, 1)
+
+      // generate a doubly linked list
+      const shuffledList = arrayToDoublyLinkedList(trackArr)
+
+      // place this track at the front of the list
+      shuffledList.insertBefore(selPlayable, 0)
+
+      if (playableToPushBefore) {
+        // place this track at the front of the list
+        shuffledList.insertBefore(playableToPushBefore, 0)
+      }
+
+      // get the new node which is now part of the shuffled doubly linked list
+      const newNode = shuffledList.find((trk) => trk.selEl.id === selPlayable.selEl.id, true) as DoublyLinkedListNode<IPlayable>
+
+      // assign the new node that points to a shuffled version of the current playlist as the current node
+      this.selPlaying.playableNode = newNode
+    }
   }
 
   /**
@@ -448,21 +496,25 @@ const eventAggregator = (window as any).eventAggregator as EventAggregator
 
 // subscribe the setPlaying element event
 eventAggregator.subscribe(PlayableEventArg.name, (eventArg: PlayableEventArg) =>
-  spotifyPlayback.setSelPlayingEl(eventArg)
+  spotifyPlayback.setSelPlayingEl(eventArg, false)
 )
 
-export function isSamePlayingURI (uri: string) {
+export function isSamePlayingURIWithEl (uri: string) {
   return (
     uri === spotifyPlayback.selPlaying.track_uri &&
       spotifyPlayback.selPlaying.element != null
   )
 }
 
+export function isSamePlayingURI (uri: string) {
+  return uri === spotifyPlayback.selPlaying.track_uri
+}
+
 export function checkIfIsPlayingElAfterRerender (uri: string, selEl: Element, trackDataNode: DoublyLinkedListNode<IPlayable>) {
-  if (isSamePlayingURI(uri)) {
+  if (isSamePlayingURIWithEl(uri)) {
     // This element was playing before rerendering so set it to be the currently playing one again
     spotifyPlayback.selPlaying.element = selEl
-    spotifyPlayback.selPlaying.trackDataNode = trackDataNode
+    spotifyPlayback.selPlaying.playableNode = trackDataNode
   }
 }
 
