@@ -279,7 +279,7 @@ class DoublyLinkedList<T> {
    * @returns {*} The data in the "data" portion of the given node
    *      or undefined if the node doesn't exist.
    */
-  get (index: number): T {
+  get (index: number, asNode: boolean): T | DoublyLinkedListNode<T> {
     // ensure `index` is a positive value
     if (index > -1) {
       /*
@@ -314,7 +314,11 @@ class DoublyLinkedList<T> {
        * `null`, then it's safe to return `current.data`.
        */
       if (current !== null) {
-        return current.data
+        if (asNode) {
+          return current
+        } else {
+          return current.data
+        }
       } else {
         throw new RangeError(`index ${index} out of range`)
       }
