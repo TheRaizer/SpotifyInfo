@@ -435,13 +435,19 @@ class SpotifyPlayback {
   }
 
   private checkToShuffleIPlayables (playableToPushBefore: IPlayable | null = null) {
-    if (playerPublicVars.isShuffle && this.selPlaying.playableArr !== null && this.selPlaying.playableNode !== null) {
+    if (this.selPlaying.playableArr == null || this.selPlaying.playableNode == null) return
+
+    const selPlayable = this.selPlaying.playableNode.data
+    if (playerPublicVars.isShuffle) {
       console.log('shuffle')
-      const selPlayable = this.selPlaying.playableNode.data
 
       // shuffle array
       const trackArr = shuffle(this.selPlaying.playableArr)
 
+      if (playableToPushBefore) {
+        const index = trackArr.indexOf(playableToPushBefore)
+        trackArr.splice(index, 1)
+      }
       // remove this track from the array
       const index = trackArr.indexOf(selPlayable)
       trackArr.splice(index, 1)
@@ -462,6 +468,14 @@ class SpotifyPlayback {
 
       // assign the new node that points to a shuffled version of the current playlist as the current node
       this.selPlaying.playableNode = newNode
+    } else if (this.wasInShuffle) {
+      console.log('unshuffle')
+      this.wasInShuffle = false
+      // obtain an unshuffled linked list
+      const playableList = arrayToDoublyLinkedList(this.selPlaying.playableArr)
+
+      // set the current node to be one that points to other unshuffled nodes
+      this.selPlaying.playableNode = playableList.find((playable) => playable.selEl.id === selPlayable.selEl.id) as DoublyLinkedListNode<IPlayable>
     }
   }
 
