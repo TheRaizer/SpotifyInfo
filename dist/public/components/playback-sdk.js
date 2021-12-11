@@ -12,8 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkIfIsPlayingElAfterRerender = exports.isSamePlayingURI = void 0;
+exports.checkIfIsPlayingElAfterRerender = exports.isSamePlayingURI = exports.isSamePlayingURIWithEl = exports.playerPublicVars = void 0;
 const config_1 = require("../config");
+const doubly_linked_list_1 = require("./doubly-linked-list");
 const track_play_args_1 = __importDefault(require("./pubsub/event-args/track-play-args"));
 const axios_1 = __importDefault(require("axios"));
 const aggregator_1 = __importDefault(require("./pubsub/aggregator"));
@@ -34,8 +35,12 @@ function saveVolume(volume) {
         (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putPlayerVolumeData(volume)));
     });
 }
+exports.playerPublicVars = {
+    isShuffle: false
+};
 class SpotifyPlayback {
     constructor() {
+        this.wasInShuffle = false;
         this.isExecutingAction = false;
         this.player = null;
         this.device_id = '';
@@ -43,7 +48,8 @@ class SpotifyPlayback {
         this.selPlaying = {
             element: null,
             track_uri: '',
-            trackDataNode: null
+            playableNode: null,
+            playableArr: null
         };
         this.playerIsReady = false;
         this._loadWebPlayer();
@@ -170,7 +176,7 @@ class SpotifyPlayback {
             console.log('Ready with Device ID', device_id);
             this.device_id = device_id;
             // append web player element to DOM
-            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.trackDataNode), () => this.tryWebPlayerPause(this.selPlaying.trackDataNode), () => this.tryPlayNext(this.selPlaying.trackDataNode), () => this.onSeekStart(this.player, this.webPlayerEl), (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl), (percentage) => this.onSeeking(percentage, this.webPlayerEl), (percentage, save) => this.setVolume(percentage, this.player, save), parseFloat(loadedVolume));
+            this.webPlayerEl.appendWebPlayerHtml(() => this.tryPlayPrev(this.selPlaying.playableNode), () => this.tryWebPlayerPause(this.selPlaying.playableNode), () => this.tryPlayNext(this.selPlaying.playableNode), () => this.onSeekStart(this.player, this.webPlayerEl), (percentage) => this.seekSong(percentage, this.player, this.webPlayerEl), (percentage) => this.onSeeking(percentage, this.webPlayerEl), (percentage, save) => this.setVolume(percentage, this.player, save), parseFloat(loadedVolume));
             this.playerIsReady = true;
         });
         // Not Ready
@@ -194,7 +200,7 @@ class SpotifyPlayback {
         if (!this.isExecutingAction && currNode !== null) {
             const prevTrack = currNode.data;
             console.log('Try player pause');
-            this.setSelPlayingEl(new track_play_args_1.default(prevTrack, currNode));
+            this.setSelPlayingEl(new track_play_args_1.default(prevTrack, currNode, this.selPlaying.playableArr));
         }
     }
     /**
@@ -203,7 +209,9 @@ class SpotifyPlayback {
      * @param currNode - the current IPlayable node that was/is playing
      */
     tryPlayPrev(currNode) {
-        if (currNode === null) {
+        // there is no current node or the player is in shuffle mode
+        if (currNode === null || (exports.playerPublicVars.isShuffle && !this.wasInShuffle)) {
+            // (if the player has just been put into shuffle mode then there should be no previous playables to go back too)
             return;
         }
         // if an action is processing we cannot do anything
@@ -216,8 +224,12 @@ class SpotifyPlayback {
                     if (currNode.previous === null) {
                         return;
                     }
+                    let prevTrackNode = currNode.previous;
+                    if (!exports.playerPublicVars.isShuffle && this.wasInShuffle) {
+                        prevTrackNode = this.unShuffle(-1);
+                    }
                     const prevTrack = currNode.previous.data;
-                    this.setSelPlayingEl(new track_play_args_1.default(prevTrack, currNode.previous));
+                    this.setSelPlayingEl(new track_play_args_1.default(prevTrack, prevTrackNode, this.selPlaying.playableArr));
                 }
             });
         }
@@ -233,8 +245,17 @@ class SpotifyPlayback {
         }
         // check to see if this is the last node or if an action is processing
         if (!this.isExecutingAction && currNode.next !== null) {
-            const nextTrack = currNode.next.data;
-            this.setSelPlayingEl(new track_play_args_1.default(nextTrack, currNode.next));
+            let nextTrackNode = currNode.next;
+            if (!this.wasInShuffle && exports.playerPublicVars.isShuffle) {
+                // by calling this before assigning the next node, this.shufflePlayables() must return back the next node
+                nextTrackNode = this.shufflePlayables();
+                // call after to ensure that this.shufflePlayables() runs the if statement that returns the next node
+                this.wasInShuffle = true;
+            }
+            else if (!exports.playerPublicVars.isShuffle && this.wasInShuffle) {
+                nextTrackNode = this.unShuffle(1);
+            }
+            this.setSelPlayingEl(new track_play_args_1.default(nextTrackNode.data, nextTrackNode, this.selPlaying.playableArr));
         }
     }
     completelyDeselectTrack() {
@@ -249,14 +270,15 @@ class SpotifyPlayback {
         if (this.selPlaying.element === null) {
             throw new Error('Selected playing element was null before deselection on song finish');
         }
-        (_a = this.selPlaying.trackDataNode) === null || _a === void 0 ? void 0 : _a.data.onStopped();
+        (_a = this.selPlaying.playableNode) === null || _a === void 0 ? void 0 : _a.data.onStopped();
         this.selPlaying.element.classList.remove(config_1.config.CSS.CLASSES.selected);
         (_b = this.webPlayerEl.playPause) === null || _b === void 0 ? void 0 : _b.classList.remove(config_1.config.CSS.CLASSES.selected);
         this.selPlaying.element = null;
     }
-    selectTrack(eventArg) {
+    selectTrack(eventArg, playThruWebPlayer) {
         var _a, _b;
-        this.selPlaying.trackDataNode = eventArg.playableNode;
+        this.selPlaying.playableNode = eventArg.playableNode;
+        this.selPlaying.playableArr = eventArg.playableArr;
         this.selPlaying.element = eventArg.currPlayable.selEl;
         this.selPlaying.element.classList.add(config_1.config.CSS.CLASSES.selected);
         this.selPlaying.track_uri = eventArg.currPlayable.uri;
@@ -264,13 +286,20 @@ class SpotifyPlayback {
         this.webPlayerEl.setTitle(eventArg.currPlayable.title);
         this.webPlayerEl.setImgSrc(eventArg.currPlayable.imageUrl);
         this.webPlayerEl.setArtists(eventArg.currPlayable.artistsHtml);
-        (_b = this.selPlaying.trackDataNode) === null || _b === void 0 ? void 0 : _b.data.onPlaying();
+        (_b = this.selPlaying.playableNode) === null || _b === void 0 ? void 0 : _b.data.onPlaying();
+        // we can call after assigning playable node as it does not change which node is played
+        if (!playThruWebPlayer && exports.playerPublicVars.isShuffle) {
+            this.shufflePlayables();
+        }
+        else if (!exports.playerPublicVars.isShuffle && this.wasInShuffle) {
+            this.selPlaying.playableNode = this.unShuffle(0);
+        }
     }
     onTrackFinish() {
         this.completelyDeselectTrack();
         this.webPlayerEl.songProgress.sliderProgress.style.width = '100%';
         clearInterval(this.getStateInterval);
-        this.tryPlayNext(this.selPlaying.trackDataNode);
+        this.tryPlayNext(this.selPlaying.playableNode);
     }
     /**
      * Sets an interval that obtains the state of the player every second.
@@ -320,7 +349,7 @@ class SpotifyPlayback {
      *
      * @param {PlayableEventArg} eventArg - a class that contains the current, next and previous tracks to play
      */
-    setSelPlayingEl(eventArg) {
+    setSelPlayingEl(eventArg, playThruWebPlayer = true) {
         var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             // if the player isn't ready we cannot continue.
@@ -334,7 +363,7 @@ class SpotifyPlayback {
             this.isExecutingAction = true;
             if (this.selPlaying.element != null) {
                 // stop the previous track that was playing
-                (_a = this.selPlaying.trackDataNode) === null || _a === void 0 ? void 0 : _a.data.onStopped();
+                (_a = this.selPlaying.playableNode) === null || _a === void 0 ? void 0 : _a.data.onStopped();
                 clearInterval(this.getStateInterval);
                 // reassign the element if it exists as it may have been rerendered and therefore the previous value is pointing to nothing
                 this.selPlaying.element = (_b = document.getElementById(this.selPlaying.element.id)) !== null && _b !== void 0 ? _b : this.selPlaying.element;
@@ -354,22 +383,69 @@ class SpotifyPlayback {
             if (this.selPlaying.track_uri === eventArg.currPlayable.uri) {
                 // this selEl could corrospond to the same song but is an element that is non-existent, so reassign it to a equivalent existing element if this is the case.
                 eventArg.currPlayable.selEl = (_c = document.getElementById(eventArg.currPlayable.selEl.id)) !== null && _c !== void 0 ? _c : eventArg.currPlayable.selEl;
-                yield this.startTrack(() => __awaiter(this, void 0, void 0, function* () { return this.resume(); }), eventArg);
+                yield this.startTrack(() => __awaiter(this, void 0, void 0, function* () { return this.resume(); }), eventArg, playThruWebPlayer);
                 this.isExecutingAction = false;
                 return;
             }
             console.log('start track');
-            yield this.startTrack(() => __awaiter(this, void 0, void 0, function* () { return this.play(eventArg.currPlayable.uri); }), eventArg);
+            yield this.startTrack(() => __awaiter(this, void 0, void 0, function* () { return this.play(eventArg.currPlayable.uri); }), eventArg, playThruWebPlayer);
             this.isExecutingAction = false;
         });
     }
-    startTrack(playingAsyncFunc, eventArg) {
+    startTrack(playingAsyncFunc, eventArg, playThruWebPlayer) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.selectTrack(eventArg);
+            this.selectTrack(eventArg, playThruWebPlayer);
             yield playingAsyncFunc();
             // set playing state once song starts playing
             this.setGetStateInterval();
         });
+    }
+    /**
+     * Shuffles the playables and either returns the current node or the next node that both point to a shuffled version of the list.
+     * @returns {DoublyLinkedListNode<IPlayable>} either the next or current node in the shuffled list.
+     */
+    shufflePlayables() {
+        if (this.selPlaying.playableArr == null || this.selPlaying.playableNode == null)
+            throw new Error('no sel playing');
+        console.log('shuffle');
+        const selPlayable = this.selPlaying.playableNode.data;
+        // shuffle array
+        const trackArr = (0, config_1.shuffle)(this.selPlaying.playableArr);
+        // remove this track from the array
+        const index = trackArr.indexOf(selPlayable);
+        trackArr.splice(index, 1);
+        // generate a doubly linked list
+        const shuffledList = (0, doubly_linked_list_1.arrayToDoublyLinkedList)(trackArr);
+        // place this track at the front of the list
+        shuffledList.insertBefore(selPlayable, 0);
+        let newNode;
+        if (!this.wasInShuffle) {
+            // get the next node as this should run before the next node is chosen.
+            newNode = shuffledList.get(1, true);
+        }
+        else {
+            // get the new node which has identical data as the old one, but is now part of the shuffled doubly linked list
+            newNode = shuffledList.get(0, true);
+            this.selPlaying.playableNode = newNode;
+        }
+        return newNode;
+    }
+    /**
+     * Unshuffles the playables.
+     * @param {number} dir value representing the index to add or remove from the index of the current playing node. (1: getsNext, -1: getsPrev, 0: getsCurrent)
+     * @returns {DoublyLinkedListNode<IPlayable>} the node that points to the unshuffled version of the list. Either the previous, current, or next node from the current playable.
+     */
+    unShuffle(dir) {
+        if (this.selPlaying.playableArr == null || this.selPlaying.playableNode == null)
+            throw new Error('no sel playing');
+        const selPlayable = this.selPlaying.playableNode.data;
+        console.log('unshuffle');
+        this.wasInShuffle = false;
+        // obtain an unshuffled linked list
+        const playableList = (0, doubly_linked_list_1.arrayToDoublyLinkedList)(this.selPlaying.playableArr);
+        const newNodeIdx = playableList.findIndex((playable) => playable.selEl.id === selPlayable.selEl.id);
+        const newNode = playableList.get(newNodeIdx + dir, true);
+        return newNode;
     }
     /**
      * Plays a track through this device.
@@ -400,17 +476,21 @@ if (window.eventAggregator === undefined) {
 }
 const eventAggregator = window.eventAggregator;
 // subscribe the setPlaying element event
-eventAggregator.subscribe(track_play_args_1.default.name, (eventArg) => spotifyPlayback.setSelPlayingEl(eventArg));
-function isSamePlayingURI(uri) {
+eventAggregator.subscribe(track_play_args_1.default.name, (eventArg) => spotifyPlayback.setSelPlayingEl(eventArg, false));
+function isSamePlayingURIWithEl(uri) {
     return (uri === spotifyPlayback.selPlaying.track_uri &&
         spotifyPlayback.selPlaying.element != null);
 }
+exports.isSamePlayingURIWithEl = isSamePlayingURIWithEl;
+function isSamePlayingURI(uri) {
+    return uri === spotifyPlayback.selPlaying.track_uri;
+}
 exports.isSamePlayingURI = isSamePlayingURI;
 function checkIfIsPlayingElAfterRerender(uri, selEl, trackDataNode) {
-    if (isSamePlayingURI(uri)) {
+    if (isSamePlayingURIWithEl(uri)) {
         // This element was playing before rerendering so set it to be the currently playing one again
         spotifyPlayback.selPlaying.element = selEl;
-        spotifyPlayback.selPlaying.trackDataNode = trackDataNode;
+        spotifyPlayback.selPlaying.playableNode = trackDataNode;
     }
 }
 exports.checkIfIsPlayingElAfterRerender = checkIfIsPlayingElAfterRerender;

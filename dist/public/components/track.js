@@ -87,7 +87,7 @@ class Track extends card_1.default {
               <div class="${config_1.config.CSS.CLASSES.flipCard} ${config_1.config.CSS.CLASSES.noSelect}  ${config_1.config.CSS.CLASSES.expandOnHover}">
                 <button class="${config_1.config.CSS.CLASSES.card} ${config_1.config.CSS.CLASSES.flipCardInner} ${config_1.config.CSS.CLASSES.track}" id="${this.getCardId()}">
                   <div class="${config_1.config.CSS.CLASSES.flipCardFront}"  title="Click to view more Info">
-                    <div ${config_1.config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" id="${this._uri}" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}" title="Click to play song"></div>
+                    <div ${config_1.config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" id="${this._uri}" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURIWithEl)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}" title="Click to play song"></div>
                     <img src="${this.imageUrl}" alt="Album Cover"></img>
                     <div>
                       <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap} ${config_1.config.CSS.CLASSES.scrollingText}">${this.title}</h4>
@@ -116,10 +116,13 @@ class Track extends card_1.default {
         });
         return el;
     }
-    playPauseClick(trackNode) {
+    playPauseClick(trackNode, trackList = null) {
         const track = this;
-        // select this track to play or pause by publishing the track play event arg
-        eventAggregator.publish(new track_play_args_1.default(track, trackNode));
+        let trackArr = null;
+        if (trackList) {
+            trackArr = trackList.toArray();
+        }
+        eventAggregator.publish(new track_play_args_1.default(track, trackNode, trackArr));
     }
     /** Get a track html to be placed as a list element.
      *
@@ -132,7 +135,7 @@ class Track extends card_1.default {
         const playPauseId = this._uri + this.dateAddedToPlaylist;
         const html = `
             <li class="${config_1.config.CSS.CLASSES.playlistTrack}">
-              <button id="${playPauseId}" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}">
+              <button id="${playPauseId}" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURIWithEl)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}">
               </button>
               <img class="${config_1.config.CSS.CLASSES.noSelect}" src="${this.imageUrl}"></img>
               <div class="${config_1.config.CSS.CLASSES.links}">
@@ -157,7 +160,7 @@ class Track extends card_1.default {
             throw new Error('Play pause button on track was not found');
         }
         this.selEl = playPauseBtn;
-        playPauseBtn === null || playPauseBtn === void 0 ? void 0 : playPauseBtn.addEventListener('click', () => this.playPauseClick(trackNode));
+        playPauseBtn === null || playPauseBtn === void 0 ? void 0 : playPauseBtn.addEventListener('click', () => this.playPauseClick(trackNode, trackList));
         (0, playback_sdk_1.checkIfIsPlayingElAfterRerender)(this.uri, playPauseBtn, trackNode);
         return el;
     }
@@ -171,8 +174,8 @@ class Track extends card_1.default {
         const trackNode = trackList.find((x) => x.uri === this.uri, true);
         const html = `
             <li class="${config_1.config.CSS.CLASSES.playlistTrack}">
-            <div class="${config_1.config.CSS.CLASSES.rankedTrackInteract} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}">
-              <button id="${this._uri}" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURI)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}">
+            <div class="${config_1.config.CSS.CLASSES.rankedTrackInteract} ${(0, playback_sdk_1.isSamePlayingURIWithEl)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}">
+              <button id="${this._uri}" class="${config_1.config.CSS.CLASSES.playBtn} ${(0, playback_sdk_1.isSamePlayingURIWithEl)(this.uri) ? config_1.config.CSS.CLASSES.selected : ''}">
               </button>
               <p>${rank}.</p>
             </div>
@@ -201,7 +204,7 @@ class Track extends card_1.default {
         this.onPlaying = () => rankedInteract.classList.add(config_1.config.CSS.CLASSES.selected);
         this.onStopped = () => rankedInteract.classList.remove(config_1.config.CSS.CLASSES.selected);
         playPauseBtn === null || playPauseBtn === void 0 ? void 0 : playPauseBtn.addEventListener('click', () => {
-            this.playPauseClick(trackNode);
+            this.playPauseClick(trackNode, trackList);
         });
         (0, playback_sdk_1.checkIfIsPlayingElAfterRerender)(this.uri, playPauseBtn, trackNode);
         return el;

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("../config");
+const playback_sdk_1 = require("./playback-sdk");
 class Slider {
     constructor(startPercentage, onDragStop, topToBottom, onDragStart = () => { }, onDragging = (percentage) => { }, sliderEl) {
         var _a;
@@ -177,7 +178,8 @@ class SpotifyPlaybackElement {
       </div>
       <div class="${config_1.config.CSS.CLASSES.webPlayerControls} ${config_1.config.CSS.CLASSES.column}">
         <div>
-          <article>
+          <article id="web-player-buttons">
+            <button id="${config_1.config.CSS.IDs.shuffle}"><img src="${config_1.config.PATHS.shuffleIcon}"/></button>
             <button id="${config_1.config.CSS.IDs.playPrev}" class="${config_1.config.CSS.CLASSES.expandOnHover}"><img src="${config_1.config.PATHS.playPrev}" alt="previous"/></button>
             <button id="${config_1.config.CSS.IDs.webPlayerPlayPause}" class="${config_1.config.CSS.CLASSES.playBtn}"></button>
             <button id="${config_1.config.CSS.IDs.playNext}" class="${config_1.config.CSS.CLASSES.expandOnHover}"><img src="${config_1.config.PATHS.playNext}" alt="next"/></button>
@@ -251,6 +253,10 @@ class SpotifyPlaybackElement {
         var _a, _b, _c;
         const playPrev = document.getElementById(config_1.config.CSS.IDs.playPrev);
         const playNext = document.getElementById(config_1.config.CSS.IDs.playNext);
+        const shuffle = document.getElementById(config_1.config.CSS.IDs.shuffle);
+        shuffle === null || shuffle === void 0 ? void 0 : shuffle.addEventListener('click', () => {
+            playback_sdk_1.playerPublicVars.isShuffle = !playback_sdk_1.playerPublicVars.isShuffle;
+        });
         playPrev === null || playPrev === void 0 ? void 0 : playPrev.addEventListener('click', playPrevFunc);
         playNext === null || playNext === void 0 ? void 0 : playNext.addEventListener('click', playNextFunc);
         (_a = this.playPause) === null || _a === void 0 ? void 0 : _a.addEventListener('click', pauseFunc);

@@ -253,7 +253,7 @@ class DoublyLinkedList {
      * @returns {*} The data in the "data" portion of the given node
      *      or undefined if the node doesn't exist.
      */
-    get(index) {
+    get(index, asNode) {
         // ensure `index` is a positive value
         if (index > -1) {
             /*
@@ -285,7 +285,12 @@ class DoublyLinkedList {
              * `null`, then it's safe to return `current.data`.
              */
             if (current !== null) {
-                return current.data;
+                if (asNode) {
+                    return current;
+                }
+                else {
+                    return current.data;
+                }
             }
             else {
                 throw new RangeError(`index ${index} out of range`);
@@ -586,10 +591,17 @@ class DoublyLinkedList {
     }
     /**
      * Converts the list into a string representation.
-     * @returns {String} A string representation of the list.
+     * @returns {string} A string representation of the list.
      */
     toString() {
         return [...this].toString();
+    }
+    /**
+     * Converts the doubly linked list to an array.
+     * @returns {Array<T>} An array of the data from the linked list.
+     */
+    toArray() {
+        return [...this];
     }
 }
 exports.default = DoublyLinkedList;

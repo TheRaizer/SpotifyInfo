@@ -39,7 +39,7 @@ function checkIfHasTokens() {
     });
 }
 exports.checkIfHasTokens = checkIfHasTokens;
-function getTokens(onNoToken) {
+function getTokens() {
     return __awaiter(this, void 0, void 0, function* () {
         let hasToken = false;
         // create a parameter searcher in the URL after '?' which holds the requests body parameters
@@ -55,9 +55,6 @@ function getTokens(onNoToken) {
             authCode = '';
             // get user info from spotify
             yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getCurrentUserProfile));
-        }
-        else {
-            onNoToken();
         }
         window.history.pushState(null, '', '/');
         return hasToken;
@@ -93,25 +90,29 @@ function generateLogin({ classesToAdd = ['right'], changeAccount = true, parentE
     parentEl.appendChild(a);
 }
 exports.generateLogin = generateLogin;
-function onSuccessfulTokenCall(hasToken, hasTokenCallback = () => { }, noTokenCallBack = () => { }) {
-    var _a;
+function onSuccessfulTokenCall(hasToken, hasTokenCallback = () => { }, noTokenCallBack = () => { }, redirectHome = true) {
+    var _a, _b;
     const getTokensSpinner = document.getElementById(config_1.config.CSS.IDs.getTokenLoadingSpinner);
     // remove token spinner because by this line we have obtained the token
     (_a = getTokensSpinner === null || getTokensSpinner === void 0 ? void 0 : getTokensSpinner.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(getTokensSpinner);
     const infoContainer = document.getElementById(config_1.config.CSS.IDs.infoContainer);
+    // generate the nav login
+    generateLogin({ changeAccount: hasToken, parentEl: (_b = document.getElementById(config_1.config.CSS.IDs.topNavMobile)) !== null && _b !== void 0 ? _b : (0, config_1.throwExpression)('No top nav mobile element found') });
+    generateLogin({ changeAccount: hasToken });
     if (hasToken) {
-        // generate the nav login
-        generateLogin();
         if (infoContainer == null) {
             throw new Error('Info container Element does not exist');
         }
         infoContainer.style.display = 'block';
         (0, user_data_1.displayUsername)();
+        console.log('display username');
         hasTokenCallback();
     }
     else {
         // if there is no token redirect to allow access page
-        window.location.href = config_1.config.URLs.siteUrl;
+        if (redirectHome) {
+            window.location.href = config_1.config.URLs.siteUrl;
+        }
         noTokenCallBack();
     }
 }

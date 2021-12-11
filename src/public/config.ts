@@ -385,7 +385,13 @@ export async function addItemsToPlaylist (playlistId: string, uris: Array<string
     })
 }
 
+/**
+ * Shuffles a given array and returns the shuffled version.
+ * @param {Array<T>} array The array to shuffle but not mutate.
+ * @returns {Array<T>} a shuffled version of the given array.
+ */
 export function shuffle<T> (array: Array<T>) {
+  const cloneArr = [...array]
   let currentIndex = array.length
   let randomIndex
 
@@ -396,9 +402,9 @@ export function shuffle<T> (array: Array<T>) {
     currentIndex--;
 
     // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]]
+    [cloneArr[currentIndex], cloneArr[randomIndex]] = [
+      cloneArr[randomIndex], cloneArr[currentIndex]]
   }
 
-  return array
+  return cloneArr
 }

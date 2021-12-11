@@ -607,6 +607,12 @@ function selectInitialTabs(term) {
     const featBorder = featureSelections.getElementsByClassName(config_1.config.CSS.CLASSES.borderCover)[0];
     selections.featureTabManager.selectNewTab(featBtn, featBorder);
 }
+function hideViewAllButtonOnTextForm() {
+    var _a;
+    const viewAllEl = (_a = document.getElementById(config_1.config.CSS.IDs.viewAllTopTracks)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)(`element of id ${config_1.config.CSS.IDs.viewAllTopTracks} does not exist`);
+    viewAllEl.classList.add(config_1.config.CSS.CLASSES.displayNone);
+    viewAllEl.textContent = 'See Less';
+}
 const addEventListeners = (function () {
     function addTrackFeatureButtonEvents() {
         function onClick(btn, borderCover) {
@@ -734,8 +740,10 @@ const addEventListeners = (function () {
         button === null || button === void 0 ? void 0 : button.addEventListener('click', () => generatePlaylistFromTopTracks(trackActions.selections.term));
     }
     function addConvertCards() {
+        var _a;
         const convertBtn = document.getElementById(config_1.config.CSS.IDs.convertCard);
         const convertImg = convertBtn === null || convertBtn === void 0 ? void 0 : convertBtn.getElementsByTagName('img')[0];
+        const viewAllEl = (_a = document.getElementById(config_1.config.CSS.IDs.viewAllTopTracks)) !== null && _a !== void 0 ? _a : (0, config_1.throwExpression)(`element of id ${config_1.config.CSS.IDs.viewAllTopTracks} does not exist`);
         function onClick() {
             if (convertImg === undefined) {
                 throw new Error('convert cards to text form buttons image is not found');
@@ -751,6 +759,7 @@ const addEventListeners = (function () {
                 if (tracksTextContainer) {
                     (0, config_1.removeAllChildNodes)(tracksTextContainer);
                 }
+                viewAllEl.classList.remove(config_1.config.CSS.CLASSES.displayNone);
             }
             else {
                 saveLoad.savedOptions.inTextForm = true;
@@ -761,6 +770,7 @@ const addEventListeners = (function () {
                 }
                 // also disable see all button
                 convertImg.src = config_1.config.PATHS.gridView;
+                hideViewAllButtonOnTextForm();
             }
             displayCardInfo.displayTracks(trackActions.getCurrSelTopTracks());
         }
@@ -780,9 +790,7 @@ const saveLoad = (function () {
     function saveTopTracksForm(isInTextForm) {
         (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putTopTracksIsInTextFormData(String(isInTextForm))));
     }
-    function loadTopTracksForm() {
-    }
-    return { saveTopTracksForm, loadTopTracksForm, savedOptions };
+    return { saveTopTracksForm, savedOptions };
 })();
 const initialLoads = (function () {
     function loadPlaylistForm() {
@@ -790,6 +798,8 @@ const initialLoads = (function () {
             if (isInTextForm) {
                 tracksTextContainer === null || tracksTextContainer === void 0 ? void 0 : tracksTextContainer.classList.remove(config_1.config.CSS.CLASSES.displayNone);
                 tracksCardContainer === null || tracksCardContainer === void 0 ? void 0 : tracksCardContainer.classList.add(config_1.config.CSS.CLASSES.displayNone);
+                trackActions.selections.numViewableCards = MAX_VIEWABLE_CARDS;
+                hideViewAllButtonOnTextForm();
             }
             else {
                 tracksTextContainer === null || tracksTextContainer === void 0 ? void 0 : tracksTextContainer.classList.add(config_1.config.CSS.CLASSES.displayNone);

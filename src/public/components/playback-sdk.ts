@@ -240,9 +240,12 @@ class SpotifyPlayback {
    * @param currNode - the current IPlayable node that was/is playing
    */
   private tryPlayPrev (currNode: DoublyLinkedListNode<IPlayable> | null) {
-    if (currNode === null) {
+    // there is no current node or the player is in shuffle mode
+    if (currNode === null || (playerPublicVars.isShuffle && !this.wasInShuffle)) {
+      // (if the player has just been put into shuffle mode then there should be no previous playables to go back too)
       return
     }
+
     // if an action is processing we cannot do anything
     if (!this.isExecutingAction) {
       this.player.getCurrentState().then((state: { position: any }) => {
@@ -252,8 +255,14 @@ class SpotifyPlayback {
           if (currNode.previous === null) {
             return
           }
+
+          let prevTrackNode = currNode.previous
+
+          if (!playerPublicVars.isShuffle && this.wasInShuffle) {
+            prevTrackNode = this.unShuffle(-1)
+          }
           const prevTrack = currNode.previous.data
-          this.setSelPlayingEl(new PlayableEventArg(prevTrack, currNode.previous, this.selPlaying.playableArr))
+          this.setSelPlayingEl(new PlayableEventArg(prevTrack, prevTrackNode, this.selPlaying.playableArr))
         }
       })
     }
@@ -278,6 +287,8 @@ class SpotifyPlayback {
 
         // call after to ensure that this.shufflePlayables() runs the if statement that returns the next node
         this.wasInShuffle = true
+      } else if (!playerPublicVars.isShuffle && this.wasInShuffle) {
+        nextTrackNode = this.unShuffle(1)
       }
 
       this.setSelPlayingEl(new PlayableEventArg(nextTrackNode.data, nextTrackNode, this.selPlaying.playableArr))
@@ -320,6 +331,8 @@ class SpotifyPlayback {
     // we can call after assigning playable node as it does not change which node is played
     if (!playThruWebPlayer && playerPublicVars.isShuffle) {
       this.shufflePlayables()
+    } else if (!playerPublicVars.isShuffle && this.wasInShuffle) {
+      this.selPlaying.playableNode = this.unShuffle(0)
     }
   }
 
@@ -439,11 +452,14 @@ class SpotifyPlayback {
     this.setGetStateInterval()
   }
 
+  /**
+   * Shuffles the playables and either returns the current node or the next node that both point to a shuffled version of the list.
+   * @returns {DoublyLinkedListNode<IPlayable>} either the next or current node in the shuffled list.
+   */
   private shufflePlayables () : DoublyLinkedListNode<IPlayable> {
     if (this.selPlaying.playableArr == null || this.selPlaying.playableNode == null) throw new Error('no sel playing')
-
-    const selPlayable = this.selPlaying.playableNode.data
     console.log('shuffle')
+    const selPlayable = this.selPlaying.playableNode.data
 
     // shuffle array
     const trackArr = shuffle(this.selPlaying.playableArr)
@@ -462,16 +478,31 @@ class SpotifyPlayback {
     if (!this.wasInShuffle) {
       // get the next node as this should run before the next node is chosen.
       newNode = shuffledList.get(1, true) as DoublyLinkedListNode<IPlayable>
-
-      // assign the new node that points to a shuffled version of the current playlist as the current node
-      return newNode
     } else {
       // get the new node which has identical data as the old one, but is now part of the shuffled doubly linked list
       newNode = shuffledList.get(0, true) as DoublyLinkedListNode<IPlayable>
       this.selPlaying.playableNode = newNode
-
-      return newNode
     }
+    return newNode
+  }
+
+  /**
+   * Unshuffles the playables.
+   * @param {number} dir value representing the index to add or remove from the index of the current playing node. (1: getsNext, -1: getsPrev, 0: getsCurrent)
+   * @returns {DoublyLinkedListNode<IPlayable>} the node that points to the unshuffled version of the list. Either the previous, current, or next node from the current playable.
+   */
+  private unShuffle (dir: number) : DoublyLinkedListNode<IPlayable> {
+    if (this.selPlaying.playableArr == null || this.selPlaying.playableNode == null) throw new Error('no sel playing')
+    const selPlayable = this.selPlaying.playableNode.data
+
+    console.log('unshuffle')
+    this.wasInShuffle = false
+    // obtain an unshuffled linked list
+    const playableList = arrayToDoublyLinkedList(this.selPlaying.playableArr)
+
+    const newNodeIdx = playableList.findIndex((playable) => playable.selEl.id === selPlayable.selEl.id)
+    const newNode = playableList.get(newNodeIdx + dir, true) as DoublyLinkedListNode<IPlayable>
+    return newNode
   }
 
   /**

@@ -7,9 +7,10 @@ class PlayableEventArg {
      * @param {IPlayable} currTrack - object containing element to select, track_uri, and track title.
      * @param {DoublyLinkedListNode<IPlayable>} trackNode - node that allows us to traverse to next and previous track datas.
      */
-    constructor(currTrack, trackNode) {
+    constructor(currTrack, trackNode, playableArr) {
         this.currPlayable = currTrack;
         this.playableNode = trackNode;
+        this.playableArr = playableArr;
     }
 }
 exports.default = PlayableEventArg;

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addItemsToPlaylist = exports.throwExpression = exports.getPixelPosInElOnClick = exports.animationControl = exports.removeAllChildNodes = exports.getValidImage = exports.capitalizeFirstLetter = exports.isEllipsisActive = exports.getTextWidth = exports.searchUl = exports.promiseHandler = exports.htmlToEl = exports.millisToMinutesAndSeconds = exports.config = void 0;
+exports.shuffle = exports.addItemsToPlaylist = exports.throwExpression = exports.getPixelPosInElOnClick = exports.animationControl = exports.removeAllChildNodes = exports.getValidImage = exports.capitalizeFirstLetter = exports.isEllipsisActive = exports.getTextWidth = exports.searchUl = exports.promiseHandler = exports.htmlToEl = exports.millisToMinutesAndSeconds = exports.config = void 0;
 const axios_1 = __importDefault(require("axios"));
 const authEndpoint = 'https://accounts.spotify.com/authorize';
 // Replace with your app's client ID, redirect URI and desired scopes
@@ -88,7 +88,9 @@ exports.config = {
             generatePlaylist: 'generate-playlist',
             hideShowPlaylistTxt: 'hide-show-playlist-txt',
             topTracksTextFormContainer: 'term-text-form-container',
-            username: 'username'
+            username: 'username',
+            topNavMobile: 'topnav-mobile',
+            shuffle: 'shuffle'
         },
         CLASSES: {
             glow: 'glow',
@@ -205,7 +207,9 @@ exports.config = {
         pauseBlackIcon: '/images/pause-black-30px.png',
         playNext: '/images/next-30px.png',
         playPrev: '/images/previous-30px.png',
-        profileUser: '/images/profile-user.png'
+        profileUser: '/images/profile-user.png',
+        shuffleIcon: '/images/shuffle-icon.png',
+        shuffleIconGreen: '/images/shuffle-icon-green.png'
     }
 };
 function millisToMinutesAndSeconds(millis) {
@@ -377,4 +381,26 @@ function addItemsToPlaylist(playlistId, uris) {
     });
 }
 exports.addItemsToPlaylist = addItemsToPlaylist;
+/**
+ * Shuffles a given array and returns the shuffled version.
+ * @param {Array<T>} array The array to shuffle but not mutate.
+ * @returns {Array<T>} a shuffled version of the given array.
+ */
+function shuffle(array) {
+    const cloneArr = [...array];
+    let currentIndex = array.length;
+    let randomIndex;
+    // While there remain elements to shuffle...
+    while (currentIndex !== 0) {
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        // And swap it with the current element.
+        [cloneArr[currentIndex], cloneArr[randomIndex]] = [
+            cloneArr[randomIndex], cloneArr[currentIndex]
+        ];
+    }
+    return cloneArr;
+}
+exports.shuffle = shuffle;
 //# sourceMappingURL=config.js.map
