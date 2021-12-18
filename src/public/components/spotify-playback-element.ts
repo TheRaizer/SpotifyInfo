@@ -200,7 +200,7 @@ export default class SpotifyPlaybackElement {
     setVolume: (percentage: number, save: boolean) => void,
     initialVolume: number) {
     const html = `
-    <article id="${config.CSS.IDs.webPlayer}" class="resize-drag">
+    <article id="${config.CSS.IDs.webPlayer}" class="${config.CSS.CLASSES.noSelect}">
       <img class="${config.CSS.CLASSES.column}" src="${config.PATHS.profileUser}" alt="track" id="${config.CSS.IDs.playerTrackImg}"/>
       <div class="${config.CSS.CLASSES.column}" style="flex-basis: 30%; max-width: 18.5vw;">
         <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
@@ -210,9 +210,9 @@ export default class SpotifyPlaybackElement {
         <div>
           <article id="web-player-buttons">
             <button id="${config.CSS.IDs.shuffle}"><img src="${config.PATHS.shuffleIcon}"/></button>
-            <button id="${config.CSS.IDs.playPrev}" class="${config.CSS.CLASSES.expandOnHover}"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
+            <button id="${config.CSS.IDs.playPrev}" class="next-prev"><img src="${config.PATHS.playPrev}" alt="previous"/></button>
             <button id="${config.CSS.IDs.webPlayerPlayPause}" class="${config.CSS.CLASSES.playBtn}"></button>
-            <button id="${config.CSS.IDs.playNext}" class="${config.CSS.CLASSES.expandOnHover}"><img src="${config.PATHS.playNext}" alt="next"/></button>
+            <button id="${config.CSS.IDs.playNext}" class="next-prev"><img src="${config.PATHS.playNext}" alt="next"/></button>
           </article>
           <div id="${config.CSS.IDs.webPlayerVolume}" class="${config.CSS.CLASSES.slider}">
             <div class="${config.CSS.CLASSES.progress}"></div>

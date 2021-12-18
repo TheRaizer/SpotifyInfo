@@ -453,6 +453,8 @@ footer {
   min-width: 0;
 }
 .expanded-playlist > header {
+  border-top: 1px solid #4a4949;
+  background-color: #242323;
   -webkit-box-shadow: 0px 15px 10px -10px #111;
   box-shadow: 0px 15px 10px -10px #111;
   height: 70px;
@@ -465,7 +467,6 @@ footer {
   top: 0;
   margin: 0 0 0 0;
   z-index: 1;
-  background: #303030;
   font-weight: 700;
 }
 .expanded-playlist > header > div {
@@ -801,6 +802,7 @@ footer {
 * Browsers: last 4 version
 */
 #artist-cards-container > .artist > .content {
+  border: 1px solid #4c4c4c;
   color: white;
   display: flex;
   width: 250px;
@@ -958,6 +960,7 @@ ul.genres > li {
   height: 70vh;
   overflow-y: scroll;
   background-color: #1f1f1f;
+  margin-bottom: 15vmin;
 }
 .profile-area ul.track-list {
   height: 430px;
@@ -1288,8 +1291,8 @@ ul.genres > li {
   height: 100px;
   min-width: 200px;
   min-height: 100px;
-  background-color: #272626;
-  border-radius: 5px;
+  background-color: #1e1e1e;
+  border-top: 1px solid #323232;
   color: #d4d4d4;
   z-index: 20;
   position: fixed;
@@ -1350,9 +1353,31 @@ ul.genres > li {
   margin-left: 5px;
   margin-right: 5px;
 }
+.next-prev {
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+}
+.next-prev > img {
+  height: 26px;
+  width: 26px;
+}
+.next-prev:hover {
+  background-color: #777777;
+}
+.next-prev:active {
+  background-color: transparent;
+}
 #play-pause-player {
   width: 36px;
   height: 36px;
+  background-color: #f0f0f0;
+}
+#play-pause-player.selected::after {
+  border-color: black;
+}
+#play-pause-player::after {
+  border-bottom-color: black;
 }
 #player-track-img {
   margin: 5px 5px 5px 5px;
@@ -1361,26 +1386,6 @@ ul.genres > li {
 }
 #web-player-artists {
   margin-left: 5%;
-}
-#play-next {
-  height: 36px;
-  width: 36px;
-  background: #000;
-  border-radius: 50%;
-}
-#play-next > img {
-  height: 26px;
-  width: 26px;
-}
-#play-prev {
-  height: 36px;
-  width: 36px;
-  background: #000;
-  border-radius: 50%;
-}
-#play-prev > img {
-  height: 26px;
-  width: 26px;
 }
 #web-player-buttons {
   width: 150px;
@@ -1447,14 +1452,6 @@ ul.genres > li {
 }
 .track-list {
   box-shadow: inset 0px -14px 20px -15px black, inset 0px 14px 20px -15px black;
-}
-.resize-drag {
-  -ms-touch-action: none;
-  touch-action: none;
-}
-.resize-drag * {
-  -ms-touch-action: none;
-  touch-action: none;
 }
 .play-btn {
   display: inline-block;

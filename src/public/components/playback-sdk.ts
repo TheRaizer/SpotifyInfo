@@ -12,7 +12,7 @@ import EventAggregator from './pubsub/aggregator'
 import { IPlayable } from '../../types'
 import SpotifyPlaybackElement from './spotify-playback-element'
 
-async function loadVolume () {
+async function loadVolume() {
   const { res, err } = await promiseHandler(axios.get(config.URLs.getPlayerVolumeData))
 
   if (err) {
@@ -21,7 +21,7 @@ async function loadVolume () {
     return res!.data
   }
 }
-async function saveVolume (volume: string) {
+async function saveVolume(volume: string) {
   promiseHandler(axios.put(config.URLs.putPlayerVolumeData(volume)))
 }
 export const playerPublicVars = {
@@ -33,12 +33,12 @@ class SpotifyPlayback {
   private isExecutingAction: boolean;
   private device_id: string;
   public selPlaying: {
-      element: null | Element
-      track_uri: string
-      // this node may be a shuffled or unshuffled node
-      playableNode: null | DoublyLinkedListNode<IPlayable>
-      // this array is always in standard order and never shuffled.
-      playableArr: null | Array<IPlayable>
+    element: null | Element
+    track_uri: string
+    // this node may be a shuffled or unshuffled node
+    playableNode: null | DoublyLinkedListNode<IPlayable>
+    // this array is always in standard order and never shuffled.
+    playableArr: null | Array<IPlayable>
   }
 
   private getStateInterval: NodeJS.Timeout | null;
@@ -46,7 +46,7 @@ class SpotifyPlayback {
   private playerIsReady: boolean;
   private wasInShuffle = false;
 
-  constructor () {
+  constructor() {
     this.isExecutingAction = false
     this.player = null
     this.device_id = ''
@@ -65,7 +65,7 @@ class SpotifyPlayback {
     this.webPlayerEl = new SpotifyPlaybackElement()
   }
 
-  private setVolume (percentage: number, player: any, save: boolean = false) {
+  private setVolume(percentage: number, player: any, save: boolean = false) {
     const newVolume = percentage / 100
     player.setVolume(newVolume)
 
@@ -79,7 +79,7 @@ class SpotifyPlayback {
    * @param percentage The percent that the bar has filled with respect to the entire bar
    * @param webPlayerEl The webplayer element that gives us access to the song progress bar
    */
-  private onSeeking (percentage: number, webPlayerEl: SpotifyPlaybackElement) {
+  private onSeeking(percentage: number, webPlayerEl: SpotifyPlaybackElement) {
     // get the position by using the percent the progress bar.
     const seekPosition = webPlayerEl.songProgress!.max * (percentage / 100)
     if (webPlayerEl.currTime == null) {
@@ -94,7 +94,7 @@ class SpotifyPlayback {
    * @param player The spotify sdk player whose state we will use to change the song's progress bar's max value to the duration of the song.
    * @param webPlayerEl The web player element that will allow us to modify the progress bars max attribute.
    */
-  private onSeekStart (player: any, webPlayerEl: SpotifyPlaybackElement) {
+  private onSeekStart(player: any, webPlayerEl: SpotifyPlaybackElement) {
     player.getCurrentState().then((state: { duration: any }) => {
       if (!state) {
         console.error(
@@ -113,7 +113,7 @@ class SpotifyPlayback {
    * @param player the spotify sdk player that will seek the song to a given position
    * @param webPlayerEl the web player element that gives us access to the song progress bar.
    */
-  private seekSong (percentage: number, player: any, webPlayerEl: SpotifyPlaybackElement) {
+  private seekSong(percentage: number, player: any, webPlayerEl: SpotifyPlaybackElement) {
     if (!this.isExecutingAction) {
       this.isExecutingAction = true
       // obtain the final position the user wishes to seek once mouse is up.
@@ -126,7 +126,7 @@ class SpotifyPlayback {
     }
   }
 
-  private async _loadWebPlayer () {
+  private async _loadWebPlayer() {
     // load the users saved volume if there isnt then load 0.4 as default.
     const volume = await loadVolume()
 
@@ -169,7 +169,7 @@ class SpotifyPlayback {
     })
   }
 
-  private _addListeners (loadedVolume: string) {
+  private _addListeners(loadedVolume: string) {
     // Error handling
     this.player.addListener('initialization_error', ({ message }: { message: unknown }) => {
       console.error(message)
@@ -186,7 +186,7 @@ class SpotifyPlayback {
     })
 
     // Playback status updates
-    this.player.addListener('player_state_changed', (state: Spotify.PlaybackState | null) => {})
+    this.player.addListener('player_state_changed', (state: Spotify.PlaybackState | null) => { })
 
     // Ready
     this.player.addListener('ready', ({ device_id }: { device_id: string }) => {
@@ -213,7 +213,7 @@ class SpotifyPlayback {
     })
   }
 
-  private resetDuration () {
+  private resetDuration() {
     if (!this.isExecutingAction) {
       this.isExecutingAction = true
       this.player.seek(0).then(() => { this.isExecutingAction = false })
@@ -225,7 +225,7 @@ class SpotifyPlayback {
    *
    * @param currNode - the current IPlayable node that was/is playing
    */
-  private tryWebPlayerPause (currNode: DoublyLinkedListNode<IPlayable> | null) {
+  private tryWebPlayerPause(currNode: DoublyLinkedListNode<IPlayable> | null) {
     // check to see if this is the first node or if an action is processing
     if (!this.isExecutingAction && currNode !== null) {
       const prevTrack = currNode.data
@@ -239,7 +239,7 @@ class SpotifyPlayback {
    *
    * @param currNode - the current IPlayable node that was/is playing
    */
-  private tryPlayPrev (currNode: DoublyLinkedListNode<IPlayable> | null) {
+  private tryPlayPrev(currNode: DoublyLinkedListNode<IPlayable> | null) {
     // there is no current node or the player is in shuffle mode
     if (currNode === null || (playerPublicVars.isShuffle && !this.wasInShuffle)) {
       // (if the player has just been put into shuffle mode then there should be no previous playables to go back too)
@@ -273,7 +273,7 @@ class SpotifyPlayback {
    *
    * @param currNode - the current IPlayable node that was/is playing
    */
-  private tryPlayNext (currNode: DoublyLinkedListNode<IPlayable> | null) {
+  private tryPlayNext(currNode: DoublyLinkedListNode<IPlayable> | null) {
     if (currNode === null) {
       return
     }
@@ -295,7 +295,7 @@ class SpotifyPlayback {
     }
   }
 
-  private completelyDeselectTrack () {
+  private completelyDeselectTrack() {
     if (this.selPlaying.element === null) {
       throw new Error('Selected playing element was null before deselection on song finish')
     }
@@ -303,7 +303,7 @@ class SpotifyPlayback {
     this.selPlaying.track_uri = ''
   }
 
-  private pauseDeselectTrack () {
+  private pauseDeselectTrack() {
     if (this.selPlaying.element === null) {
       throw new Error('Selected playing element was null before deselection on song finish')
     }
@@ -314,7 +314,7 @@ class SpotifyPlayback {
     this.selPlaying.element = null
   }
 
-  private selectTrack (eventArg: PlayableEventArg, playThruWebPlayer: boolean) {
+  private selectTrack(eventArg: PlayableEventArg, playThruWebPlayer: boolean) {
     this.selPlaying.playableNode = eventArg.playableNode
     this.selPlaying.playableArr = eventArg.playableArr
     this.selPlaying.element = eventArg.currPlayable.selEl
@@ -336,7 +336,7 @@ class SpotifyPlayback {
     }
   }
 
-  private onTrackFinish () {
+  private onTrackFinish() {
     this.completelyDeselectTrack()
 
     this.webPlayerEl.songProgress!.sliderProgress!.style.width = '100%'
@@ -348,7 +348,7 @@ class SpotifyPlayback {
    * Sets an interval that obtains the state of the player every second.
    * Should only be called when a song is playing.
    */
-  private setGetStateInterval () {
+  private setGetStateInterval() {
     let durationMinSec = ''
     if (this.getStateInterval) {
       clearInterval(this.getStateInterval)
@@ -397,7 +397,7 @@ class SpotifyPlayback {
    *
    * @param {PlayableEventArg} eventArg - a class that contains the current, next and previous tracks to play
    */
-  public async setSelPlayingEl (eventArg: PlayableEventArg, playThruWebPlayer = true) {
+  public async setSelPlayingEl(eventArg: PlayableEventArg, playThruWebPlayer = true) {
     // if the player isn't ready we cannot continue.
     if (!this.playerIsReady) {
       console.log('player is not ready')
@@ -443,7 +443,7 @@ class SpotifyPlayback {
     this.isExecutingAction = false
   }
 
-  private async startTrack (playingAsyncFunc: Function, eventArg: PlayableEventArg, playThruWebPlayer: boolean) {
+  private async startTrack(playingAsyncFunc: Function, eventArg: PlayableEventArg, playThruWebPlayer: boolean) {
     this.selectTrack(eventArg, playThruWebPlayer)
 
     await playingAsyncFunc()
@@ -456,7 +456,7 @@ class SpotifyPlayback {
    * Shuffles the playables and either returns the current node or the next node that both point to a shuffled version of the list.
    * @returns {DoublyLinkedListNode<IPlayable>} either the next or current node in the shuffled list.
    */
-  private shufflePlayables () : DoublyLinkedListNode<IPlayable> {
+  private shufflePlayables(): DoublyLinkedListNode<IPlayable> {
     if (this.selPlaying.playableArr == null || this.selPlaying.playableNode == null) throw new Error('no sel playing')
     console.log('shuffle')
     const selPlayable = this.selPlaying.playableNode.data
@@ -474,7 +474,7 @@ class SpotifyPlayback {
     // place this track at the front of the list
     shuffledList.insertBefore(selPlayable, 0)
 
-    let newNode : DoublyLinkedListNode<IPlayable>
+    let newNode: DoublyLinkedListNode<IPlayable>
     if (!this.wasInShuffle) {
       // get the next node as this should run before the next node is chosen.
       newNode = shuffledList.get(1, true) as DoublyLinkedListNode<IPlayable>
@@ -491,7 +491,7 @@ class SpotifyPlayback {
    * @param {number} dir value representing the index to add or remove from the index of the current playing node. (1: getsNext, -1: getsPrev, 0: getsCurrent)
    * @returns {DoublyLinkedListNode<IPlayable>} the node that points to the unshuffled version of the list. Either the previous, current, or next node from the current playable.
    */
-  private unShuffle (dir: number) : DoublyLinkedListNode<IPlayable> {
+  private unShuffle(dir: number): DoublyLinkedListNode<IPlayable> {
     if (this.selPlaying.playableArr == null || this.selPlaying.playableNode == null) throw new Error('no sel playing')
     const selPlayable = this.selPlaying.playableNode.data
 
@@ -511,17 +511,17 @@ class SpotifyPlayback {
    * @param {string} track_uri - the track uri to play
    * @returns whether or not the track has been played succesfully.
    */
-  private async play (track_uri: string) {
+  private async play(track_uri: string) {
     await promiseHandler(
       axios.put(config.URLs.putPlayTrack(this.device_id, track_uri))
     )
   }
 
-  private async resume () {
+  private async resume() {
     await this.player.resume()
   }
 
-  private async pause () {
+  private async pause() {
     await this.player.pause()
   }
 }
@@ -539,18 +539,18 @@ eventAggregator.subscribe(PlayableEventArg.name, (eventArg: PlayableEventArg) =>
   spotifyPlayback.setSelPlayingEl(eventArg, false)
 )
 
-export function isSamePlayingURIWithEl (uri: string) {
+export function isSamePlayingURIWithEl(uri: string) {
   return (
     uri === spotifyPlayback.selPlaying.track_uri &&
-      spotifyPlayback.selPlaying.element != null
+    spotifyPlayback.selPlaying.element != null
   )
 }
 
-export function isSamePlayingURI (uri: string) {
+export function isSamePlayingURI(uri: string) {
   return uri === spotifyPlayback.selPlaying.track_uri
 }
 
-export function checkIfIsPlayingElAfterRerender (uri: string, selEl: Element, trackDataNode: DoublyLinkedListNode<IPlayable>) {
+export function checkIfIsPlayingElAfterRerender(uri: string, selEl: Element, trackDataNode: DoublyLinkedListNode<IPlayable>) {
   if (isSamePlayingURIWithEl(uri)) {
     // This element was playing before rerendering so set it to be the currently playing one again
     spotifyPlayback.selPlaying.element = selEl

@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body>
-    <section class="top-header">
+    <section class="container">
       <nav class="topnav">
         <ul>
           <li><a class="active" href="/">Home</a></li>
@@ -64,12 +64,18 @@
         </a>
         <a href="/profile">Profile</a>
       </nav>
+      <div id="info-container">
+        <section>
+          <div class="feature-area"></div>
+          <div class="feature-area"></div>
+          <div class="feature-area"></div>
+        </section>
+      </div>
+      <img
+        id="get-token-loading-spinner"
+        src="/images/200pxLoadingSpinner.svg"
+      />
     </section>
-    <section id="login">
-      <div id="circle"></div>
-      <div id="info-container"></div>
-    </section>
-    <img id="get-token-loading-spinner" src="/images/200pxLoadingSpinner.svg" />
     <script type="module" src="index-bundle.js"></script>
   </body>
 </html>
