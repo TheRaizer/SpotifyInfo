@@ -1291,8 +1291,8 @@ ul.genres > li {
   height: 100px;
   min-width: 200px;
   min-height: 100px;
-  background-color: #1e1e1e;
-  border-top: 1px solid #323232;
+  background-color: #282828;
+  border-top: 1px solid #474747;
   color: #d4d4d4;
   z-index: 20;
   position: fixed;

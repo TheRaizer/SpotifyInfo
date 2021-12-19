@@ -397,101 +397,6 @@ const addEventListeners = (function () {
       manageTracks.sortExpandedTracksToOrder(false)
     })
   }
-  function addDeleteRecentlyAddedTrackEvent () {
-    function onClick () {
-      if (numToRemoveInput === undefined) {
-        throw new Error('number to remove input is not found')
-      }
-      const numToRemove = parseInt(numToRemoveInput.value)
-      if (
-        numToRemove > selPlaylistTracks().size ||
-         numToRemove === 0
-      ) {
-        console.log('cant remove this many')
-        // the user is trying to delete more songs then there are available, you may want to allow this
-        return
-      }
-      const orderedTracks = manageTracks.orderTracksByDateAdded(
-        selPlaylistTracks()
-      )
-      const tracksToRemove = orderedTracks.slice(0, numToRemove)
-
-      // remove songs contained in tracksToRemove from expandablePlaylistTracks
-      tracksToRemove.forEach((trackToRemove) => {
-        const idx = selPlaylistTracks().findIndex(
-          (track) => track.id === trackToRemove.id
-        )
-        selPlaylistTracks().remove(idx)
-      })
-
-      playlistActions.playlistSelVerif.currSelectedValNoNull.addToUndoStack(
-        tracksToRemove
-      )
-
-      // not same order as some have been deleted
-      manageTracks.sortExpandedTracksToOrder(false)
-      const trackUris = tracksToRemove.map((track) => { return { uri: track.uri } })
-
-      promiseHandler(
-        axios.delete(config.URLs.deletePlaylistTracks(playlistActions.playlistSelVerif.currSelectedValNoNull.id), {
-          data: { track_uris: trackUris }
-        })
-      )
-    }
-    const numToRemoveInput = document
-      .getElementById(config.CSS.IDs.removeEarlyAdded)
-      ?.getElementsByTagName('input')[0]
-
-    const removeBtn = document
-      .getElementById(config.CSS.IDs.removeEarlyAdded)
-      ?.getElementsByTagName('button')[0]
-
-    removeBtn?.addEventListener('click', () => onClick())
-  }
-  function addUndoPlaylistTrackDeleteEvent () {
-    function onClick () {
-      const currPlaylist = playlistActions.playlistSelVerif.currSelectedValNoNull
-      if (!currPlaylist || currPlaylist.undoStack.length === 0) {
-        return
-      }
-      const undonePlaylistId = currPlaylist.id
-      const tracksRemoved = currPlaylist.undoStack.pop()
-
-      const trackUris = tracksRemoved!.map((track) => track.uri)
-      promiseHandler(
-        axios.post(config.URLs.postPlaylistTracks(currPlaylist.id), {
-          track_uris: trackUris
-        }),
-        () => {
-          // if the request was succesful and the user is
-          // still looking at the playlist that was undone back, reload it.
-          if (
-            undonePlaylistId ===
-            playlistActions.playlistSelVerif.currSelectedValNoNull.id
-          ) {
-            // reload the playlist after adding tracks in order to show the tracks added back
-            playlistActions.showPlaylistTracks(
-              playlistActions.playlistSelVerif.currSelectedValNoNull
-            )
-          }
-        }
-      )
-    }
-    const undoBtn = document.getElementById(config.CSS.IDs.undo)
-
-    undoBtn?.addEventListener('click', () => onClick())
-  }
-  function addModsOpenerEvent () {
-    const modsSection = document.getElementById(config.CSS.IDs.playlistMods)
-    const openModsSection = document.getElementById(config.CSS.IDs.modsOpener)
-    const wrenchIcon = openModsSection?.getElementsByTagName('img')[0]
-    openModsSection?.addEventListener('click', () => {
-      // expand mods section
-      modsSection?.classList.toggle(config.CSS.CLASSES.appear)
-      // select the wrench image
-      wrenchIcon?.classList.toggle(config.CSS.CLASSES.selected)
-    })
-  }
   function addConvertCards () {
     const convertBtn = document.getElementById(config.CSS.IDs.convertCard)
     const convertImg = convertBtn?.getElementsByTagName('img')[0]
@@ -535,9 +440,6 @@ const addEventListeners = (function () {
   return {
     addExpandedPlaylistModsSearchbarEvent,
     addExpandedPlaylistModsOrderEvent,
-    addDeleteRecentlyAddedTrackEvent,
-    addUndoPlaylistTrackDeleteEvent,
-    addModsOpenerEvent,
     addConvertCards,
     addHideShowPlaylistTxt
   }
