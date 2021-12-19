@@ -4,15 +4,15 @@ import { displayUsername } from './user-data'
 
 const HALF_HOUR = 1.8e6 /* 30 min in ms */
 
+// if the user stays on the same page for 30 min refresh the token.
+const startRefreshInterval = () => {
+  console.log('start interval refresh')
+  setInterval(() => {
+    promiseHandler(axios.put(config.URLs.putRefreshAccessToken))
+    console.log('refresh async')
+  }, HALF_HOUR)
+}
 export async function checkIfHasTokens (): Promise<boolean> {
-  // if the user stays on the same page for 30 min refresh the token.
-  const startRefreshInterval = () => {
-    console.log('start interval refresh')
-    setInterval(() => {
-      promiseHandler(axios.put(config.URLs.putRefreshAccessToken))
-      console.log('refresh async')
-    }, HALF_HOUR)
-  }
   let hasToken = false
   // await promise resolve that returns whether the session has tokens.
   await promiseHandler(
@@ -43,7 +43,10 @@ export async function getTokens () {
       axios.get(config.URLs.getObtainTokensPrefix(authCode)),
 
       // if the request was succesful we have recieved a token
-      () => (hasToken = true)
+      () => {
+        hasToken = true
+        startRefreshInterval()
+      }
     )
     authCode = ''
 

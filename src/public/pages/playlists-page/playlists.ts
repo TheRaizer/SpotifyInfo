@@ -154,6 +154,7 @@ const playlistActions = (function () {
     if (playlistObj.hasLoadedTracks()) {
       whenTracksLoading()
       onTracksLoadingDone()
+
       manageTracks.sortExpandedTracksToOrder(
         playlistObj.order === playlistOrder.value
       )

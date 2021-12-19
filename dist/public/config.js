@@ -42,7 +42,6 @@ const scopes = [
 exports.config = {
     CSS: {
         IDs: {
-            removeEarlyAdded: 'remove-early-added',
             getTokenLoadingSpinner: 'get-token-loading-spinner',
             playlistCardsContainer: 'playlist-cards-container',
             trackCardsContainer: 'track-cards-container',
@@ -52,15 +51,11 @@ exports.config = {
             infoContainer: 'info-container',
             allowAccessHeader: 'allow-access-header',
             expandedPlaylistMods: 'expanded-playlist-mods',
-            playlistMods: 'playlist-mods',
             tracksData: 'tracks-data',
             tracksChart: 'tracks-chart',
             tracksTermSelections: 'tracks-term-selections',
             featureSelections: 'feature-selections',
             playlistsSection: 'playlists-section',
-            undo: 'undo',
-            redo: 'redo',
-            modsOpener: 'mods-opener',
             featDef: 'feat-definition',
             featAverage: 'feat-average',
             rank: 'rank',

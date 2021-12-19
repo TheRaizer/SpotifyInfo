@@ -32,7 +32,6 @@ require('dotenv').config({ path: path.join(__dirname, '/.env') })
 const app: Application = express()
 
 const RedisStorage = RedisStore(session)
-console.log(process.env)
 if (process.env.REDIS_PORT === undefined) {
   throw new Error('Redis port is undefined in .env')
 }
@@ -169,8 +168,7 @@ app.listen(process.env.EXPRESS_PORT, function () {
   // set interval to update secret every minute
   setInterval(function () {
     crypto.randomBytes(66, function (_err, buffer: Buffer) {
-      const secret = buffer.toString('hex')
-      let secretA
+      const secret = buffer.toString('hex');
       (sesh.secret as Array<string>).unshift(secret)
     })
   }, 60000)

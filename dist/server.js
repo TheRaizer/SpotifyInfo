@@ -22,7 +22,6 @@ require('dotenv').config({ path: path_1.default.join(__dirname, '/.env') });
 // more info: https://stackoverflow.com/questions/31378997/express-js-limit-api-access-to-only-pages-from-the-same-website
 const app = (0, express_1.default)();
 const RedisStorage = (0, connect_redis_1.default)(express_session_1.default);
-console.log(process.env);
 if (process.env.REDIS_PORT === undefined) {
     throw new Error('Redis port is undefined in .env');
 }
@@ -141,7 +140,6 @@ app.listen(process.env.EXPRESS_PORT, function () {
     setInterval(function () {
         crypto_1.default.randomBytes(66, function (_err, buffer) {
             const secret = buffer.toString('hex');
-            let secretA;
             sesh.secret.unshift(secret);
         });
     }, 60000);
