@@ -1,4 +1,4 @@
-import { promiseHandler } from './config'
+import { animationControl, promiseHandler } from './config'
 import { checkIfHasTokens, getTokens, onSuccessfulTokenCall } from './manage-tokens'
 
 (function () {
@@ -12,3 +12,8 @@ import { checkIfHasTokens, getTokens, onSuccessfulTokenCall } from './manage-tok
     }
   })
 })()
+
+window.onload = function () {
+  document.body.className += 'loaded'
+  animationControl.addClassOnInterval('.feature-area', 'appear', 200)
+}

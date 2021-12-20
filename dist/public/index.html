@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="max-width: 100%; overflow-x: hidden">
   <head>
     <meta charset="UTF-8" />
     <!-- IE 10+ "Metro" Tiles - 144x144 pixels in size icon should be transparent -->
@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/main.css" />
   </head>
-  <body>
+  <body style="max-width: 100%; overflow-x: hidden">
     <section class="container">
       <nav class="topnav">
         <ul>
@@ -64,26 +64,25 @@
         </a>
         <a href="/profile">Profile</a>
       </nav>
-      <div id="info-container">
-        <main class="home-main">
-          <h1>Spotify Info</h1>
-          <section>
-            <div class="feature-area">
-              <h3>50</h3>
-              <p>See your top 50 tracks from 3 different time periods.</p>
-            </div>
-            <div class="feature-area">
-              <p>
-                Play your top artist's tracks from 3 different time periods with
-                ease.
-              </p>
-            </div>
-            <div class="feature-area">
-              <p>View the stats of your top songs.</p>
-            </div>
-          </section>
-        </main>
-      </div>
+      <div id="info-container"></div>
+      <main class="home-main">
+        <h1>Spotify Info</h1>
+        <section>
+          <div class="feature-area">
+            <h3>50</h3>
+            <p>See your top 50 tracks from 3 different time periods.</p>
+          </div>
+          <div class="feature-area">
+            <p>
+              Play your top artist's tracks from 3 different time periods with
+              ease.
+            </p>
+          </div>
+          <div class="feature-area">
+            <p>View the stats of your top songs.</p>
+          </div>
+        </section>
+      </main>
       <img
         id="get-token-loading-spinner"
         src="/images/200pxLoadingSpinner.svg"

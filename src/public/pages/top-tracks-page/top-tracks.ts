@@ -151,7 +151,7 @@ const displayCardInfo = (function () {
     featureManager.changeTracksChart(tracksDisplayed)
 
     // set appear class on all cards, even though some are not going to be visible
-    animationControl.animateAttributes(
+    animationControl.addClassOnInterval(
       '.' + config.CSS.CLASSES.rankCard,
       config.CSS.CLASSES.appear,
       5
@@ -184,7 +184,7 @@ const displayCardInfo = (function () {
     featureManager.changeTracksChart(tracksDisplayed)
 
     // set appear class on all cards, even though some are not going to be visible
-    animationControl.animateAttributes(
+    animationControl.addClassOnInterval(
       '.' + config.CSS.CLASSES.rankCard,
       config.CSS.CLASSES.appear,
       5
@@ -276,7 +276,7 @@ const displayCardInfo = (function () {
 
     featureManager.changeTracksChart(tracksDisplayed)
     // animate the cards into view
-    animationControl.animateAttributes(
+    animationControl.addClassOnInterval(
       '.' + config.CSS.CLASSES.rankCard,
       config.CSS.CLASSES.appear,
       5

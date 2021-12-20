@@ -115,7 +115,7 @@ const artistCardsHandler = (function () {
       }
     }
     if (!autoAppear) {
-      animationControl.animateAttributes(
+      animationControl.addClassOnInterval(
         '.' + config.CSS.CLASSES.artist,
         config.CSS.CLASSES.appear,
         25

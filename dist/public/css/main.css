@@ -1008,15 +1008,17 @@ ul.genres > li {
   display: flex;
   color: white;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
 }
 .home-main > h1 {
+  opacity: 0;
+  transition: opacity 1000ms ease-in;
   flex-basis: 30vw;
   font-size: 8em;
 }
 .home-main > section {
-  margin-left: 25vw;
+  margin-left: 15vw;
   flex-basis: 50vw;
 }
 .feature-area {
@@ -1028,11 +1030,31 @@ ul.genres > li {
 }
 .feature-area > h3 {
   margin-right: 5vw;
+  color: black;
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  border-radius: 50%;
+  font-size: 2em;
+  font-weight: bold;
+  text-align: center;
+  background: #000;
+  background-color: white;
 }
 .feature-area > p {
+  opacity: 0;
+  transition: transform 400ms ease-in-out, opacity 1000ms ease-in;
+  transform: translateX(100vw);
   color: #d4d4d4;
   font-weight: bold;
   font-size: 1.3em;
+}
+.feature-area.appear > p {
+  opacity: 1;
+  transform: translateX(0);
+}
+body.loaded .home-main > h1 {
+  opacity: 1;
 }
 /*
 * Prefixed by https://autoprefixer.github.io

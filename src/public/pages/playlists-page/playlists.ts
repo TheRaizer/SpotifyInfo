@@ -300,7 +300,7 @@ const displayCardInfo = (function () {
     // add event listener to cards
     playlistActions.addOnPlaylistCardListeners(playlistObjs)
     // animate the cards(show the cards)
-    animationControl.animateAttributes('.playlist', config.CSS.CLASSES.appear, 0)
+    animationControl.addClassOnInterval('.playlist', config.CSS.CLASSES.appear, 0)
   }
 
   return {
@@ -557,7 +557,7 @@ const initialLoads = (function () {
       promiseHandler(
         infoRetrieval.getInitialInfo(),
         () =>
-          animationControl.animateAttributes(
+          animationControl.addClassOnInterval(
             '.playlist,#expanded-playlist-mods',
             config.CSS.CLASSES.appear,
             25

@@ -303,7 +303,7 @@ export const animationControl = (function () {
    * @param {String} classToTransitionToo - The class that all the transitioning elements will add
    * @param {Number} animationInterval - The interval to wait between animation of elements
    */
-  function intervalElementsTransitions (
+  function addClassOnInterval (
     elementsToAnimate: string,
     classToTransitionToo: string,
     animationInterval: number
@@ -327,21 +327,8 @@ export const animationControl = (function () {
       }, animationInterval)
     })
   }
-  /** Animates all elements that contain a certain class or id
-   *
-   * @param {string} elementsToAnimate - comma separated string containing the classes or ids of elements to animate INCLUDING prefix char.
-   * @param {string} classToAdd - class to add EXCLUDING the prefix char.
-   * @param {string} animationInterval - the interval to animate the given elements in milliseconds.
-   */
-  function animateAttributes (elementsToAnimate: string, classToAdd: string, animationInterval: number) {
-    intervalElementsTransitions(
-      elementsToAnimate,
-      classToAdd,
-      animationInterval
-    )
-  }
   return {
-    animateAttributes
+    addClassOnInterval
   }
 })()
 
