@@ -1003,6 +1003,37 @@ ul.genres > li {
   width: 80vw;
   height: 40vh;
 }
+.home-main {
+  height: 91vh;
+  display: flex;
+  color: white;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+.home-main > h1 {
+  flex-basis: 30vw;
+  font-size: 8em;
+}
+.home-main > section {
+  margin-left: 25vw;
+  flex-basis: 50vw;
+}
+.feature-area {
+  display: flex;
+  flex-direction: row;
+  padding: 8vmin 8vmin 8vmin 8vmin;
+  justify-content: flex-start;
+  align-items: center;
+}
+.feature-area > h3 {
+  margin-right: 5vw;
+}
+.feature-area > p {
+  color: #d4d4d4;
+  font-weight: bold;
+  font-size: 1.3em;
+}
 /*
 * Prefixed by https://autoprefixer.github.io
 * PostCSS: v7.0.29,

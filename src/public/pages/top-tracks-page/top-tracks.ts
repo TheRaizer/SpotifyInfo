@@ -540,7 +540,6 @@ const charts = {
 
     // update other Feature class's in TRACK_FEATS
     updateFeaturesAttrs(featsDataArr as Array<FeaturesData>)
-    generateEmojis()
 
     const titles = trackObjs.map((track) => track.title)
     return titles
@@ -603,79 +602,6 @@ const charts = {
     const featAverage = document.getElementById(config.CSS.IDs.featAverage) ?? throwExpression(`element of id ${config.CSS.IDs.featAverage} does not exist`)
     featDef.textContent = selFeat.definition
     computeTendency()
-  }
-
-  function generateEmojis () {
-    const emojiContainer = document.getElementById(config.CSS.IDs.emojis) ?? throwExpression(`Emoji container of id ${config.CSS.IDs.emojis} does not exist`)
-
-    const emojiHelpers = (function () {
-      function popularityEmoji () {
-        if (TRACK_FEATS.popularity.mean >= FEAT_HIGH) {
-          emojiContainer.appendChild(getEmojiHtml(config.PATHS.sheepEmoji))
-        } else if (TRACK_FEATS.popularity.mean <= FEAT_LOW) {
-          emojiContainer.appendChild(getEmojiHtml(config.PATHS.wolfEmoji))
-        } else {
-          // TODO
-        }
-      }
-      function valenceEmoji () {
-        if (TRACK_FEATS.valence.mean >= FEAT_HIGH) {
-          emojiContainer.appendChild(getEmojiHtml(config.PATHS.happyEmoji))
-        } else if (TRACK_FEATS.valence.mean <= FEAT_LOW) {
-          emojiContainer.appendChild(getEmojiHtml(config.PATHS.sadEmoji))
-        } else {
-          emojiContainer.appendChild(getEmojiHtml(config.PATHS.neutralEmoji))
-        }
-      }
-      function acousticEmoji () {
-        if (TRACK_FEATS.acousticness.mean >= FEAT_HIGH) {
-          emojiContainer.appendChild(getEmojiHtml(config.PATHS.acousticEmoji))
-        } else if (TRACK_FEATS.acousticness.mean <= FEAT_LOW) {
-          emojiContainer.appendChild(
-            getEmojiHtml(config.PATHS.nonAcousticEmoji)
-          )
-        } else {
-          // TODO
-        }
-      }
-      function instrumentalEmoji () {
-        if (TRACK_FEATS.instrumentalness.mean >= FEAT_HIGH) {
-          emojiContainer.appendChild(
-            getEmojiHtml(config.PATHS.instrumentEmoji)
-          )
-        } else if (TRACK_FEATS.instrumentalness.mean <= FEAT_LOW) {
-          emojiContainer.appendChild(getEmojiHtml(config.PATHS.singerEmoji))
-        } else {
-          // TODO
-        }
-      }
-      function danceEmoji () {
-        if (TRACK_FEATS.danceability.mean >= FEAT_HIGH) {
-          emojiContainer.appendChild(getEmojiHtml(config.PATHS.dancingEmoji))
-        } else if (TRACK_FEATS.danceability.mean <= FEAT_LOW) {
-          // TODO
-        } else {
-          // TODO
-        }
-      }
-      function getEmojiHtml (path: string) {
-        const html = `<img src=${path} alt="emoji"/>`
-
-        return htmlToEl(html) as Node
-      }
-      return {
-        popularityEmoji,
-        valenceEmoji,
-        acousticEmoji,
-        instrumentalEmoji,
-        danceEmoji
-      }
-    })()
-
-    removeAllChildNodes(emojiContainer as Node)
-    Object.entries(emojiHelpers).forEach(([, generator]) => {
-      generator()
-    })
   }
 
   return {

@@ -17,6 +17,10 @@ const crypto_1 = __importDefault(require("crypto"));
 const uuid_1 = require("uuid");
 const path_1 = __importDefault(require("path"));
 console.log(__dirname);
+// const options = {
+//   key: fs.readFileSync('/srv/www/keys/my-site-key.pem'),
+//   cert: fs.readFileSync('/srv/www/keys/chain.pem')
+// }
 require('dotenv').config({ path: path_1.default.join(__dirname, '/.env') });
 // express and helmet protects api from being called on other sites, also known as CORS
 // more info: https://stackoverflow.com/questions/31378997/express-js-limit-api-access-to-only-pages-from-the-same-website
@@ -47,7 +51,7 @@ if (process.env.SESH_SECRET) {
         },
         resave: false,
         saveUninitialized: false,
-        name: 'IloveCooking',
+        name: '__sess__',
         cookie: {
             signed: true,
             maxAge: 8.64e7 // 1 day to ms
@@ -77,7 +81,9 @@ app.use((0, helmet_1.default)({
     // don't set CSP (content security policy middle ware) as this will be set manually
     contentSecurityPolicy: false
 }));
-app.use(helmet_1.default.contentSecurityPolicy({
+app.use(
+// manually override some attributes of the content security policy
+helmet_1.default.contentSecurityPolicy({
     useDefaults: true,
     directives: {
         'img-src': [
@@ -144,4 +150,5 @@ app.listen(process.env.EXPRESS_PORT, function () {
         });
     }, 60000);
 });
+// https.createServer(options, app).listen(8443)
 //# sourceMappingURL=server.js.map

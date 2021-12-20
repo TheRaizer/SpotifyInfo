@@ -1,0 +1,36 @@
+@import "main-vars.less";
+
+.home-main {
+  height: 91vh;
+  display: flex;
+  color: white;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+
+  & > h1 {
+    flex-basis: 30vw;
+    font-size: 8em;
+  }
+
+  & > section {
+    margin-left: 25vw;
+    flex-basis: 50vw;
+  }
+}
+
+.feature-area {
+  display: flex;
+  flex-direction: row;
+  padding: 8vmin 8vmin 8vmin 8vmin;
+  justify-content: flex-start;
+  align-items: center;
+  & > h3 {
+    margin-right: 5vw;
+  }
+  & > p {
+    color: @reading-color;
+    font-weight: bold;
+    font-size: 1.3em;
+  }
+}

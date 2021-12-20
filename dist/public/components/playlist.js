@@ -68,7 +68,9 @@ class Playlist extends card_1.default {
             }
             const trackList = new doubly_linked_list_1.default();
             // map each track data in the playlist data to an array.
-            const tracksData = res.data.map((data) => data.track);
+            let tracksData = res.data.map((data) => data.track);
+            // filter any data that has a null id as the track would not be unplayable
+            tracksData = tracksData.filter((data) => data.id !== null);
             getPlaylistTracksFromDatas(tracksData, res.data, trackList);
             // define track objects
             this.trackList = trackList;
