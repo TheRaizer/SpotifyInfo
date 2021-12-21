@@ -1012,7 +1012,11 @@ ul.genres > li {
   justify-content: center;
   align-items: center;
 }
-.home-main > h1 {
+.home-main a {
+  padding: 10px;
+  font-size: 1.1em;
+}
+.home-main h1 {
   opacity: 0;
   transition: opacity 1000ms ease-in;
   flex-basis: 30vw;
@@ -1066,7 +1070,7 @@ ul.genres > li {
   line-height: 100px;
   font-size: 2.3em;
 }
-body.loaded .home-main > h1 {
+body.loaded .home-main h1 {
   opacity: 1;
 }
 /*

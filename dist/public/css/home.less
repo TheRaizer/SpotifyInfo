@@ -8,7 +8,11 @@
   justify-content: center;
   align-items: center;
 
-  & > h1 {
+  & a {
+    padding: 10px;
+    font-size: 1.1em;
+  }
+  & h1 {
     opacity: 0;
     transition: opacity 1000ms ease-in;
     flex-basis: 30vw;
@@ -75,7 +79,7 @@
 
 & body.loaded {
   .home-main {
-    & > h1 {
+    & h1 {
       opacity: 1;
     }
   }

@@ -68,7 +68,8 @@ export const config = {
       topTracksTextFormContainer: 'term-text-form-container',
       username: 'username',
       topNavMobile: 'topnav-mobile',
-      shuffle: 'shuffle'
+      shuffle: 'shuffle',
+      homeHeader: 'home-header'
     },
     CLASSES: {
       glow: 'glow',
