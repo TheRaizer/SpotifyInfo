@@ -1,11 +1,17 @@
 import { animationControl, promiseHandler } from './config'
 import { checkIfHasTokens, getTokens, onSuccessfulTokenCall } from './manage-tokens'
 
+function generateCustomLoginButton () {
+
+}
+
 (function () {
   promiseHandler<boolean>(checkIfHasTokens(), (hasToken) => {
     if (!hasToken) {
       promiseHandler<boolean>(getTokens(), (obtainedToken) => {
-        onSuccessfulTokenCall(obtainedToken, () => {}, () => {}, false)
+        onSuccessfulTokenCall(obtainedToken, () => {}, () => {
+          console.log('no token')
+        }, false)
       })
     } else {
       onSuccessfulTokenCall(true)
