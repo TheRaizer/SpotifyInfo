@@ -311,6 +311,7 @@ export default class SpotifyPlaybackElement {
 
     shuffle?.addEventListener('click', () => {
       playerPublicVars.isShuffle = !playerPublicVars.isShuffle
+      shuffle.getElementsByTagName('img')[0].classList.toggle(config.CSS.CLASSES.selected)
     })
     playPrev?.addEventListener('click', playPrevFunc)
     playNext?.addEventListener('click', playNextFunc)
