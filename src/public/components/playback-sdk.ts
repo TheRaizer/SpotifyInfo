@@ -139,6 +139,7 @@ class SpotifyPlayback {
       this.player = new window.Spotify.Player({
         name: 'Spotify Info Web Player',
         getOAuthToken: (cb) => {
+          console.log('get auth token')
           promiseHandler(axios.put(config.URLs.putRefreshAccessToken), () => {
             promiseHandler<AxiosResponse<string | null>>(axios.request<string | null>({ method: 'GET', url: config.URLs.getAccessToken }), (res) => {
               if (res.status === NO_CONTENT || res.data === null) {
@@ -160,6 +161,7 @@ class SpotifyPlayback {
         this.player = new window.Spotify.Player({
           name: 'Spotify Info Web Player',
           getOAuthToken: (cb) => {
+            console.log('get auth token')
             promiseHandler(axios.put(config.URLs.putRefreshAccessToken), () => {
               promiseHandler<AxiosResponse<string | null>>(axios.request<string | null>({ method: 'GET', url: config.URLs.getAccessToken }), (res) => {
                 if (res.status === NO_CONTENT || res.data === null) {
