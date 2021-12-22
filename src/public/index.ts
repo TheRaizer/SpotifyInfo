@@ -2,6 +2,17 @@ import axios from 'axios'
 import { animationControl, config, promiseHandler } from './config'
 import { checkIfHasTokens, getTokens, onSuccessfulTokenCall } from './manage-tokens'
 
+const HALF_HOUR = 1.8e6 /* 30 min in ms */
+
+// if the user stays on the same page for 30 min refresh the token.
+// only refresh on home page as the web player will refresh token on other pages.
+const startRefreshInterval = () => {
+  console.log('start interval refresh')
+  setInterval(() => {
+    promiseHandler(axios.put(config.URLs.putRefreshAccessToken))
+    console.log('refresh async')
+  }, HALF_HOUR)
+}
 function generateCustomLoginButton () {
   // Create anchor element.
   const a = document.createElement('a')
@@ -28,12 +39,14 @@ function generateCustomLoginButton () {
   promiseHandler<boolean>(checkIfHasTokens(), (hasToken) => {
     if (!hasToken) {
       promiseHandler<boolean>(getTokens(), (obtainedToken) => {
-        onSuccessfulTokenCall(obtainedToken, () => {}, () => {
-          console.log('no token')
+        onSuccessfulTokenCall(obtainedToken, () => {
+          startRefreshInterval()
+        }, () => {
           generateCustomLoginButton()
         }, false)
       })
     } else {
+      startRefreshInterval()
       onSuccessfulTokenCall(true)
     }
   })

@@ -59,6 +59,8 @@ class SpotifyPlayback {
       playableArr: null
     }
     this.playerIsReady = false
+
+    // reload player every 30 min to avoid timeout's
     this._loadWebPlayer()
 
     // pass it the "this." attributes in this scope because when a function is called from a different class the "this." attributes are undefined.
@@ -130,42 +132,50 @@ class SpotifyPlayback {
     // load the users saved volume if there isnt then load 0.4 as default.
     const volume = await loadVolume()
 
-    promiseHandler<AxiosResponse<string | null>>(axios.request<string | null>({ method: 'GET', url: config.URLs.getAccessToken }), (res) => {
-      const NO_CONTENT = 204
-      if (res.status === NO_CONTENT || res.data === null) {
-        throw new Error('access token has no content')
-      } else if (window.Spotify) {
-        // if the spotify sdk is already defined set player without setting onSpotifyWebPlaybackSDKReady meaning the window: Window is in a different scope
-        // use window.Spotify.Player as spotify namespace is declared in the Window interface as per DefinitelyTyped -> spotify-web-playback-sdk -> index.d.ts https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/spotify-web-playback-sdk
+    const NO_CONTENT = 204
+    if (window.Spotify) {
+      // if the spotify sdk is already defined set player without setting onSpotifyWebPlaybackSDKReady meaning the window: Window is in a different scope
+      // use window.Spotify.Player as spotify namespace is declared in the Window interface as per DefinitelyTyped -> spotify-web-playback-sdk -> index.d.ts https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/spotify-web-playback-sdk
+      this.player = new window.Spotify.Player({
+        name: 'Spotify Info Web Player',
+        getOAuthToken: (cb) => {
+          promiseHandler(axios.put(config.URLs.putRefreshAccessToken), () => {
+            promiseHandler<AxiosResponse<string | null>>(axios.request<string | null>({ method: 'GET', url: config.URLs.getAccessToken }), (res) => {
+              if (res.status === NO_CONTENT || res.data === null) {
+                throw new Error('access token has no content')
+              }
+              // give the token to callback
+              cb(res.data)
+            })
+          })
+        },
+        volume: volume
+      })
+      this._addListeners(volume)
+      this.player.connect()
+    } else {
+      // of spotify sdk is undefined
+      window.onSpotifyWebPlaybackSDKReady = () => {
+        // if getting token was succesful create spotify player using the window in this scope
         this.player = new window.Spotify.Player({
           name: 'Spotify Info Web Player',
           getOAuthToken: (cb) => {
-            // give the token to callback
-            cb(res.data)
+            promiseHandler(axios.put(config.URLs.putRefreshAccessToken), () => {
+              promiseHandler<AxiosResponse<string | null>>(axios.request<string | null>({ method: 'GET', url: config.URLs.getAccessToken }), (res) => {
+                if (res.status === NO_CONTENT || res.data === null) {
+                  throw new Error('access token has no content')
+                }
+                // give the token to callback
+                cb(res.data)
+              })
+            })
           },
           volume: volume
         })
         this._addListeners(volume)
-        // Connect to the player!
         this.player.connect()
-      } else {
-        // of spotify sdk is undefined
-        window.onSpotifyWebPlaybackSDKReady = () => {
-          // if getting token was succesful create spotify player using the window in this scope
-          this.player = new window.Spotify.Player({
-            name: 'Spotify Info Web Player',
-            getOAuthToken: (cb) => {
-              // give the token to callback
-              cb(res.data)
-            },
-            volume: volume
-          })
-          this._addListeners(volume)
-          // Connect to the player!
-          this.player.connect()
-        }
       }
-    })
+    }
   }
 
   private _addListeners (loadedVolume: string) {
