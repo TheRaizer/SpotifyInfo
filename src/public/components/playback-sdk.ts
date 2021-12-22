@@ -251,8 +251,7 @@ class SpotifyPlayback {
    * @param currNode - the current IPlayable node that was/is playing
    */
   private tryPlayPrev (currNode: DoublyLinkedListNode<IPlayable> | null) {
-    // there is no current node or the player is in shuffle mode
-    if (currNode === null || (playerPublicVars.isShuffle && !this.wasInShuffle)) {
+    if (currNode === null) {
       // (if the player has just been put into shuffle mode then there should be no previous playables to go back too)
       return
     }
@@ -263,16 +262,17 @@ class SpotifyPlayback {
         if (state.position > 1000) {
           this.resetDuration()
         } else {
-          if (currNode.previous === null) {
-            return
-          }
-
+          // if the player is in shuffle mode
+          if (playerPublicVars.isShuffle && !this.wasInShuffle) { return }
           let prevTrackNode = currNode.previous
 
           if (!playerPublicVars.isShuffle && this.wasInShuffle) {
             prevTrackNode = this.unShuffle(-1)
           }
-          const prevTrack = currNode.previous.data
+
+          if (prevTrackNode === null) { return }
+
+          const prevTrack = prevTrackNode.data
           this.setSelPlayingEl(new PlayableEventArg(prevTrack, prevTrackNode, this.selPlaying.playableArr))
         }
       })
@@ -289,7 +289,8 @@ class SpotifyPlayback {
       return
     }
     // check to see if this is the last node or if an action is processing
-    if (!this.isExecutingAction && currNode.next !== null) {
+    console.log((currNode.next !== null && (!this.wasInShuffle && playerPublicVars.isShuffle)))
+    if (!this.isExecutingAction) {
       let nextTrackNode = currNode.next
 
       if (!this.wasInShuffle && playerPublicVars.isShuffle) {
@@ -300,6 +301,11 @@ class SpotifyPlayback {
         this.wasInShuffle = true
       } else if (!playerPublicVars.isShuffle && this.wasInShuffle) {
         nextTrackNode = this.unShuffle(1)
+      }
+
+      // if shuffle is not one and this node is null, then we are at the end of the playlist and cannot play next.
+      if (nextTrackNode === null) {
+        return
       }
 
       this.setSelPlayingEl(new PlayableEventArg(nextTrackNode.data, nextTrackNode, this.selPlaying.playableArr))
@@ -502,7 +508,7 @@ class SpotifyPlayback {
    * @param {number} dir value representing the index to add or remove from the index of the current playing node. (1: getsNext, -1: getsPrev, 0: getsCurrent)
    * @returns {DoublyLinkedListNode<IPlayable>} the node that points to the unshuffled version of the list. Either the previous, current, or next node from the current playable.
    */
-  private unShuffle (dir: number): DoublyLinkedListNode<IPlayable> {
+  private unShuffle (dir: number): DoublyLinkedListNode<IPlayable> | null {
     if (this.selPlaying.playableArr == null || this.selPlaying.playableNode == null) throw new Error('no sel playing')
     const selPlayable = this.selPlaying.playableNode.data
 
@@ -512,7 +518,11 @@ class SpotifyPlayback {
     const playableList = arrayToDoublyLinkedList(this.selPlaying.playableArr)
 
     const newNodeIdx = playableList.findIndex((playable) => playable.selEl.id === selPlayable.selEl.id)
-    const newNode = playableList.get(newNodeIdx + dir, true) as DoublyLinkedListNode<IPlayable>
+
+    let newNode: DoublyLinkedListNode<IPlayable> | null = null
+    if (playableList.size > newNodeIdx + dir && newNodeIdx + dir >= 0) {
+      newNode = playableList.get(newNodeIdx + dir, true) as DoublyLinkedListNode<IPlayable>
+    }
     return newNode
   }
 
