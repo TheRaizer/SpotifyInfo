@@ -167,7 +167,7 @@
 }
 
 #web-player-buttons {
-  width: 150px;
+  width: 200px;
   display: flex;
   align-items: center;
   margin-bottom: 10%;
@@ -175,6 +175,7 @@
 }
 
 #shuffle {
+  margin-right: 20px;
   & > img {
     width: 17px;
     content: url(../images/shuffle-icon.png);
@@ -184,6 +185,20 @@
     }
     &.selected {
       content: url("../images/shuffle-icon-green.png");
+    }
+  }
+}
+#loop {
+  margin-left: 20px;
+  & > img {
+    width: 20px;
+    content: url(../images/loop-icon.png);
+
+    &:hover {
+      content: url("../images/loop-icon-light.png");
+    }
+    &.selected {
+      content: url("../images/loop-icon-green.png");
     }
   }
 }

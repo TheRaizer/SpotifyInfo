@@ -69,7 +69,8 @@ export const config = {
       username: 'username',
       topNavMobile: 'topnav-mobile',
       shuffle: 'shuffle',
-      homeHeader: 'home-header'
+      homeHeader: 'home-header',
+      loop: 'loop'
     },
     CLASSES: {
       glow: 'glow',
@@ -181,7 +182,9 @@ export const config = {
     playPrev: '/images/previous-30px.png',
     profileUser: '/images/profile-user.png',
     shuffleIcon: '/images/shuffle-icon.png',
-    shuffleIconGreen: '/images/shuffle-icon-green.png'
+    shuffleIconGreen: '/images/shuffle-icon-green.png',
+    loopIcon: '/images/loop-icon.png',
+    loopIconGreen: '/images/loop-icon-green.png'
   }
 }
 

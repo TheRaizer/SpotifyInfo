@@ -25,7 +25,8 @@ async function saveVolume (volume: string) {
   promiseHandler(axios.put(config.URLs.putPlayerVolumeData(volume)))
 }
 export const playerPublicVars = {
-  isShuffle: false
+  isShuffle: false,
+  isLoop: false
 }
 class SpotifyPlayback {
   private player: any;
@@ -256,16 +257,22 @@ class SpotifyPlayback {
       return
     }
 
+    if (playerPublicVars.isLoop) {
+      this.resetDuration()
+      return
+    }
+
     // if an action is processing we cannot do anything
     if (!this.isExecutingAction) {
       this.player.getCurrentState().then((state: { position: any }) => {
         if (state.position > 1000) {
           this.resetDuration()
         } else {
-          // if the player is in shuffle mode
+          // if the player IS in shuffle mode
           if (playerPublicVars.isShuffle && !this.wasInShuffle) { return }
           let prevTrackNode = currNode.previous
 
+          // if the player WAS in shuffle mode
           if (!playerPublicVars.isShuffle && this.wasInShuffle) {
             prevTrackNode = this.unShuffle(-1)
           }
@@ -288,8 +295,13 @@ class SpotifyPlayback {
     if (currNode === null) {
       return
     }
-    // check to see if this is the last node or if an action is processing
-    console.log((currNode.next !== null && (!this.wasInShuffle && playerPublicVars.isShuffle)))
+
+    // once a track automatically finishes we cannot reset its duration so we play the track again instead
+    if (playerPublicVars.isLoop) {
+      this.startTrack(async () => this.play(currNode.data.uri), new PlayableEventArg(currNode.data, currNode, this.selPlaying.playableArr), true)
+      return
+    }
+    // check to see if an action is processing
     if (!this.isExecutingAction) {
       let nextTrackNode = currNode.next
 

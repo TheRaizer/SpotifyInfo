@@ -1466,11 +1466,14 @@ body.loaded .home-main h1 {
   margin-left: 5%;
 }
 #web-player-buttons {
-  width: 150px;
+  width: 200px;
   display: flex;
   align-items: center;
   margin-bottom: 10%;
   justify-content: space-around;
+}
+#shuffle {
+  margin-right: 20px;
 }
 #shuffle > img {
   width: 17px;
@@ -1481,6 +1484,19 @@ body.loaded .home-main h1 {
 }
 #shuffle > img.selected {
   content: url("../images/shuffle-icon-green.png");
+}
+#loop {
+  margin-left: 20px;
+}
+#loop > img {
+  width: 20px;
+  content: url(../images/loop-icon.png);
+}
+#loop > img:hover {
+  content: url("../images/loop-icon-light.png");
+}
+#loop > img.selected {
+  content: url("../images/loop-icon-green.png");
 }
 .glow {
   color: white;
