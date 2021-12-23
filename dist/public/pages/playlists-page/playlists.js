@@ -146,7 +146,7 @@ const playlistActions = (function () {
         const spinnerEl = (0, config_1.htmlToEl)(htmlString);
         trackUl.appendChild(spinnerEl);
         playlistSelVerif.selectionChanged(playlistObj);
-        saves.savePlaylist(playlistObj.id, playlistObj.name, [{ url: playlistObj.imageUrl }]);
+        saves.savePlaylistId(playlistObj.id);
         // tracks are already loaded so show them
         if (playlistObj.hasLoadedTracks()) {
             whenTracksLoading();
@@ -198,6 +198,9 @@ const playlistActions = (function () {
         playlistSelVerif
     };
 })();
+/**
+ * Contains the array of Playlist objects.
+ */
 const infoRetrieval = (function () {
     const playlistObjs = [];
     /** Obtains playlist info from web api and displays their cards.
@@ -225,6 +228,7 @@ const infoRetrieval = (function () {
             }
             // get playlists data and execute call back on succesful
             yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getPlaylists), onSuccesful);
+            yield loadPlaylist();
         });
     }
     return {
@@ -411,19 +415,13 @@ const saves = (function () {
     function savePlaylistForm(isInTextForm) {
         (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putPlaylistIsInTextFormData(String(isInTextForm))));
     }
-    function savePlaylist(id, name, images) {
-        (0, config_1.promiseHandler)((0, axios_1.default)({
-            method: 'put',
-            url: config_1.config.URLs.putCurrPlaylist(id, name),
-            data: {
-                images: images
-            }
-        }));
+    function savePlaylistId(id) {
+        (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putCurrPlaylistId(id)));
     }
     return {
         saveResizeWidth,
         savePlaylistForm,
-        savePlaylist
+        savePlaylistId
     };
 })();
 /**
@@ -464,6 +462,22 @@ function checkIfCardFormChangeOnResize() {
         }
     });
 }
+function loadPlaylist() {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield (0, config_1.promiseHandler)(axios_1.default
+            .get(config_1.config.URLs.getCurrPlaylistId), (res) => {
+            const loadedPlaylistId = res.data;
+            const playlistToLoad = infoRetrieval.playlistObjs.find((playlist) => playlist.id === loadedPlaylistId);
+            if (playlistToLoad) {
+                playlistActions.showPlaylistTracks(playlistToLoad);
+                const playlistCard = document.getElementById(playlistToLoad.getCardId());
+                if (playlistCard) {
+                    playlistActions.clickCard(infoRetrieval.playlistObjs, playlistCard);
+                }
+            }
+        });
+    });
+}
 const initialLoads = (function () {
     function loadPlaylistForm() {
         (0, config_1.promiseHandler)(axios_1.default
@@ -489,19 +503,9 @@ const initialLoads = (function () {
             cardResizeContainer.style.width = res.data + 'px';
         }));
     }
-    function loadPlaylist() {
-        (0, config_1.promiseHandler)(axios_1.default
-            .get(config_1.config.URLs.getCurrPlaylist), (res) => {
-            console.log(res);
-            if (res.data.id !== '') {
-                playlistActions.showPlaylistTracks(new playlist_1.default(res.data.name, res.data.images, res.data.id));
-            }
-        });
-    }
     return {
         loadPlaylistForm,
-        loadResizeWidth,
-        loadPlaylist
+        loadResizeWidth
     };
 })();
 (function () {

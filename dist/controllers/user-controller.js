@@ -68,20 +68,16 @@ function getTopArtistsTerm(req, res) {
     var _a;
     res.status(http_status_codes_1.StatusCodes.OK).send((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.topArtistsTerm);
 }
-function putCurrPlaylist(req, res) {
+function putCurrPlaylistId(req, res) {
     const id = req.query.id;
-    const name = req.query.name;
-    const images = req.body.images;
     if (req.session.user !== undefined) {
-        req.session.user.currPlaylist.id = id;
-        req.session.user.currPlaylist.name = name;
-        req.session.user.currPlaylist.images = images;
+        req.session.user.currPlaylistId = id;
     }
     res.sendStatus(http_status_codes_1.StatusCodes.CREATED);
 }
-function getCurrPlaylist(req, res) {
+function getCurrPlaylistId(req, res) {
     var _a;
-    res.status(http_status_codes_1.StatusCodes.OK).send((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.currPlaylist);
+    res.status(http_status_codes_1.StatusCodes.OK).send((_a = req.session.user) === null || _a === void 0 ? void 0 : _a.currPlaylistId);
 }
 function getUsername(req, res) {
     if (req.session.user !== undefined) {
@@ -109,8 +105,8 @@ const userCtrl = {
     getTopTracksTerm,
     putTopArtistsTerm,
     getTopArtistsTerm,
-    putCurrPlaylist,
-    getCurrPlaylist,
+    putCurrPlaylistId,
+    getCurrPlaylistId,
     getUsername
 };
 exports.userCtrl = userCtrl;

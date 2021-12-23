@@ -77,22 +77,18 @@ function getTopArtistsTerm (req: Request, res: Response) {
   res.status(StatusCodes.OK).send(req.session.user?.topArtistsTerm)
 }
 
-function putCurrPlaylist (req: Request, res: Response) {
+function putCurrPlaylistId (req: Request, res: Response) {
   const id = req.query.id as string
-  const name = req.query.name as string
-  const images = req.body.images as Array<SpotifyImg>
 
   if (req.session.user !== undefined) {
-    req.session.user.currPlaylist.id = id
-    req.session.user.currPlaylist.name = name
-    req.session.user.currPlaylist.images = images
+    req.session.user.currPlaylistId = id
   }
 
   res.sendStatus(StatusCodes.CREATED)
 }
 
-function getCurrPlaylist (req: Request, res: Response) {
-  res.status(StatusCodes.OK).send(req.session.user?.currPlaylist)
+function getCurrPlaylistId (req: Request, res: Response) {
+  res.status(StatusCodes.OK).send(req.session.user?.currPlaylistId)
 }
 
 function getUsername (req: Request, res: Response) {
@@ -120,8 +116,8 @@ const userCtrl = {
   getTopTracksTerm,
   putTopArtistsTerm,
   getTopArtistsTerm,
-  putCurrPlaylist,
-  getCurrPlaylist,
+  putCurrPlaylistId,
+  getCurrPlaylistId,
   getUsername
 }
 

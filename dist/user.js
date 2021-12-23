@@ -11,7 +11,7 @@ class User {
         this.playerVolume = '0.4';
         this.topTracksTerm = 'short_term';
         this.topArtistsTerm = 'short_term';
-        this.currPlaylist = { name: '', images: [], id: '' };
+        this.currPlaylistId = '';
         this.id = '';
         this.username = '';
     }

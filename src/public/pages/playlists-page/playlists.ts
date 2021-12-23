@@ -5,7 +5,8 @@ import {
   htmlToEl,
   promiseHandler,
   searchUl,
-  animationControl
+  animationControl,
+  throwExpression
 } from '../../config'
 import {
   checkIfHasTokens,
@@ -150,7 +151,7 @@ const playlistActions = (function () {
 
     playlistSelVerif.selectionChanged(playlistObj)
 
-    saves.savePlaylist(playlistObj.id, playlistObj.name, [{ url: playlistObj.imageUrl }])
+    saves.savePlaylistId(playlistObj.id)
 
     // tracks are already loaded so show them
     if (playlistObj.hasLoadedTracks()) {
@@ -162,7 +163,6 @@ const playlistActions = (function () {
       )
     } else {
       // tracks aren't loaded so lazy load them then show them
-
       whenTracksLoading()
       loadPlaylistTracks(playlistObj, () => {
         // indexed when loaded so no need to re-index them
@@ -214,6 +214,9 @@ const playlistActions = (function () {
   }
 })()
 
+/**
+ * Contains the array of Playlist objects.
+ */
 const infoRetrieval = (function () {
   const playlistObjs: Array<Playlist> = []
 
@@ -249,6 +252,8 @@ const infoRetrieval = (function () {
       axios.get(config.URLs.getPlaylists),
       onSuccesful
     )
+
+    await loadPlaylist()
   }
   return {
     getInitialInfo,
@@ -461,22 +466,16 @@ const saves = (function () {
       )
     )
   }
-  function savePlaylist (id: string, name: string, images: Array<SpotifyImg>) {
+  function savePlaylistId (id: string) {
     promiseHandler(
-      axios({
-        method: 'put',
-        url: config.URLs.putCurrPlaylist(id, name),
-        data: {
-          images: images
-        }
-      })
+      axios.put(config.URLs.putCurrPlaylistId(id))
     )
   }
 
   return {
     saveResizeWidth,
     savePlaylistForm,
-    savePlaylist
+    savePlaylistId
   }
 })()
 
@@ -526,6 +525,24 @@ function checkIfCardFormChangeOnResize () {
   })
 }
 
+async function loadPlaylist () {
+  await promiseHandler(
+    axios
+      .get(config.URLs.getCurrPlaylistId),
+    (res) => {
+      const loadedPlaylistId = res.data
+      const playlistToLoad = infoRetrieval.playlistObjs.find((playlist) => playlist.id === loadedPlaylistId)
+
+      if (playlistToLoad) {
+        playlistActions.showPlaylistTracks(playlistToLoad)
+
+        const playlistCard = document.getElementById(playlistToLoad.getCardId())
+        if (playlistCard) { playlistActions.clickCard(infoRetrieval.playlistObjs, playlistCard) }
+      }
+    }
+  )
+}
+
 const initialLoads = (function () {
   function loadPlaylistForm () {
     promiseHandler(
@@ -557,20 +574,9 @@ const initialLoads = (function () {
         })
     )
   }
-  function loadPlaylist () {
-    promiseHandler(
-      axios
-        .get(config.URLs.getCurrPlaylist),
-      (res) => {
-        console.log(res)
-        if (res.data.id !== '') { playlistActions.showPlaylistTracks(new Playlist(res.data.name, res.data.images, res.data.id)) }
-      }
-    )
-  }
   return {
     loadPlaylistForm,
-    loadResizeWidth,
-    loadPlaylist
+    loadResizeWidth
   }
 })();
 
