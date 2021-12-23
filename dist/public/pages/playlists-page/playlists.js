@@ -72,7 +72,7 @@ const resizeActions = (function () {
                 }
             }
         })
-            .on('resizeend', saveLoad.saveResizeWidth);
+            .on('resizeend', saves.saveResizeWidth);
         // once we renable the resize we must set its width to be what the user last set it too.
         initialLoads.loadResizeWidth();
     }
@@ -146,6 +146,7 @@ const playlistActions = (function () {
         const spinnerEl = (0, config_1.htmlToEl)(htmlString);
         trackUl.appendChild(spinnerEl);
         playlistSelVerif.selectionChanged(playlistObj);
+        saves.savePlaylist(playlistObj.id, playlistObj.name, [{ url: playlistObj.imageUrl }]);
         // tracks are already loaded so show them
         if (playlistObj.hasLoadedTracks()) {
             whenTracksLoading();
@@ -267,7 +268,7 @@ const displayCardInfo = (function () {
         // add event listener to cards
         playlistActions.addOnPlaylistCardListeners(playlistObjs);
         // animate the cards(show the cards)
-        config_1.animationControl.animateAttributes('.playlist', config_1.config.CSS.CLASSES.appear, 0);
+        config_1.animationControl.addClassOnInterval('.playlist', config_1.config.CSS.CLASSES.appear, 0);
     }
     return {
         displayPlaylistCards
@@ -368,11 +369,11 @@ const addEventListeners = (function () {
             playlistsCardContainer === null || playlistsCardContainer === void 0 ? void 0 : playlistsCardContainer.classList.toggle(config_1.config.CSS.CLASSES.textForm);
             displayCardInfo.displayPlaylistCards(infoRetrieval.playlistObjs);
             if (playlistsCardContainer === null || playlistsCardContainer === void 0 ? void 0 : playlistsCardContainer.classList.contains(config_1.config.CSS.CLASSES.textForm)) {
-                saveLoad.savePlaylistForm(true);
+                saves.savePlaylistForm(true);
                 convertImg.src = config_1.config.PATHS.gridView;
             }
             else {
-                saveLoad.savePlaylistForm(false);
+                saves.savePlaylistForm(false);
                 convertImg.src = config_1.config.PATHS.listView;
             }
         }
@@ -403,16 +404,26 @@ const addEventListeners = (function () {
         addHideShowPlaylistTxt
     };
 })();
-const saveLoad = (function () {
+const saves = (function () {
     function saveResizeWidth() {
         (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putPlaylistResizeData(cardResizeContainer.getBoundingClientRect().width.toString())));
     }
     function savePlaylistForm(isInTextForm) {
         (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putPlaylistIsInTextFormData(String(isInTextForm))));
     }
+    function savePlaylist(id, name, images) {
+        (0, config_1.promiseHandler)((0, axios_1.default)({
+            method: 'put',
+            url: config_1.config.URLs.putCurrPlaylist(id, name),
+            data: {
+                images: images
+            }
+        }));
+    }
     return {
         saveResizeWidth,
-        savePlaylistForm
+        savePlaylistForm,
+        savePlaylist
     };
 })();
 /**
@@ -478,16 +489,26 @@ const initialLoads = (function () {
             cardResizeContainer.style.width = res.data + 'px';
         }));
     }
+    function loadPlaylist() {
+        (0, config_1.promiseHandler)(axios_1.default
+            .get(config_1.config.URLs.getCurrPlaylist), (res) => {
+            console.log(res);
+            if (res.data.id !== '') {
+                playlistActions.showPlaylistTracks(new playlist_1.default(res.data.name, res.data.images, res.data.id));
+            }
+        });
+    }
     return {
         loadPlaylistForm,
-        loadResizeWidth
+        loadResizeWidth,
+        loadPlaylist
     };
 })();
 (function () {
     (0, config_1.promiseHandler)((0, manage_tokens_1.checkIfHasTokens)(), (hasToken) => {
         (0, manage_tokens_1.onSuccessfulTokenCall)(hasToken, () => {
             // get information and onSuccess animate the elements
-            (0, config_1.promiseHandler)(infoRetrieval.getInitialInfo(), () => config_1.animationControl.animateAttributes('.playlist,#expanded-playlist-mods', config_1.config.CSS.CLASSES.appear, 25), () => console.log('Problem when getting information'));
+            (0, config_1.promiseHandler)(infoRetrieval.getInitialInfo(), () => config_1.animationControl.addClassOnInterval('.playlist,#expanded-playlist-mods', config_1.config.CSS.CLASSES.appear, 25), () => console.log('Problem when getting information'));
         });
     });
     Object.entries(addEventListeners).forEach(([, addEventListener]) => {

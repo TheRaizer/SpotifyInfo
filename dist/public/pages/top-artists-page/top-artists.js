@@ -115,7 +115,7 @@ const artistCardsHandler = (function () {
             }
         }
         if (!autoAppear) {
-            config_1.animationControl.animateAttributes('.' + config_1.config.CSS.CLASSES.artist, config_1.config.CSS.CLASSES.appear, 25);
+            config_1.animationControl.addClassOnInterval('.' + config_1.config.CSS.CLASSES.artist, config_1.config.CSS.CLASSES.appear, 25);
         }
     }
     /**

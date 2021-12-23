@@ -15,7 +15,7 @@ import CardActionsHandler from '../../components/card-actions'
 import DoublyLinkedList, { arrayToDoublyLinkedList } from '../../components/doubly-linked-list'
 import interact from 'interactjs'
 import axios, { AxiosResponse } from 'axios'
-import { PlaylistData } from '../../../types'
+import { PlaylistData, SpotifyImg } from '../../../types'
 import Track from '../../components/track'
 
 const expandedPlaylistMods = document.getElementById(
@@ -68,7 +68,7 @@ const resizeActions = (function () {
           }
         }
       })
-      .on('resizeend', saveLoad.saveResizeWidth)
+      .on('resizeend', saves.saveResizeWidth)
 
     // once we renable the resize we must set its width to be what the user last set it too.
     initialLoads.loadResizeWidth()
@@ -150,6 +150,8 @@ const playlistActions = (function () {
 
     playlistSelVerif.selectionChanged(playlistObj)
 
+    saves.savePlaylist(playlistObj.id, playlistObj.name, [{ url: playlistObj.imageUrl }])
+
     // tracks are already loaded so show them
     if (playlistObj.hasLoadedTracks()) {
       whenTracksLoading()
@@ -178,8 +180,7 @@ const playlistActions = (function () {
   function clickCard (playlistObjs: Array<Playlist>, playlistCard: Element) {
     cardActionsHandler.onCardClick(playlistCard, playlistObjs, (selObj: Playlist) => {
       showPlaylistTracks(selObj)
-    }
-    )
+    })
   }
 
   /** Add event listeners to each playlist card.
@@ -411,10 +412,10 @@ const addEventListeners = (function () {
       if (
         playlistsCardContainer?.classList.contains(config.CSS.CLASSES.textForm)
       ) {
-        saveLoad.savePlaylistForm(true)
+        saves.savePlaylistForm(true)
         convertImg.src = config.PATHS.gridView
       } else {
-        saveLoad.savePlaylistForm(false)
+        saves.savePlaylistForm(false)
         convertImg.src = config.PATHS.listView
       }
     }
@@ -446,7 +447,7 @@ const addEventListeners = (function () {
   }
 })()
 
-const saveLoad = (function () {
+const saves = (function () {
   function saveResizeWidth () {
     promiseHandler(
       axios.put(
@@ -460,10 +461,22 @@ const saveLoad = (function () {
       )
     )
   }
+  function savePlaylist (id: string, name: string, images: Array<SpotifyImg>) {
+    promiseHandler(
+      axios({
+        method: 'put',
+        url: config.URLs.putCurrPlaylist(id, name),
+        data: {
+          images: images
+        }
+      })
+    )
+  }
 
   return {
     saveResizeWidth,
-    savePlaylistForm
+    savePlaylistForm,
+    savePlaylist
   }
 })()
 
@@ -544,9 +557,20 @@ const initialLoads = (function () {
         })
     )
   }
+  function loadPlaylist () {
+    promiseHandler(
+      axios
+        .get(config.URLs.getCurrPlaylist),
+      (res) => {
+        console.log(res)
+        if (res.data.id !== '') { playlistActions.showPlaylistTracks(new Playlist(res.data.name, res.data.images, res.data.id)) }
+      }
+    )
+  }
   return {
     loadPlaylistForm,
-    loadResizeWidth
+    loadResizeWidth,
+    loadPlaylist
   }
 })();
 

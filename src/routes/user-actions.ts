@@ -20,8 +20,8 @@ router.get('/get-top-tracks-term', userCtrl.getTopTracksTerm)
 router.put('/put-top-artists-term', userCtrl.putTopArtistsTerm)
 router.get('/get-top-artists-term', userCtrl.getTopArtistsTerm)
 
-router.put('/put-current-playlist-id', userCtrl.putCurrPlaylistId)
-router.get('/get-current-playlist-id', userCtrl.getCurrPlaylistId)
+router.put('/put-current-playlist', userCtrl.putCurrPlaylist)
+router.get('/get-current-playlist', userCtrl.getCurrPlaylist)
 
 router.get('/get-username', userCtrl.getUsername)
 

@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 import type { Request, Response } from 'express'
+import { SpotifyImg } from '../types'
 
 function putPlaylistResizeData (req: Request, res: Response) {
   const val = req.query.val as string
@@ -76,17 +77,22 @@ function getTopArtistsTerm (req: Request, res: Response) {
   res.status(StatusCodes.OK).send(req.session.user?.topArtistsTerm)
 }
 
-function putCurrPlaylistId (req: Request, res: Response) {
+function putCurrPlaylist (req: Request, res: Response) {
   const id = req.query.id as string
+  const name = req.query.name as string
+  const images = req.body.images as Array<SpotifyImg>
+
   if (req.session.user !== undefined) {
-    req.session.user.currPlaylistId = id
+    req.session.user.currPlaylist.id = id
+    req.session.user.currPlaylist.name = name
+    req.session.user.currPlaylist.images = images
   }
 
   res.sendStatus(StatusCodes.CREATED)
 }
 
-function getCurrPlaylistId (req: Request, res: Response) {
-  res.status(StatusCodes.OK).send(req.session.user?.currPlaylistId)
+function getCurrPlaylist (req: Request, res: Response) {
+  res.status(StatusCodes.OK).send(req.session.user?.currPlaylist)
 }
 
 function getUsername (req: Request, res: Response) {
@@ -114,8 +120,8 @@ const userCtrl = {
   getTopTracksTerm,
   putTopArtistsTerm,
   getTopArtistsTerm,
-  putCurrPlaylistId,
-  getCurrPlaylistId,
+  putCurrPlaylist,
+  getCurrPlaylist,
   getUsername
 }
 

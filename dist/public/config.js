@@ -19,25 +19,19 @@ const authEndpoint = 'https://accounts.spotify.com/authorize';
 const redirectUri = 'http://localhost:3000';
 const clientId = '434f5e9f442a4e4586e089a33f65c857';
 const scopes = [
-    'ugc-image-upload',
     'user-read-playback-state',
     'user-modify-playback-state',
     'user-read-currently-playing',
     'streaming',
-    'app-remote-control',
     'user-read-email',
     'user-read-private',
     'playlist-read-collaborative',
-    'playlist-modify-public',
     'playlist-read-private',
     'playlist-modify-private',
-    'user-library-modify',
     'user-library-read',
     'user-top-read',
-    'user-read-playback-position',
     'user-read-recently-played',
-    'user-follow-read',
-    'user-follow-modify'
+    'user-follow-read'
 ];
 exports.config = {
     CSS: {
@@ -85,7 +79,9 @@ exports.config = {
             topTracksTextFormContainer: 'term-text-form-container',
             username: 'username',
             topNavMobile: 'topnav-mobile',
-            shuffle: 'shuffle'
+            shuffle: 'shuffle',
+            homeHeader: 'home-header',
+            loop: 'loop'
         },
         CLASSES: {
             glow: 'glow',
@@ -174,8 +170,8 @@ exports.config = {
         getPlayerVolumeData: '/user/get-player-volume',
         putTerm: (term, termType) => `/user/put-top-${termType}-term?term=${term}`,
         getTerm: (termType) => `/user/get-top-${termType}-term`,
-        putCurrPlaylistId: (id) => `/user/put-current-playlist-id?id=${id}`,
-        getCurrPlaylistId: '/user/get-current-playlist-id',
+        putCurrPlaylist: (id, name) => `/user/put-current-playlist?id=${id}&name=${name}`,
+        getCurrPlaylist: '/user/get-current-playlist',
         postPlaylist: (name) => `/spotify/post-playlist?name=${name}`,
         postItemsToPlaylist: (playlistId) => `/spotify/post-items-to-playlist?playlist_id=${playlistId}`,
         getUsername: '/user/get-username'
@@ -194,7 +190,9 @@ exports.config = {
         playPrev: '/images/previous-30px.png',
         profileUser: '/images/profile-user.png',
         shuffleIcon: '/images/shuffle-icon.png',
-        shuffleIconGreen: '/images/shuffle-icon-green.png'
+        shuffleIconGreen: '/images/shuffle-icon-green.png',
+        loopIcon: '/images/loop-icon.png',
+        loopIconGreen: '/images/loop-icon-green.png'
     }
 };
 function millisToMinutesAndSeconds(millis) {
@@ -309,7 +307,7 @@ exports.animationControl = (function () {
      * @param {String} classToTransitionToo - The class that all the transitioning elements will add
      * @param {Number} animationInterval - The interval to wait between animation of elements
      */
-    function intervalElementsTransitions(elementsToAnimate, classToTransitionToo, animationInterval) {
+    function addClassOnInterval(elementsToAnimate, classToTransitionToo, animationInterval) {
         // arr of html selectors that point to elements to animate
         const attributes = elementsToAnimate.split(',');
         attributes.forEach((attr) => {
@@ -328,17 +326,8 @@ exports.animationControl = (function () {
             }, animationInterval);
         });
     }
-    /** Animates all elements that contain a certain class or id
-     *
-     * @param {string} elementsToAnimate - comma separated string containing the classes or ids of elements to animate INCLUDING prefix char.
-     * @param {string} classToAdd - class to add EXCLUDING the prefix char.
-     * @param {string} animationInterval - the interval to animate the given elements in milliseconds.
-     */
-    function animateAttributes(elementsToAnimate, classToAdd, animationInterval) {
-        intervalElementsTransitions(elementsToAnimate, classToAdd, animationInterval);
-    }
     return {
-        animateAttributes
+        addClassOnInterval
     };
 })();
 function getPixelPosInElOnClick(mouseEvt) {

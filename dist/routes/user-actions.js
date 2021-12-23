@@ -17,7 +17,7 @@ router.put('/put-top-tracks-term', user_controller_1.userCtrl.putTopTracksTerm);
 router.get('/get-top-tracks-term', user_controller_1.userCtrl.getTopTracksTerm);
 router.put('/put-top-artists-term', user_controller_1.userCtrl.putTopArtistsTerm);
 router.get('/get-top-artists-term', user_controller_1.userCtrl.getTopArtistsTerm);
-router.put('/put-current-playlist-id', user_controller_1.userCtrl.putCurrPlaylistId);
-router.get('/get-current-playlist-id', user_controller_1.userCtrl.getCurrPlaylistId);
+router.put('/put-current-playlist', user_controller_1.userCtrl.putCurrPlaylist);
+router.get('/get-current-playlist', user_controller_1.userCtrl.getCurrPlaylist);
 router.get('/get-username', user_controller_1.userCtrl.getUsername);
 //# sourceMappingURL=user-actions.js.map

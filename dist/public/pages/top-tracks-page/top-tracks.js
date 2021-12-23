@@ -136,7 +136,7 @@ const displayCardInfo = (function () {
         trackActions.addTrackCardListeners(trackArr);
         featureManager.changeTracksChart(tracksDisplayed);
         // set appear class on all cards, even though some are not going to be visible
-        config_1.animationControl.animateAttributes('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 5);
+        config_1.animationControl.addClassOnInterval('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 5);
     }
     /**
      * Generates the tracks as ranked tracks in a playlist to the DOM then makes them visible
@@ -159,7 +159,7 @@ const displayCardInfo = (function () {
         }
         featureManager.changeTracksChart(tracksDisplayed);
         // set appear class on all cards, even though some are not going to be visible
-        config_1.animationControl.animateAttributes('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 5);
+        config_1.animationControl.addClassOnInterval('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 5);
     }
     /**
      * Depending on the given card form, this function will generate the respective track html and append it to the DOM.
@@ -241,7 +241,7 @@ const displayCardInfo = (function () {
         }
         featureManager.changeTracksChart(tracksDisplayed);
         // animate the cards into view
-        config_1.animationControl.animateAttributes('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 5);
+        config_1.animationControl.addClassOnInterval('.' + config_1.config.CSS.CLASSES.rankCard, config_1.config.CSS.CLASSES.appear, 5);
     }
     /**
      * Adds a css class to cards starting from the last in order to hide them.

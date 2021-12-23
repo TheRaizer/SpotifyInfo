@@ -183,6 +183,7 @@ class SpotifyPlaybackElement {
             <button id="${config_1.config.CSS.IDs.playPrev}" class="next-prev"><img src="${config_1.config.PATHS.playPrev}" alt="previous"/></button>
             <button id="${config_1.config.CSS.IDs.webPlayerPlayPause}" class="${config_1.config.CSS.CLASSES.playBtn}"></button>
             <button id="${config_1.config.CSS.IDs.playNext}" class="next-prev"><img src="${config_1.config.PATHS.playNext}" alt="next"/></button>
+            <button id="${config_1.config.CSS.IDs.loop}"><img src="${config_1.config.PATHS.loopIcon}"/></button>
           </article>
           <div id="${config_1.config.CSS.IDs.webPlayerVolume}" class="${config_1.config.CSS.CLASSES.slider}">
             <div class="${config_1.config.CSS.CLASSES.progress}"></div>
@@ -254,8 +255,14 @@ class SpotifyPlaybackElement {
         const playPrev = document.getElementById(config_1.config.CSS.IDs.playPrev);
         const playNext = document.getElementById(config_1.config.CSS.IDs.playNext);
         const shuffle = document.getElementById(config_1.config.CSS.IDs.shuffle);
+        const loop = document.getElementById(config_1.config.CSS.IDs.loop);
+        loop === null || loop === void 0 ? void 0 : loop.addEventListener('click', () => {
+            playback_sdk_1.playerPublicVars.isLoop = !playback_sdk_1.playerPublicVars.isLoop;
+            loop.getElementsByTagName('img')[0].classList.toggle(config_1.config.CSS.CLASSES.selected);
+        });
         shuffle === null || shuffle === void 0 ? void 0 : shuffle.addEventListener('click', () => {
             playback_sdk_1.playerPublicVars.isShuffle = !playback_sdk_1.playerPublicVars.isShuffle;
+            shuffle.getElementsByTagName('img')[0].classList.toggle(config_1.config.CSS.CLASSES.selected);
         });
         playPrev === null || playPrev === void 0 ? void 0 : playPrev.addEventListener('click', playPrevFunc);
         playNext === null || playNext === void 0 ? void 0 : playNext.addEventListener('click', playNextFunc);

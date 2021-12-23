@@ -36,7 +36,8 @@ function saveVolume(volume) {
     });
 }
 exports.playerPublicVars = {
-    isShuffle: false
+    isShuffle: false,
+    isLoop: false
 };
 class SpotifyPlayback {
     constructor() {
@@ -52,6 +53,7 @@ class SpotifyPlayback {
             playableArr: null
         };
         this.playerIsReady = false;
+        // reload player every 30 min to avoid timeout's
         this._loadWebPlayer();
         // pass it the "this." attributes in this scope because when a function is called from a different class the "this." attributes are undefined.
         this.webPlayerEl = new spotify_playback_element_1.default();
@@ -113,44 +115,53 @@ class SpotifyPlayback {
         return __awaiter(this, void 0, void 0, function* () {
             // load the users saved volume if there isnt then load 0.4 as default.
             const volume = yield loadVolume();
-            (0, config_1.promiseHandler)(axios_1.default.request({ method: 'GET', url: config_1.config.URLs.getAccessToken }), (res) => {
-                const NO_CONTENT = 204;
-                if (res.status === NO_CONTENT || res.data === null) {
-                    throw new Error('access token has no content');
-                }
-                else if (window.Spotify) {
-                    // if the spotify sdk is already defined set player without setting onSpotifyWebPlaybackSDKReady meaning the window: Window is in a different scope
-                    // use window.Spotify.Player as spotify namespace is declared in the Window interface as per DefinitelyTyped -> spotify-web-playback-sdk -> index.d.ts https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/spotify-web-playback-sdk
+            const NO_CONTENT = 204;
+            if (window.Spotify) {
+                // if the spotify sdk is already defined set player without setting onSpotifyWebPlaybackSDKReady meaning the window: Window is in a different scope
+                // use window.Spotify.Player as spotify namespace is declared in the Window interface as per DefinitelyTyped -> spotify-web-playback-sdk -> index.d.ts https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/spotify-web-playback-sdk
+                this.player = new window.Spotify.Player({
+                    name: 'Spotify Info Web Player',
+                    getOAuthToken: (cb) => {
+                        console.log('get auth token');
+                        (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putRefreshAccessToken), () => {
+                            (0, config_1.promiseHandler)(axios_1.default.request({ method: 'GET', url: config_1.config.URLs.getAccessToken }), (res) => {
+                                if (res.status === NO_CONTENT || res.data === null) {
+                                    throw new Error('access token has no content');
+                                }
+                                // give the token to callback
+                                cb(res.data);
+                            });
+                        });
+                    },
+                    volume: volume
+                });
+                this._addListeners(volume);
+                this.player.connect();
+            }
+            else {
+                // of spotify sdk is undefined
+                window.onSpotifyWebPlaybackSDKReady = () => {
+                    // if getting token was succesful create spotify player using the window in this scope
                     this.player = new window.Spotify.Player({
                         name: 'Spotify Info Web Player',
                         getOAuthToken: (cb) => {
-                            // give the token to callback
-                            cb(res.data);
+                            console.log('get auth token');
+                            (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putRefreshAccessToken), () => {
+                                (0, config_1.promiseHandler)(axios_1.default.request({ method: 'GET', url: config_1.config.URLs.getAccessToken }), (res) => {
+                                    if (res.status === NO_CONTENT || res.data === null) {
+                                        throw new Error('access token has no content');
+                                    }
+                                    // give the token to callback
+                                    cb(res.data);
+                                });
+                            });
                         },
                         volume: volume
                     });
                     this._addListeners(volume);
-                    // Connect to the player!
                     this.player.connect();
-                }
-                else {
-                    // of spotify sdk is undefined
-                    window.onSpotifyWebPlaybackSDKReady = () => {
-                        // if getting token was succesful create spotify player using the window in this scope
-                        this.player = new window.Spotify.Player({
-                            name: 'Spotify Info Web Player',
-                            getOAuthToken: (cb) => {
-                                // give the token to callback
-                                cb(res.data);
-                            },
-                            volume: volume
-                        });
-                        this._addListeners(volume);
-                        // Connect to the player!
-                        this.player.connect();
-                    };
-                }
-            });
+                };
+            }
         });
     }
     _addListeners(loadedVolume) {
@@ -208,9 +219,12 @@ class SpotifyPlayback {
      * @param currNode - the current IPlayable node that was/is playing
      */
     tryPlayPrev(currNode) {
-        // there is no current node or the player is in shuffle mode
-        if (currNode === null || (exports.playerPublicVars.isShuffle && !this.wasInShuffle)) {
+        if (currNode === null) {
             // (if the player has just been put into shuffle mode then there should be no previous playables to go back too)
+            return;
+        }
+        if (exports.playerPublicVars.isLoop) {
+            this.resetDuration();
             return;
         }
         // if an action is processing we cannot do anything
@@ -220,14 +234,19 @@ class SpotifyPlayback {
                     this.resetDuration();
                 }
                 else {
-                    if (currNode.previous === null) {
+                    // if the player IS in shuffle mode
+                    if (exports.playerPublicVars.isShuffle && !this.wasInShuffle) {
                         return;
                     }
                     let prevTrackNode = currNode.previous;
+                    // if the player WAS in shuffle mode
                     if (!exports.playerPublicVars.isShuffle && this.wasInShuffle) {
                         prevTrackNode = this.unShuffle(-1);
                     }
-                    const prevTrack = currNode.previous.data;
+                    if (prevTrackNode === null) {
+                        return;
+                    }
+                    const prevTrack = prevTrackNode.data;
                     this.setSelPlayingEl(new track_play_args_1.default(prevTrack, prevTrackNode, this.selPlaying.playableArr));
                 }
             });
@@ -242,8 +261,13 @@ class SpotifyPlayback {
         if (currNode === null) {
             return;
         }
-        // check to see if this is the last node or if an action is processing
-        if (!this.isExecutingAction && currNode.next !== null) {
+        // once a track automatically finishes we cannot reset its duration so we play the track again instead
+        if (exports.playerPublicVars.isLoop) {
+            this.startTrack(() => __awaiter(this, void 0, void 0, function* () { return this.play(currNode.data.uri); }), new track_play_args_1.default(currNode.data, currNode, this.selPlaying.playableArr), true);
+            return;
+        }
+        // check to see if an action is processing
+        if (!this.isExecutingAction) {
             let nextTrackNode = currNode.next;
             if (!this.wasInShuffle && exports.playerPublicVars.isShuffle) {
                 // by calling this before assigning the next node, this.shufflePlayables() must return back the next node
@@ -253,6 +277,10 @@ class SpotifyPlayback {
             }
             else if (!exports.playerPublicVars.isShuffle && this.wasInShuffle) {
                 nextTrackNode = this.unShuffle(1);
+            }
+            // if shuffle is not one and this node is null, then we are at the end of the playlist and cannot play next.
+            if (nextTrackNode === null) {
+                return;
             }
             this.setSelPlayingEl(new track_play_args_1.default(nextTrackNode.data, nextTrackNode, this.selPlaying.playableArr));
         }
@@ -443,7 +471,10 @@ class SpotifyPlayback {
         // obtain an unshuffled linked list
         const playableList = (0, doubly_linked_list_1.arrayToDoublyLinkedList)(this.selPlaying.playableArr);
         const newNodeIdx = playableList.findIndex((playable) => playable.selEl.id === selPlayable.selEl.id);
-        const newNode = playableList.get(newNodeIdx + dir, true);
+        let newNode = null;
+        if (playableList.size > newNodeIdx + dir && newNodeIdx + dir >= 0) {
+            newNode = playableList.get(newNodeIdx + dir, true);
+        }
         return newNode;
     }
     /**

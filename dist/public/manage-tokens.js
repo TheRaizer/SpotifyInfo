@@ -16,15 +16,6 @@ exports.onSuccessfulTokenCall = exports.generateLogin = exports.getTokens = expo
 const config_1 = require("./config");
 const axios_1 = __importDefault(require("axios"));
 const user_data_1 = require("./user-data");
-const HALF_HOUR = 1.8e6; /* 30 min in ms */
-// if the user stays on the same page for 30 min refresh the token.
-const startRefreshInterval = () => {
-    console.log('start interval refresh');
-    setInterval(() => {
-        (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putRefreshAccessToken));
-        console.log('refresh async');
-    }, HALF_HOUR);
-};
 function checkIfHasTokens() {
     return __awaiter(this, void 0, void 0, function* () {
         let hasToken = false;
@@ -32,9 +23,6 @@ function checkIfHasTokens() {
         yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getHasTokens), (res) => {
             hasToken = res.data;
         });
-        if (hasToken) {
-            startRefreshInterval();
-        }
         return hasToken;
     });
 }
@@ -53,7 +41,6 @@ function getTokens() {
             // if the request was succesful we have recieved a token
             () => {
                 hasToken = true;
-                startRefreshInterval();
             });
             authCode = '';
             // get user info from spotify

@@ -1,3 +1,4 @@
+import { SpotifyImg } from './types'
 
 class User {
   access_token: string = '';
@@ -9,7 +10,7 @@ class User {
   playerVolume: string = '0.4';
   topTracksTerm: string = 'short_term';
   topArtistsTerm: string = 'short_term';
-  currPlaylistId: string = '';
+  currPlaylist: { name: string; images: Array<SpotifyImg>; id: string } = { name: '', images: [], id: '' }
   id: string = '';
   username: string = '';
 }

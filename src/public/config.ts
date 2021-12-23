@@ -162,8 +162,8 @@ export const config = {
     getPlayerVolumeData: '/user/get-player-volume',
     putTerm: (term: TERMS, termType: TERM_TYPE) => `/user/put-top-${termType}-term?term=${term}`,
     getTerm: (termType: TERM_TYPE) => `/user/get-top-${termType}-term`,
-    putCurrPlaylistId: (id: string) => `/user/put-current-playlist-id?id=${id}`,
-    getCurrPlaylistId: '/user/get-current-playlist-id',
+    putCurrPlaylist: (id: string, name: string) => `/user/put-current-playlist?id=${id}&name=${name}`,
+    getCurrPlaylist: '/user/get-current-playlist',
     postPlaylist: (name: string) => `/spotify/post-playlist?name=${name}`,
     postItemsToPlaylist: (playlistId: string) => `/spotify/post-items-to-playlist?playlist_id=${playlistId}`,
     getUsername: '/user/get-username'
