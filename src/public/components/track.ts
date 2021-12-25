@@ -153,7 +153,7 @@ class Track extends Card implements IPlayable {
                     <h3>Release Date:</h3>
                     <p>${this.releaseDate.toDateString()}</p>
                     <h3>Album Name:</h3>
-                    <a href="${this.externalUrls.spotify}">
+                    <a href="${this.externalUrls.spotify}" target="_blank">
                       <p ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" class="${config.CSS.CLASSES.ellipsisWrap}">${
       this.album.name
     }</p>
