@@ -96,7 +96,7 @@ class Artist extends Card {
                     </div>
                   </div>
                   <div class=${config.CSS.CLASSES.flipCardBack}>
-                    <h3><a href="${this.externalUrl}" target="_blank">${this.name}</a></h3>
+                    <h3><a href="${this.externalUrl}" target="_blank" ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true">${this.name}</a></h3>
                     <h3>Followers:</h3>
                     <p>${this.followerCount}</p>
                     <h3>Genres:</h3>

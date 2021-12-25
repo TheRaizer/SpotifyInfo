@@ -148,7 +148,8 @@ export default class CardActionsHandler {
 
     cards.forEach((trackCard) => {
       trackCard.addEventListener('click', (evt) => {
-        if ((evt!.target as HTMLElement)?.getAttribute('data-restrict-flip-on-click')) {
+        // if the element restricts flip on click then dont flip the card
+        if ((evt!.target as HTMLElement)?.getAttribute(config.CSS.ATTRIBUTES.restrictFlipOnClick)) {
           return
         }
         this.onCardClick(
