@@ -1375,12 +1375,15 @@ body.loaded .home-main h1 {
 }
 #web-player h4 {
   margin-left: 5%;
-  font-size: 1.2em;
-  font-weight: bold;
 }
 #web-player h4:hover {
   color: white;
   text-decoration: underline;
+}
+#web-player h4 > a {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: white;
 }
 #web-player a {
   font-size: 0.9em;

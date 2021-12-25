@@ -135,7 +135,7 @@ class Slider {
 }
 
 export default class SpotifyPlaybackElement {
-  private title: Element | null;
+  private title: HTMLAnchorElement | null;
   public currTime: Element | null;
   public duration: Element | null;
   public playPause: Element | null;
@@ -164,11 +164,12 @@ export default class SpotifyPlaybackElement {
     }
   }
 
-  public setTitle (title: string) {
+  public setTitle (title: string, trackUri: string) {
     if (this.title === null) {
       throw new Error('Trying to set title before it is assigned')
     }
     this.title!.textContent = title
+    this.title!.href = trackUri
   }
 
   public getTitle (): string {
@@ -203,7 +204,7 @@ export default class SpotifyPlaybackElement {
     <article id="${config.CSS.IDs.webPlayer}" class="${config.CSS.CLASSES.noSelect}">
       <img class="${config.CSS.CLASSES.column}" src="${config.PATHS.profileUser}" alt="track" id="${config.CSS.IDs.playerTrackImg}"/>
       <div class="${config.CSS.CLASSES.column}" style="flex-basis: 30%; max-width: 18.5vw;">
-        <h4 class="${config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
+        <h4 class="${config.CSS.CLASSES.ellipsisWrap}"><a href="" target="_blank">Select a Song</a></h4>
         <span id="${config.CSS.IDs.webPlayerArtists}"></span>
       </div>
       <div class="${config.CSS.CLASSES.webPlayerControls} ${config.CSS.CLASSES.column}">
@@ -286,7 +287,7 @@ export default class SpotifyPlaybackElement {
     this.songProgress = new Slider(0, seekSong, false, onSeekStart, onSeeking, songSliderEl)
     this.volumeBar = new Slider(initialVolume * 100, (percentage) => setVolume(percentage, false), false, () => {}, (percentage) => setVolume(percentage, true), volumeSliderEl)
 
-    this.title = webPlayerEl.getElementsByTagName('h4')[0] as Element ?? throwExpression('web player title element does not exist')
+    this.title = webPlayerEl.getElementsByTagName('h4')[0].getElementsByTagName('a')[0] as HTMLAnchorElement ?? throwExpression('web player title element does not exist')
 
     // get playtime bar elements
     this.currTime = playTimeBar.getElementsByTagName('p')[0] as Element ?? throwExpression('web player current time element does not exist')
