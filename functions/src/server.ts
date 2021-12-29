@@ -1,21 +1,21 @@
-/* eslint-disable no-unused-vars */
 import { StatusCodes } from 'http-status-codes'
-import express from 'express'
+import * as express from 'express'
 import type { Request, Response, NextFunction, Application } from 'express'
 
 import { createClient } from 'redis'
-import helmet from 'helmet'
-import session from 'express-session'
+import * as helmet from 'helmet'
+import * as session from 'express-session'
 import type { SessionOptions } from 'express-session'
 
 import { router as tokens } from './routes/tokens'
 import { router as spotifyActions } from './routes/spotify-actions'
 import { router as userActions } from './routes/user-actions'
-import RedisStore from 'connect-redis'
-import crypto from 'crypto'
+import * as RedisStore from 'connect-redis'
+import * as crypto from 'crypto'
 import { v4 as uuidv4 } from 'uuid'
 import User from './user'
-import path from 'path'
+import * as path from 'path'
+import * as functions from 'firebase-functions'
 
 declare module 'express-session' {
   interface SessionData {
@@ -179,5 +179,4 @@ app.on('listening', function () {
   }, 60000)
 })
 
-app.listen(process.env.EXPRESS_PORT, function () {
-})
+export const server = functions.https.onRequest(app)

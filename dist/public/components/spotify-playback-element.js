@@ -144,11 +144,12 @@ class SpotifyPlaybackElement {
             playerTrackImg.src = imgSrc;
         }
     }
-    setTitle(title) {
+    setTitle(title, trackUri) {
         if (this.title === null) {
             throw new Error('Trying to set title before it is assigned');
         }
         this.title.textContent = title;
+        this.title.href = trackUri;
     }
     getTitle() {
         if (this.title === null) {
@@ -173,7 +174,7 @@ class SpotifyPlaybackElement {
     <article id="${config_1.config.CSS.IDs.webPlayer}" class="${config_1.config.CSS.CLASSES.noSelect}">
       <img class="${config_1.config.CSS.CLASSES.column}" src="${config_1.config.PATHS.profileUser}" alt="track" id="${config_1.config.CSS.IDs.playerTrackImg}"/>
       <div class="${config_1.config.CSS.CLASSES.column}" style="flex-basis: 30%; max-width: 18.5vw;">
-        <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap}">Select a Song</h4>
+        <h4 class="${config_1.config.CSS.CLASSES.ellipsisWrap}"><a href="" target="_blank">Select a Song</a></h4>
         <span id="${config_1.config.CSS.IDs.webPlayerArtists}"></span>
       </div>
       <div class="${config_1.config.CSS.CLASSES.webPlayerControls} ${config_1.config.CSS.CLASSES.column}">
@@ -237,7 +238,7 @@ class SpotifyPlaybackElement {
         const volumeSliderEl = (_d = document.getElementById(config_1.config.CSS.IDs.webPlayerVolume)) !== null && _d !== void 0 ? _d : (0, config_1.throwExpression)('web player volume bar does not exist');
         this.songProgress = new Slider(0, seekSong, false, onSeekStart, onSeeking, songSliderEl);
         this.volumeBar = new Slider(initialVolume * 100, (percentage) => setVolume(percentage, false), false, () => { }, (percentage) => setVolume(percentage, true), volumeSliderEl);
-        this.title = (_e = webPlayerEl.getElementsByTagName('h4')[0]) !== null && _e !== void 0 ? _e : (0, config_1.throwExpression)('web player title element does not exist');
+        this.title = (_e = webPlayerEl.getElementsByTagName('h4')[0].getElementsByTagName('a')[0]) !== null && _e !== void 0 ? _e : (0, config_1.throwExpression)('web player title element does not exist');
         // get playtime bar elements
         this.currTime = (_f = playTimeBar.getElementsByTagName('p')[0]) !== null && _f !== void 0 ? _f : (0, config_1.throwExpression)('web player current time element does not exist');
         this.duration = (_g = playTimeBar.getElementsByTagName('p')[1]) !== null && _g !== void 0 ? _g : (0, config_1.throwExpression)('web player duration time element does not exist');

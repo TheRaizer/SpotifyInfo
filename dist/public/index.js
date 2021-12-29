@@ -35,7 +35,9 @@ function generateCustomLoginButton() {
     parentEl === null || parentEl === void 0 ? void 0 : parentEl.appendChild(a);
 }
 (function () {
+    console.log('Interesting');
     (0, config_1.promiseHandler)((0, manage_tokens_1.checkIfHasTokens)(), (hasToken) => {
+        console.log('redirect uri: ' + config_1.redirectUri);
         if (!hasToken) {
             (0, config_1.promiseHandler)((0, manage_tokens_1.getTokens)(), (obtainedToken) => {
                 (0, manage_tokens_1.onSuccessfulTokenCall)(obtainedToken, () => {

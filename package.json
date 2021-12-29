@@ -12,6 +12,8 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
+    "firebase-admin": "^10.0.1",
+    "firebase-functions": "^3.16.0",
     "helmet": "^4.6.0",
     "http-status-codes": "^2.1.4",
     "https": "^1.0.0",
@@ -48,7 +50,7 @@
     "webpack-cli": "^4.8.0"
   },
   "scripts": {
-    "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
+    "prebuild": "tsconfig.json --fix",
     "build": "tsc",
     "tsc": "tsc -p tsconfig.json",
     "start": "node dist/server",

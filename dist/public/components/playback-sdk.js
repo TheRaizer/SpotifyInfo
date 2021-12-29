@@ -310,7 +310,7 @@ class SpotifyPlayback {
         this.selPlaying.element.classList.add(config_1.config.CSS.CLASSES.selected);
         this.selPlaying.track_uri = eventArg.currPlayable.uri;
         (_a = this.webPlayerEl.playPause) === null || _a === void 0 ? void 0 : _a.classList.add(config_1.config.CSS.CLASSES.selected);
-        this.webPlayerEl.setTitle(eventArg.currPlayable.title);
+        this.webPlayerEl.setTitle(eventArg.currPlayable.title, eventArg.currPlayable.uri);
         this.webPlayerEl.setImgSrc(eventArg.currPlayable.imageUrl);
         this.webPlayerEl.setArtists(eventArg.currPlayable.artistsHtml);
         (_b = this.selPlaying.playableNode) === null || _b === void 0 ? void 0 : _b.data.onPlaying();

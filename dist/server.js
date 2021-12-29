@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.server = void 0;
 /* eslint-disable no-unused-vars */
 const http_status_codes_1 = require("http-status-codes");
 const express_1 = __importDefault(require("express"));
@@ -16,6 +17,7 @@ const connect_redis_1 = __importDefault(require("connect-redis"));
 const crypto_1 = __importDefault(require("crypto"));
 const uuid_1 = require("uuid");
 const path_1 = __importDefault(require("path"));
+const firebase_functions_1 = __importDefault(require("firebase-functions"));
 console.log(__dirname);
 // const options = {
 //   key: fs.readFileSync('/srv/www/keys/my-site-key.pem'),
@@ -140,7 +142,7 @@ app.put('/clear-session', function (req, res, next) {
     req.session.destroy((err) => next(err));
     res.sendStatus(http_status_codes_1.StatusCodes.OK);
 });
-app.listen(process.env.EXPRESS_PORT, function () {
+app.on('listening', function () {
     console.log('listening at localhost:' + process.env.EXPRESS_PORT);
     // set interval to update secret every minute
     setInterval(function () {
@@ -150,5 +152,7 @@ app.listen(process.env.EXPRESS_PORT, function () {
         });
     }, 60000);
 });
-// https.createServer(options, app).listen(8443)
+exports.server = firebase_functions_1.default.https.onRequest(app);
+// app.listen(process.env.EXPRESS_PORT, function () {
+// })
 //# sourceMappingURL=server.js.map

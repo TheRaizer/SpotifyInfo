@@ -5,7 +5,7 @@ import axios from 'axios'
 
 const authEndpoint = 'https://accounts.spotify.com/authorize'
 // Replace with your app's client ID, redirect URI and desired scopes
-const redirectUri = 'http://localhost:3000'
+export const redirectUri = 'http://localhost:3000'
 const clientId = '434f5e9f442a4e4586e089a33f65c857'
 const scopes = [
   'user-read-playback-state',
@@ -128,7 +128,7 @@ export const config = {
     }
   },
   URLs: {
-    siteUrl: 'http://localhost:3000',
+    siteUrl: 'http://localhost:5000',
     auth: `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join(
       '%20'
     )}&response_type=code&show_dialog=true`,

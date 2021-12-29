@@ -47,7 +47,7 @@ class Artist extends card_1.default {
         <section class="${config_1.config.CSS.CLASSES.content}">
           <header class="artist-base">
             <img src=${this.imageUrl} alt="Artist"/>
-            <h3>${this.name}</h3>
+            <h3><a href=${this.externalUrl} target="_blank">${this.name}</a></h3>
             <ul class="genres">
               ${genreList}
             </ul>
@@ -87,8 +87,11 @@ class Artist extends card_1.default {
                     </div>
                   </div>
                   <div class=${config_1.config.CSS.CLASSES.flipCardBack}>
+                    <h3><a href="${this.externalUrl}" target="_blank" ${config_1.config.CSS.ATTRIBUTES.restrictFlipOnClick}="true">${this.name}</a></h3>
                     <h3>Followers:</h3>
                     <p>${this.followerCount}</p>
+                    <h3>Genres:</h3>
+                    <p>${this.genres}</p>
                   </div>
                 </button>
               </div>

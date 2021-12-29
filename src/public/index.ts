@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { animationControl, config, promiseHandler } from './config'
+import { animationControl, config, promiseHandler, redirectUri } from './config'
 import { checkIfHasTokens, getTokens, onSuccessfulTokenCall } from './manage-tokens'
 
 const HALF_HOUR = 1.8e6 /* 30 min in ms */
@@ -36,7 +36,9 @@ function generateCustomLoginButton () {
 }
 
 (function () {
+  console.log('Interesting')
   promiseHandler<boolean>(checkIfHasTokens(), (hasToken) => {
+    console.log('redirect uri: ' + redirectUri)
     if (!hasToken) {
       promiseHandler<boolean>(getTokens(), (obtainedToken) => {
         onSuccessfulTokenCall(obtainedToken, () => {
