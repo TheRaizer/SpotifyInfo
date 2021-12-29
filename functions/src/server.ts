@@ -22,29 +22,25 @@ declare module 'express-session' {
     user: User
   }
 }
-
-console.log(__dirname)
-
-// const options = {
-//   key: fs.readFileSync('/srv/www/keys/my-site-key.pem'),
-//   cert: fs.readFileSync('/srv/www/keys/chain.pem')
-// }
-
 require('dotenv').config({ path: path.join(__dirname, '/.env') })
 
-// express and helmet protects api from being called on other sites, also known as CORS
+// express protects api from being called on other sites, also known as CORS and helmet secures from other problems
 // more info: https://stackoverflow.com/questions/31378997/express-js-limit-api-access-to-only-pages-from-the-same-website
 const app: Application = express()
 
+
+const { REDIS_PORT, REDIS_HOST, REDIS_PASSWORD, SESH_SECRET, NODE_ENV } = process.env
+
 const RedisStorage = RedisStore(session)
-if (process.env.REDIS_PORT === undefined) {
+if (REDIS_PORT === undefined) {
   throw new Error('Redis port is undefined in .env')
 }
+
 // Configure redis client
 const redisClient = createClient({
-  host: process.env.REDIS_HOST,
-  port: parseInt(process.env.REDIS_PORT),
-  password: process.env.REDIS_PASSWORD
+  host: REDIS_HOST,
+  port: parseInt(REDIS_PORT),
+  password: REDIS_PASSWORD
 })
 redisClient.on('error', function (err) {
   console.log('Could not establish a connection with redis. ' + err)
@@ -58,7 +54,7 @@ let sesh: SessionOptions
 if (process.env.SESH_SECRET) {
   sesh = {
     store: new RedisStorage({ client: redisClient }),
-    secret: [process.env.SESH_SECRET],
+    secret: [SESH_SECRET!],
     genid: function () {
       return uuidv4() + crypto.randomBytes(48) // use UUIDs for session IDs
     },
@@ -74,7 +70,7 @@ if (process.env.SESH_SECRET) {
   throw new Error('NO session secret found on .env')
 }
 // NODE_ENV is conventionally either 'production' or 'development'
-if (process.env.NODE_ENV === 'production') {
+if (NODE_ENV === 'production') {
   console.log('Production')
   app.set('trust proxy', 1) // trust first proxy
   if (sesh.cookie) {

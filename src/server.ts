@@ -167,7 +167,8 @@ app.put('/clear-session', function (req: Request, res: Response, next: NextFunct
   res.sendStatus(StatusCodes.OK)
 })
 
-app.on('listening', function () {
+app.listen(process.env.EXPRESS_PORT)
+app.on('listened', function () {
   console.log('listening at localhost:' + process.env.EXPRESS_PORT)
 
   // set interval to update secret every minute
@@ -177,7 +178,4 @@ app.on('listening', function () {
       (sesh.secret as Array<string>).unshift(secret)
     })
   }, 60000)
-})
-
-app.listen(process.env.EXPRESS_PORT, function () {
 })
