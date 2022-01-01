@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+// @ts-nocheck
 import { StatusCodes } from 'http-status-codes'
 import express from 'express'
 import type { Request, Response, NextFunction, Application } from 'express'
@@ -22,13 +23,6 @@ declare module 'express-session' {
     user: User
   }
 }
-
-console.log(__dirname)
-
-// const options = {
-//   key: fs.readFileSync('/srv/www/keys/my-site-key.pem'),
-//   cert: fs.readFileSync('/srv/www/keys/chain.pem')
-// }
 
 require('dotenv').config({ path: path.join(__dirname, '/.env') })
 
@@ -167,8 +161,7 @@ app.put('/clear-session', function (req: Request, res: Response, next: NextFunct
   res.sendStatus(StatusCodes.OK)
 })
 
-app.listen(process.env.EXPRESS_PORT)
-app.on('listened', function () {
+app.listen(process.env.EXPRESS_PORT, () => {
   console.log('listening at localhost:' + process.env.EXPRESS_PORT)
 
   // set interval to update secret every minute

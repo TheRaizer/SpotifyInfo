@@ -24,7 +24,9 @@ const regenerateSessionWithTokens = (
   const sessionData = req.session
   // regenerate session which changes id
   req.session.regenerate((err) => {
+    console.log(err);
     if (err) {
+      console.log("THERE WAS AN ERROR REGENING SESSION")
       throw new Error(err)
     }
     // once session regenerated, reassign the data

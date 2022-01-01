@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /* eslint-disable no-unused-vars */
+// @ts-nocheck
 const http_status_codes_1 = require("http-status-codes");
 const express_1 = __importDefault(require("express"));
 const redis_1 = require("redis");
@@ -16,11 +17,6 @@ const connect_redis_1 = __importDefault(require("connect-redis"));
 const crypto_1 = __importDefault(require("crypto"));
 const uuid_1 = require("uuid");
 const path_1 = __importDefault(require("path"));
-console.log(__dirname);
-// const options = {
-//   key: fs.readFileSync('/srv/www/keys/my-site-key.pem'),
-//   cert: fs.readFileSync('/srv/www/keys/chain.pem')
-// }
 require('dotenv').config({ path: path_1.default.join(__dirname, '/.env') });
 // express and helmet protects api from being called on other sites, also known as CORS
 // more info: https://stackoverflow.com/questions/31378997/express-js-limit-api-access-to-only-pages-from-the-same-website
@@ -140,8 +136,7 @@ app.put('/clear-session', function (req, res, next) {
     req.session.destroy((err) => next(err));
     res.sendStatus(http_status_codes_1.StatusCodes.OK);
 });
-app.listen(process.env.EXPRESS_PORT);
-app.on('listened', function () {
+app.listen(process.env.EXPRESS_PORT, () => {
     console.log('listening at localhost:' + process.env.EXPRESS_PORT);
     // set interval to update secret every minute
     setInterval(function () {

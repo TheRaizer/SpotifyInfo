@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { StatusCodes } from 'http-status-codes'
 import * as express from 'express'
 import type { Request, Response, NextFunction, Application } from 'express'
