@@ -2,39 +2,36 @@ import {
   config,
   millisToMinutesAndSeconds,
   htmlToEl,
-  getValidImage,
-  shuffle
+  getValidImage
 } from '../config'
 import {
   checkIfIsPlayingElAfterRerender,
-  isSamePlayingURI,
-  isSamePlayingURIWithEl,
-  playerPublicVars
+  isSamePlayingURIWithEl
 } from './playback-sdk'
 import Album from './album'
 import Card from './card'
 import PlayableEventArg from './pubsub/event-args/track-play-args'
 import { SpotifyImg, FeaturesData, IArtistTrackData, IPlayable, ExternalUrls, TrackData } from '../../types'
-import DoublyLinkedList, { arrayToDoublyLinkedList, DoublyLinkedListNode } from '../components/doubly-linked-list'
+import DoublyLinkedList, { DoublyLinkedListNode } from '../components/doubly-linked-list'
 import axios from 'axios'
 import EventAggregator from './pubsub/aggregator'
 
 const eventAggregator = (window as any).eventAggregator as EventAggregator
 
 class Track extends Card implements IPlayable {
-  private externalUrls: ExternalUrls;
-  private _id: string;
-  private _title: string;
-  private _duration: string;
-  private _uri: string;
-  private _dateAddedToPlaylist: Date;
+  private externalUrls: ExternalUrls
+  private _id: string
+  private _title: string
+  private _duration: string
+  private _uri: string
+  private _dateAddedToPlaylist: Date
 
-  popularity: string;
-  releaseDate: Date;
-  album: Album;
-  features: FeaturesData | undefined;
-  imageUrl: string;
-  selEl: Element;
+  popularity: string
+  releaseDate: Date
+  album: Album
+  features: FeaturesData | undefined
+  imageUrl: string
+  selEl: Element
   onPlaying: Function
   onStopped: Function
   artistsHtml: string

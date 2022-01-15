@@ -5,7 +5,7 @@
  * @class DoublyLinkedListNode
  */
 export class DoublyLinkedListNode<T> {
-  data: T;
+  data: T
   next: DoublyLinkedListNode<T> | null
   previous: DoublyLinkedListNode<T> | null
 

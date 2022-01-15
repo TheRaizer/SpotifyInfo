@@ -6,13 +6,13 @@ import { ArtistData, SpotifyImg } from '../../types'
 import axios from 'axios'
 
 class Artist extends Card {
-  artistId: string;
-  name: string;
-  genres: Array<string>;
-  followerCount: string;
-  externalUrl: string;
-  imageUrl: string;
-  topTracks: DoublyLinkedList<Track> | undefined;
+  artistId: string
+  name: string
+  genres: Array<string>
+  followerCount: string
+  externalUrl: string
+  imageUrl: string
+  topTracks: DoublyLinkedList<Track> | undefined
 
   constructor (id: string, name: string, genres: Array<string>, followerCount: string, externalUrl: string, images: Array<SpotifyImg>) {
     super()
@@ -109,7 +109,11 @@ class Artist extends Card {
     return htmlToEl(html) as Node
   }
 
-  async loadTopTracks () {
+  /**
+   * Load top tracks from the spotify API and convert the data into a DoublyLinkedList of Track instances.
+   * @returns {DoublyLinkedList<Track>} list of Tracks obtained from the data.
+   */
+  async loadTopTracks (): Promise<DoublyLinkedList<Track>> {
     const res = await axios.get(config.URLs.getArtistTopTracks(this.artistId))
     const tracksData = res.data.tracks
     const trackObjs = new DoublyLinkedList<Track>()
@@ -120,12 +124,22 @@ class Artist extends Card {
     return trackObjs
   }
 
-  hasLoadedTopTracks () {
+  /**
+   * Whether the top tracks of this artist have been loaded depends on whether this.topTracks has been assigned.
+   * @returns {boolean} Whether the top tracks have been loaded.
+   */
+  hasLoadedTopTracks (): boolean {
     return this.topTracks !== undefined
   }
 }
 
-export function generateArtistsFromData (datas: Array<ArtistData>, artistArr: Array<Artist>) {
+/**
+ * Generates instances of the Artist class given an array of ArtistData.
+ * @param {Array<ArtistData>} datas the data to be used to create the Artist instances.
+ * @param {Array<Artist>} artistArr ref to the array that will store the created Artist instances.
+ * @returns {Array<Artist>} the artist array that was given and has now been mutated.
+ */
+export function generateArtistsFromData (datas: Array<ArtistData>, artistArr: Array<Artist>) : Array<Artist> {
   datas.forEach((data: ArtistData) => {
     artistArr.push(
       new Artist(

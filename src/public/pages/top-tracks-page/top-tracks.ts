@@ -46,7 +46,6 @@ const trackActions = (function () {
       trackCards,
       trackArr,
       null,
-      true,
       false
     )
   }
@@ -319,12 +318,12 @@ const displayCardInfo = (function () {
 
 /** Manages a feature's information for all tracks in a term. */
 class Feature {
-  featKey: string;
+  featKey: string
   data: Array<number> // contains the feature values of all tracks in a term
-  EMA: number;
-  mean: number;
-  std: number;
-  definition: string;
+  EMA: number
+  mean: number
+  std: number
+  definition: string
   constructor (featKey: string, definition: string) {
     this.featKey = featKey
     this.data = []

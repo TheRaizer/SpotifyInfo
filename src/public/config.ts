@@ -297,9 +297,9 @@ export const animationControl = (function () {
    * This is done on set intervals.
    *
    *
-   * @param {String} elementsToAnimate - comma separated string containing the classes or ids of elements to animate including prefix char.
-   * @param {String} classToTransitionToo - The class that all the transitioning elements will add
-   * @param {Number} animationInterval - The interval to wait between animation of elements
+   * @param {string} elementsToAnimate - comma separated string containing the classes or ids of elements to animate including prefix char.
+   * @param {string} classToTransitionToo - The class that all the transitioning elements will add
+   * @param {number} animationInterval - The interval to wait between animation of elements
    */
   function addClassOnInterval (
     elementsToAnimate: string,
@@ -360,7 +360,7 @@ export async function addItemsToPlaylist (playlistId: string, uris: Array<string
  * @param {Array<T>} array The array to shuffle but not mutate.
  * @returns {Array<T>} a shuffled version of the given array.
  */
-export function shuffle<T> (array: Array<T>) {
+export function shuffle<T> (array: Array<T>): Array<T> {
   const cloneArr = [...array]
   let currentIndex = array.length
   let randomIndex

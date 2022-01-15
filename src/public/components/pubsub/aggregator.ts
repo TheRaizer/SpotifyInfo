@@ -13,7 +13,7 @@ import Subscription from './subscription'
  *
  */
 class EventAggregator {
-  subscribers: { [key: string]: Array<Subscription> };
+  subscribers: { [key: string]: Array<Subscription> }
   constructor () {
     // key - type, value - [] of functions that take a certain value depending on the type
     this.subscribers = {}

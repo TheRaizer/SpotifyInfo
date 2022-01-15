@@ -13,6 +13,11 @@ export enum TERM_TYPE {
     TRACKS = 'tracks'
 }
 
+/**
+ * Determines the term given a string representation of the term.
+ * @param {string} val the string corrosponding to a term.
+ * @returns {TERMS} the term enum corrosponding to the given string.
+ */
 export function determineTerm (val: string) : TERMS {
   switch (val) {
     case TERMS.SHORT_TERM:
@@ -26,6 +31,12 @@ export function determineTerm (val: string) : TERMS {
   }
 }
 
+/**
+ * Loads from redis the last term of a certain type that the user last left off at.
+ *
+ * @param {TERM_TYPE} termType the type of item whose term you want to load (eg. artists, tracks etc.)
+ * @returns {Promise<TERMS>} the term that the user last left the page from.
+ */
 export async function loadTerm (termType: TERM_TYPE) : Promise<TERMS> {
   const { res, err } = await promiseHandler<AxiosResponse<string | null>>((axios.request<string | null>({ method: 'GET', url: config.URLs.getTerm(termType) })))
   if (err) {
@@ -35,13 +46,19 @@ export async function loadTerm (termType: TERM_TYPE) : Promise<TERMS> {
   }
 }
 
+/**
+ * Saves to redis the term of a certain type.
+ *
+ * @param {TERMS} term the term to save.
+ * @param {TERM_TYPE} termType the type of item whose term you want to save (eg. artists, tracks etc.)
+ */
 export async function saveTerm (term: TERMS, termType: TERM_TYPE) {
   await promiseHandler(axios.put(config.URLs.putTerm(term, termType)))
 }
 
 /**
  * Get the index that points to the tab elements
- * @param term the term relating to the tab elements
+ * @param {TERMS} term the term relating to the tab elements
  * @returns the index to find the tab elements
  */
 export function IdxFromTerm (term: TERMS) {
@@ -55,6 +72,12 @@ export function IdxFromTerm (term: TERMS) {
   }
 }
 
+/**
+ * Selects the tab to start on when page loads.
+ * @param {TERMS} term the term whose tab is to be selected.
+ * @param {SelectableTabEls} termTab the tab elements handler.
+ * @param {Element} tabParent the parent of all the tab elements
+ */
 export function selectStartTermTab (term: TERMS, termTab: SelectableTabEls, tabParent: Element) {
   const idx = IdxFromTerm(term)
   const btn = tabParent.getElementsByTagName('button')[idx]

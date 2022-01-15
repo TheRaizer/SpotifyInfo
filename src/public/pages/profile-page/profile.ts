@@ -115,7 +115,6 @@ const followedArtistActions = (function () {
       artistCards,
       followedArtists,
       null,
-      true,
       false
     )
   }

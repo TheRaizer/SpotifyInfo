@@ -1,9 +1,12 @@
 import { config } from '../config'
 
 class SelectableTabEls {
-  btn: Element | undefined;
-  borderCover: Element | undefined;
+  btn: Element | undefined // currently selected tab button
+  borderCover: Element | undefined // currently selected tab border cover
 
+  /**
+   * Removes the required CSS classes to the current elements.
+   */
   private unselectEls () {
     if (this.btn && this.borderCover) {
       this.btn.classList.remove(config.CSS.CLASSES.selected)
@@ -11,6 +14,9 @@ class SelectableTabEls {
     }
   }
 
+  /**
+   * Adds the required CSS classes to the current elements.
+   */
   private selectEls () {
     if (this.btn && this.borderCover) {
       this.btn.classList.add(config.CSS.CLASSES.selected)
@@ -18,6 +24,11 @@ class SelectableTabEls {
     }
   }
 
+  /**
+   * Select new tab and unselect previous tab.
+   * @param {Element} btn the button for the tab that will be selected.
+   * @param {Element} borderCover the border cover for the tab that will be selected.
+   */
   public selectNewTab (btn: Element, borderCover: Element) {
     // unselect the previous tab
     this.unselectEls()

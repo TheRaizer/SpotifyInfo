@@ -6,12 +6,12 @@ import { PlaylistTrackData, SpotifyImg, TrackData } from '../../types'
 import axios from 'axios'
 
 class Playlist extends Card {
-  name: string;
-  id: string;
-  undoStack: Array<Array<Track>>;
-  order: string;
-  trackList: undefined | DoublyLinkedList<Track>;
-  imageUrl: string;
+  name: string
+  id: string
+  undoStack: Array<Array<Track>>
+  order: string
+  trackList: undefined | DoublyLinkedList<Track>
+  imageUrl: string
 
   constructor (name: string, images: Array<SpotifyImg>, id: string) {
     super()

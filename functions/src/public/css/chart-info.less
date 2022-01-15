@@ -1,0 +1,177 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
+
+@import "main-vars.less";
+
+@bg-color: #202020;
+@icon-height: 64px;
+
+.chart-info {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 35%;
+  flex: 0 0 35%;
+  width: 35%;
+  color: @reading-color;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: space-evenly;
+  -ms-flex-pack: space-evenly;
+  justify-content: space-evenly;
+  margin-left: 4vw;
+
+  & > div {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    text-align: start;
+    background-color: @bg-color;
+
+    min-width: 0;
+    min-height: @icon-height;
+    width: 100%;
+
+    margin-top: 5%;
+    margin-bottom: 5%;
+
+    -ms-flex-preferred-size: 60px;
+
+    flex-basis: 60px;
+    overflow-y: hidden;
+    -webkit-transition: all 700ms cubic-bezier(0.075, 0.82, 0.165, 1);
+    -o-transition: all 700ms cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition: all 700ms cubic-bezier(0.075, 0.82, 0.165, 1);
+    -webkit-box-shadow: inset 0 -5px 10px -5px #000000;
+    box-shadow: inset 0 -5px 10px -5px #000000;
+
+    &:hover {
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+
+    & > img {
+      margin-left: 5%;
+      height: -webkit-fit-content;
+      height: -moz-fit-content;
+      height: fit-content;
+      width: -webkit-fit-content;
+      width: -moz-fit-content;
+      width: fit-content;
+    }
+    & .expandable-text-container {
+      margin-top: 20px;
+      margin-bottom: 25px;
+      -ms-flex-preferred-size: 70%;
+      flex-basis: 70%;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      height: -webkit-fit-content;
+      height: -moz-fit-content;
+      height: fit-content;
+      min-width: 0;
+      line-height: 1.5;
+    }
+    & .drop-down {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
+
+.chart-container {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 55%;
+  flex: 0 0 55%;
+  width: 55%;
+  min-width: 0;
+  height: 60vh;
+}
+
+#tracks-data {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.vibe {
+  margin-top: 15vw;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+
+  & > h2 {
+    color: @reading-color;
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 2vw;
+  }
+
+  & > div {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    width: 50vw;
+    min-width: -webkit-fit-content;
+    min-width: -moz-fit-content;
+    min-width: fit-content;
+    min-height: -webkit-fit-content;
+    min-height: -moz-fit-content;
+    min-height: fit-content;
+    height: 10vw;
+    background-color: @bg-color;
+
+    & > img {
+      width: 64px;
+      height: 64px;
+    }
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  #tracks-data {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+  }
+  .chart-container {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 0 100%;
+    flex: 1 0 100%;
+    width: 100%;
+  }
+  .chart-info {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 100%;
+    flex: 0 0 100%;
+    width: 100%;
+  }
+}

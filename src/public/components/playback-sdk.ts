@@ -12,15 +12,23 @@ import EventAggregator from './pubsub/aggregator'
 import { IPlayable } from '../../types'
 import SpotifyPlaybackElement from './spotify-playback-element'
 
-async function loadVolume () {
+/**
+ * Load the volume from the redis session.
+ * @returns {string} the value stored for volume 0-1.
+ */
+async function loadVolume () : Promise<string> {
   const { res, err } = await promiseHandler(axios.get(config.URLs.getPlayerVolumeData))
 
   if (err) {
-    return 0
+    return '0'
   } else {
     return res!.data
   }
 }
+
+/**
+ * Save the volume to the redis session.
+ */
 async function saveVolume (volume: string) {
   promiseHandler(axios.put(config.URLs.putPlayerVolumeData(volume)))
 }
@@ -29,10 +37,10 @@ export const playerPublicVars = {
   isLoop: false
 }
 class SpotifyPlayback {
-  private player: any;
+  private player: any
   // controls timing of async actions when working with webplayer sdk
-  private isExecutingAction: boolean;
-  private device_id: string;
+  private isExecutingAction: boolean
+  private device_id: string
   public selPlaying: {
     element: null | Element
     track_uri: string
@@ -42,10 +50,10 @@ class SpotifyPlayback {
     playableArr: null | Array<IPlayable>
   }
 
-  private getStateInterval: NodeJS.Timeout | null;
-  private webPlayerEl: SpotifyPlaybackElement;
-  private playerIsReady: boolean;
-  private wasInShuffle = false;
+  private getStateInterval: NodeJS.Timeout | null
+  private webPlayerEl: SpotifyPlaybackElement
+  private playerIsReady: boolean
+  private wasInShuffle = false
 
   constructor () {
     this.isExecutingAction = false
@@ -151,7 +159,7 @@ class SpotifyPlayback {
             })
           })
         },
-        volume: volume
+        volume: parseInt(volume)
       })
       this._addListeners(volume)
       this.player.connect()
@@ -173,7 +181,7 @@ class SpotifyPlayback {
               })
             })
           },
-          volume: volume
+          volume: parseInt(volume)
         })
         this._addListeners(volume)
         this.player.connect()

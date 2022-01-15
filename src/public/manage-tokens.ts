@@ -2,6 +2,11 @@ import { config, promiseHandler, throwExpression } from './config'
 import axios from 'axios'
 import { displayUsername } from './user-data'
 
+/**
+ * Checks to see if this users redis session contains a valid access token to the spotify web api.
+ *
+ * @returns {boolean} whether the redis session contains a valid access token to the spotify web api.
+ */
 export async function checkIfHasTokens (): Promise<boolean> {
   let hasToken = false
   // await promise resolve that returns whether the session has tokens.
@@ -15,7 +20,12 @@ export async function checkIfHasTokens (): Promise<boolean> {
   return hasToken
 }
 
-export async function getTokens () {
+/**
+ * Attempts to obtain token from spotify api using the auth code retrieved from the url after a user login has been made.
+ *
+ * @returns {boolean} whether a valid token was retrieved.
+ */
+export async function getTokens (): Promise<boolean> {
   let hasToken = false
   // create a parameter searcher in the URL after '?' which holds the requests body parameters
   const urlParams = new URLSearchParams(window.location.search)
@@ -44,7 +54,8 @@ export async function getTokens () {
   return hasToken
 }
 
-/** Generate a login/change account link. Defaults to appending it onto the nav bar.
+/**
+ * Generate a login/change account link. Defaults to appending it onto the nav bar.
  *
  * @param {Array<String>} classesToAdd - the classes to add onto the link.
  * @param {Boolean} changeAccount - Whether the link should be for changing account, or for logging in. (defaults to true)
@@ -82,6 +93,16 @@ export function generateLogin ({
   // Append the anchor element to the parent.
   parentEl.appendChild(a)
 }
+
+/**
+ * Called once the redis session has been checked for a valid token. If one does not exist this function will generate a login element.
+ * Otherwise if a valid token does exist then this function display the username.
+ *
+ * @param hasToken whether the redis session has a valid access token to the spotify api.
+ * @param hasTokenCallback callback to run if a valid token exists.
+ * @param noTokenCallBack callhback to run if a valid token does not exist.
+ * @param redirectHome whether to redirect back to the home page.
+ */
 export function onSuccessfulTokenCall (
   hasToken: boolean,
   hasTokenCallback = () => { },

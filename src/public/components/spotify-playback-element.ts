@@ -8,15 +8,15 @@ import {
 import { playerPublicVars } from './playback-sdk'
 
 class Slider {
-  public drag: boolean = false;
-  public sliderEl: HTMLElement | null = null;
-  public sliderProgress: HTMLElement | null = null;
-  private percentage: number = 0;
-  public max: number = 0;
-  private topToBottom: boolean;
-  private onDragStart: () => void;
-  private onDragStop: (percentage: number) => void;
-  private onDragging: (percentage: number) => void;
+  public drag: boolean = false
+  public sliderEl: HTMLElement | null = null
+  public sliderProgress: HTMLElement | null = null
+  private percentage: number = 0
+  public max: number = 0
+  private topToBottom: boolean
+  private onDragStart: () => void
+  private onDragStop: (percentage: number) => void
+  private onDragging: (percentage: number) => void
 
   constructor (startPercentage: number, onDragStop: (percentage: number) => void, topToBottom: boolean, onDragStart = () => {}, onDragging = (percentage: number) => {}, sliderEl: HTMLElement) {
     this.onDragStop = onDragStop
@@ -38,6 +38,10 @@ class Slider {
     this.sliderProgress!.style.removeProperty('background-color')
   }
 
+  /**
+   * Updates the length of the bar according to where the mouse position is.
+   * @param {number} mosPosVal the mouse position w.r.t. the client.
+   */
   private updateBar (mosPosVal: number) {
     let position
     if (this.topToBottom) {
@@ -62,6 +66,9 @@ class Slider {
     this.changeBarLength()
   };
 
+  /**
+   * Changes the bar length by percent 0-100;
+   */
   private changeBarLength () {
     // set background color of all moving sliders progress as the spotify green
     this.sliderProgress!.style.backgroundColor = '#1db954'
@@ -72,11 +79,17 @@ class Slider {
     }
   }
 
+  /**
+   * Adds both mouse and touch events for changing the slider bar length.
+   */
   public addEventListeners () {
     this.addMouseEvents()
     this.addTouchEvents()
   }
 
+  /**
+   * Add add touch events to change the bar length and color for mobile.
+   */
   private addTouchEvents () {
     this.sliderEl?.addEventListener('touchstart', (evt) => {
       this.drag = true
@@ -101,6 +114,9 @@ class Slider {
     })
   }
 
+  /**
+   * Add add mouse events to change the bar length and color.
+   */
   private addMouseEvents () {
     this.sliderEl?.addEventListener('mousedown', (evt) => {
       this.drag = true
@@ -135,12 +151,12 @@ class Slider {
 }
 
 export default class SpotifyPlaybackElement {
-  private title: HTMLAnchorElement | null;
-  public currTime: Element | null;
-  public duration: Element | null;
-  public playPause: Element | null;
-  public songProgress: Slider | null = null;
-  private volumeBar: Slider | null = null;
+  private title: HTMLAnchorElement | null
+  public currTime: Element | null
+  public duration: Element | null
+  public playPause: Element | null
+  public songProgress: Slider | null = null
+  private volumeBar: Slider | null = null
 
   constructor () {
     this.title = null
@@ -182,14 +198,14 @@ export default class SpotifyPlaybackElement {
   /**
    * Append the web player element to the DOM along with the event listeners for the buttons.
    *
-   * @param playPrevFunc the function to run when the play previous button is pressed on the web player.
-   * @param pauseFunc the function to run when the pause/play button is pressed on the web player.
-   * @param playNextFunc the function to run when the play next button is pressed on the web player.
-   * @param onSeekStart - on drag start event for song progress slider
-   * @param seekSong - on drag end event to seek song for song progress slider
-   * @param onSeeking - on dragging event for song progress slider
-   * @param setVolume - on dragging and on drag end event for volume slider
-   * @param initialVolume - the initial volume to set the slider at
+   * @param {() => void} playPrevFunc the function to run when the play previous button is pressed on the web player.
+   * @param {() => void} pauseFunc the function to run when the pause/play button is pressed on the web player.
+   * @param {() => void} playNextFunc the function to run when the play next button is pressed on the web player.
+   * @param {() => void} onSeekStart - on drag start event for song progress slider
+   * @param {(percentage: number) => void} seekSong - on drag end event to seek song for song progress slider
+   * @param {(percentage: number) => void} onSeeking - on dragging event for song progress slider
+   * @param {(percentage: number, save: boolean) => void} setVolume - on dragging and on drag end event for volume slider
+   * @param {number} initialVolume - the initial volume to set the slider at
    */
   public appendWebPlayerHtml (
     playPrevFunc: () => void,
@@ -249,8 +265,8 @@ export default class SpotifyPlaybackElement {
   /**
    * Updates the web player element.
    *
-   * @param percentDone the percent of the song that has been completed
-   * @param position the current position in ms that has been completed
+   * @param {number} percentDone the percent of the song that has been completed
+   * @param {number} position the current position in ms that has been completed
    */
   public updateElement (percentDone: number, position: number) {
     // if the user is dragging the song progress bar don't auto update
@@ -266,11 +282,11 @@ export default class SpotifyPlaybackElement {
 
   /**
    * Retrieve the web player elements once the web player element has been appeneded to the DOM. Initializes Sliders.
-   * @param onSeekStart - on drag start event for song progress slider
-   * @param seekSong - on drag end event to seek song for song progress slider
-   * @param onSeeking - on dragging event for song progress slider
-   * @param setVolume - on dragging and on drag end event for volume slider
-   * @param initialVolume - the initial volume to set the slider at
+   * @param {() => void} onSeekStart - on drag start event for song progress slider
+   * @param {(percentage: number) => void} seekSong - on drag end event to seek song for song progress slider
+   * @param {(percentage: number) => void} onSeeking - on dragging event for song progress slider
+   * @param {(percentage: number, save: boolean) => void} setVolume - on dragging and on drag end event for volume slider
+   * @param {number} initialVolume - the initial volume to set the slider at
    */
   private getWebPlayerEls (
     onSeekStart: () => void,
@@ -299,9 +315,9 @@ export default class SpotifyPlaybackElement {
   /**
    * Assigns the events to run on each button press that exists on the web player element.
    *
-   * @param playPrevFunc function to run when play previous button is pressed
-   * @param pauseFunc function to run when play/pause button is pressed
-   * @param playNextFunc function to run when play next button is pressed
+   * @param {() => void} playPrevFunc function to run when play previous button is pressed
+   * @param {() => void} pauseFunc function to run when play/pause button is pressed
+   * @param {() => void} playNextFunc function to run when play next button is pressed
    */
   private assignEventListeners (
     playPrevFunc: () => void,

@@ -1,10 +1,10 @@
 import EventAggregator from './aggregator'
 
 export default class Subscription {
-  eventAggregator: EventAggregator;
-  evt: Function;
-  argType: string;
-  id: string;
+  eventAggregator: EventAggregator
+  evt: Function
+  argType: string
+  id: string
 
   constructor (eventAggregator: EventAggregator, evt: Function, argType: string) {
     this.eventAggregator = eventAggregator

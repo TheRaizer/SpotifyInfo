@@ -1,6 +1,6 @@
 class AsyncSelectionVerif<T> {
-  private _currSelectedVal: T | null;
-  hasLoadedCurrSelected: boolean;
+  private _currSelectedVal: T | null
+  hasLoadedCurrSelected: boolean
 
   constructor () {
     this._currSelectedVal = null

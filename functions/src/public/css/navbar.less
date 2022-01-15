@@ -1,0 +1,117 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
+
+@import "main-vars.less";
+
+@hover-color: rgba(221, 221, 221, 0.966);
+@border: 1px solid @hover-color;
+
+.topnav {
+  z-index: 1000;
+  position: fixed;
+  list-style-type: none;
+  margin: 15px 0 0 0;
+  padding: 0;
+  overflow: hidden;
+
+  font-family: arial;
+
+  text-align: left;
+  background-color: transparent;
+  width: 100%;
+  right: 0;
+  top: 0;
+
+  & li {
+    float: left;
+    margin-right: 0.5vw;
+    margin-left: 0.5vw;
+
+    & a {
+      width: 10vw;
+      height: 20px;
+      border-radius: 30px;
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 15px 0.2vw;
+      text-decoration: none;
+      float: left;
+      font-size: 17px;
+
+      background-color: rgba(126, 126, 126, 0.199);
+
+      -webkit-transition: background-color 300ms ease-out;
+      -o-transition: background-color 300ms ease-out;
+      transition: background-color 300ms ease-out;
+
+      &.spotify-logo {
+        padding: 15px 0.2vw;
+      }
+      &:hover:not(.active) {
+        background-color: @hover-color;
+        color: black;
+      }
+      &.active:hover {
+        background-color: @primary-green;
+      }
+    }
+    &.right {
+      margin-left: 0;
+      margin-right: 0;
+      float: right;
+    }
+  }
+}
+
+#topnav-mobile {
+  display: none;
+}
+
+@media only screen and (max-width: 900px) {
+  #topnav-mobile {
+    display: flex;
+    justify-content: center;
+
+    & > a {
+      margin-right: 0.5vw;
+      margin-left: 0.5vw;
+
+      width: 10vw;
+      height: 20px;
+      border-radius: 30px;
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 15px 0.2vw;
+      text-decoration: none;
+      float: left;
+      font-size: 17px;
+
+      background-color: rgba(126, 126, 126, 0.199);
+
+      -webkit-transition: background-color 300ms ease-out;
+      -o-transition: background-color 300ms ease-out;
+      transition: background-color 300ms ease-out;
+
+      &.spotify-logo {
+        padding: 15px 0.2vw;
+      }
+      &:hover:not(.active) {
+        background-color: @hover-color;
+        color: black;
+      }
+      &.active:hover {
+        background-color: @primary-green;
+      }
+    }
+  }
+
+  .topnav {
+    display: none;
+  }
+}
