@@ -85,7 +85,6 @@ function logErrors (err: { response: { data: any } }, _req: Request, _res: Respo
 }
 
 // the app.use middleware run top down so we log errors at the end
-
 app.use(
   helmet({
     // don't set CSP (content security policy middle ware) as this will be set manually
@@ -115,6 +114,7 @@ app.use(
     }
   })
 )
+
 app.use(session(sesh))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())

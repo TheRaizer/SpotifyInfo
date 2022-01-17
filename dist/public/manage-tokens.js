@@ -16,6 +16,11 @@ exports.onSuccessfulTokenCall = exports.generateLogin = exports.getTokens = expo
 const config_1 = require("./config");
 const axios_1 = __importDefault(require("axios"));
 const user_data_1 = require("./user-data");
+/**
+ * Checks to see if this users redis session contains a valid access token to the spotify web api.
+ *
+ * @returns {boolean} whether the redis session contains a valid access token to the spotify web api.
+ */
 function checkIfHasTokens() {
     return __awaiter(this, void 0, void 0, function* () {
         let hasToken = false;
@@ -27,6 +32,11 @@ function checkIfHasTokens() {
     });
 }
 exports.checkIfHasTokens = checkIfHasTokens;
+/**
+ * Attempts to obtain token from spotify api using the auth code retrieved from the url after a user login has been made.
+ *
+ * @returns {boolean} whether a valid token was retrieved.
+ */
 function getTokens() {
     return __awaiter(this, void 0, void 0, function* () {
         let hasToken = false;
@@ -51,7 +61,8 @@ function getTokens() {
     });
 }
 exports.getTokens = getTokens;
-/** Generate a login/change account link. Defaults to appending it onto the nav bar.
+/**
+ * Generate a login/change account link. Defaults to appending it onto the nav bar.
  *
  * @param {Array<String>} classesToAdd - the classes to add onto the link.
  * @param {Boolean} changeAccount - Whether the link should be for changing account, or for logging in. (defaults to true)
@@ -80,6 +91,15 @@ function generateLogin({ classesToAdd = ['right'], changeAccount = true, parentE
     parentEl.appendChild(a);
 }
 exports.generateLogin = generateLogin;
+/**
+ * Called once the redis session has been checked for a valid token. If one does not exist this function will generate a login element.
+ * Otherwise if a valid token does exist then this function display the username.
+ *
+ * @param hasToken whether the redis session has a valid access token to the spotify api.
+ * @param hasTokenCallback callback to run if a valid token exists.
+ * @param noTokenCallBack callhback to run if a valid token does not exist.
+ * @param redirectHome whether to redirect back to the home page.
+ */
 function onSuccessfulTokenCall(hasToken, hasTokenCallback = () => { }, noTokenCallBack = () => { }, redirectHome = true) {
     var _a, _b;
     const getTokensSpinner = document.getElementById(config_1.config.CSS.IDs.getTokenLoadingSpinner);

@@ -6,15 +6,16 @@ class CardActionsHandler {
         this.storedSelEls = new Array(maxLength);
         this.currScrollingAnim = null;
     }
-    /** Manages selecting a card and deselecting the previous selected one
+    /**
+     * Manages selecting a card and deselecting the previous selected one
      * when a cards on click event listener is triggered.
      *
      * @param {Element} selCardEl - the card that executed this function when clicked
      * @param {Array<Card>} corrObjList - the list of objects that contains one that corrosponds to the selected card,
      * each ***object must have the cardId attribute.
      * @param {Function} callback - function to run when selected object has changed
-     * @param {Boolean} allowUnselSelected - whether to allow unselecting of the selected card by clicking on it again
-     * @param {Boolean} unselectPrevious - whether to unselect the previously selected card
+     * @param {boolean} allowUnselSelected - whether to allow unselecting of the selected card by clicking on it again
+     * @param {boolean} unselectPrevious - whether to unselect the previously selected card
      */
     onCardClick(selCardEl, corrObjList, callback, allowUnselSelected = false, unselectPrevious = true) {
         // if the selected card is selected, and we can unselect it, do so.
@@ -51,7 +52,8 @@ class CardActionsHandler {
             callback(selObj);
         }
     }
-    /** Manages adding certain properties realting to scrolling text when entering
+    /**
+     * Manages adding certain properties realting to scrolling text when entering
      * a card element. We assume there is only one scrolling text on the card.
      *
      * @param {Element} enteringCardEl - element you are entering, that contains the scrolling text
@@ -65,7 +67,8 @@ class CardActionsHandler {
             this.runScrollingTextAnim(scrollingText, enteringCardEl);
         }
     }
-    /** Starts to scroll text from left to right.
+    /**
+     * Starts to scroll text from left to right.
      *
      * @param {Element} scrollingText - element containing the text that will scroll
      * @param {Element} cardEl - card element that contains the scrolling text
@@ -91,10 +94,11 @@ class CardActionsHandler {
         });
         this.currScrollingAnim.onfinish = () => this.scrollTextOnCardLeave(cardEl);
     }
-    /** Manages removing certain properties relating to scrolling text once leaving
+    /**
+     * Manages removing certain properties relating to scrolling text once leaving
      * a card element. We assume there is only one scrolling text on the card.
      *
-     * @param {HTML} leavingCardEl - element you are leaving, that contains the scrolling text
+     * @param {Element} leavingCardEl - element you are leaving, that contains the scrolling text
      */
     scrollTextOnCardLeave(leavingCardEl) {
         var _a;
@@ -107,7 +111,14 @@ class CardActionsHandler {
     clearSelectedEls() {
         this.storedSelEls.splice(0, this.storedSelEls.length);
     }
-    addAllEventListeners(cards, objArr, clickCallBack, allowUnselected, unselectPrevious) {
+    /**
+     * For every card in the given array we add an onClick, mouseenter, and mouseleave event listener to it.
+     * @param {Array<Element>} cards the card elements to add the event listeners too.
+     * @param {Array<Card>} objArr the array of Card instances corrosponding to the given card elements.
+     * @param {null | ((selObj: unknown) => void)} clickCallBack a function to execute when the card is clicked.
+     * @param {boolean} unselectPrevious whether to unselect the previous card when a new card is clicked.
+     */
+    addAllEventListeners(cards, objArr, clickCallBack, unselectPrevious) {
         this.clearSelectedEls();
         cards.forEach((trackCard) => {
             trackCard.addEventListener('click', (evt) => {
@@ -116,7 +127,7 @@ class CardActionsHandler {
                 if ((_a = evt.target) === null || _a === void 0 ? void 0 : _a.getAttribute(config_1.config.CSS.ATTRIBUTES.restrictFlipOnClick)) {
                     return;
                 }
-                this.onCardClick(trackCard, objArr, clickCallBack, allowUnselected, unselectPrevious);
+                this.onCardClick(trackCard, objArr, clickCallBack, true, unselectPrevious);
             });
             trackCard.addEventListener('mouseenter', () => {
                 this.scrollTextOnCardEnter(trackCard);

@@ -37,7 +37,7 @@ const trackActions = (function () {
     };
     function addTrackCardListeners(trackArr) {
         const trackCards = Array.from(document.getElementsByClassName(config_1.config.CSS.CLASSES.track));
-        cardActionsHandler.addAllEventListeners(trackCards, trackArr, null, true, false);
+        cardActionsHandler.addAllEventListeners(trackCards, trackArr, null, false);
     }
     function getCurrSelTopTracks() {
         if (selections.term === save_load_term_1.TERMS.SHORT_TERM) {

@@ -98,7 +98,7 @@ const followedArtistActions = (function () {
         });
         const artistCards = Array.from(document.getElementsByClassName(config_1.config.CSS.CLASSES.artist));
         // add event listeners to the cards
-        cardActionsHandler.addAllEventListeners(artistCards, followedArtists, null, true, false);
+        cardActionsHandler.addAllEventListeners(artistCards, followedArtists, null, false);
     }
     return { getFollowedArtists };
 })();

@@ -99,6 +99,10 @@ class Artist extends card_1.default {
           `;
         return (0, config_1.htmlToEl)(html);
     }
+    /**
+     * Load top tracks from the spotify API and convert the data into a DoublyLinkedList of Track instances.
+     * @returns {DoublyLinkedList<Track>} list of Tracks obtained from the data.
+     */
     loadTopTracks() {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield axios_1.default.get(config_1.config.URLs.getArtistTopTracks(this.artistId));
@@ -109,10 +113,20 @@ class Artist extends card_1.default {
             return trackObjs;
         });
     }
+    /**
+     * Whether the top tracks of this artist have been loaded depends on whether this.topTracks has been assigned.
+     * @returns {boolean} Whether the top tracks have been loaded.
+     */
     hasLoadedTopTracks() {
         return this.topTracks !== undefined;
     }
 }
+/**
+ * Generates instances of the Artist class given an array of ArtistData.
+ * @param {Array<ArtistData>} datas the data to be used to create the Artist instances.
+ * @param {Array<Artist>} artistArr ref to the array that will store the created Artist instances.
+ * @returns {Array<Artist>} the artist array that was given and has now been mutated.
+ */
 function generateArtistsFromData(datas, artistArr) {
     datas.forEach((data) => {
         artistArr.push(new Artist(data.id, data.name, data.genres, data.followers.total, data.external_urls.spotify, data.images));

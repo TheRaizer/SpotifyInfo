@@ -26,6 +26,11 @@ var TERM_TYPE;
     TERM_TYPE["ARTISTS"] = "artists";
     TERM_TYPE["TRACKS"] = "tracks";
 })(TERM_TYPE = exports.TERM_TYPE || (exports.TERM_TYPE = {}));
+/**
+ * Determines the term given a string representation of the term.
+ * @param {string} val the string corrosponding to a term.
+ * @returns {TERMS} the term enum corrosponding to the given string.
+ */
 function determineTerm(val) {
     switch (val) {
         case TERMS.SHORT_TERM:
@@ -39,6 +44,12 @@ function determineTerm(val) {
     }
 }
 exports.determineTerm = determineTerm;
+/**
+ * Loads from redis the last term of a certain type that the user last left off at.
+ *
+ * @param {TERM_TYPE} termType the type of item whose term you want to load (eg. artists, tracks etc.)
+ * @returns {Promise<TERMS>} the term that the user last left the page from.
+ */
 function loadTerm(termType) {
     return __awaiter(this, void 0, void 0, function* () {
         const { res, err } = yield (0, config_1.promiseHandler)((axios_1.default.request({ method: 'GET', url: config_1.config.URLs.getTerm(termType) })));
@@ -51,6 +62,12 @@ function loadTerm(termType) {
     });
 }
 exports.loadTerm = loadTerm;
+/**
+ * Saves to redis the term of a certain type.
+ *
+ * @param {TERMS} term the term to save.
+ * @param {TERM_TYPE} termType the type of item whose term you want to save (eg. artists, tracks etc.)
+ */
 function saveTerm(term, termType) {
     return __awaiter(this, void 0, void 0, function* () {
         yield (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putTerm(term, termType)));
@@ -59,7 +76,7 @@ function saveTerm(term, termType) {
 exports.saveTerm = saveTerm;
 /**
  * Get the index that points to the tab elements
- * @param term the term relating to the tab elements
+ * @param {TERMS} term the term relating to the tab elements
  * @returns the index to find the tab elements
  */
 function IdxFromTerm(term) {
@@ -73,6 +90,12 @@ function IdxFromTerm(term) {
     }
 }
 exports.IdxFromTerm = IdxFromTerm;
+/**
+ * Selects the tab to start on when page loads.
+ * @param {TERMS} term the term whose tab is to be selected.
+ * @param {SelectableTabEls} termTab the tab elements handler.
+ * @param {Element} tabParent the parent of all the tab elements
+ */
 function selectStartTermTab(term, termTab, tabParent) {
     const idx = IdxFromTerm(term);
     const btn = tabParent.getElementsByTagName('button')[idx];

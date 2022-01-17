@@ -303,9 +303,9 @@ exports.animationControl = (function () {
      * This is done on set intervals.
      *
      *
-     * @param {String} elementsToAnimate - comma separated string containing the classes or ids of elements to animate including prefix char.
-     * @param {String} classToTransitionToo - The class that all the transitioning elements will add
-     * @param {Number} animationInterval - The interval to wait between animation of elements
+     * @param {string} elementsToAnimate - comma separated string containing the classes or ids of elements to animate including prefix char.
+     * @param {string} classToTransitionToo - The class that all the transitioning elements will add
+     * @param {number} animationInterval - The interval to wait between animation of elements
      */
     function addClassOnInterval(elementsToAnimate, classToTransitionToo, animationInterval) {
         // arr of html selectors that point to elements to animate

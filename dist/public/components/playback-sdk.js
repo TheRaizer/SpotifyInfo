@@ -19,17 +19,24 @@ const track_play_args_1 = __importDefault(require("./pubsub/event-args/track-pla
 const axios_1 = __importDefault(require("axios"));
 const aggregator_1 = __importDefault(require("./pubsub/aggregator"));
 const spotify_playback_element_1 = __importDefault(require("./spotify-playback-element"));
+/**
+ * Load the volume from the redis session.
+ * @returns {string} the value stored for volume 0-1.
+ */
 function loadVolume() {
     return __awaiter(this, void 0, void 0, function* () {
         const { res, err } = yield (0, config_1.promiseHandler)(axios_1.default.get(config_1.config.URLs.getPlayerVolumeData));
         if (err) {
-            return 0;
+            return '0';
         }
         else {
             return res.data;
         }
     });
 }
+/**
+ * Save the volume to the redis session.
+ */
 function saveVolume(volume) {
     return __awaiter(this, void 0, void 0, function* () {
         (0, config_1.promiseHandler)(axios_1.default.put(config_1.config.URLs.putPlayerVolumeData(volume)));
@@ -133,7 +140,7 @@ class SpotifyPlayback {
                             });
                         });
                     },
-                    volume: volume
+                    volume: parseInt(volume)
                 });
                 this._addListeners(volume);
                 this.player.connect();
@@ -156,7 +163,7 @@ class SpotifyPlayback {
                                 });
                             });
                         },
-                        volume: volume
+                        volume: parseInt(volume)
                     });
                     this._addListeners(volume);
                     this.player.connect();
