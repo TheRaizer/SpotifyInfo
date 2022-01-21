@@ -48,7 +48,7 @@ class Playlist extends Card {
     } ${config.CSS.CLASSES.playlist} ${config.CSS.CLASSES.noSelect} ${
       isSelected ? config.CSS.CLASSES.selected : ''
     }" id="${this.getCardId()}" title="Click to View Tracks">
-              <img src="${this.imageUrl}" alt="Playlist Cover"></img>
+              <img src="${this.imageUrl}" alt="Playlist Cover" title="Playlist Cover"></img>
               <h4 class="${config.CSS.CLASSES.scrollingText} ${
       config.CSS.CLASSES.ellipsisWrap
     }">${this.name}</h4>

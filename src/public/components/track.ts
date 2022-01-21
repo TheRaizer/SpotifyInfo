@@ -130,14 +130,14 @@ class Track extends Card implements IPlayable {
     }  ${config.CSS.CLASSES.expandOnHover}">
                 <button class="${config.CSS.CLASSES.card} ${
       config.CSS.CLASSES.flipCardInner
-    } ${config.CSS.CLASSES.track}" id="${this.getCardId()}">
+    } ${config.CSS.CLASSES.track}" id="${this.getCardId()}" title="Click to Flip">
                   <div class="${
                     config.CSS.CLASSES.flipCardFront
                   }"  title="Click to view more Info">
                     <div ${config.CSS.ATTRIBUTES.restrictFlipOnClick}="true" id="${this._uri}" class="${config.CSS.CLASSES.playBtn} ${
                 isSamePlayingURIWithEl(this.uri) ? config.CSS.CLASSES.selected : ''
               }" title="Click to play song"></div>
-                    <img src="${this.imageUrl}" alt="Album Cover"></img>
+                    <img src="${this.imageUrl}" alt="Album Cover" title="Album Cover"></img>
                     <div>
                       <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
       config.CSS.CLASSES.scrollingText
@@ -198,11 +198,11 @@ class Track extends Card implements IPlayable {
             <li class="${config.CSS.CLASSES.playlistTrack}">
               <button id="${playPauseId}" class="${config.CSS.CLASSES.playBtn} ${
                 isSamePlayingURIWithEl(this.uri) ? config.CSS.CLASSES.selected : ''
-              }">
+              }" title="Play Track">
               </button>
               <img class="${config.CSS.CLASSES.noSelect}" src="${
       this.imageUrl
-    }"></img>
+    }" alt="Album Cover" title="Album Cover"></img>
               <div class="${config.CSS.CLASSES.links}">
                 <a href="${this.externalUrls.spotify}" target="_blank">
                   <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
@@ -253,13 +253,13 @@ class Track extends Card implements IPlayable {
               }">
               <button id="${this._uri}" class="${config.CSS.CLASSES.playBtn} ${
                   isSamePlayingURIWithEl(this.uri) ? config.CSS.CLASSES.selected : ''
-                }">
+                }" title="Play Track">
               </button>
               <p>${rank}.</p>
             </div>
               <img class="${config.CSS.CLASSES.noSelect}" src="${
       this.imageUrl
-    }"></img>
+    }" alt="Album Cover" title="Album Cover"></img>
               <div class="${config.CSS.CLASSES.links}">
                 <a href="${this.externalUrls.spotify}" target="_blank">
                   <h4 class="${config.CSS.CLASSES.ellipsisWrap} ${
